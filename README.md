@@ -1,5 +1,7 @@
 # ayame-web-sdk
 
+[![npm version](https://badge.fury.io/js/%40open-ayame%2Fayame-web-sdk.svg)](https://badge.fury.io/js/%40open-ayame%2Fayame-web-sdk)
+
 Web SDK for WebRTC Signaling Server Ayame
 
 ## サンプル

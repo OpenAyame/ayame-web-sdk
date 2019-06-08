@@ -15,6 +15,7 @@
     "type": "git",
     "url": "git+https://github.com/OpenAyame/ayame-web-sdk.git"
   },
+  "homepage": "https://github.com/OpenAyame/ayame-web-sdk",
   "author": "Shiguredo Inc.",
   "license": "MIT",
   "devDependencies": {
