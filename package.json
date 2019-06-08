@@ -1,0 +1,37 @@
+{
+  "name": "ayame-web-sdk",
+  "version": "0.0.1",
+  "description": "Web SDK for WebRTC Signaling Server Ayame",
+  "main": "dist/ayame.min.js",
+  "scripts": {
+    "build": "webpack --mode development --cache false --config webpack.config.js",
+    "watch": "webpack --mode development --watch --config webpack.config.js",
+    "release": "webpack --mode production --cache false --config webpack.config.js",
+    "fmt": "$(npm bin)/eslint src --fix; exit 0;",
+    "flow": "$(npm bin)/flow src  --show-all-errors",
+    "postinstall": "$(npm bin)/flow-typed install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenAyame/ayame-web-sdk.git"
+  },
+  "author": "Shiguredo Inc.",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-transform-flow-strip-types": "^7.4.4",
+    "@babel/preset-flow": "^7.0.0",
+    "babel-eslint": "^10.0.1",
+    "babel-loader": "^8.0.6",
+    "eslint": "^5.16.0",
+    "eslint-config-prettier": "^4.3.0",
+    "eslint-plugin-flowtype": "^3.9.1",
+    "eslint-plugin-import": "^2.17.3",
+    "eslint-plugin-prettier": "^3.1.0",
+    "flow-bin": "^0.99.1",
+    "flow-typed": "^2.5.2",
+    "prettier": "^1.17.1",
+    "webpack": "^4.32.2",
+    "webpack-cli": "^3.3.2"
+  }
+}

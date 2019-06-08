@@ -1,0 +1,29 @@
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>Ayame test</title>
+    </head>
+    <body>
+      <button onclick="startConn();">接続</button>
+      <button onclick="conn.disconnect();">切断</button>
+      <div style="float:left;">
+        <video id="local-video" autoplay="" style="width: 400px; height: 300px; border: 1px solid black;"></video>
+      </div>
+      <div style="float:right;">
+        <video id="remote-video" autoplay="" style="width: 400px; height: 300px; border: 1px solid black;"></video>
+      </div>
+      <script src="../dist/ayame.js"></script>
+      <script type="text/javascript">
+        const conn = Ayame.connection('ws://localhost:3000/ws', 'testroom');
+        const startConn = async () => {
+          const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true})
+          const stream = await conn.connect(mediaStream);
+          conn.on('disconnect', (e) => console.log(e));
+          conn.on('addstream', (e) => {
+            document.querySelector('#remote-video').srcObject = e.stream;
+          });
+          document.querySelector('#local-video').srcObject = stream;
+        };
+      </script>
+  </body>
+</html>
