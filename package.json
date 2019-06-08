@@ -1,5 +1,5 @@
 {
-  "name": "ayame-web-sdk",
+  "name": "@open-ayame/ayame-web-sdk",
   "version": "0.0.1",
   "description": "Web SDK for WebRTC Signaling Server Ayame",
   "main": "dist/ayame.min.js",
