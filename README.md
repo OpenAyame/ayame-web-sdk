@@ -4,7 +4,7 @@ Web SDK for WebRTC Signaling Server Ayame
 
 ## サンプル
 
-```
+```javascript
 const conn = Ayame.connection('wss://example.com:3000/ws', 'test-room');
 const startConn = async () => {
     const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
