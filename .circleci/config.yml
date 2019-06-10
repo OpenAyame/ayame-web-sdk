@@ -23,6 +23,10 @@ jobs:
           name: run eslint
           command: |
             $(npm bin)/eslint --debug src/
+      - run:
+          name: run flow
+          command: |
+            $(npm bin)/flow src/
 workflows:
   version: 2
   test:
