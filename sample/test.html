@@ -17,7 +17,9 @@
         const conn = Ayame.connection('ws://localhost:3000/ws', 'testroom');
         const startConn = async () => {
           const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true})
-          const stream = await conn.connect(mediaStream);
+          const authnMetadata = {hoge: "fuga"};
+          const stream = await conn.connect(mediaStream, authnMetadata);
+          conn.on('connect', ({authzMetadata}) => console.log(authzMetadata));
           conn.on('disconnect', (e) => console.log(e));
           conn.on('addstream', (e) => {
             document.querySelector('#remote-video').srcObject = e.stream;

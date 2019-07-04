@@ -15,6 +15,7 @@ class Connection {
   options: ConnectionOptions;
   stream: window.MediaStream;
   remoteStreamId: ?string;
+  authnMetadata: ?Object;
   _ws: WebSocket;
   _pc: window.RTCPeerConnection;
   _callbacks: Object;
@@ -32,6 +33,7 @@ class Connection {
     }
     this.stream = null;
     this._pc = null;
+    this.authnMetadata = null;
     this._callbacks = {
       connect: () => {},
       disconnect: () => {},
@@ -46,10 +48,11 @@ class Connection {
     }
   }
 
-  async connect(stream: window.RTCMediaStream) {
+  async connect(stream: window.RTCMediaStream, authnMetadata: ?Object = null) {
     this.stream = stream;
     this._hasReceivedSdp = false;
     this._candidates = [];
+    this.authnMetadata = authnMetadata;
     this._signaling();
     return stream;
   }
@@ -73,11 +76,16 @@ class Connection {
   _signaling() {
     this._ws = new WebSocket(this.signalingUrl);
     this._ws.onopen = () => {
-      this._sendWs({
+      const registerMessage = {
         type: 'register',
-        room_id: this.roomId,
-        client_id: this.clientId
-      });
+        roomId: this.roomId,
+        clientId: this.clientId,
+        authnMetadata: undefined
+      };
+      if (this.authnMetadata !== null) {
+        registerMessage.authnMetadata = this.authnMetadata;
+      }
+      this._sendWs(registerMessage);
     };
     this._ws.onclose = async event => {
       this.disconnect();
@@ -95,6 +103,7 @@ class Connection {
           this._callbacks.close(event);
         } else if (message.type === 'accept') {
           if (!this._pc) this._pc = this._createPeerConnection();
+          this._callbacks.connect({ authzMetadata: message.authzMetadata });
           this._ws.onclose = closeEvent => {
             this.disconnect();
             this._callbacks.disconnect({ reason: 'WS-CLOSED', event: closeEvent });
