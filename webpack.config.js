@@ -6,7 +6,10 @@ const pkg = require('./package.json');
 
 let version = pkg.version;
 
+const mode = process.env.NODE_ENV || "development";
+const watch = mode === 'development';
 const config = {
+  mode: mode,
   context: path.resolve(__dirname, './src'),
   entry: {
     ayame: './ayame.js',
@@ -43,7 +46,8 @@ const config = {
         ]
       }
     ]
-  }
+  },
+  watch
 };
 
 module.exports = config;

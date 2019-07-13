@@ -4,8 +4,8 @@
   "description": "Web SDK for WebRTC Signaling Server Ayame",
   "main": "dist/ayame.min.js",
   "scripts": {
-    "build": "webpack --mode development --cache false --config webpack.config.js",
-    "watch": "webpack --mode development --watch --config webpack.config.js",
+    "watch": "NODE_ENV=development wp --config ./webpack.config",
+    "build": "NODE_ENV=production wp  --config ./webpack.config",
     "release": "webpack --mode production --cache false --config webpack.config.js",
     "fmt": "$(npm bin)/eslint src --fix; exit 0;",
     "flow": "$(npm bin)/flow src  --show-all-errors",
@@ -33,6 +33,7 @@
     "flow-typed": "^2.5.2",
     "prettier": "^1.18.2",
     "webpack": "^4.35.3",
-    "webpack-cli": "^3.3.5"
+    "webpack-cli": "^3.3.5",
+    "webpack-nano": "^0.6.2"
   }
 }
