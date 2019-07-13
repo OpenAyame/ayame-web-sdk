@@ -118,11 +118,13 @@ class Connection {
           const answer = new window.RTCSessionDescription(message);
           await this._setAnswer(answer);
         } else if (message.type === 'candidate') {
-          const candidate = new window.RTCIceCandidate(message.ice);
-          if (this._hasReceivedSdp) {
-            this._addIceCandidate(candidate);
-          } else {
-            this._candidates.push(candidate);
+          if (message.ice) {
+            const candidate = new window.RTCIceCandidate(message.ice);
+            if (this._hasReceivedSdp) {
+              this._addIceCandidate(candidate);
+            } else {
+              this._candidates.push(candidate);
+            }
           }
         }
       } catch (error) {
