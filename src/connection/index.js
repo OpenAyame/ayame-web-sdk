@@ -1,9 +1,30 @@
 /* @flow */
-import { randomString, isUnifiedPlan } from '../utils';
+import { randomString } from '../utils';
 
+export type ConnectionDirection = 'sendrecv' | 'recvonly' | 'sendonly';
+
+/*
+ * オーディオ接続に関するオプションです。
+ */
+export type ConnectionAudioOption = {
+  direction: ConnectionDirection,
+  enabled: boolean
+};
+
+/*
+ * ビデオ接続に関するオプションです。
+ */
+export type ConnectionVideoOption = {
+  direction: ConnectionDirection,
+  enabled: boolean
+};
+
+/*
+  接続時に指定するオプションです。
+ */
 export type ConnectionOptions = {
-  audio?: boolean,
-  video?: boolean,
+  audio: ConnectionAudioOption,
+  video: ConnectionVideoOption,
   clientId?: string,
   iceServers: Array<Object>
 };
@@ -13,14 +34,12 @@ class Connection {
   clientId: ?string;
   signalingUrl: string;
   options: ConnectionOptions;
-  stream: window.MediaStream;
+  stream: ?window.MediaStream;
   remoteStreamId: ?string;
   authnMetadata: ?Object;
   _ws: WebSocket;
   _pc: window.RTCPeerConnection;
   _callbacks: Object;
-  _hasReceivedSdp: boolean;
-  _candidates: Array<window.RTCIceCandidate>;
 
   constructor(signalingUrl: string, roomId: string, options: ConnectionOptions) {
     this.roomId = roomId;
@@ -48,10 +67,8 @@ class Connection {
     }
   }
 
-  async connect(stream: window.RTCMediaStream, authnMetadata: ?Object = null) {
+  async connect(stream: ?window.RTCMediaStream, authnMetadata: ?Object = null) {
     this.stream = stream;
-    this._hasReceivedSdp = false;
-    this._candidates = [];
     this.authnMetadata = authnMetadata;
     this._signaling();
     return stream;
@@ -76,6 +93,7 @@ class Connection {
   _signaling() {
     this._ws = new WebSocket(this.signalingUrl);
     this._ws.onopen = () => {
+      if (!this._pc) this._pc = this._createPeerConnection();
       const registerMessage = {
         type: 'register',
         roomId: this.roomId,
@@ -102,7 +120,6 @@ class Connection {
         } else if (message.type === 'close') {
           this._callbacks.close(event);
         } else if (message.type === 'accept') {
-          if (!this._pc) this._pc = this._createPeerConnection();
           this._callbacks.connect({ authzMetadata: message.authzMetadata });
           this._ws.onclose = closeEvent => {
             this.disconnect();
@@ -120,11 +137,7 @@ class Connection {
         } else if (message.type === 'candidate') {
           if (message.ice) {
             const candidate = new window.RTCIceCandidate(message.ice);
-            if (this._hasReceivedSdp) {
-              this._addIceCandidate(candidate);
-            } else {
-              this._candidates.push(candidate);
-            }
+            this._addIceCandidate(candidate);
           }
         }
       } catch (error) {
@@ -139,16 +152,7 @@ class Connection {
       iceServers: this.options.iceServers
     };
     const pc = new window.RTCPeerConnection(pcConfig);
-    if ('ontrack' in pc) {
-      pc.ontrack = (event: window.RTCTrackEvent) => {
-        const stream = event.streams[0];
-        if (!stream) return;
-        if (stream.id === 'default') return;
-        this.remoteStreamId = stream.id;
-        event.stream = stream;
-        this._callbacks.addstream(event);
-      };
-    } else {
+    if (typeof pc.ontrack === 'undefined') {
       pc.onaddstream = (event: window.RTCStreamEvent) => {
         const stream = event.stream;
         if ((this.remoteStreamId && stream.id !== this.remoteStreamId) || this.remoteStreamId === null) {
@@ -162,8 +166,18 @@ class Connection {
           this._callbacks.removestream(event);
         }
       };
+    } else {
+      pc.ontrack = (event: window.RTCTrackEvent) => {
+        const stream = event.streams[0];
+        if (!stream) return;
+        if (stream.id === 'default') return;
+        if (stream.id === (this.stream && this.stream.id)) return;
+        this.remoteStreamId = stream.id;
+        event.stream = stream;
+        this._callbacks.addstream(event);
+      };
     }
-    pc.onicecandidate = (event: window.RTCIceCandidateEvent) => {
+    pc.onicecandidate = event => {
       if (event.candidate) {
         this._sendIceCandidate(event.candidate);
       }
@@ -179,8 +193,8 @@ class Connection {
     pc.onnegotiationneeded = async () => {
       try {
         const offer = await pc.createOffer({
-          offerToReceiveAudio: this.options.audio,
-          offerToReceiveVideo: this.options.video
+          offerToReceiveAudio: this.options.audio.enabled,
+          offerToReceiveVideo: this.options.video.enabled
         });
         await pc.setLocalDescription(offer);
         this._sendSdp(pc.localDescription);
@@ -190,18 +204,28 @@ class Connection {
       }
     };
     // Add local stream to pc.
-    if (this.stream) {
-      if (typeof pc.addStream === 'undefined') {
-        this.stream.getTracks().forEach(track => {
-          pc.addTrack(track, this.stream);
-        });
-      } else {
-        pc.addStream(this.stream);
-      }
+    const videoTrack = this.stream && this.stream.getVideoTracks()[0];
+    const audioTrack = this.stream && this.stream.getAudioTracks()[0];
+    if (audioTrack) {
+      pc.addTransceiver(audioTrack, { streams: [this.stream], direction: this.options.audio.direction });
     }
-    if (isUnifiedPlan(pc)) {
-      pc.addTransceiver('video', { direction: 'recvonly' });
-      pc.addTransceiver('audio', { direction: 'recvonly' });
+    pc.addTransceiver('audio', { direction: 'recvonly' });
+    if (videoTrack) {
+      pc.addTransceiver(videoTrack, { streams: [this.stream], direction: this.options.video.direction });
+    }
+    pc.addTransceiver('video', { direction: 'recvonly' });
+
+    if (this.options.video.direction === 'sendonly') {
+      pc.getTransceivers().forEach(transceiver => {
+        videoTrack && transceiver.sender.replaceTrack(videoTrack);
+        transceiver.direction = 'sendonly';
+      });
+    }
+    if (this.options.audio.direction === 'sendonly') {
+      pc.getTransceivers().forEach(transceiver => {
+        audioTrack && transceiver.sender.replaceTrack(audioTrack);
+        transceiver.direction = 'sendonly';
+      });
     }
     return pc;
   }
@@ -222,11 +246,10 @@ class Connection {
 
   async _setAnswer(sessionDescription: window.RTCSessionDescription) {
     await this._pc.setRemoteDescription(sessionDescription);
-    this._drainCandidate();
   }
 
   async _setOffer(sessionDescription: window.RTCSessionDescription) {
-    this._pc = this._createPeerConnection();
+    if (!this._pc) this._pc = this._createPeerConnection();
     this._pc.onnegotiationneeded = () => {};
     try {
       await this._pc.setRemoteDescription(sessionDescription);
@@ -238,15 +261,9 @@ class Connection {
   }
 
   _addIceCandidate(candidate: window.RTCIceCandidate) {
-    this._pc.addIceCandidate(candidate);
-  }
-
-  _drainCandidate() {
-    this._hasReceivedSdp = true;
-    this._candidates.forEach((candidate: window.RTCIceCandidate) => {
-      this._addIceCandidate(candidate);
-    });
-    this._candidates = [];
+    if (this._pc) {
+      this._pc.addIceCandidate(candidate);
+    }
   }
 
   _sendIceCandidate(candidate: window.RTCIceCandidate) {

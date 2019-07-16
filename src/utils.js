@@ -8,8 +8,3 @@ export function randomString(strLength: number) {
   }
   return result.join('');
 }
-
-export function isUnifiedPlan(peer: window.RTCPeerConnection) {
-  const config = peer.getConfiguration();
-  return 'addTransceiver' in peer && (!('sdpSemantics' in config) || config.sdpSemantics === 'unified-plan');
-}

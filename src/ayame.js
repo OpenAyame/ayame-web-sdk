@@ -2,9 +2,9 @@
 import Connection from './connection';
 import type { ConnectionOptions } from './connection';
 
-const defaultOptions = {
-  audio: true,
-  video: true,
+const defaultOptions: ConnectionOptions = {
+  audio: { direction: 'sendrecv', enabled: true },
+  video: { direction: 'sendrecv', enabled: true },
   iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
 };
 
