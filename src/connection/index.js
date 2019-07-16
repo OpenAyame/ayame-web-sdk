@@ -1,5 +1,5 @@
 /* @flow */
-import { randomString } from '../utils';
+import { randomString, traceLog } from '../utils';
 
 export type ConnectionDirection = 'sendrecv' | 'recvonly' | 'sendonly';
 
@@ -132,7 +132,7 @@ class Connection {
             await this._setAnswer(message);
           } else if (message.type === 'candidate') {
             if (message.ice) {
-              console.debug('Received ICE candidate ...');
+              traceLog('Received ICE candidate ...', message.ice);
               const candidate = new window.RTCIceCandidate(message.ice);
               this._addIceCandidate(candidate);
             }
@@ -169,10 +169,9 @@ class Connection {
         }
       };
     } else {
-
       let tracks = [];
       pc.ontrack = (event: window.RTCTrackEvent) => {
-        console.log('-- peer.ontrack()', event);
+        traceLog('-- peer.ontrack()', event);
         tracks.push(event.track);
         let mediaStream = new window.MediaStream(tracks);
         this.remoteStreamId = mediaStream.id;
@@ -183,10 +182,16 @@ class Connection {
     pc.onicecandidate = event => {
       if (event.candidate) {
         this._sendIceCandidate(event.candidate);
+      } else {
+        traceLog('empty ice event', '');
       }
     };
     pc.oniceconnectionstatechange = () => {
+      traceLog('ICE connection Status has changed to ', pc.iceConnectionState);
       switch (pc.iceConnectionState) {
+        case 'connected':
+          this._isNegotiating = false;
+          break;
         case 'closed':
         case 'failed':
         case 'disconnected':
@@ -212,6 +217,9 @@ class Connection {
         this.disconnect();
         this._callbacks.disconnect({ reason: 'NEGOTIATION-ERROR', error: error });
       }
+    };
+    pc.onsignalingstatechange = _ => {
+      traceLog('signaling state changes:', pc.signalingState);
     };
     // Add local stream to pc.
     const videoTrack = this.stream && this.stream.getVideoTracks()[0];
