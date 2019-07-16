@@ -37,6 +37,7 @@ class Connection {
   stream: ?window.MediaStream;
   remoteStreamId: ?string;
   authnMetadata: ?Object;
+  _isNegotiating: boolean;
   _ws: WebSocket;
   _pc: window.RTCPeerConnection;
   _callbacks: Object;
@@ -50,6 +51,7 @@ class Connection {
     } else {
       this.clientId = randomString(17);
     }
+    this._isNegotiating = false;
     this.stream = null;
     this._pc = null;
     this.authnMetadata = null;
@@ -88,12 +90,12 @@ class Connection {
       this._pc.close();
     }
     this._pc = null;
+    this._isNegotiating = false;
   }
 
   _signaling() {
     this._ws = new WebSocket(this.signalingUrl);
     this._ws.onopen = () => {
-      if (!this._pc) this._pc = this._createPeerConnection();
       const registerMessage = {
         type: 'register',
         roomId: this.roomId,
@@ -104,50 +106,50 @@ class Connection {
         registerMessage.authnMetadata = this.authnMetadata;
       }
       this._sendWs(registerMessage);
+      this._ws.onmessage = async (event: MessageEvent) => {
+        try {
+          if (typeof event.data !== 'string') {
+            return;
+          }
+          const message = JSON.parse(event.data);
+          if (message.type === 'ping') {
+            this._sendWs({ type: 'pong' });
+          } else if (message.type === 'close') {
+            this._callbacks.close(event);
+          } else if (message.type === 'accept') {
+            if (!this._pc) this._pc = this._createPeerConnection(true);
+            this._callbacks.connect({ authzMetadata: message.authzMetadata });
+            this._ws.onclose = closeEvent => {
+              this.disconnect();
+              this._callbacks.disconnect({ reason: 'WS-CLOSED', event: closeEvent });
+            };
+          } else if (message.type === 'reject') {
+            this.disconnect();
+            this._callbacks.disconnect({ reason: 'REJECTED' });
+          } else if (message.type === 'offer') {
+            this._setOffer(message);
+          } else if (message.type === 'answer') {
+            await this._setAnswer(message);
+          } else if (message.type === 'candidate') {
+            if (message.ice) {
+              console.debug('Received ICE candidate ...');
+              const candidate = new window.RTCIceCandidate(message.ice);
+              this._addIceCandidate(candidate);
+            }
+          }
+        } catch (error) {
+          this.disconnect();
+          this._callbacks.disconnect({ reason: 'SIGNALING-ERROR', error: error });
+        }
+      };
     };
     this._ws.onclose = async event => {
       this.disconnect();
       this._callbacks.disconnect(event);
     };
-    this._ws.onmessage = async (event: MessageEvent) => {
-      try {
-        if (typeof event.data !== 'string') {
-          return;
-        }
-        const message = JSON.parse(event.data);
-        if (message.type === 'ping') {
-          this._sendWs({ type: 'pong' });
-        } else if (message.type === 'close') {
-          this._callbacks.close(event);
-        } else if (message.type === 'accept') {
-          this._callbacks.connect({ authzMetadata: message.authzMetadata });
-          this._ws.onclose = closeEvent => {
-            this.disconnect();
-            this._callbacks.disconnect({ reason: 'WS-CLOSED', event: closeEvent });
-          };
-        } else if (message.type === 'reject') {
-          this.disconnect();
-          this._callbacks.disconnect({ reason: 'REJECTED' });
-        } else if (message.type === 'offer') {
-          const offer = new window.RTCSessionDescription(message);
-          this._setOffer(offer);
-        } else if (message.type === 'answer') {
-          const answer = new window.RTCSessionDescription(message);
-          await this._setAnswer(answer);
-        } else if (message.type === 'candidate') {
-          if (message.ice) {
-            const candidate = new window.RTCIceCandidate(message.ice);
-            this._addIceCandidate(candidate);
-          }
-        }
-      } catch (error) {
-        this.disconnect();
-        this._callbacks.disconnect({ reason: 'SIGNALING-ERROR', error: error });
-      }
-    };
   }
 
-  _createPeerConnection() {
+  _createPeerConnection(isOffer: boolean) {
     const pcConfig = {
       iceServers: this.options.iceServers
     };
@@ -167,13 +169,14 @@ class Connection {
         }
       };
     } else {
+
+      let tracks = [];
       pc.ontrack = (event: window.RTCTrackEvent) => {
-        const stream = event.streams[0];
-        if (!stream) return;
-        if (stream.id === 'default') return;
-        if (stream.id === (this.stream && this.stream.id)) return;
-        this.remoteStreamId = stream.id;
-        event.stream = stream;
+        console.log('-- peer.ontrack()', event);
+        tracks.push(event.track);
+        let mediaStream = new window.MediaStream(tracks);
+        this.remoteStreamId = mediaStream.id;
+        event.stream = mediaStream;
         this._callbacks.addstream(event);
       };
     }
@@ -191,13 +194,20 @@ class Connection {
       }
     };
     pc.onnegotiationneeded = async () => {
+      if (this._isNegotiating) {
+        return;
+      }
       try {
-        const offer = await pc.createOffer({
-          offerToReceiveAudio: this.options.audio.enabled,
-          offerToReceiveVideo: this.options.video.enabled
-        });
-        await pc.setLocalDescription(offer);
-        this._sendSdp(pc.localDescription);
+        this._isNegotiating = true;
+        if (isOffer) {
+          const offer = await pc.createOffer({
+            offerToReceiveAudio: this.options.audio.enabled,
+            offerToReceiveVideo: this.options.video.enabled
+          });
+          await pc.setLocalDescription(offer);
+          this._sendSdp(pc.localDescription);
+          this._isNegotiating = false;
+        }
       } catch (error) {
         this.disconnect();
         this._callbacks.disconnect({ reason: 'NEGOTIATION-ERROR', error: error });
@@ -207,24 +217,24 @@ class Connection {
     const videoTrack = this.stream && this.stream.getVideoTracks()[0];
     const audioTrack = this.stream && this.stream.getAudioTracks()[0];
     if (audioTrack) {
-      pc.addTransceiver(audioTrack, { streams: [this.stream], direction: this.options.audio.direction });
+      pc.addTrack(audioTrack, this.stream);
     }
     pc.addTransceiver('audio', { direction: 'recvonly' });
     if (videoTrack) {
-      pc.addTransceiver(videoTrack, { streams: [this.stream], direction: this.options.video.direction });
+      pc.addTrack(videoTrack, this.stream);
     }
     pc.addTransceiver('video', { direction: 'recvonly' });
 
     if (this.options.video.direction === 'sendonly') {
       pc.getTransceivers().forEach(transceiver => {
         videoTrack && transceiver.sender.replaceTrack(videoTrack);
-        transceiver.direction = 'sendonly';
+        transceiver.direction = this.options.video.direction;
       });
     }
     if (this.options.audio.direction === 'sendonly') {
       pc.getTransceivers().forEach(transceiver => {
         audioTrack && transceiver.sender.replaceTrack(audioTrack);
-        transceiver.direction = 'sendonly';
+        transceiver.direction = this.options.audio.direction;
       });
     }
     return pc;
@@ -249,8 +259,7 @@ class Connection {
   }
 
   async _setOffer(sessionDescription: window.RTCSessionDescription) {
-    if (!this._pc) this._pc = this._createPeerConnection();
-    this._pc.onnegotiationneeded = () => {};
+    this._pc = this._createPeerConnection(false);
     try {
       await this._pc.setRemoteDescription(sessionDescription);
       await this._createAnswer();

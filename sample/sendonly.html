@@ -9,27 +9,16 @@
       <div style="float:left;">
         <video id="local-video" autoplay="" style="width: 400px; height: 300px; border: 1px solid black;"></video>
       </div>
-      <div style="float:right;">
-        <video id="remote-video" style="width: 400px; height: 300px; border: 1px solid black;"></video>
-      </div>
       <script src="../dist/ayame.js"></script>
       <script type="text/javascript">
         const conn = Ayame.connection('wss://ayame.shiguredo.jp/ws', 'ayame-test-room');
+        conn.options.video.direction = 'sendonly';
         const remoteVideo = document.querySelector('#remote-video');
         const startConn = async () => {
           const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true})
-          const authnMetadata = {hoge: "fuga"};
           conn.on('connect', ({authzMetadata}) => console.log(authzMetadata));
           conn.on('disconnect', (e) => console.log(e));
-          conn.on('addstream', async (e) => {
-            remoteVideo.srcObject = e.stream;
-            try {
-              await remoteVideo.play();
-            } catch(error) {
-              console.log('error auto play:' + error);
-            }
-          });
-          const stream = await conn.connect(mediaStream, authnMetadata);
+          const stream = await conn.connect(mediaStream);
           document.querySelector('#local-video').srcObject = stream;
         };
       </script>
