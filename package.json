@@ -8,8 +8,7 @@
     "build": "NODE_ENV=production wp  --config ./webpack.config",
     "release": "webpack --mode production --cache false --config webpack.config.js",
     "fmt": "$(npm bin)/eslint src --fix; exit 0;",
-    "flow": "$(npm bin)/flow src  --show-all-errors",
-    "postinstall": "$(npm bin)/flow-typed install"
+    "flow": "$(npm bin)/flow src  --show-all-errors"
   },
   "repository": {
     "type": "git",
