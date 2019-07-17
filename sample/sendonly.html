@@ -13,6 +13,7 @@
       <script type="text/javascript">
         const conn = Ayame.connection('wss://ayame.shiguredo.jp/ws', 'ayame-test-room');
         conn.options.video.direction = 'sendonly';
+        conn.options.audio.direction = 'sendonly';
         const remoteVideo = document.querySelector('#remote-video');
         const startConn = async () => {
           const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true})
