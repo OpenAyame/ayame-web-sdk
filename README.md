@@ -6,6 +6,11 @@ Web SDK for WebRTC Signaling Server Ayame
 
 ## サンプル
 
+- [sendrecv(双方向送受信)](./samples/sendrecv.html)
+- [recvonly(受信のみ)](./samples/recvonly.html)
+- [sendonly(送信のみ)](./samples/sendonly.html)
+- [getDisplayMedia(画面共有)](./samples/displaymedia.html)
+
 ```javascript
 const conn = Ayame.connection('wss://example.com/ws', 'test-room');
 const startConn = async () => {
