@@ -1,0 +1,40 @@
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>Ayame getDisplayMedia() Sample</title>
+    </head>
+    <body>
+      <h4>Ayame getDisplayMedia() Sample</h4>
+      <button onclick="startConn();">接続</button>
+      <button onclick="conn.disconnect();">切断</button>
+      <div style="float:left;">
+        <video id="local-video" muted autoplay style="width: 400px; height: 300px; border: 1px solid black;"></video>
+      </div>
+      <div style="float:right;">
+        <video id="remote-video" autoplay style="width: 400px; height: 300px; border: 1px solid black;"></video>
+      </div>
+      <script src="../dist/ayame.js"></script>
+      <script type="text/javascript">
+        const conn = Ayame.connection('wss://ayame.shiguredo.jp/ws', 'ayame-test-room');
+        conn.options.audio.enabled = false;
+        const remoteVideo = document.querySelector('#remote-video');
+        const startConn = async () => {
+          const mediaStream = await navigator.mediaDevices.getDisplayMedia();
+          const authnMetadata = {hoge: "fuga"};
+          conn.on('connect', ({authzMetadata}) => console.log(authzMetadata));
+          conn.on('disconnect', (e) => console.log(e));
+          conn.on('addstream', async (e) => {
+            console.log(e.stream);
+            remoteVideo.srcObject = e.stream;
+            try {
+              await remoteVideo.play();
+            } catch(error) {
+              console.log('error auto play:' + error);
+            }
+          });
+          const stream = await conn.connect(mediaStream, authnMetadata);
+          document.querySelector('#local-video').srcObject = stream;
+        };
+      </script>
+  </body>
+</html>
