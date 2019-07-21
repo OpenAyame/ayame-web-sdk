@@ -166,7 +166,6 @@ class Connection {
                     this._callbacks.disconnect({ reason: 'WS-CLOSED', event: closeEvent });
                   };
                 }
-                resolve();
               } else if (message.type === 'reject') {
                 await this.disconnect();
                 this._callbacks.disconnect({ reason: 'REJECTED' });
@@ -177,7 +176,7 @@ class Connection {
               } else if (message.type === 'candidate') {
                 if (message.ice) {
                   traceLog('Received ICE candidate ...', message.ice);
-                  const candidate = message.ice;
+                  const candidate = new window.RTCIceCandidate(message.ice);
                   this._addIceCandidate(candidate);
                 }
               }
@@ -194,6 +193,7 @@ class Connection {
           this._callbacks.disconnect(event);
         };
       }
+      return resolve();
     });
   }
 
@@ -240,12 +240,6 @@ class Connection {
         case 'connected':
           this._isNegotiating = false;
           break;
-        case 'closed':
-        case 'failed':
-          await this.disconnect();
-          break;
-        case 'disconnected':
-          break;
       }
     };
     pc.onnegotiationneeded = async () => {
@@ -253,6 +247,7 @@ class Connection {
         return;
       }
       try {
+        traceLog('Negotiation Needed');
         this._isNegotiating = true;
         if (isOffer) {
           const offer = await pc.createOffer({
