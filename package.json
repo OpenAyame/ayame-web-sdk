@@ -8,7 +8,8 @@
     "build": "NODE_ENV=production wp  --config ./webpack.config",
     "release": "webpack --mode production --cache false --config webpack.config.js",
     "fmt": "$(npm bin)/eslint src --fix; exit 0;",
-    "flow": "$(npm bin)/flow src  --show-all-errors"
+    "flow": "$(npm bin)/flow src  --show-all-errors",
+    "flow:stop": "$(npm bin)/flow stop"
   },
   "repository": {
     "type": "git",
@@ -18,21 +19,21 @@
   "author": "Shiguredo Inc.",
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "^7.5.4",
+    "@babel/core": "^7.5.5",
     "@babel/plugin-transform-flow-strip-types": "^7.4.4",
     "@babel/preset-flow": "^7.0.0",
     "babel-eslint": "^10.0.2",
     "babel-loader": "^8.0.6",
-    "eslint": "^6.0.1",
+    "eslint": "^6.1.0",
     "eslint-config-prettier": "^6.0.0",
-    "eslint-plugin-flowtype": "^3.11.1",
-    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-flowtype": "^3.12.1",
+    "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-prettier": "^3.1.0",
-    "flow-bin": "^0.102.0",
-    "flow-typed": "^2.5.2",
+    "flow-bin": "^0.103.0",
+    "flow-typed": "^2.6.0",
     "prettier": "^1.18.2",
-    "webpack": "^4.35.3",
-    "webpack-cli": "^3.3.5",
-    "webpack-nano": "^0.6.2"
+    "webpack": "^4.36.1",
+    "webpack-cli": "^3.3.6",
+    "webpack-nano": "^0.7.0"
   }
 }

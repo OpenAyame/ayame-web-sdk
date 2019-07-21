@@ -38,7 +38,7 @@ class Connection {
   remoteStreamId: ?string;
   authnMetadata: ?Object;
   _isNegotiating: boolean;
-  _ws: WebSocket;
+  _ws: ?WebSocket;
   _pc: window.RTCPeerConnection;
   _callbacks: Object;
 
@@ -70,83 +70,131 @@ class Connection {
   }
 
   async connect(stream: ?window.RTCMediaStream, authnMetadata: ?Object = null) {
+    if (this._ws || this._pc) {
+      traceLog('connection already exists');
+      throw new Error('Connection Already Exists!');
+    }
     this.stream = stream;
     this.authnMetadata = authnMetadata;
-    this._signaling();
+    await this._signaling();
     return stream;
   }
 
-  disconnect() {
-    this.remoteStreamId = null;
+  async disconnect() {
+    const closePeerConnection = new Promise((resolve, reject) => {
+      if (!this._pc) return resolve();
+      if (this._pc && this._pc.signalingState == 'closed') {
+        return resolve();
+      }
+      this._pc.oniceconnectionstatechange = () => {};
+      const timerId = setInterval(() => {
+        if (!this._pc) {
+          clearInterval(timerId);
+          return reject('PeerConnection Closing Error');
+        }
+        if (this._pc && this._pc.signalingState == 'closed') {
+          clearInterval(timerId);
+          return resolve();
+        }
+      }, 800);
+      this._pc.close();
+    });
+    const closeWebSocketConnection = new Promise((resolve, reject) => {
+      if (!this._ws) return resolve();
+      if (this._ws && this._ws.readyState === 3) return resolve();
+      this._ws.onclose = () => {};
+      const timerId = setInterval(() => {
+        if (!this._ws) {
+          clearInterval(timerId);
+          return reject('WebSocket Closing Error');
+        }
+        if (this._ws.readyState === 3) {
+          clearInterval(timerId);
+          return resolve();
+        }
+      }, 800);
+      this._ws && this._ws.close();
+    });
     if (this.stream) {
       this.stream.getTracks().forEach(t => {
         t.stop();
       });
     }
+    this.remoteStreamId = null;
     this.stream = null;
-    this._ws.onclose = () => {};
-    this._ws.close();
-    if (this._pc && this._pc.signalingState !== 'closed') {
-      this._pc.close();
-    }
-    this._pc = null;
+    this.authnMetadata = null;
     this._isNegotiating = false;
+    await Promise.all([closeWebSocketConnection, closePeerConnection]);
+    this._ws = null;
+    this._pc = null;
   }
 
-  _signaling() {
-    this._ws = new WebSocket(this.signalingUrl);
-    this._ws.onopen = () => {
-      const registerMessage = {
-        type: 'register',
-        roomId: this.roomId,
-        clientId: this.clientId,
-        authnMetadata: undefined
-      };
-      if (this.authnMetadata !== null) {
-        registerMessage.authnMetadata = this.authnMetadata;
+  async _signaling() {
+    return new Promise((resolve, reject) => {
+      if (this._ws) {
+        return reject('WebSocket Connnection Already Exists!');
       }
-      this._sendWs(registerMessage);
-      this._ws.onmessage = async (event: MessageEvent) => {
-        try {
-          if (typeof event.data !== 'string') {
-            return;
-          }
-          const message = JSON.parse(event.data);
-          if (message.type === 'ping') {
-            this._sendWs({ type: 'pong' });
-          } else if (message.type === 'close') {
-            this._callbacks.close(event);
-          } else if (message.type === 'accept') {
-            if (!this._pc) this._pc = this._createPeerConnection(true);
-            this._callbacks.connect({ authzMetadata: message.authzMetadata });
-            this._ws.onclose = closeEvent => {
-              this.disconnect();
-              this._callbacks.disconnect({ reason: 'WS-CLOSED', event: closeEvent });
-            };
-          } else if (message.type === 'reject') {
-            this.disconnect();
-            this._callbacks.disconnect({ reason: 'REJECTED' });
-          } else if (message.type === 'offer') {
-            this._setOffer(message);
-          } else if (message.type === 'answer') {
-            await this._setAnswer(message);
-          } else if (message.type === 'candidate') {
-            if (message.ice) {
-              traceLog('Received ICE candidate ...', message.ice);
-              const candidate = new window.RTCIceCandidate(message.ice);
-              this._addIceCandidate(candidate);
+      this._ws = new WebSocket(this.signalingUrl);
+      this._ws.onopen = () => {
+        const registerMessage = {
+          type: 'register',
+          roomId: this.roomId,
+          clientId: this.clientId,
+          authnMetadata: undefined
+        };
+        if (this.authnMetadata !== null) {
+          registerMessage.authnMetadata = this.authnMetadata;
+        }
+        this._sendWs(registerMessage);
+        if (this._ws) {
+          this._ws.onmessage = async (event: MessageEvent) => {
+            try {
+              if (typeof event.data !== 'string') {
+                return;
+              }
+              const message = JSON.parse(event.data);
+              if (message.type === 'ping') {
+                this._sendWs({ type: 'pong' });
+              } else if (message.type === 'close') {
+                this._callbacks.close(event);
+              } else if (message.type === 'accept') {
+                if (!this._pc) this._pc = this._createPeerConnection(true);
+                this._callbacks.connect({ authzMetadata: message.authzMetadata });
+                if (this._ws) {
+                  this._ws.onclose = async closeEvent => {
+                    await this.disconnect();
+                    this._callbacks.disconnect({ reason: 'WS-CLOSED', event: closeEvent });
+                  };
+                }
+                resolve();
+              } else if (message.type === 'reject') {
+                await this.disconnect();
+                this._callbacks.disconnect({ reason: 'REJECTED' });
+              } else if (message.type === 'offer') {
+                this._setOffer(message);
+              } else if (message.type === 'answer') {
+                await this._setAnswer(message);
+              } else if (message.type === 'candidate') {
+                if (message.ice) {
+                  traceLog('Received ICE candidate ...', message.ice);
+                  const candidate = message.ice;
+                  this._addIceCandidate(candidate);
+                }
+              }
+            } catch (error) {
+              await this.disconnect();
+              this._callbacks.disconnect({ reason: 'SIGNALING-ERROR', error: error });
             }
-          }
-        } catch (error) {
-          this.disconnect();
-          this._callbacks.disconnect({ reason: 'SIGNALING-ERROR', error: error });
+          };
         }
       };
-    };
-    this._ws.onclose = async event => {
-      this.disconnect();
-      this._callbacks.disconnect(event);
-    };
+      if (this._ws) {
+        this._ws.onclose = async event => {
+          await this.disconnect();
+          this._callbacks.disconnect(event);
+        };
+      }
+    });
   }
 
   _createPeerConnection(isOffer: boolean) {
@@ -186,7 +234,7 @@ class Connection {
         traceLog('empty ice event', '');
       }
     };
-    pc.oniceconnectionstatechange = () => {
+    pc.oniceconnectionstatechange = async () => {
       traceLog('ICE connection Status has changed to ', pc.iceConnectionState);
       switch (pc.iceConnectionState) {
         case 'connected':
@@ -194,6 +242,8 @@ class Connection {
           break;
         case 'closed':
         case 'failed':
+          await this.disconnect();
+          break;
         case 'disconnected':
           break;
       }
@@ -214,7 +264,7 @@ class Connection {
           this._isNegotiating = false;
         }
       } catch (error) {
-        this.disconnect();
+        await this.disconnect();
         this._callbacks.disconnect({ reason: 'NEGOTIATION-ERROR', error: error });
       }
     };
@@ -257,7 +307,7 @@ class Connection {
       await this._pc.setLocalDescription(answer);
       this._sendSdp(this._pc.localDescription);
     } catch (error) {
-      this.disconnect();
+      await this.disconnect();
       this._callbacks.disconnect({ reason: 'CREATE-ANSWER-ERROR', error: error });
     }
   }
@@ -272,14 +322,18 @@ class Connection {
       await this._pc.setRemoteDescription(sessionDescription);
       await this._createAnswer();
     } catch (error) {
-      this.disconnect();
+      await this.disconnect();
       this._callbacks.disconnect({ reason: 'SET-OFFER-ERROR', error: error });
     }
   }
 
-  _addIceCandidate(candidate: window.RTCIceCandidate) {
-    if (this._pc) {
-      this._pc.addIceCandidate(candidate);
+  async _addIceCandidate(candidate: window.RTCIceCandidate) {
+    try {
+      if (this._pc) {
+        await this._pc.addIceCandidate(candidate);
+      }
+    } catch (_error) {
+      traceLog('invalid ice candidate', candidate);
     }
   }
 

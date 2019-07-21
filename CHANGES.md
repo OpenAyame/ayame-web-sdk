@@ -1,6 +1,7 @@
 # リリースノート
 
 ## develop
+- disconnect 時の peer connection, websocket の初期化周りを修正する
 
 ## 0.0.1.rc-2
 
