@@ -1,11 +1,13 @@
 /* @flow */
 import Connection from './connection';
 import type { ConnectionOptions } from './connection';
+import { randomString } from './utils';
 
-const defaultOptions: ConnectionOptions = {
+export const defaultOptions: ConnectionOptions = {
   audio: { direction: 'sendrecv', enabled: true },
   video: { direction: 'sendrecv', enabled: true },
-  iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+  iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+  clientId: randomString(17)
 };
 
 export function connection(signalingUrl: string, roomId: string, options: ConnectionOptions = defaultOptions) {

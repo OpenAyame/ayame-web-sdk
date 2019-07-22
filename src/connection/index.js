@@ -1,5 +1,5 @@
 /* @flow */
-import { randomString, traceLog } from '../utils';
+import { traceLog } from '../utils';
 
 export type ConnectionDirection = 'sendrecv' | 'recvonly' | 'sendonly';
 
@@ -25,13 +25,12 @@ export type ConnectionVideoOption = {
 export type ConnectionOptions = {
   audio: ConnectionAudioOption,
   video: ConnectionVideoOption,
-  clientId?: string,
+  clientId: string,
   iceServers: Array<Object>
 };
 
 class Connection {
   roomId: string;
-  clientId: ?string;
   signalingUrl: string;
   options: ConnectionOptions;
   stream: ?window.MediaStream;
@@ -46,11 +45,6 @@ class Connection {
     this.roomId = roomId;
     this.signalingUrl = signalingUrl;
     this.options = options;
-    if (options.clientId) {
-      this.clientId = options.clientId;
-    } else {
-      this.clientId = randomString(17);
-    }
     this._isNegotiating = false;
     this.stream = null;
     this._pc = null;
@@ -139,7 +133,7 @@ class Connection {
         const registerMessage = {
           type: 'register',
           roomId: this.roomId,
-          clientId: this.clientId,
+          clientId: this.options.clientId,
           authnMetadata: undefined
         };
         if (this.authnMetadata !== null) {
