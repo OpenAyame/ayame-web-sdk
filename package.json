@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/OpenAyame/ayame-web-sdk",
   "author": "Shiguredo Inc.",
-  "license": "Apache License 2.0",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@babel/core": "^7.5.5",
     "@babel/plugin-transform-flow-strip-types": "^7.4.4",
