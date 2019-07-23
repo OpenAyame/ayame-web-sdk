@@ -233,6 +233,7 @@ class Connection {
       switch (pc.iceConnectionState) {
         case 'connected':
           this._isNegotiating = false;
+          break;
         case 'failed':
           traceLog('')
           await this.disconnect();
