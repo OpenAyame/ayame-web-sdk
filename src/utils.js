@@ -1,5 +1,6 @@
 /* @flow */
 
+/* @ignore */
 export function randomString(strLength: number) {
   var result = [];
   var charSet = '0123456789';
@@ -9,6 +10,7 @@ export function randomString(strLength: number) {
   return result.join('');
 }
 
+/* @ignore */
 export function traceLog(title: string, value: Object | string) {
   let prefix = '';
   if (window.performance) {
@@ -21,6 +23,7 @@ export function traceLog(title: string, value: Object | string) {
   }
 }
 
+/* @ignore */
 function browser() {
   const ua = window.navigator.userAgent.toLocaleLowerCase();
   if (ua.indexOf('edge') !== -1) {

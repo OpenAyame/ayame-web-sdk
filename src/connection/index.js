@@ -1,10 +1,19 @@
 /* @flow */
+/* @private */
 import { traceLog } from '../utils';
 
+/**
+ * オーディオ、ビデオの送受信方向に関するオプションです。
+ * - sendrecv
+ * - recvonly
+ * - sendonly
+ * @typedef {string} ConnectionDirection
+ */
 export type ConnectionDirection = 'sendrecv' | 'recvonly' | 'sendonly';
 
 /*
  * オーディオ接続に関するオプションです。
+ * @typedef {Object} ConnectionAudioOption
  */
 export type ConnectionAudioOption = {
   direction: ConnectionDirection,
@@ -13,6 +22,7 @@ export type ConnectionAudioOption = {
 
 /*
  * ビデオ接続に関するオプションです。
+ * @typedef {Object} ConnectionVideoOption
  */
 export type ConnectionVideoOption = {
   direction: ConnectionDirection,
@@ -21,6 +31,7 @@ export type ConnectionVideoOption = {
 
 /*
   接続時に指定するオプションです。
+ * @typedef {Object} ConnectionOptions
  */
 export type ConnectionOptions = {
   audio: ConnectionAudioOption,
@@ -29,6 +40,9 @@ export type ConnectionOptions = {
   iceServers: Array<Object>
 };
 
+/*
+ * Peer Connection 接続を管理するクラスです。
+ */
 class Connection {
   debug: boolean;
   roomId: string;
@@ -42,6 +56,9 @@ class Connection {
   _pc: window.RTCPeerConnection;
   _callbacks: Object;
 
+  /*
+   * @private
+   */
   constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug: boolean = false) {
     this.debug = debug;
     this.roomId = roomId;
@@ -58,7 +75,9 @@ class Connection {
       removestream: () => {}
     };
   }
-
+  /*
+   * @private
+   */
   on(kind: string, callback: Function) {
     if (kind in this._callbacks) {
       this._callbacks[kind] = callback;
