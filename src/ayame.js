@@ -10,8 +10,13 @@ export const defaultOptions: ConnectionOptions = {
   clientId: randomString(17)
 };
 
-export function connection(signalingUrl: string, roomId: string, options: ConnectionOptions = defaultOptions) {
-  return new Connection(signalingUrl, roomId, options);
+export function connection(
+  signalingUrl: string,
+  roomId: string,
+  options: ConnectionOptions = defaultOptions,
+  debug: boolean = false
+) {
+  return new Connection(signalingUrl, roomId, options, debug);
 }
 export function version() {
   return process.version;

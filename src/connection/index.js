@@ -30,6 +30,7 @@ export type ConnectionOptions = {
 };
 
 class Connection {
+  debug: boolean;
   roomId: string;
   signalingUrl: string;
   options: ConnectionOptions;
@@ -41,7 +42,8 @@ class Connection {
   _pc: window.RTCPeerConnection;
   _callbacks: Object;
 
-  constructor(signalingUrl: string, roomId: string, options: ConnectionOptions) {
+  constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug: boolean = false) {
+    this.debug = debug;
     this.roomId = roomId;
     this.signalingUrl = signalingUrl;
     this.options = options;
@@ -65,7 +67,7 @@ class Connection {
 
   async connect(stream: ?window.RTCMediaStream, authnMetadata: ?Object = null) {
     if (this._ws || this._pc) {
-      traceLog('connection already exists');
+      this._traceLog('connection already exists');
       throw new Error('Connection Already Exists!');
     }
     this.stream = stream;
@@ -169,7 +171,7 @@ class Connection {
                 await this._setAnswer(message);
               } else if (message.type === 'candidate') {
                 if (message.ice) {
-                  traceLog('Received ICE candidate ...', message.ice);
+                  this._traceLog('Received ICE candidate ...', message.ice);
                   const candidate = new window.RTCIceCandidate(message.ice);
                   this._addIceCandidate(candidate);
                 }
@@ -213,7 +215,7 @@ class Connection {
     } else {
       let tracks = [];
       pc.ontrack = (event: window.RTCTrackEvent) => {
-        traceLog('-- peer.ontrack()', event);
+        this._traceLog('peer.ontrack()', event);
         tracks.push(event.track);
         let mediaStream = new window.MediaStream(tracks);
         this.remoteStreamId = mediaStream.id;
@@ -222,31 +224,31 @@ class Connection {
       };
     }
     pc.onicecandidate = event => {
+      this._traceLog('peer.onicecandidate()', event);
       if (event.candidate) {
         this._sendIceCandidate(event.candidate);
       } else {
-        traceLog('empty ice event', '');
+        this._traceLog('empty ice event', '');
       }
     };
     pc.oniceconnectionstatechange = async () => {
-      traceLog('ICE connection Status has changed to ', pc.iceConnectionState);
+      this._traceLog('ICE connection Status has changed to ', pc.iceConnectionState);
       switch (pc.iceConnectionState) {
         case 'connected':
           this._isNegotiating = false;
           break;
         case 'failed':
-          traceLog('');
           await this.disconnect();
           this._callbacks.disconnect({ reason: 'ICE-CONNECTION-STATE-FAILED' });
           break;
       }
     };
     pc.onnegotiationneeded = async () => {
-      if (this._isNegotiating) {
+      this._traceLog('peer.onnegotiationneeded', '');
+      if (this._isNegotiating || this._pc.signalingState !== 'stable') {
         return;
       }
       try {
-        traceLog('Negotiation Needed');
         this._isNegotiating = true;
         if (isOffer) {
           const offer = await pc.createOffer({
@@ -263,7 +265,7 @@ class Connection {
       }
     };
     pc.onsignalingstatechange = _ => {
-      traceLog('signaling state changes:', pc.signalingState);
+      this._traceLog('signaling state changes:', pc.signalingState);
     };
     // Add local stream to pc.
     const videoTrack = this.stream && this.stream.getVideoTracks()[0];
@@ -327,7 +329,7 @@ class Connection {
         await this._pc.addIceCandidate(candidate);
       }
     } catch (_error) {
-      traceLog('invalid ice candidate', candidate);
+      this._traceLog('invalid ice candidate', candidate);
     }
   }
 
@@ -344,6 +346,10 @@ class Connection {
     if (this._ws) {
       this._ws.send(JSON.stringify(message));
     }
+  }
+  _traceLog(title: string, message: Object | string) {
+    if (!this.debug) return;
+    traceLog(title, message);
   }
 }
 
