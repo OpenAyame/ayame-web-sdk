@@ -235,9 +235,9 @@ class Connection {
           this._isNegotiating = false;
           break;
         case 'failed':
-          traceLog('')
+          traceLog('');
           await this.disconnect();
-          this._callbacks.disconnect({ reason: 'ICE-CONNECTION-STATE-FAILED'});
+          this._callbacks.disconnect({ reason: 'ICE-CONNECTION-STATE-FAILED' });
           break;
       }
     };
@@ -250,8 +250,8 @@ class Connection {
         this._isNegotiating = true;
         if (isOffer) {
           const offer = await pc.createOffer({
-            offerToReceiveAudio: this.options.audio.enabled,
-            offerToReceiveVideo: this.options.video.enabled
+            offerToReceiveAudio: this.options.audio.enabled && this.options.audio.direction !== 'sendonly',
+            offerToReceiveVideo: this.options.video.enabled && this.options.video.direction !== 'sendonly'
           });
           await pc.setLocalDescription(offer);
           this._sendSdp(pc.localDescription);
