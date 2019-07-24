@@ -13,7 +13,7 @@ Web SDK for WebRTC Signaling Server Ayame
 以下のURL を
 
 ```
-<script src="https://unpkg.com/@open-ayame/ayame-web-sdk@0.0.1-rc10/dist/ayame.min.js"></script>
+<script src="https://unpkg.com/@open-ayame/ayame-web-sdk@19.07.1/dist/ayame.min.js"></script>
 ```
 
 のように指定すると、npm などを経由せず簡単に Ayame を利用することができます。
@@ -21,14 +21,14 @@ Web SDK for WebRTC Signaling Server Ayame
 ### unpkg
 
 ```
-https://unpkg.com/@open-ayame/ayame-web-sdk@0.0.1-rc10/dist/ayame.min.js
+https://unpkg.com/@open-ayame/ayame-web-sdk@19.07.1/dist/ayame.min.js
 
 ```
 
 ### jsdelivr
 
 ```
-https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@0.0.1-rc10/dist/ayame.min.js
+https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@19.07.1/dist/ayame.min.js
 
 ```
 
