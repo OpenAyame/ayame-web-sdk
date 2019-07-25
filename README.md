@@ -21,14 +21,14 @@ Web SDK for WebRTC Signaling Server Ayame
 ### unpkg
 
 ```
-https://unpkg.com/@open-ayame/ayame-web-sdk@19.07.1/dist/ayame.min.js
+https://unpkg.com/@open-ayame/ayame-web-sdk@19.7.1/dist/ayame.min.js
 
 ```
 
 ### jsdelivr
 
 ```
-https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@19.07.1/dist/ayame.min.js
+https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@19.7.1/dist/ayame.min.js
 
 ```
 
