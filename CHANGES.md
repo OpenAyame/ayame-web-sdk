@@ -9,7 +9,9 @@
 - FIX
     - バグ修正
 
+## develop
 
+- [UPDATE] webpack から rollupjs に変更する
 
 ## 19.07.1
 

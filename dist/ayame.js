@@ -1,1 +1,536 @@
-!function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t():"function"==typeof define&&define.amd?define("Ayame",[],t):"object"==typeof exports?exports.Ayame=t():e.Ayame=t()}(window,function(){return function(e){var t={};function i(n){if(t[n])return t[n].exports;var s=t[n]={i:n,l:!1,exports:{}};return e[n].call(s.exports,s,s.exports,i),s.l=!0,s.exports}return i.m=e,i.c=t,i.d=function(e,t,n){i.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:n})},i.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},i.t=function(e,t){if(1&t&&(e=i(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var n=Object.create(null);if(i.r(n),Object.defineProperty(n,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var s in e)i.d(n,s,function(t){return e[t]}.bind(null,s));return n},i.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return i.d(t,"a",t),t},i.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},i.p="",i(i.s=0)}([function(e,t,i){"use strict";function n(e,t){let i="";window.performance&&(i="[Ayame "+(window.performance.now()/1e3).toFixed(3)+"]"),"edge"===function(){const e=window.navigator.userAgent.toLocaleLowerCase();if(-1!==e.indexOf("edge"))return"edge";if(-1!==e.indexOf("chrome")&&-1===e.indexOf("edge"))return"chrome";if(-1!==e.indexOf("safari")&&-1===e.indexOf("chrome"))return"safari";if(-1!==e.indexOf("opera"))return"opera";if(-1!==e.indexOf("firefox"))return"firefox";return}()?console.log(i+" "+e+"\n",t):console.info(i+" "+e+"\n",t)}i.r(t);var s=class{constructor(e,t,i,n=!1){this.debug=n,this.roomId=t,this.signalingUrl=e,this.options=i,this._isNegotiating=!1,this.stream=null,this._pc=null,this.authnMetadata=null,this._callbacks={connect:()=>{},disconnect:()=>{},addstream:()=>{},removestream:()=>{}}}on(e,t){e in this._callbacks&&(this._callbacks[e]=t)}async connect(e,t=null){if(this._ws||this._pc)throw this._traceLog("connection already exists"),new Error("Connection Already Exists!");return this.stream=e,this.authnMetadata=t,await this._signaling(),e}async disconnect(){const e=new Promise((e,t)=>{if(!this._pc)return e();if(this._pc&&"closed"==this._pc.signalingState)return e();this._pc.oniceconnectionstatechange=()=>{};const i=setInterval(()=>this._pc?this._pc&&"closed"==this._pc.signalingState?(clearInterval(i),e()):void 0:(clearInterval(i),t("PeerConnection Closing Error")),800);this._pc.close()}),t=new Promise((e,t)=>{if(!this._ws)return e();if(this._ws&&3===this._ws.readyState)return e();this._ws.onclose=()=>{};const i=setInterval(()=>this._ws?3===this._ws.readyState?(clearInterval(i),e()):void 0:(clearInterval(i),t("WebSocket Closing Error")),800);this._ws&&this._ws.close()});this.stream&&this.stream.getTracks().forEach(e=>{e.stop()}),this.remoteStreamId=null,this.stream=null,this.authnMetadata=null,this._isNegotiating=!1,await Promise.all([t,e]),this._ws=null,this._pc=null}async _signaling(){return new Promise((e,t)=>this._ws?t("WebSocket Connnection Already Exists!"):(this._ws=new WebSocket(this.signalingUrl),this._ws.onopen=()=>{const e={type:"register",roomId:this.roomId,clientId:this.options.clientId,authnMetadata:void 0};null!==this.authnMetadata&&(e.authnMetadata=this.authnMetadata),this._sendWs(e),this._ws&&(this._ws.onmessage=async e=>{try{if("string"!=typeof e.data)return;const t=JSON.parse(e.data);if("ping"===t.type)this._sendWs({type:"pong"});else if("close"===t.type)this._callbacks.close(e);else if("accept"===t.type)this._pc||(this._pc=this._createPeerConnection(!0)),this._callbacks.connect({authzMetadata:t.authzMetadata}),this._ws&&(this._ws.onclose=async e=>{await this.disconnect(),this._callbacks.disconnect({reason:"WS-CLOSED",event:e})});else if("reject"===t.type)await this.disconnect(),this._callbacks.disconnect({reason:"REJECTED"});else if("offer"===t.type)this._setOffer(t);else if("answer"===t.type)await this._setAnswer(t);else if("candidate"===t.type&&t.ice){this._traceLog("Received ICE candidate ...",t.ice);const e=new window.RTCIceCandidate(t.ice);this._addIceCandidate(e)}}catch(e){await this.disconnect(),this._callbacks.disconnect({reason:"SIGNALING-ERROR",error:e})}})},this._ws&&(this._ws.onclose=async e=>{await this.disconnect(),this._callbacks.disconnect(e)}),e()))}_createPeerConnection(e){const t={iceServers:this.options.iceServers},i=new window.RTCPeerConnection(t);if(void 0===i.ontrack)i.onaddstream=e=>{const t=e.stream;(this.remoteStreamId&&t.id!==this.remoteStreamId||null===this.remoteStreamId)&&(this.remoteStreamId=t.id,this._callbacks.addstream(e))},i.onremovestream=e=>{this.remoteStreamId&&e.stream.id===this.remoteStreamId&&(this.remoteStreamId=null,this._callbacks.removestream(e))};else{let e=[];i.ontrack=t=>{this._traceLog("peer.ontrack()",t),e.push(t.track);let i=new window.MediaStream(e);this.remoteStreamId=i.id,t.stream=i,this._callbacks.addstream(t)}}i.onicecandidate=e=>{this._traceLog("peer.onicecandidate()",e),e.candidate?this._sendIceCandidate(e.candidate):this._traceLog("empty ice event","")},i.oniceconnectionstatechange=async()=>{switch(this._traceLog("ICE connection Status has changed to ",i.iceConnectionState),i.iceConnectionState){case"connected":this._isNegotiating=!1;break;case"failed":await this.disconnect(),this._callbacks.disconnect({reason:"ICE-CONNECTION-STATE-FAILED"})}},i.onnegotiationneeded=async()=>{if(this._traceLog("peer.onnegotiationneeded",""),!this._isNegotiating&&"stable"===this._pc.signalingState)try{if(this._isNegotiating=!0,e){const e=await i.createOffer({offerToReceiveAudio:this.options.audio.enabled&&"sendonly"!==this.options.audio.direction,offerToReceiveVideo:this.options.video.enabled&&"sendonly"!==this.options.video.direction});await i.setLocalDescription(e),this._sendSdp(i.localDescription),this._isNegotiating=!1}}catch(e){await this.disconnect(),this._callbacks.disconnect({reason:"NEGOTIATION-ERROR",error:e})}},i.onsignalingstatechange=e=>{this._traceLog("signaling state changes:",i.signalingState)};const n=this.stream&&this.stream.getVideoTracks()[0],s=this.stream&&this.stream.getAudioTracks()[0];return s&&i.addTrack(s,this.stream),i.addTransceiver("audio",{direction:"recvonly"}),n&&i.addTrack(n,this.stream),i.addTransceiver("video",{direction:"recvonly"}),"sendonly"===this.options.video.direction&&i.getTransceivers().forEach(e=>{n&&e.sender.replaceTrack(n),e.direction=this.options.video.direction}),"sendonly"===this.options.audio.direction&&i.getTransceivers().forEach(e=>{s&&e.sender.replaceTrack(s),e.direction=this.options.audio.direction}),i}async _createAnswer(){if(this._pc)try{let e=await this._pc.createAnswer();await this._pc.setLocalDescription(e),this._sendSdp(this._pc.localDescription)}catch(e){await this.disconnect(),this._callbacks.disconnect({reason:"CREATE-ANSWER-ERROR",error:e})}}async _setAnswer(e){await this._pc.setRemoteDescription(e)}async _setOffer(e){this._pc=this._createPeerConnection(!1);try{await this._pc.setRemoteDescription(e),await this._createAnswer()}catch(e){await this.disconnect(),this._callbacks.disconnect({reason:"SET-OFFER-ERROR",error:e})}}async _addIceCandidate(e){try{this._pc&&await this._pc.addIceCandidate(e)}catch(t){this._traceLog("invalid ice candidate",e)}}_sendIceCandidate(e){const t={type:"candidate",ice:e};this._sendWs(t)}_sendSdp(e){this._sendWs(e)}_sendWs(e){this._ws&&this._ws.send(JSON.stringify(e))}_traceLog(e,t){this.debug&&n(e,t)}};i.d(t,"defaultOptions",function(){return a}),i.d(t,"connection",function(){return o}),i.d(t,"version",function(){return c});const a={audio:{direction:"sendrecv",enabled:!0},video:{direction:"sendrecv",enabled:!0},iceServers:[{urls:"stun:stun.l.google.com:19302"}],clientId:function(e){for(var t=[];e--;)t.push("0123456789".charAt(Math.floor(Math.random()*"0123456789".length)));return t.join("")}(17)};function o(e,t,i=a,n=!1){return new s(e,t,i,n)}function c(){return"0.0.1-rc10"}}])});
+/* @OpenAyame/ayame-web-sdk@19.07.1 */
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+  typeof define === 'function' && define.amd ? define(['exports'], factory) :
+  (global = global || self, factory(global.Ayame = {}));
+}(this, function (exports) { 'use strict';
+
+  /*       */
+
+  /* @ignore */
+  function randomString(strLength) {
+    var result = [];
+    var charSet = '0123456789';
+
+    while (strLength--) {
+      result.push(charSet.charAt(Math.floor(Math.random() * charSet.length)));
+    }
+
+    return result.join('');
+  }
+  /* @ignore */
+
+  function traceLog(title, value) {
+    let prefix = '';
+
+    if (window.performance) {
+      prefix = '[Ayame ' + (window.performance.now() / 1000).toFixed(3) + ']';
+    }
+
+    if (browser() === 'edge') {
+      console.log(prefix + ' ' + title + '\n', value);
+    } else {
+      console.info(prefix + ' ' + title + '\n', value);
+    }
+  }
+  /* @ignore */
+
+  function browser() {
+    const ua = window.navigator.userAgent.toLocaleLowerCase();
+
+    if (ua.indexOf('edge') !== -1) {
+      return 'edge';
+    } else if (ua.indexOf('chrome') !== -1 && ua.indexOf('edge') === -1) {
+      return 'chrome';
+    } else if (ua.indexOf('safari') !== -1 && ua.indexOf('chrome') === -1) {
+      return 'safari';
+    } else if (ua.indexOf('opera') !== -1) {
+      return 'opera';
+    } else if (ua.indexOf('firefox') !== -1) {
+      return 'firefox';
+    }
+
+    return;
+  }
+
+  /*       */
+  /**
+   * オーディオ、ビデオの送受信方向に関するオプションです。
+   * - sendrecv
+   * - recvonly
+   * - sendonly
+   * @typedef {string} ConnectionDirection
+   */
+
+  /*
+   * オーディオ接続に関するオプションです。
+   * @typedef {Object} ConnectionAudioOption
+   */
+
+  /*
+   * ビデオ接続に関するオプションです。
+   * @typedef {Object} ConnectionVideoOption
+   */
+
+  /*
+    接続時に指定するオプションです。
+   * @typedef {Object} ConnectionOptions
+   */
+
+  /*
+   * Peer Connection 接続を管理するクラスです。
+   */
+
+  class Connection {
+    /*
+     * @private
+     */
+    constructor(signalingUrl, roomId, options, debug = false) {
+      this.debug = debug;
+      this.roomId = roomId;
+      this.signalingUrl = signalingUrl;
+      this.options = options;
+      this._isNegotiating = false;
+      this.stream = null;
+      this._pc = null;
+      this.authnMetadata = null;
+      this._callbacks = {
+        connect: () => {},
+        disconnect: () => {},
+        addstream: () => {},
+        removestream: () => {}
+      };
+    }
+    /*
+     * @private
+     */
+
+
+    on(kind, callback) {
+      if (kind in this._callbacks) {
+        this._callbacks[kind] = callback;
+      }
+    }
+
+    async connect(stream, authnMetadata = null) {
+      if (this._ws || this._pc) {
+        this._traceLog('connection already exists');
+
+        throw new Error('Connection Already Exists!');
+      }
+
+      this.stream = stream;
+      this.authnMetadata = authnMetadata;
+      await this._signaling();
+      return stream;
+    }
+
+    async disconnect() {
+      const closePeerConnection = new Promise((resolve, reject) => {
+        if (!this._pc) return resolve();
+
+        if (this._pc && this._pc.signalingState == 'closed') {
+          return resolve();
+        }
+
+        this._pc.oniceconnectionstatechange = () => {};
+
+        const timerId = setInterval(() => {
+          if (!this._pc) {
+            clearInterval(timerId);
+            return reject('PeerConnection Closing Error');
+          }
+
+          if (this._pc && this._pc.signalingState == 'closed') {
+            clearInterval(timerId);
+            return resolve();
+          }
+        }, 800);
+
+        this._pc.close();
+      });
+      const closeWebSocketConnection = new Promise((resolve, reject) => {
+        if (!this._ws) return resolve();
+        if (this._ws && this._ws.readyState === 3) return resolve();
+
+        this._ws.onclose = () => {};
+
+        const timerId = setInterval(() => {
+          if (!this._ws) {
+            clearInterval(timerId);
+            return reject('WebSocket Closing Error');
+          }
+
+          if (this._ws.readyState === 3) {
+            clearInterval(timerId);
+            return resolve();
+          }
+        }, 800);
+        this._ws && this._ws.close();
+      });
+
+      if (this.stream) {
+        this.stream.getTracks().forEach(t => {
+          t.stop();
+        });
+      }
+
+      this.remoteStreamId = null;
+      this.stream = null;
+      this.authnMetadata = null;
+      this._isNegotiating = false;
+      await Promise.all([closeWebSocketConnection, closePeerConnection]);
+      this._ws = null;
+      this._pc = null;
+    }
+
+    async _signaling() {
+      return new Promise((resolve, reject) => {
+        if (this._ws) {
+          return reject('WebSocket Connnection Already Exists!');
+        }
+
+        this._ws = new WebSocket(this.signalingUrl);
+
+        this._ws.onopen = () => {
+          const registerMessage = {
+            type: 'register',
+            roomId: this.roomId,
+            clientId: this.options.clientId,
+            authnMetadata: undefined
+          };
+
+          if (this.authnMetadata !== null) {
+            registerMessage.authnMetadata = this.authnMetadata;
+          }
+
+          this._sendWs(registerMessage);
+
+          if (this._ws) {
+            this._ws.onmessage = async event => {
+              try {
+                if (typeof event.data !== 'string') {
+                  return;
+                }
+
+                const message = JSON.parse(event.data);
+
+                if (message.type === 'ping') {
+                  this._sendWs({
+                    type: 'pong'
+                  });
+                } else if (message.type === 'close') {
+                  this._callbacks.close(event);
+                } else if (message.type === 'accept') {
+                  if (!this._pc) this._pc = this._createPeerConnection(true);
+
+                  this._callbacks.connect({
+                    authzMetadata: message.authzMetadata
+                  });
+
+                  if (this._ws) {
+                    this._ws.onclose = async closeEvent => {
+                      await this.disconnect();
+
+                      this._callbacks.disconnect({
+                        reason: 'WS-CLOSED',
+                        event: closeEvent
+                      });
+                    };
+                  }
+                } else if (message.type === 'reject') {
+                  await this.disconnect();
+
+                  this._callbacks.disconnect({
+                    reason: 'REJECTED'
+                  });
+                } else if (message.type === 'offer') {
+                  this._setOffer(message);
+                } else if (message.type === 'answer') {
+                  await this._setAnswer(message);
+                } else if (message.type === 'candidate') {
+                  if (message.ice) {
+                    this._traceLog('Received ICE candidate ...', message.ice);
+
+                    const candidate = new window.RTCIceCandidate(message.ice);
+
+                    this._addIceCandidate(candidate);
+                  }
+                }
+              } catch (error) {
+                await this.disconnect();
+
+                this._callbacks.disconnect({
+                  reason: 'SIGNALING-ERROR',
+                  error: error
+                });
+              }
+            };
+          }
+        };
+
+        if (this._ws) {
+          this._ws.onclose = async event => {
+            await this.disconnect();
+
+            this._callbacks.disconnect(event);
+          };
+        }
+
+        return resolve();
+      });
+    }
+
+    _createPeerConnection(isOffer) {
+      const pcConfig = {
+        iceServers: this.options.iceServers
+      };
+      const pc = new window.RTCPeerConnection(pcConfig);
+
+      if (typeof pc.ontrack === 'undefined') {
+        pc.onaddstream = event => {
+          const stream = event.stream;
+
+          if (this.remoteStreamId && stream.id !== this.remoteStreamId || this.remoteStreamId === null) {
+            this.remoteStreamId = stream.id;
+
+            this._callbacks.addstream(event);
+          }
+        };
+
+        pc.onremovestream = event => {
+          if (this.remoteStreamId && event.stream.id === this.remoteStreamId) {
+            this.remoteStreamId = null;
+
+            this._callbacks.removestream(event);
+          }
+        };
+      } else {
+        let tracks = [];
+
+        pc.ontrack = event => {
+          this._traceLog('peer.ontrack()', event);
+
+          tracks.push(event.track);
+          let mediaStream = new window.MediaStream(tracks);
+          this.remoteStreamId = mediaStream.id;
+          event.stream = mediaStream;
+
+          this._callbacks.addstream(event);
+        };
+      }
+
+      pc.onicecandidate = event => {
+        this._traceLog('peer.onicecandidate()', event);
+
+        if (event.candidate) {
+          this._sendIceCandidate(event.candidate);
+        } else {
+          this._traceLog('empty ice event', '');
+        }
+      };
+
+      pc.oniceconnectionstatechange = async () => {
+        this._traceLog('ICE connection Status has changed to ', pc.iceConnectionState);
+
+        switch (pc.iceConnectionState) {
+          case 'connected':
+            this._isNegotiating = false;
+            break;
+
+          case 'failed':
+            await this.disconnect();
+
+            this._callbacks.disconnect({
+              reason: 'ICE-CONNECTION-STATE-FAILED'
+            });
+
+            break;
+        }
+      };
+
+      pc.onnegotiationneeded = async () => {
+        this._traceLog('peer.onnegotiationneeded', '');
+
+        if (this._isNegotiating || this._pc.signalingState !== 'stable') {
+          return;
+        }
+
+        try {
+          this._isNegotiating = true;
+
+          if (isOffer) {
+            const offer = await pc.createOffer({
+              offerToReceiveAudio: this.options.audio.enabled && this.options.audio.direction !== 'sendonly',
+              offerToReceiveVideo: this.options.video.enabled && this.options.video.direction !== 'sendonly'
+            });
+            await pc.setLocalDescription(offer);
+
+            this._sendSdp(pc.localDescription);
+
+            this._isNegotiating = false;
+          }
+        } catch (error) {
+          await this.disconnect();
+
+          this._callbacks.disconnect({
+            reason: 'NEGOTIATION-ERROR',
+            error: error
+          });
+        }
+      };
+
+      pc.onsignalingstatechange = _ => {
+        this._traceLog('signaling state changes:', pc.signalingState);
+      }; // Add local stream to pc.
+
+
+      const videoTrack = this.stream && this.stream.getVideoTracks()[0];
+      const audioTrack = this.stream && this.stream.getAudioTracks()[0];
+
+      if (audioTrack) {
+        pc.addTrack(audioTrack, this.stream);
+      }
+
+      pc.addTransceiver('audio', {
+        direction: 'recvonly'
+      });
+
+      if (videoTrack) {
+        pc.addTrack(videoTrack, this.stream);
+      }
+
+      pc.addTransceiver('video', {
+        direction: 'recvonly'
+      });
+
+      if (this.options.video.direction === 'sendonly') {
+        pc.getTransceivers().forEach(transceiver => {
+          videoTrack && transceiver.sender.replaceTrack(videoTrack);
+          transceiver.direction = this.options.video.direction;
+        });
+      }
+
+      if (this.options.audio.direction === 'sendonly') {
+        pc.getTransceivers().forEach(transceiver => {
+          audioTrack && transceiver.sender.replaceTrack(audioTrack);
+          transceiver.direction = this.options.audio.direction;
+        });
+      }
+
+      return pc;
+    }
+
+    async _createAnswer() {
+      if (!this._pc) {
+        return;
+      }
+
+      try {
+        let answer = await this._pc.createAnswer();
+        await this._pc.setLocalDescription(answer);
+
+        this._sendSdp(this._pc.localDescription);
+      } catch (error) {
+        await this.disconnect();
+
+        this._callbacks.disconnect({
+          reason: 'CREATE-ANSWER-ERROR',
+          error: error
+        });
+      }
+    }
+
+    async _setAnswer(sessionDescription) {
+      await this._pc.setRemoteDescription(sessionDescription);
+    }
+
+    async _setOffer(sessionDescription) {
+      this._pc = this._createPeerConnection(false);
+
+      try {
+        await this._pc.setRemoteDescription(sessionDescription);
+        await this._createAnswer();
+      } catch (error) {
+        await this.disconnect();
+
+        this._callbacks.disconnect({
+          reason: 'SET-OFFER-ERROR',
+          error: error
+        });
+      }
+    }
+
+    async _addIceCandidate(candidate) {
+      try {
+        if (this._pc) {
+          await this._pc.addIceCandidate(candidate);
+        }
+      } catch (_error) {
+        this._traceLog('invalid ice candidate', candidate);
+      }
+    }
+
+    _sendIceCandidate(candidate) {
+      const message = {
+        type: 'candidate',
+        ice: candidate
+      };
+
+      this._sendWs(message);
+    }
+
+    _sendSdp(sessionDescription) {
+      this._sendWs(sessionDescription);
+    }
+
+    _sendWs(message) {
+      if (this._ws) {
+        this._ws.send(JSON.stringify(message));
+      }
+    }
+
+    _traceLog(title, message) {
+      if (!this.debug) return;
+      traceLog(title, message);
+    }
+
+  }
+
+  /*       */
+  const defaultOptions = {
+    audio: {
+      direction: 'sendrecv',
+      enabled: true
+    },
+    video: {
+      direction: 'sendrecv',
+      enabled: true
+    },
+    iceServers: [{
+      urls: 'stun:stun.l.google.com:19302'
+    }],
+    clientId: randomString(17)
+  };
+  /*
+   * Ayame Connection を生成します。
+   *
+   * @param {String} signalingUrl シグナリングに用いる websocket url
+   * @param {ConnectionOptions} options 接続時のオプション
+   * @param {debug} boolean デバッグログを出力するかどうかのフラグ
+   */
+
+  function connection(signalingUrl, roomId, options = defaultOptions, debug = false) {
+    return new Connection(signalingUrl, roomId, options, debug);
+  }
+  function version() {
+    return process.version;
+  }
+
+  exports.connection = connection;
+  exports.defaultOptions = defaultOptions;
+  exports.version = version;
+
+  Object.defineProperty(exports, '__esModule', { value: true });
+
+}));
