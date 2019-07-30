@@ -241,6 +241,8 @@ class Connection {
         this._traceLog('audio codecs=', audioCodecs);
         audioTransceiver.setCodecPreferences(audioCodecs);
       }
+    } else {
+      pc.addTransceiver('audio', { direction: 'recvonly' });
     }
     const videoTrack = this.stream && this.stream.getVideoTracks()[0];
     if (videoTrack && this.options.video.direction !== 'recvonly') {
@@ -252,6 +254,8 @@ class Connection {
         this._traceLog('video codecs=', videoCodecs);
         videoTransceiver.setCodecPreferences(videoCodecs);
       }
+    } else {
+      pc.addTransceiver('video', { direction: 'recvonly' });
     }
     let tracks = [];
     pc.ontrack = (event: window.RTCTrackEvent) => {

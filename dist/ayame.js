@@ -364,6 +364,10 @@
 
           audioTransceiver.setCodecPreferences(audioCodecs);
         }
+      } else {
+        pc.addTransceiver('audio', {
+          direction: 'recvonly'
+        });
       }
 
       const videoTrack = this.stream && this.stream.getVideoTracks()[0];
@@ -381,6 +385,10 @@
 
           videoTransceiver.setCodecPreferences(videoCodecs);
         }
+      } else {
+        pc.addTransceiver('video', {
+          direction: 'recvonly'
+        });
       }
 
       let tracks = [];
