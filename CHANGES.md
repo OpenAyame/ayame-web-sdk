@@ -10,7 +10,7 @@
     - バグ修正
 
 ## develop
-
+- [ADD] video, audio のコーデック指定をサポートする
 - [UPDATE] webpack から rollupjs に変更する
 
 ## 19.07.1
