@@ -28,8 +28,6 @@
         options.clientId = clientId ? clientId : options.clientId;
         options.video.direction = 'recvonly';
         options.audio.direction = 'recvonly';
-        options.video.codec = 'H264';
-        options.audio.codec = 'OPUS';
         const conn = Ayame.connection(signalingUrl, roomId, options, true);
         const startConn = async () => {
           const authnMetadata = {hoge: "fuga"};

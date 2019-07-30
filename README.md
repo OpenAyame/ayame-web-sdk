@@ -53,7 +53,7 @@ startConn();
 
 ```javascript
 const conn = Ayame.connection('wss://example.com/ws', 'test-room');
-conn.options.audio.direction = 'sendonly';
+conn.options.video.direction = 'sendonly';
 conn.options.audio.direction = 'sendonly';
 const startConn = async () => {
     const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
@@ -72,8 +72,23 @@ startConn();
 
 ```javascript
 const conn = Ayame.connection('wss://example.com/ws', 'test-room');
+conn.options.video.direction = 'recvonly';
 conn.options.audio.direction = 'recvonly';
-conn.options.audio.direction = 'recvonly';
+const startConn = async () => {
+    await conn.connect(null);
+    conn.on('disconnect', (e) => console.log(e));
+    conn.on('addstream', (e) => {
+        document.querySelector('#remote-video').srcObject = e.stream;
+    });
+};
+startConn();
+```
+
+### コーデックを H.264 指定で接続する
+
+```javascript
+const conn = Ayame.connection('wss://example.com/ws', 'test-room');
+conn.options.video.codec = 'H264';
 const startConn = async () => {
     const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
     const stream = await conn.connect(mediaStream);
