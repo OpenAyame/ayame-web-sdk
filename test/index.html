@@ -12,10 +12,23 @@
         <input id="clientIdInput" disabled type="text" value=""></input>
         </p>
         <button onclick="startConn();">接続</button>
-        <button onclick="conn.disconnect();">切断</button>
+        <button onclick="conn && conn.disconnect();">切断</button>
+        <select id="video-codec" onChange="onChangeVideoCodec();">
+          <option value="none">none</option>
+          <option value="H264">H264</option>
+          <option value="VP8">VP8</option>
+          <option value="VP9">VP9</option>
+        </select>
+        <select id="audio-codec" onChange="onChangeAudioCodec();">
+          <option value="none">none</option>
+          <option value="OPUS">OPUS</option>
+          <option value="G722">G722</option>
+          <option value="PCMU">PCMU</option>
+          <option value="PCMA">PCMA</option>
+        </select>
       </div>
       <div style="float:left;">
-        <video id="local-video" autoplay="" style="width: 400px; height: 300px; border: 1px solid black;"></video>
+        <video id="local-video" muted autoplay="" style="width: 400px; height: 300px; border: 1px solid black;"></video>
       </div>
       <div style="float:right;">
         <video id="remote-video" autoplay style="width: 400px; height: 300px; border: 1px solid black;"></video>
@@ -24,13 +37,14 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.7.0/qs.min.js"></script>
       <script src="./main.js"></script>
       <script type="text/javascript">
+        const remoteVideo = document.querySelector('#remote-video');
+        let conn = null;
         const options = Ayame.defaultOptions;
         options.clientId = clientId ? clientId : options.clientId;
-        options.video.codec = 'H264';
-        options.audio.codec = 'OPUS';
-        const conn = Ayame.connection(signalingUrl, roomId, options, true);
-        const remoteVideo = document.querySelector('#remote-video');
         const startConn = async () => {
+          options.video.codec = videoCodec;
+          options.audio.codec = audioCodec;
+          conn = Ayame.connection(signalingUrl, roomId, options, true);
           const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true})
           const authnMetadata = {hoge: "fuga"};
           conn.on('connect', ({authzMetadata}) => console.log(authzMetadata));

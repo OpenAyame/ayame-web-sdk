@@ -1,6 +1,22 @@
 const signalingUrl = 'wss://ayame.shiguredo.jp/ws';
 let roomId = 'ayame-test-room';
 let clientId = null;
+let videoCodec = null;
+let audioCodec = null;
+
+function onChangeVideoCodec() {
+  videoCodec = document.getElementById("video-codec").value;
+  if (videoCodec == 'none') {
+    videoCodec = null;
+  }
+}
+
+function onChangeAudioCodec() {
+  audioCodec = document.getElementById("audio-codec").value;
+  if (audioCodec == 'none') {
+    audioCodec = null;
+  }
+}
 
 // query string から roomId, clientId を取得するヘルパー
 function parseQueryString() {

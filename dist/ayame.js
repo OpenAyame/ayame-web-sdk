@@ -350,10 +350,11 @@
       const pc = new window.RTCPeerConnection(pcConfig); // Add local stream to pc.
 
       const audioTrack = this.stream && this.stream.getAudioTracks()[0];
-      const videoTrack = this.stream && this.stream.getVideoTracks()[0];
 
       if (audioTrack && this.options.audio.direction !== 'recvonly') {
-        pc.addTrack(audioTrack, this.stream);
+        const audioSender = pc.addTrack(audioTrack, this.stream);
+
+        const audioTransceiver = this._getTransceiver(pc, audioSender);
 
         if (this._isAudioCodecSpecified()) {
           const audioCapabilities = window.RTCRtpSender.getCapabilities('audio');
@@ -361,16 +362,16 @@
 
           this._traceLog('audio codecs=', audioCodecs);
 
-          pc.getTransceivers().forEach(transceiver => {
-            if (transceiver.sender.kind == 'audio') {
-              transceiver.setCodecPreferences(audioCodecs);
-            }
-          });
+          audioTransceiver.setCodecPreferences(audioCodecs);
         }
       }
 
+      const videoTrack = this.stream && this.stream.getVideoTracks()[0];
+
       if (videoTrack && this.options.video.direction !== 'recvonly') {
-        pc.addTrack(videoTrack, this.stream);
+        const videoSender = pc.addTrack(videoTrack, this.stream);
+
+        const videoTransceiver = this._getTransceiver(pc, videoSender);
 
         if (this._isVideoCodecSpecified()) {
           const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
@@ -378,11 +379,7 @@
 
           this._traceLog('video codecs=', videoCodecs);
 
-          pc.getTransceivers().forEach(transceiver => {
-            if (transceiver.sender.kind == 'video') {
-              transceiver.setCodecPreferences(videoCodecs);
-            }
-          });
+          videoTransceiver.setCodecPreferences(videoCodecs);
         }
       }
 
@@ -443,6 +440,9 @@
               offerToReceiveAudio: this.options.audio.enabled && this.options.audio.direction !== 'sendonly',
               offerToReceiveVideo: this.options.video.enabled && this.options.video.direction !== 'sendonly'
             });
+
+            this._traceLog('create offer sdp, sdp=', offer.sdp);
+
             await pc.setLocalDescription(offer);
 
             this._sendSdp(pc.localDescription);
@@ -462,32 +462,6 @@
       pc.onsignalingstatechange = _ => {
         this._traceLog('signaling state changes:', pc.signalingState);
       };
-
-      if (this.options.video.direction === 'recvonly') {
-        pc.addTransceiver('video', {
-          direction: 'recvonly'
-        });
-      }
-
-      if (this.options.audio.direction === 'recvonly') {
-        pc.addTransceiver('audio', {
-          direction: 'recvonly'
-        });
-      }
-
-      if (this.options.video.direction === 'sendonly') {
-        pc.getTransceivers().forEach(transceiver => {
-          videoTrack && transceiver.sender.replaceTrack(videoTrack);
-          transceiver.direction = this.options.video.direction;
-        });
-      }
-
-      if (this.options.audio.direction === 'sendonly') {
-        pc.getTransceivers().forEach(transceiver => {
-          audioTrack && transceiver.sender.replaceTrack(audioTrack);
-          transceiver.direction = this.options.audio.direction;
-        });
-      }
 
       return pc;
     }
@@ -511,6 +485,9 @@
 
       try {
         let answer = await this._pc.createAnswer();
+
+        this._traceLog('create answer sdp, sdp=', answer.sdp);
+
         await this._pc.setLocalDescription(answer);
 
         this._sendSdp(this._pc.localDescription);
@@ -576,6 +553,19 @@
     _traceLog(title, message) {
       if (!this.debug) return;
       traceLog(title, message);
+    }
+
+    _getTransceiver(pc, track) {
+      let transceiver = null;
+      pc.getTransceivers().forEach(t => {
+        if (t.sender == track || t.receiver == track) transceiver = t;
+      });
+
+      if (!transceiver) {
+        throw new Error('invalid transceiver');
+      }
+
+      return transceiver;
     }
 
   }
