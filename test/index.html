@@ -19,13 +19,6 @@
           <option value="VP8">VP8</option>
           <option value="VP9">VP9</option>
         </select>
-        <select id="audio-codec" onChange="onChangeAudioCodec();">
-          <option value="none">none</option>
-          <option value="OPUS">OPUS</option>
-          <option value="G722">G722</option>
-          <option value="PCMU">PCMU</option>
-          <option value="PCMA">PCMA</option>
-        </select>
       </div>
       <div style="float:left;">
         <video id="local-video" muted autoplay="" style="width: 400px; height: 300px; border: 1px solid black;"></video>
@@ -43,7 +36,6 @@
         options.clientId = clientId ? clientId : options.clientId;
         const startConn = async () => {
           options.video.codec = videoCodec;
-          options.audio.codec = audioCodec;
           conn = Ayame.connection(signalingUrl, roomId, options, true);
           const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true})
           const authnMetadata = {hoge: "fuga"};

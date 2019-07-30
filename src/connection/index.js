@@ -1,6 +1,6 @@
 /* @flow */
 /* @private */
-import { traceLog, getVideoCodecsFromString, getAudioCodecsFromString } from '../utils';
+import { traceLog, getVideoCodecsFromString } from '../utils';
 
 /**
  * オーディオ、ビデオの送受信方向に関するオプションです。
@@ -12,16 +12,10 @@ import { traceLog, getVideoCodecsFromString, getAudioCodecsFromString } from '..
 export type ConnectionDirection = 'sendrecv' | 'recvonly' | 'sendonly';
 
 /*
- * オーディオ接続のコーデックに関するオプションです。
- * @typedef {string} VideoCodecOption
- */
-export type AudioCodecOption = 'OPUS' | 'G722' | 'PCMU' | 'PCMA';
-/*
  * オーディオ接続に関するオプションです。
  * @typedef {Object} ConnectionAudioOption
  */
 export type ConnectionAudioOption = {
-  codec: ?AudioCodecOption,
   direction: ConnectionDirection,
   enabled: boolean
 };
@@ -233,14 +227,7 @@ class Connection {
     // Add local stream to pc.
     const audioTrack = this.stream && this.stream.getAudioTracks()[0];
     if (audioTrack && this.options.audio.direction !== 'recvonly') {
-      const audioSender = pc.addTrack(audioTrack, this.stream);
-      const audioTransceiver = this._getTransceiver(pc, audioSender);
-      if (this._isAudioCodecSpecified()) {
-        const audioCapabilities = window.RTCRtpSender.getCapabilities('audio');
-        const audioCodecs = getAudioCodecsFromString(this.options.audio.codec || 'OPUS', audioCapabilities.codecs);
-        this._traceLog('audio codecs=', audioCodecs);
-        audioTransceiver.setCodecPreferences(audioCodecs);
-      }
+      pc.addTrack(audioTrack, this.stream);
     } else {
       pc.addTransceiver('audio', { direction: 'recvonly' });
     }
@@ -320,12 +307,6 @@ class Connection {
     return this.options.video.enabled && this.options.video.codec !== null;
   }
 
-  _isAudioCodecSpecified() {
-    if (typeof window.RTCRtpSender.getCapabilities === 'undefined') return false;
-    if (this.options.audio.direction === 'recvonly') return false;
-    return this.options.audio.enabled && this.options.audio.codec !== null;
-  }
-
   async _createAnswer() {
     if (!this._pc) {
       return;
@@ -388,8 +369,7 @@ class Connection {
   _getTransceiver(pc: window.RTCPeerConnection, track: any) {
     let transceiver = null;
     pc.getTransceivers().forEach(t => {
-      if (t.sender == track || t.receiver == track)
-        transceiver = t;
+      if (t.sender == track || t.receiver == track) transceiver = t;
     });
     if (!transceiver) {
       throw new Error('invalid transceiver');

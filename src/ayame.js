@@ -5,7 +5,7 @@ import type { ConnectionOptions } from './connection';
 import { randomString } from './utils';
 
 export const defaultOptions: ConnectionOptions = {
-  audio: { direction: 'sendrecv', enabled: true, codec: null },
+  audio: { direction: 'sendrecv', enabled: true },
   video: { direction: 'sendrecv', enabled: true, codec: null },
   iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
   clientId: randomString(17)

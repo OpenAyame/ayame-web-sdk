@@ -1,4 +1,4 @@
-/* @OpenAyame/ayame-web-sdk@19.07.2-rc0 */
+/* @OpenAyame/ayame-web-sdk@19.07.1 */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -58,33 +58,6 @@
 
     return filteredCodecs;
   }
-  function getAudioCodecsFromString(codec, codecs) {
-    if (browser() !== 'chrome') {
-      throw new Error('codec 指定は chrome canary でのみ利用できます');
-    }
-
-    let mimeType = '';
-
-    if (codec === 'OPUS') {
-      mimeType = 'audio/opus';
-    } else if (codec === 'G722') {
-      mimeType = 'audio/G722';
-    } else if (codec === 'PCMU') {
-      mimeType = 'audio/PCMU';
-    } else if (codec === 'PCMA') {
-      mimeType = 'audio/PCMA';
-    } else {
-      mimeType = `video/${codec}`;
-    }
-
-    const filteredCodecs = codecs.filter(c => c.mimeType == mimeType);
-
-    if (filteredCodecs.length < 1) {
-      throw new Error('invalid audio codec type');
-    }
-
-    return filteredCodecs;
-  }
   /* @ignore */
 
   function browser() {
@@ -112,11 +85,6 @@
    * - recvonly
    * - sendonly
    * @typedef {string} ConnectionDirection
-   */
-
-  /*
-   * オーディオ接続のコーデックに関するオプションです。
-   * @typedef {string} VideoCodecOption
    */
 
   /*
@@ -352,18 +320,7 @@
       const audioTrack = this.stream && this.stream.getAudioTracks()[0];
 
       if (audioTrack && this.options.audio.direction !== 'recvonly') {
-        const audioSender = pc.addTrack(audioTrack, this.stream);
-
-        const audioTransceiver = this._getTransceiver(pc, audioSender);
-
-        if (this._isAudioCodecSpecified()) {
-          const audioCapabilities = window.RTCRtpSender.getCapabilities('audio');
-          const audioCodecs = getAudioCodecsFromString(this.options.audio.codec || 'OPUS', audioCapabilities.codecs);
-
-          this._traceLog('audio codecs=', audioCodecs);
-
-          audioTransceiver.setCodecPreferences(audioCodecs);
-        }
+        pc.addTrack(audioTrack, this.stream);
       } else {
         pc.addTransceiver('audio', {
           direction: 'recvonly'
@@ -480,12 +437,6 @@
       return this.options.video.enabled && this.options.video.codec !== null;
     }
 
-    _isAudioCodecSpecified() {
-      if (typeof window.RTCRtpSender.getCapabilities === 'undefined') return false;
-      if (this.options.audio.direction === 'recvonly') return false;
-      return this.options.audio.enabled && this.options.audio.codec !== null;
-    }
-
     async _createAnswer() {
       if (!this._pc) {
         return;
@@ -582,8 +533,7 @@
   const defaultOptions = {
     audio: {
       direction: 'sendrecv',
-      enabled: true,
-      codec: null
+      enabled: true
     },
     video: {
       direction: 'sendrecv',
