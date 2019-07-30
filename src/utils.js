@@ -1,4 +1,5 @@
 /* @flow */
+import type { AudioCodecOption, VideoCodecOption } from './connection';
 
 /* @ignore */
 export function randomString(strLength: number) {
@@ -23,6 +24,49 @@ export function traceLog(title: string, value: Object | string) {
   }
 }
 
+export function getVideoCodecsFromString(codec: VideoCodecOption, codecs: Array<Object>) {
+  if (browser() !== 'chrome') {
+    throw new Error('codec 指定は chrome canary でのみ利用できます');
+  }
+  let mimeType = '';
+  if (codec === 'VP8') {
+    mimeType = 'video/VP8';
+  } else if (codec === 'VP9') {
+    mimeType = 'video/VP9';
+  } else if (codec === 'H264') {
+    mimeType = 'video/H264';
+  } else {
+    mimeType = `video/${codec}`;
+  }
+  const filteredCodecs: Array<Object> = codecs.filter(c => c.mimeType == mimeType);
+  if (filteredCodecs.length < 1) {
+    throw new Error('invalid video codec type');
+  }
+  return filteredCodecs;
+}
+
+export function getAudioCodecsFromString(codec: AudioCodecOption, codecs: Array<Object>) {
+  if (browser() !== 'chrome') {
+    throw new Error('codec 指定は chrome canary でのみ利用できます');
+  }
+  let mimeType = '';
+  if (codec === 'OPUS') {
+    mimeType = 'audio/opus';
+  } else if (codec === 'G722') {
+    mimeType = 'audio/G722';
+  } else if (codec === 'PCMU') {
+    mimeType = 'audio/PCMU';
+  } else if (codec === 'PCMA') {
+    mimeType = 'audio/PCMA';
+  } else {
+    mimeType = `video/${codec}`;
+  }
+  const filteredCodecs: Array<Object> = codecs.filter(c => c.mimeType == mimeType);
+  if (filteredCodecs.length < 1) {
+    throw new Error('invalid audio codec type');
+  }
+  return filteredCodecs;
+}
 /* @ignore */
 function browser() {
   const ua = window.navigator.userAgent.toLocaleLowerCase();

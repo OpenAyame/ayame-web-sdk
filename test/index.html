@@ -20,12 +20,14 @@
       <div style="float:right;">
         <video id="remote-video" autoplay style="width: 400px; height: 300px; border: 1px solid black;"></video>
       </div>
-      <script src="../dist/ayame.min.js"></script>
+      <script src="../dist/ayame.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.7.0/qs.min.js"></script>
       <script src="./main.js"></script>
       <script type="text/javascript">
         const options = Ayame.defaultOptions;
         options.clientId = clientId ? clientId : options.clientId;
+        options.video.codec = 'H264';
+        options.audio.codec = 'OPUS';
         const conn = Ayame.connection(signalingUrl, roomId, options, true);
         const remoteVideo = document.querySelector('#remote-video');
         const startConn = async () => {

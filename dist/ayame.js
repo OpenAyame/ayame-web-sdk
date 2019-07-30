@@ -33,6 +33,58 @@
       console.info(prefix + ' ' + title + '\n', value);
     }
   }
+  function getVideoCodecsFromString(codec, codecs) {
+    if (browser() !== 'chrome') {
+      throw new Error('codec 指定は chrome canary でのみ利用できます');
+    }
+
+    let mimeType = '';
+
+    if (codec === 'VP8') {
+      mimeType = 'video/VP8';
+    } else if (codec === 'VP9') {
+      mimeType = 'video/VP9';
+    } else if (codec === 'H264') {
+      mimeType = 'video/H264';
+    } else {
+      mimeType = `video/${codec}`;
+    }
+
+    const filteredCodecs = codecs.filter(c => c.mimeType == mimeType);
+
+    if (filteredCodecs.length < 1) {
+      throw new Error('invalid video codec type');
+    }
+
+    return filteredCodecs;
+  }
+  function getAudioCodecsFromString(codec, codecs) {
+    if (browser() !== 'chrome') {
+      throw new Error('codec 指定は chrome canary でのみ利用できます');
+    }
+
+    let mimeType = '';
+
+    if (codec === 'OPUS') {
+      mimeType = 'audio/opus';
+    } else if (codec === 'G722') {
+      mimeType = 'audio/G722';
+    } else if (codec === 'PCMU') {
+      mimeType = 'audio/PCMU';
+    } else if (codec === 'PCMA') {
+      mimeType = 'audio/PCMA';
+    } else {
+      mimeType = `video/${codec}`;
+    }
+
+    const filteredCodecs = codecs.filter(c => c.mimeType == mimeType);
+
+    if (filteredCodecs.length < 1) {
+      throw new Error('invalid audio codec type');
+    }
+
+    return filteredCodecs;
+  }
   /* @ignore */
 
   function browser() {
@@ -63,8 +115,18 @@
    */
 
   /*
+   * オーディオ接続のコーデックに関するオプションです。
+   * @typedef {string} VideoCodecOption
+   */
+
+  /*
    * オーディオ接続に関するオプションです。
    * @typedef {Object} ConnectionAudioOption
+   */
+
+  /*
+   * ビデオ接続のコーデックに関するオプションです。
+   * @typedef {string} VideoCodecOption
    */
 
   /*
@@ -285,40 +347,57 @@
       const pcConfig = {
         iceServers: this.options.iceServers
       };
-      const pc = new window.RTCPeerConnection(pcConfig);
+      const pc = new window.RTCPeerConnection(pcConfig); // Add local stream to pc.
 
-      if (typeof pc.ontrack === 'undefined') {
-        pc.onaddstream = event => {
-          const stream = event.stream;
+      const audioTrack = this.stream && this.stream.getAudioTracks()[0];
+      const videoTrack = this.stream && this.stream.getVideoTracks()[0];
 
-          if (this.remoteStreamId && stream.id !== this.remoteStreamId || this.remoteStreamId === null) {
-            this.remoteStreamId = stream.id;
+      if (audioTrack && this.options.audio.direction !== 'recvonly') {
+        pc.addTrack(audioTrack, this.stream);
 
-            this._callbacks.addstream(event);
-          }
-        };
+        if (this._isAudioCodecSpecified()) {
+          const audioCapabilities = window.RTCRtpSender.getCapabilities('audio');
+          const audioCodecs = getAudioCodecsFromString(this.options.audio.codec || 'OPUS', audioCapabilities.codecs);
 
-        pc.onremovestream = event => {
-          if (this.remoteStreamId && event.stream.id === this.remoteStreamId) {
-            this.remoteStreamId = null;
+          this._traceLog('audio codecs=', audioCodecs);
 
-            this._callbacks.removestream(event);
-          }
-        };
-      } else {
-        let tracks = [];
-
-        pc.ontrack = event => {
-          this._traceLog('peer.ontrack()', event);
-
-          tracks.push(event.track);
-          let mediaStream = new window.MediaStream(tracks);
-          this.remoteStreamId = mediaStream.id;
-          event.stream = mediaStream;
-
-          this._callbacks.addstream(event);
-        };
+          pc.getTransceivers().forEach(transceiver => {
+            if (transceiver.sender.kind == 'audio') {
+              transceiver.setCodecPreferences(audioCodecs);
+            }
+          });
+        }
       }
+
+      if (videoTrack && this.options.video.direction !== 'recvonly') {
+        pc.addTrack(videoTrack, this.stream);
+
+        if (this._isVideoCodecSpecified()) {
+          const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
+          const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+
+          this._traceLog('video codecs=', videoCodecs);
+
+          pc.getTransceivers().forEach(transceiver => {
+            if (transceiver.sender.kind == 'video') {
+              transceiver.setCodecPreferences(videoCodecs);
+            }
+          });
+        }
+      }
+
+      let tracks = [];
+
+      pc.ontrack = event => {
+        this._traceLog('peer.ontrack()', event);
+
+        tracks.push(event.track);
+        let mediaStream = new window.MediaStream(tracks);
+        this.remoteStreamId = mediaStream.id;
+        event.stream = mediaStream;
+
+        this._callbacks.addstream(event);
+      };
 
       pc.onicecandidate = event => {
         this._traceLog('peer.onicecandidate()', event);
@@ -382,27 +461,19 @@
 
       pc.onsignalingstatechange = _ => {
         this._traceLog('signaling state changes:', pc.signalingState);
-      }; // Add local stream to pc.
+      };
 
-
-      const videoTrack = this.stream && this.stream.getVideoTracks()[0];
-      const audioTrack = this.stream && this.stream.getAudioTracks()[0];
-
-      if (audioTrack) {
-        pc.addTrack(audioTrack, this.stream);
+      if (this.options.video.direction === 'recvonly') {
+        pc.addTransceiver('video', {
+          direction: 'recvonly'
+        });
       }
 
-      pc.addTransceiver('audio', {
-        direction: 'recvonly'
-      });
-
-      if (videoTrack) {
-        pc.addTrack(videoTrack, this.stream);
+      if (this.options.audio.direction === 'recvonly') {
+        pc.addTransceiver('audio', {
+          direction: 'recvonly'
+        });
       }
-
-      pc.addTransceiver('video', {
-        direction: 'recvonly'
-      });
 
       if (this.options.video.direction === 'sendonly') {
         pc.getTransceivers().forEach(transceiver => {
@@ -419,6 +490,18 @@
       }
 
       return pc;
+    }
+
+    _isVideoCodecSpecified() {
+      if (typeof window.RTCRtpSender.getCapabilities === 'undefined') return false;
+      if (this.options.video.direction === 'recvonly') return false;
+      return this.options.video.enabled && this.options.video.codec !== null;
+    }
+
+    _isAudioCodecSpecified() {
+      if (typeof window.RTCRtpSender.getCapabilities === 'undefined') return false;
+      if (this.options.audio.direction === 'recvonly') return false;
+      return this.options.audio.enabled && this.options.audio.codec !== null;
     }
 
     async _createAnswer() {
@@ -501,11 +584,13 @@
   const defaultOptions = {
     audio: {
       direction: 'sendrecv',
-      enabled: true
+      enabled: true,
+      codec: null
     },
     video: {
       direction: 'sendrecv',
-      enabled: true
+      enabled: true,
+      codec: null
     },
     iceServers: [{
       urls: 'stun:stun.l.google.com:19302'
