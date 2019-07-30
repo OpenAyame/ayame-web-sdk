@@ -1,4 +1,4 @@
-/* @OpenAyame/ayame-web-sdk@19.07.1 */
+/* @OpenAyame/ayame-web-sdk@19.07.2-rc0 */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -343,9 +343,18 @@
           videoTransceiver.setCodecPreferences(videoCodecs);
         }
       } else {
-        pc.addTransceiver('video', {
+        const videoTransceiver = pc.addTransceiver('video', {
           direction: 'recvonly'
         });
+
+        if (this._isVideoCodecSpecified()) {
+          const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
+          const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+
+          this._traceLog('video codecs=', videoCodecs);
+
+          videoTransceiver.setCodecPreferences(videoCodecs);
+        }
       }
 
       let tracks = [];

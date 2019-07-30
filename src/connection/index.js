@@ -242,7 +242,14 @@ class Connection {
         videoTransceiver.setCodecPreferences(videoCodecs);
       }
     } else {
-      pc.addTransceiver('video', { direction: 'recvonly' });
+      const videoTransceiver = pc.addTransceiver('video', { direction: 'recvonly' });
+
+      if (this._isVideoCodecSpecified()) {
+        const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
+        const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+        this._traceLog('video codecs=', videoCodecs);
+        videoTransceiver.setCodecPreferences(videoCodecs);
+      }
     }
     let tracks = [];
     pc.ontrack = (event: window.RTCTrackEvent) => {
