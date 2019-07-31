@@ -243,7 +243,6 @@ class Connection {
       }
     } else {
       const videoTransceiver = pc.addTransceiver('video', { direction: 'recvonly' });
-
       if (this._isVideoCodecSpecified()) {
         const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
         const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
@@ -310,7 +309,6 @@ class Connection {
 
   _isVideoCodecSpecified() {
     if (typeof window.RTCRtpSender.getCapabilities === 'undefined') return false;
-    if (this.options.video.direction === 'recvonly') return false;
     return this.options.video.enabled && this.options.video.codec !== null;
   }
 

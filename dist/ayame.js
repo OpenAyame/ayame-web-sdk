@@ -442,7 +442,6 @@
 
     _isVideoCodecSpecified() {
       if (typeof window.RTCRtpSender.getCapabilities === 'undefined') return false;
-      if (this.options.video.direction === 'recvonly') return false;
       return this.options.video.enabled && this.options.video.codec !== null;
     }
 
