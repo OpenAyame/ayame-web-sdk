@@ -263,7 +263,7 @@ class Connection {
           const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
           this._traceLog('video codecs=', videoCodecs);
           videoTransceiver.setCodecPreferences(videoCodecs);
-        } else if (this._isVideoCodecSpecified()) {
+        } else {
           this._removeCodec = true;
         }
       }
