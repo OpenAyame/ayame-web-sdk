@@ -479,6 +479,20 @@
         return;
       }
 
+      if (browser() === 'safari') {
+        if (this.options.video.enabled && this.options.video.direction === 'sendrecv') {
+          this._pc.addTransceiver('video', {
+            direction: 'recvonly'
+          });
+        }
+
+        if (this.options.audio.enabled && this.options.audio.direction === 'sendrecv') {
+          this._pc.addTransceiver('audio', {
+            direction: 'recvonly'
+          });
+        }
+      }
+
       let offer = await this._pc.createOffer({
         offerToReceiveAudio: this.options.audio.enabled && this.options.audio.direction !== 'sendonly',
         offerToReceiveVideo: this.options.video.enabled && this.options.video.direction !== 'sendonly'
@@ -533,16 +547,6 @@
 
     async _setOffer(sessionDescription) {
       this._pc = this._createPeerConnection();
-
-      if (browser() === 'safari') {
-        this._pc.addTransceiver('video', {
-          direction: 'recvonly'
-        });
-
-        this._pc.addTransceiver('audio', {
-          direction: 'recvonly'
-        });
-      }
 
       try {
         await this._pc.setRemoteDescription(sessionDescription);
