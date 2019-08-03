@@ -512,15 +512,6 @@
       try {
         let answer = await this._pc.createAnswer();
 
-        if (this._removeCodec && this.options.video.codec) {
-          const codecs = ['VP8', 'VP9', 'H264'];
-          codecs.forEach(codec => {
-            if (this.options.video.codec !== codec) {
-              answer.sdp = removeCodec(answer.sdp, codec);
-            }
-          });
-        }
-
         this._traceLog('create answer sdp, sdp=', answer.sdp);
 
         await this._pc.setLocalDescription(answer);
