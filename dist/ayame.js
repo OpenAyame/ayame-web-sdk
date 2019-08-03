@@ -419,7 +419,7 @@
             this._traceLog('video codecs=', videoCodecs);
 
             videoTransceiver.setCodecPreferences(videoCodecs);
-          } else if (this._isVideoCodecSpecified()) {
+          } else {
             this._removeCodec = true;
           }
         }
@@ -543,6 +543,8 @@
 
     async _setAnswer(sessionDescription) {
       await this._pc.setRemoteDescription(sessionDescription);
+
+      this._traceLog('set answer sdp=', sessionDescription.sdp);
     }
 
     async _setOffer(sessionDescription) {
@@ -550,6 +552,9 @@
 
       try {
         await this._pc.setRemoteDescription(sessionDescription);
+
+        this._traceLog('set offer sdp=', sessionDescription.sdp);
+
         await this._createAnswer();
       } catch (error) {
         await this.disconnect();
