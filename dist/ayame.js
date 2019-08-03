@@ -131,7 +131,7 @@
         disconnect: () => {},
         addstream: () => {},
         removestream: () => {},
-        message: () => {}
+        data: () => {}
       };
     }
     /*
@@ -494,7 +494,7 @@
       this._dataChannel.onmessage = event => {
         this._traceLog('datachannel onmessage=>', event.data);
 
-        this._callbacks.message(event);
+        this._callbacks.data(event);
       };
     }
 

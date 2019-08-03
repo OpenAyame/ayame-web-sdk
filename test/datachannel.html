@@ -1,7 +1,7 @@
 <html lang="ja">
     <head>
         <meta charset="utf-8">
-        <title>Ayame Send/Recv Test</title>
+        <title>Ayame DataChannel Test</title>
     </head>
     <body>
       <div>
@@ -31,7 +31,7 @@
         const startConn = async () => {
           options.video.codec = videoCodec;
           conn = Ayame.connection(signalingUrl, roomId, options, true);
-          conn.on('message', (e) => {
+          conn.on('data', (e) => {
             messages = messages ? (messages + '\n' + e.data) : e.data;
             document.querySelector("#messages").value = messages;
           });

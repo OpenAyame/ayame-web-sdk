@@ -84,7 +84,7 @@ class Connection {
       disconnect: () => {},
       addstream: () => {},
       removestream: () => {},
-      message: () => {}
+      data: () => {}
     };
   }
   /*
@@ -353,7 +353,7 @@ class Connection {
     };
     this._dataChannel.onmessage = (event: Object) => {
       this._traceLog('datachannel onmessage=>', event.data);
-      this._callbacks.message(event);
+      this._callbacks.data(event);
     };
   }
 
