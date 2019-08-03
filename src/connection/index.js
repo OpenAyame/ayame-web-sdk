@@ -1,6 +1,6 @@
 /* @flow */
 /* @private */
-import { traceLog, getVideoCodecsFromString } from '../utils';
+import { traceLog, getVideoCodecsFromString, removeCodec, browser } from '../utils';
 
 /**
  * オーディオ、ビデオの送受信方向に関するオプションです。
@@ -62,6 +62,8 @@ class Connection {
   _isChannelOpen: boolean;
   _ws: ?WebSocket;
   _pc: window.RTCPeerConnection;
+  _callbacks: Object;
+  _removeCodec: boolean;
   _dataChannel: ?window.RTCDataChannel;
   _callbacks: Object;
 
@@ -75,9 +77,9 @@ class Connection {
     this.options = options;
     this._isNegotiating = false;
     this._isChannelOpen = false;
+    this._removeCodec = false;
     this.stream = null;
     this._pc = null;
-    this._dataChannel = null;
     this.authnMetadata = null;
     this._callbacks = {
       connect: () => {},
@@ -96,6 +98,7 @@ class Connection {
     }
   }
 
+
   async connect(stream: ?window.RTCMediaStream, authnMetadata: ?Object = null) {
     if (this._ws || this._pc) {
       this._traceLog('connection already exists');
@@ -104,7 +107,6 @@ class Connection {
     this.stream = stream;
     this.authnMetadata = authnMetadata;
     await this._signaling();
-    await this._createDataChannel();
     return stream;
   }
 
@@ -127,7 +129,30 @@ class Connection {
     if (this._dataChannel) {
       this._dataChannel.close();
     }
-    const closePeerConnection = this.closePeerConnection(this._pc);
+    const closePeerConnection = new Promise((resolve, reject) => {
+      if (browser() === 'safari' && this._pc) {
+        this._pc.oniceconnectionstatechange = () => {};
+        this._pc.close();
+        this._pc = null;
+        return resolve();
+      }
+      if (!this._pc) return resolve();
+      if (this._pc && this._pc.signalingState == 'closed') {
+        return resolve();
+      }
+      this._pc.oniceconnectionstatechange = () => {};
+      const timerId = setInterval(() => {
+        if (!this._pc) {
+          clearInterval(timerId);
+          return reject('PeerConnection Closing Error');
+        }
+        if (this._pc && this._pc.signalingState == 'closed') {
+          clearInterval(timerId);
+          return resolve();
+        }
+      }, 800);
+      this._pc.close();
+    });
     const closeWebSocketConnection = new Promise((resolve, reject) => {
       if (!this._ws) return resolve();
       if (this._ws && this._ws.readyState === 3) return resolve();
@@ -156,29 +181,7 @@ class Connection {
     await Promise.all([closeWebSocketConnection, closePeerConnection]);
     this._ws = null;
     this._pc = null;
-    this._dataChannel = null;
-    this._isChannelOpen = false;
-  }
-
-  async closePeerConnection(pc: ?window.RTCPeerConnection) {
-    return new Promise((resolve, reject) => {
-      if (!pc) return resolve();
-      if (pc && pc.signalingState == 'closed') {
-        return resolve();
-      }
-      pc.oniceconnectionstatechange = () => {};
-      const timerId = setInterval(() => {
-        if (!pc) {
-          clearInterval(timerId);
-          return reject('PeerConnection Closing Error');
-        }
-        if (pc && pc.signalingState == 'closed') {
-          clearInterval(timerId);
-          return resolve();
-        }
-      }, 800);
-      pc.close();
-    });
+    this._removeCodec = false;
   }
 
   async _signaling() {
@@ -210,7 +213,9 @@ class Connection {
               } else if (message.type === 'close') {
                 this._callbacks.close(event);
               } else if (message.type === 'accept') {
-                if (!this._pc) this._pc = this._createPeerConnection(true);
+                if (!this._pc) this._pc = this._createPeerConnection();
+                await this._createDataChannel();
+                await this._sendOffer();
                 this._callbacks.connect({ authzMetadata: message.authzMetadata });
                 if (this._ws) {
                   this._ws.onclose = async closeEvent => {
@@ -218,14 +223,13 @@ class Connection {
                     this._callbacks.disconnect({ reason: 'WS-CLOSED', event: closeEvent });
                   };
                 }
-                return resolve();
               } else if (message.type === 'reject') {
                 await this.disconnect();
                 this._callbacks.disconnect({ reason: 'REJECTED' });
               } else if (message.type === 'offer') {
-                this._setOffer(message);
+                this._setOffer(new window.RTCSessionDescription(message));
               } else if (message.type === 'answer') {
-                await this._setAnswer(message);
+                await this._setAnswer(new window.RTCSessionDescription(message));
               } else if (message.type === 'candidate') {
                 if (message.ice) {
                   this._traceLog('Received ICE candidate ...', message.ice);
@@ -246,10 +250,11 @@ class Connection {
           this._callbacks.disconnect(event);
         };
       }
+      return resolve();
     });
   }
 
-  _createPeerConnection(isOffer: boolean) {
+  _createPeerConnection() {
     const pcConfig = {
       iceServers: this.options.iceServers
     };
@@ -258,7 +263,7 @@ class Connection {
     const audioTrack = this.stream && this.stream.getAudioTracks()[0];
     if (audioTrack && this.options.audio.direction !== 'recvonly') {
       pc.addTrack(audioTrack, this.stream);
-    } else {
+    } else if (this.options.audio.enabled) {
       pc.addTransceiver('audio', { direction: 'recvonly' });
     }
     const videoTrack = this.stream && this.stream.getVideoTracks()[0];
@@ -266,20 +271,29 @@ class Connection {
       const videoSender = pc.addTrack(videoTrack, this.stream);
       const videoTransceiver = this._getTransceiver(pc, videoSender);
       if (this._isVideoCodecSpecified()) {
-        const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
-        const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
-        this._traceLog('video codecs=', videoCodecs);
-        videoTransceiver.setCodecPreferences(videoCodecs);
+        if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
+          const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
+          const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+          this._traceLog('video codecs=', videoCodecs);
+          videoTransceiver.setCodecPreferences(videoCodecs);
+        } else {
+          this._removeCodec = true;
+        }
       }
-    } else {
+    } else if (this.options.video.enabled) {
       const videoTransceiver = pc.addTransceiver('video', { direction: 'recvonly' });
       if (this._isVideoCodecSpecified()) {
-        const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
-        const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
-        this._traceLog('video codecs=', videoCodecs);
-        videoTransceiver.setCodecPreferences(videoCodecs);
+        if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
+          const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
+          const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+          this._traceLog('video codecs=', videoCodecs);
+          videoTransceiver.setCodecPreferences(videoCodecs);
+        } else {
+          this._removeCodec = true;
+        }
       }
     }
+
     let tracks = [];
     pc.ontrack = (event: window.RTCTrackEvent) => {
       this._traceLog('peer.ontrack()', event);
@@ -307,28 +321,6 @@ class Connection {
           await this.disconnect();
           this._callbacks.disconnect({ reason: 'ICE-CONNECTION-STATE-FAILED' });
           break;
-      }
-    };
-    pc.onnegotiationneeded = async () => {
-      this._traceLog('peer.onnegotiationneeded', '');
-      if (this._isNegotiating || this._pc.signalingState !== 'stable') {
-        return;
-      }
-      try {
-        this._isNegotiating = true;
-        if (isOffer) {
-          const offer = await pc.createOffer({
-            offerToReceiveAudio: this.options.audio.enabled && this.options.audio.direction !== 'sendonly',
-            offerToReceiveVideo: this.options.video.enabled && this.options.video.direction !== 'sendonly'
-          });
-          this._traceLog('create offer sdp, sdp=', offer.sdp);
-          await pc.setLocalDescription(offer);
-          this._sendSdp(pc.localDescription);
-          this._isNegotiating = false;
-        }
-      } catch (error) {
-        await this.disconnect();
-        this._callbacks.disconnect({ reason: 'NEGOTIATION-ERROR', error: error });
       }
     };
     pc.onsignalingstatechange = _ => {
@@ -363,8 +355,36 @@ class Connection {
     this._createDataChannel();
   }
 
+  async _sendOffer() {
+    if (!this._pc) {
+      return;
+    }
+    if (browser() === 'safari') {
+      if (this.options.video.enabled && this.options.video.direction === 'sendrecv') {
+        this._pc.addTransceiver('video', { direction: 'recvonly' });
+      }
+      if (this.options.audio.enabled && this.options.audio.direction === 'sendrecv') {
+        this._pc.addTransceiver('audio', { direction: 'recvonly' });
+      }
+    }
+    let offer = await this._pc.createOffer({
+      offerToReceiveAudio: this.options.audio.enabled && this.options.audio.direction !== 'sendonly',
+      offerToReceiveVideo: this.options.video.enabled && this.options.video.direction !== 'sendonly'
+    });
+    if (this._removeCodec && this.options.video.codec) {
+      const codecs = ['VP8', 'VP9', 'H264'];
+      codecs.forEach(codec => {
+        if (this.options.video.codec !== codec) {
+          offer.sdp = removeCodec(offer.sdp, codec);
+        }
+      });
+    }
+    this._traceLog('create offer sdp, sdp=', offer.sdp);
+    await this._pc.setLocalDescription(offer);
+    this._sendSdp(this._pc.localDescription);
+  }
+
   _isVideoCodecSpecified() {
-    if (typeof window.RTCRtpSender.getCapabilities === 'undefined') return false;
     return this.options.video.enabled && this.options.video.codec !== null;
   }
 
@@ -385,12 +405,14 @@ class Connection {
 
   async _setAnswer(sessionDescription: window.RTCSessionDescription) {
     await this._pc.setRemoteDescription(sessionDescription);
+    this._traceLog('set answer sdp=', sessionDescription.sdp);
   }
 
   async _setOffer(sessionDescription: window.RTCSessionDescription) {
-    this._pc = this._createPeerConnection(false);
+    this._pc = this._createPeerConnection();
     try {
       await this._pc.setRemoteDescription(sessionDescription);
+      this._traceLog('set offer sdp=', sessionDescription.sdp);
       await this._createAnswer();
     } catch (error) {
       await this.disconnect();
