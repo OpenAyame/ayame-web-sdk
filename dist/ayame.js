@@ -34,10 +34,6 @@
     }
   }
   function getVideoCodecsFromString(codec, codecs) {
-    if (browser() !== 'chrome') {
-      throw new Error('codec 指定は chrome canary でのみ利用できます');
-    }
-
     let mimeType = '';
 
     if (codec === 'VP8') {
@@ -57,6 +53,58 @@
     }
 
     return filteredCodecs;
+  }
+  function removeCodec(orgSdp, codec) {
+    const internalFunc = orgSdp => {
+      const codecre = new RegExp('(a=rtpmap:(\\d*) ' + codec + '/90000\\r\\n)');
+      const rtpmaps = orgSdp.match(codecre);
+
+      if (rtpmaps == null || rtpmaps.length <= 2) {
+        return orgSdp;
+      }
+
+      const rtpmap = rtpmaps[2];
+      let modsdp = orgSdp.replace(codecre, '');
+      const rtcpre = new RegExp('(a=rtcp-fb:' + rtpmap + '.*\r\n)', 'g');
+      modsdp = modsdp.replace(rtcpre, '');
+      const fmtpre = new RegExp('(a=fmtp:' + rtpmap + '.*\r\n)', 'g');
+      modsdp = modsdp.replace(fmtpre, '');
+      const aptpre = new RegExp('(a=fmtp:(\\d*) apt=' + rtpmap + '\\r\\n)');
+      const aptmaps = modsdp.match(aptpre);
+      let fmtpmap = '';
+
+      if (aptmaps != null && aptmaps.length >= 3) {
+        fmtpmap = aptmaps[2];
+        modsdp = modsdp.replace(aptpre, '');
+        const rtppre = new RegExp('(a=rtpmap:' + fmtpmap + '.*\r\n)', 'g');
+        modsdp = modsdp.replace(rtppre, '');
+      }
+
+      let videore = /(m=video.*\r\n)/;
+      const videolines = modsdp.match(videore);
+
+      if (videolines != null) {
+        //If many m=video are found in SDP, this program doesn't work.
+        let videoline = videolines[0].substring(0, videolines[0].length - 2);
+        const videoelems = videoline.split(' ');
+        let modvideoline = videoelems[0];
+        videoelems.forEach((videoelem, index) => {
+          if (index === 0) return;
+
+          if (videoelem == rtpmap || videoelem == fmtpmap) {
+            return;
+          }
+
+          modvideoline += ' ' + videoelem;
+        });
+        modvideoline += '\r\n';
+        modsdp = modsdp.replace(videore, modvideoline);
+      }
+
+      return internalFunc(modsdp);
+    };
+
+    return internalFunc(orgSdp);
   }
   /* @ignore */
 
@@ -121,6 +169,7 @@
       this.signalingUrl = signalingUrl;
       this.options = options;
       this._isNegotiating = false;
+      this._removeCodec = false;
       this.stream = null;
       this._pc = null;
       this.authnMetadata = null;
@@ -157,6 +206,15 @@
 
     async disconnect() {
       const closePeerConnection = new Promise((resolve, reject) => {
+        if (browser() === 'safari' && this._pc) {
+          this._pc.oniceconnectionstatechange = () => {};
+
+          this._pc.close();
+
+          this._pc = null;
+          return resolve();
+        }
+
         if (!this._pc) return resolve();
 
         if (this._pc && this._pc.signalingState == 'closed') {
@@ -212,6 +270,7 @@
       await Promise.all([closeWebSocketConnection, closePeerConnection]);
       this._ws = null;
       this._pc = null;
+      this._removeCodec = false;
     }
 
     async _signaling() {
@@ -252,7 +311,8 @@
                 } else if (message.type === 'close') {
                   this._callbacks.close(event);
                 } else if (message.type === 'accept') {
-                  if (!this._pc) this._pc = this._createPeerConnection(true);
+                  if (!this._pc) this._pc = this._createPeerConnection();
+                  await this._sendOffer();
 
                   this._callbacks.connect({
                     authzMetadata: message.authzMetadata
@@ -275,9 +335,9 @@
                     reason: 'REJECTED'
                   });
                 } else if (message.type === 'offer') {
-                  this._setOffer(message);
+                  this._setOffer(new window.RTCSessionDescription(message));
                 } else if (message.type === 'answer') {
-                  await this._setAnswer(message);
+                  await this._setAnswer(new window.RTCSessionDescription(message));
                 } else if (message.type === 'candidate') {
                   if (message.ice) {
                     this._traceLog('Received ICE candidate ...', message.ice);
@@ -311,7 +371,7 @@
       });
     }
 
-    _createPeerConnection(isOffer) {
+    _createPeerConnection() {
       const pcConfig = {
         iceServers: this.options.iceServers
       };
@@ -321,7 +381,7 @@
 
       if (audioTrack && this.options.audio.direction !== 'recvonly') {
         pc.addTrack(audioTrack, this.stream);
-      } else {
+      } else if (this.options.audio.enabled) {
         pc.addTransceiver('audio', {
           direction: 'recvonly'
         });
@@ -335,25 +395,33 @@
         const videoTransceiver = this._getTransceiver(pc, videoSender);
 
         if (this._isVideoCodecSpecified()) {
-          const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
-          const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+          if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
+            const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
+            const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
 
-          this._traceLog('video codecs=', videoCodecs);
+            this._traceLog('video codecs=', videoCodecs);
 
-          videoTransceiver.setCodecPreferences(videoCodecs);
+            videoTransceiver.setCodecPreferences(videoCodecs);
+          } else {
+            this._removeCodec = true;
+          }
         }
-      } else {
+      } else if (this.options.video.enabled) {
         const videoTransceiver = pc.addTransceiver('video', {
           direction: 'recvonly'
         });
 
         if (this._isVideoCodecSpecified()) {
-          const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
-          const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+          if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
+            const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
+            const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
 
-          this._traceLog('video codecs=', videoCodecs);
+            this._traceLog('video codecs=', videoCodecs);
 
-          videoTransceiver.setCodecPreferences(videoCodecs);
+            videoTransceiver.setCodecPreferences(videoCodecs);
+          } else {
+            this._removeCodec = true;
+          }
         }
       }
 
@@ -399,40 +467,6 @@
         }
       };
 
-      pc.onnegotiationneeded = async () => {
-        this._traceLog('peer.onnegotiationneeded', '');
-
-        if (this._isNegotiating || this._pc.signalingState !== 'stable') {
-          return;
-        }
-
-        try {
-          this._isNegotiating = true;
-
-          if (isOffer) {
-            const offer = await pc.createOffer({
-              offerToReceiveAudio: this.options.audio.enabled && this.options.audio.direction !== 'sendonly',
-              offerToReceiveVideo: this.options.video.enabled && this.options.video.direction !== 'sendonly'
-            });
-
-            this._traceLog('create offer sdp, sdp=', offer.sdp);
-
-            await pc.setLocalDescription(offer);
-
-            this._sendSdp(pc.localDescription);
-
-            this._isNegotiating = false;
-          }
-        } catch (error) {
-          await this.disconnect();
-
-          this._callbacks.disconnect({
-            reason: 'NEGOTIATION-ERROR',
-            error: error
-          });
-        }
-      };
-
       pc.onsignalingstatechange = _ => {
         this._traceLog('signaling state changes:', pc.signalingState);
       };
@@ -440,8 +474,47 @@
       return pc;
     }
 
+    async _sendOffer() {
+      if (!this._pc) {
+        return;
+      }
+
+      if (browser() === 'safari') {
+        if (this.options.video.enabled && this.options.video.direction === 'sendrecv') {
+          this._pc.addTransceiver('video', {
+            direction: 'recvonly'
+          });
+        }
+
+        if (this.options.audio.enabled && this.options.audio.direction === 'sendrecv') {
+          this._pc.addTransceiver('audio', {
+            direction: 'recvonly'
+          });
+        }
+      }
+
+      let offer = await this._pc.createOffer({
+        offerToReceiveAudio: this.options.audio.enabled && this.options.audio.direction !== 'sendonly',
+        offerToReceiveVideo: this.options.video.enabled && this.options.video.direction !== 'sendonly'
+      });
+
+      if (this._removeCodec && this.options.video.codec) {
+        const codecs = ['VP8', 'VP9', 'H264'];
+        codecs.forEach(codec => {
+          if (this.options.video.codec !== codec) {
+            offer.sdp = removeCodec(offer.sdp, codec);
+          }
+        });
+      }
+
+      this._traceLog('create offer sdp, sdp=', offer.sdp);
+
+      await this._pc.setLocalDescription(offer);
+
+      this._sendSdp(this._pc.localDescription);
+    }
+
     _isVideoCodecSpecified() {
-      if (typeof window.RTCRtpSender.getCapabilities === 'undefined') return false;
       return this.options.video.enabled && this.options.video.codec !== null;
     }
 
@@ -470,13 +543,18 @@
 
     async _setAnswer(sessionDescription) {
       await this._pc.setRemoteDescription(sessionDescription);
+
+      this._traceLog('set answer sdp=', sessionDescription.sdp);
     }
 
     async _setOffer(sessionDescription) {
-      this._pc = this._createPeerConnection(false);
+      this._pc = this._createPeerConnection();
 
       try {
         await this._pc.setRemoteDescription(sessionDescription);
+
+        this._traceLog('set offer sdp=', sessionDescription.sdp);
+
         await this._createAnswer();
       } catch (error) {
         await this.disconnect();

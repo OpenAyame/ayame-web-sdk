@@ -1,6 +1,6 @@
 /* @flow */
 /* @private */
-import { traceLog, getVideoCodecsFromString } from '../utils';
+import { traceLog, getVideoCodecsFromString, removeCodec, browser } from '../utils';
 
 /**
  * オーディオ、ビデオの送受信方向に関するオプションです。
@@ -62,6 +62,7 @@ class Connection {
   _ws: ?WebSocket;
   _pc: window.RTCPeerConnection;
   _callbacks: Object;
+  _removeCodec: boolean;
 
   /*
    * @private
@@ -72,6 +73,7 @@ class Connection {
     this.signalingUrl = signalingUrl;
     this.options = options;
     this._isNegotiating = false;
+    this._removeCodec = false;
     this.stream = null;
     this._pc = null;
     this.authnMetadata = null;
@@ -104,6 +106,12 @@ class Connection {
 
   async disconnect() {
     const closePeerConnection = new Promise((resolve, reject) => {
+      if (browser() === 'safari' && this._pc) {
+        this._pc.oniceconnectionstatechange = () => {};
+        this._pc.close();
+        this._pc = null;
+        return resolve();
+      }
       if (!this._pc) return resolve();
       if (this._pc && this._pc.signalingState == 'closed') {
         return resolve();
@@ -149,6 +157,7 @@ class Connection {
     await Promise.all([closeWebSocketConnection, closePeerConnection]);
     this._ws = null;
     this._pc = null;
+    this._removeCodec = false;
   }
 
   async _signaling() {
@@ -180,7 +189,8 @@ class Connection {
               } else if (message.type === 'close') {
                 this._callbacks.close(event);
               } else if (message.type === 'accept') {
-                if (!this._pc) this._pc = this._createPeerConnection(true);
+                if (!this._pc) this._pc = this._createPeerConnection();
+                await this._sendOffer();
                 this._callbacks.connect({ authzMetadata: message.authzMetadata });
                 if (this._ws) {
                   this._ws.onclose = async closeEvent => {
@@ -192,9 +202,9 @@ class Connection {
                 await this.disconnect();
                 this._callbacks.disconnect({ reason: 'REJECTED' });
               } else if (message.type === 'offer') {
-                this._setOffer(message);
+                this._setOffer(new window.RTCSessionDescription(message));
               } else if (message.type === 'answer') {
-                await this._setAnswer(message);
+                await this._setAnswer(new window.RTCSessionDescription(message));
               } else if (message.type === 'candidate') {
                 if (message.ice) {
                   this._traceLog('Received ICE candidate ...', message.ice);
@@ -219,7 +229,7 @@ class Connection {
     });
   }
 
-  _createPeerConnection(isOffer: boolean) {
+  _createPeerConnection() {
     const pcConfig = {
       iceServers: this.options.iceServers
     };
@@ -228,7 +238,7 @@ class Connection {
     const audioTrack = this.stream && this.stream.getAudioTracks()[0];
     if (audioTrack && this.options.audio.direction !== 'recvonly') {
       pc.addTrack(audioTrack, this.stream);
-    } else {
+    } else if (this.options.audio.enabled) {
       pc.addTransceiver('audio', { direction: 'recvonly' });
     }
     const videoTrack = this.stream && this.stream.getVideoTracks()[0];
@@ -236,20 +246,29 @@ class Connection {
       const videoSender = pc.addTrack(videoTrack, this.stream);
       const videoTransceiver = this._getTransceiver(pc, videoSender);
       if (this._isVideoCodecSpecified()) {
-        const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
-        const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
-        this._traceLog('video codecs=', videoCodecs);
-        videoTransceiver.setCodecPreferences(videoCodecs);
+        if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
+          const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
+          const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+          this._traceLog('video codecs=', videoCodecs);
+          videoTransceiver.setCodecPreferences(videoCodecs);
+        } else {
+          this._removeCodec = true;
+        }
       }
-    } else {
+    } else if (this.options.video.enabled) {
       const videoTransceiver = pc.addTransceiver('video', { direction: 'recvonly' });
       if (this._isVideoCodecSpecified()) {
-        const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
-        const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
-        this._traceLog('video codecs=', videoCodecs);
-        videoTransceiver.setCodecPreferences(videoCodecs);
+        if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
+          const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
+          const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+          this._traceLog('video codecs=', videoCodecs);
+          videoTransceiver.setCodecPreferences(videoCodecs);
+        } else {
+          this._removeCodec = true;
+        }
       }
     }
+
     let tracks = [];
     pc.ontrack = (event: window.RTCTrackEvent) => {
       this._traceLog('peer.ontrack()', event);
@@ -279,36 +298,42 @@ class Connection {
           break;
       }
     };
-    pc.onnegotiationneeded = async () => {
-      this._traceLog('peer.onnegotiationneeded', '');
-      if (this._isNegotiating || this._pc.signalingState !== 'stable') {
-        return;
-      }
-      try {
-        this._isNegotiating = true;
-        if (isOffer) {
-          const offer = await pc.createOffer({
-            offerToReceiveAudio: this.options.audio.enabled && this.options.audio.direction !== 'sendonly',
-            offerToReceiveVideo: this.options.video.enabled && this.options.video.direction !== 'sendonly'
-          });
-          this._traceLog('create offer sdp, sdp=', offer.sdp);
-          await pc.setLocalDescription(offer);
-          this._sendSdp(pc.localDescription);
-          this._isNegotiating = false;
-        }
-      } catch (error) {
-        await this.disconnect();
-        this._callbacks.disconnect({ reason: 'NEGOTIATION-ERROR', error: error });
-      }
-    };
     pc.onsignalingstatechange = _ => {
       this._traceLog('signaling state changes:', pc.signalingState);
     };
     return pc;
   }
 
+  async _sendOffer() {
+    if (!this._pc) {
+      return;
+    }
+    if (browser() === 'safari') {
+      if (this.options.video.enabled && this.options.video.direction === 'sendrecv') {
+        this._pc.addTransceiver('video', { direction: 'recvonly' });
+      }
+      if (this.options.audio.enabled && this.options.audio.direction === 'sendrecv') {
+        this._pc.addTransceiver('audio', { direction: 'recvonly' });
+      }
+    }
+    let offer = await this._pc.createOffer({
+      offerToReceiveAudio: this.options.audio.enabled && this.options.audio.direction !== 'sendonly',
+      offerToReceiveVideo: this.options.video.enabled && this.options.video.direction !== 'sendonly'
+    });
+    if (this._removeCodec && this.options.video.codec) {
+      const codecs = ['VP8', 'VP9', 'H264'];
+      codecs.forEach(codec => {
+        if (this.options.video.codec !== codec) {
+          offer.sdp = removeCodec(offer.sdp, codec);
+        }
+      });
+    }
+    this._traceLog('create offer sdp, sdp=', offer.sdp);
+    await this._pc.setLocalDescription(offer);
+    this._sendSdp(this._pc.localDescription);
+  }
+
   _isVideoCodecSpecified() {
-    if (typeof window.RTCRtpSender.getCapabilities === 'undefined') return false;
     return this.options.video.enabled && this.options.video.codec !== null;
   }
 
@@ -329,12 +354,14 @@ class Connection {
 
   async _setAnswer(sessionDescription: window.RTCSessionDescription) {
     await this._pc.setRemoteDescription(sessionDescription);
+    this._traceLog('set answer sdp=', sessionDescription.sdp);
   }
 
   async _setOffer(sessionDescription: window.RTCSessionDescription) {
-    this._pc = this._createPeerConnection(false);
+    this._pc = this._createPeerConnection();
     try {
       await this._pc.setRemoteDescription(sessionDescription);
+      this._traceLog('set offer sdp=', sessionDescription.sdp);
       await this._createAnswer();
     } catch (error) {
       await this.disconnect();
