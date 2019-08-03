@@ -202,9 +202,9 @@ class Connection {
                 await this.disconnect();
                 this._callbacks.disconnect({ reason: 'REJECTED' });
               } else if (message.type === 'offer') {
-                this._setOffer(message);
+                this._setOffer(new window.RTCSessionDescription(message));
               } else if (message.type === 'answer') {
-                await this._setAnswer(message);
+                await this._setAnswer(new window.RTCSessionDescription(message));
               } else if (message.type === 'candidate') {
                 if (message.ice) {
                   this._traceLog('Received ICE candidate ...', message.ice);
