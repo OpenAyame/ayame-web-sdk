@@ -10,6 +10,7 @@
     - バグ修正
 
 ## develop
+- [ADD] datachannel に対応する
 - [CHANGE] audio のコーデック指定をなくす
 - [ADD] video, audio のコーデック指定をサポートする
 - [UPDATE] webpack から rollupjs に変更する

@@ -59,8 +59,10 @@ class Connection {
   remoteStreamId: ?string;
   authnMetadata: ?Object;
   _isNegotiating: boolean;
+  _isChannelOpen: boolean;
   _ws: ?WebSocket;
   _pc: window.RTCPeerConnection;
+  _dataChannel: ?window.RTCDataChannel;
   _callbacks: Object;
 
   /*
@@ -72,14 +74,17 @@ class Connection {
     this.signalingUrl = signalingUrl;
     this.options = options;
     this._isNegotiating = false;
+    this._isChannelOpen = false;
     this.stream = null;
     this._pc = null;
+    this._dataChannel = null;
     this.authnMetadata = null;
     this._callbacks = {
       connect: () => {},
       disconnect: () => {},
       addstream: () => {},
-      removestream: () => {}
+      removestream: () => {},
+      message: () => {}
     };
   }
   /*
@@ -99,28 +104,30 @@ class Connection {
     this.stream = stream;
     this.authnMetadata = authnMetadata;
     await this._signaling();
+    await this._createDataChannel();
     return stream;
   }
 
-  async disconnect() {
-    const closePeerConnection = new Promise((resolve, reject) => {
-      if (!this._pc) return resolve();
-      if (this._pc && this._pc.signalingState == 'closed') {
+  /*
+   * Datachannel でデータを送信します。
+   */
+  async sendData(params: any) {
+    return new Promise((resolve, reject) => {
+      this._traceLog('datachannel sendData=>', params);
+      if (this._dataChannel && this._dataChannel.readyState === 'open' && this._isChannelOpen) {
+        this._dataChannel.send(params);
         return resolve();
+      } else {
+        return reject('datachannel is not open');
       }
-      this._pc.oniceconnectionstatechange = () => {};
-      const timerId = setInterval(() => {
-        if (!this._pc) {
-          clearInterval(timerId);
-          return reject('PeerConnection Closing Error');
-        }
-        if (this._pc && this._pc.signalingState == 'closed') {
-          clearInterval(timerId);
-          return resolve();
-        }
-      }, 800);
-      this._pc.close();
     });
+  }
+
+  async disconnect() {
+    if (this._dataChannel) {
+      this._dataChannel.close();
+    }
+    const closePeerConnection = this.closePeerConnection(this._pc);
     const closeWebSocketConnection = new Promise((resolve, reject) => {
       if (!this._ws) return resolve();
       if (this._ws && this._ws.readyState === 3) return resolve();
@@ -149,6 +156,29 @@ class Connection {
     await Promise.all([closeWebSocketConnection, closePeerConnection]);
     this._ws = null;
     this._pc = null;
+    this._dataChannel = null;
+    this._isChannelOpen = false;
+  }
+
+  async closePeerConnection(pc: ?window.RTCPeerConnection) {
+    return new Promise((resolve, reject) => {
+      if (!pc) return resolve();
+      if (pc && pc.signalingState == 'closed') {
+        return resolve();
+      }
+      pc.oniceconnectionstatechange = () => {};
+      const timerId = setInterval(() => {
+        if (!pc) {
+          clearInterval(timerId);
+          return reject('PeerConnection Closing Error');
+        }
+        if (pc && pc.signalingState == 'closed') {
+          clearInterval(timerId);
+          return resolve();
+        }
+      }, 800);
+      pc.close();
+    });
   }
 
   async _signaling() {
@@ -188,6 +218,7 @@ class Connection {
                     this._callbacks.disconnect({ reason: 'WS-CLOSED', event: closeEvent });
                   };
                 }
+                return resolve();
               } else if (message.type === 'reject') {
                 await this.disconnect();
                 this._callbacks.disconnect({ reason: 'REJECTED' });
@@ -215,7 +246,6 @@ class Connection {
           this._callbacks.disconnect(event);
         };
       }
-      return resolve();
     });
   }
 
@@ -304,7 +334,33 @@ class Connection {
     pc.onsignalingstatechange = _ => {
       this._traceLog('signaling state changes:', pc.signalingState);
     };
+    pc.ondatachannel = this._onDataChannel.bind(this);
     return pc;
+  }
+
+  async _createDataChannel() {
+    if (!this._dataChannel) this._dataChannel = this._pc.createDataChannel('dataChannel');
+    this._dataChannel.onopen = () => {
+      this._isChannelOpen = true;
+    };
+    this._dataChannel.onclose = async (event: Object) => {
+      this._traceLog('datachannel onclosed=>', event);
+      this._isChannelOpen = false;
+    };
+    this._dataChannel.onerror = async (event: Object) => {
+      this._traceLog('datachannel onerror=>', event);
+      this._isChannelOpen = false;
+    };
+    this._dataChannel.onmessage = (event: Object) => {
+      this._traceLog('datachannel onmessage=>', event.data);
+      this._callbacks.message(event);
+    };
+  }
+
+  _onDataChannel(event: Object) {
+    this._traceLog('on data channel', event);
+    this._dataChannel = event.channel;
+    this._createDataChannel();
   }
 
   _isVideoCodecSpecified() {
