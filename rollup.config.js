@@ -11,7 +11,7 @@ const plugins = [
   babel({
     exclude: 'node_modules/**'
   })
-]
+];
 module.exports = [
   {
     input: 'src/ayame.js',

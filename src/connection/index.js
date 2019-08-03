@@ -1,6 +1,6 @@
 /* @flow */
 /* @private */
-import { traceLog, getVideoCodecsFromString, removeCodec } from '../utils';
+import { traceLog, getVideoCodecsFromString, removeCodec, browser } from '../utils';
 
 /**
  * オーディオ、ビデオの送受信方向に関するオプションです。
@@ -106,6 +106,12 @@ class Connection {
 
   async disconnect() {
     const closePeerConnection = new Promise((resolve, reject) => {
+      if (browser() === 'safari' && this._pc) {
+        this._pc.oniceconnectionstatechange = () => {};
+        this._pc.close();
+        this._pc = null;
+        return resolve();
+      }
       if (!this._pc) return resolve();
       if (this._pc && this._pc.signalingState == 'closed') {
         return resolve();
@@ -183,7 +189,8 @@ class Connection {
               } else if (message.type === 'close') {
                 this._callbacks.close(event);
               } else if (message.type === 'accept') {
-                if (!this._pc) this._pc = this._createPeerConnection(true);
+                if (!this._pc) this._pc = this._createPeerConnection();
+                await this._sendOffer();
                 this._callbacks.connect({ authzMetadata: message.authzMetadata });
                 if (this._ws) {
                   this._ws.onclose = async closeEvent => {
@@ -222,7 +229,7 @@ class Connection {
     });
   }
 
-  _createPeerConnection(isOffer: boolean) {
+  _createPeerConnection() {
     const pcConfig = {
       iceServers: this.options.iceServers
     };
@@ -231,7 +238,7 @@ class Connection {
     const audioTrack = this.stream && this.stream.getAudioTracks()[0];
     if (audioTrack && this.options.audio.direction !== 'recvonly') {
       pc.addTrack(audioTrack, this.stream);
-    } else {
+    } else if (this.options.audio.enabled) {
       pc.addTransceiver('audio', { direction: 'recvonly' });
     }
     const videoTrack = this.stream && this.stream.getVideoTracks()[0];
@@ -248,7 +255,7 @@ class Connection {
           this._removeCodec = true;
         }
       }
-    } else {
+    } else if (this.options.video.enabled) {
       const videoTransceiver = pc.addTransceiver('video', { direction: 'recvonly' });
       if (this._isVideoCodecSpecified()) {
         if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
@@ -261,6 +268,7 @@ class Connection {
         }
       }
     }
+
     let tracks = [];
     pc.ontrack = (event: window.RTCTrackEvent) => {
       this._traceLog('peer.ontrack()', event);
@@ -290,40 +298,31 @@ class Connection {
           break;
       }
     };
-    pc.onnegotiationneeded = async () => {
-      this._traceLog('peer.onnegotiationneeded', '');
-      if (this._isNegotiating || this._pc.signalingState !== 'stable') {
-        return;
-      }
-      try {
-        this._isNegotiating = true;
-        if (isOffer) {
-          let offer = await pc.createOffer({
-            offerToReceiveAudio: this.options.audio.enabled && this.options.audio.direction !== 'sendonly',
-            offerToReceiveVideo: this.options.video.enabled && this.options.video.direction !== 'sendonly'
-          });
-          if (this._removeCodec && this.options.video.codec) {
-            const codecs = ['VP8', 'VP9', 'H264'];
-            codecs.forEach(codec => {
-              if (this.options.video.codec !== codec) {
-                offer.sdp = removeCodec(offer.sdp, codec);
-              }
-            });
-          }
-          this._traceLog('create offer sdp, sdp=', offer.sdp);
-          await pc.setLocalDescription(offer);
-          this._sendSdp(pc.localDescription);
-          this._isNegotiating = false;
-        }
-      } catch (error) {
-        await this.disconnect();
-        this._callbacks.disconnect({ reason: 'NEGOTIATION-ERROR', error: error });
-      }
-    };
     pc.onsignalingstatechange = _ => {
       this._traceLog('signaling state changes:', pc.signalingState);
     };
     return pc;
+  }
+
+  async _sendOffer() {
+    if (!this._pc) {
+      return;
+    }
+    let offer = await this._pc.createOffer({
+      offerToReceiveAudio: this.options.audio.enabled && this.options.audio.direction !== 'sendonly',
+      offerToReceiveVideo: this.options.video.enabled && this.options.video.direction !== 'sendonly'
+    });
+    if (this._removeCodec && this.options.video.codec) {
+      const codecs = ['VP8', 'VP9', 'H264'];
+      codecs.forEach(codec => {
+        if (this.options.video.codec !== codec) {
+          offer.sdp = removeCodec(offer.sdp, codec);
+        }
+      });
+    }
+    this._traceLog('create offer sdp, sdp=', offer.sdp);
+    await this._pc.setLocalDescription(offer);
+    this._sendSdp(this._pc.localDescription);
   }
 
   _isVideoCodecSpecified() {
@@ -358,7 +357,11 @@ class Connection {
   }
 
   async _setOffer(sessionDescription: window.RTCSessionDescription) {
-    this._pc = this._createPeerConnection(false);
+    this._pc = this._createPeerConnection();
+    if (browser() === 'safari') {
+      this._pc.addTransceiver('video', { direction: 'recvonly' });
+      this._pc.addTransceiver('audio', { direction: 'recvonly' });
+    }
     try {
       await this._pc.setRemoteDescription(sessionDescription);
       await this._createAnswer();

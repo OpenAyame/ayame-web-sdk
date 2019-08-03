@@ -92,7 +92,7 @@ export function removeCodec(orgSdp: any, codec: VideoCodecOption) {
 }
 
 /* @ignore */
-function browser() {
+export function browser() {
   const ua = window.navigator.userAgent.toLocaleLowerCase();
   if (ua.indexOf('edge') !== -1) {
     return 'edge';
