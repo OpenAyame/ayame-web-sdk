@@ -25,9 +25,6 @@ export function traceLog(title: string, value: Object | string) {
 }
 
 export function getVideoCodecsFromString(codec: VideoCodecOption, codecs: Array<Object>) {
-  if (browser() !== 'chrome') {
-    throw new Error('codec 指定は chrome canary でのみ利用できます');
-  }
   let mimeType = '';
   if (codec === 'VP8') {
     mimeType = 'video/VP8';
@@ -43,6 +40,55 @@ export function getVideoCodecsFromString(codec: VideoCodecOption, codecs: Array<
     throw new Error('invalid video codec type');
   }
   return filteredCodecs;
+}
+
+export function removeCodec(orgSdp: any, codec: VideoCodecOption) {
+  const internalFunc = (orgSdp: any) => {
+    const codecre = new RegExp('(a=rtpmap:(\\d*) ' + codec + '/90000\\r\\n)');
+    const rtpmaps = orgSdp.match(codecre);
+    if (rtpmaps == null || rtpmaps.length <= 2) {
+      return orgSdp;
+    }
+    const rtpmap = rtpmaps[2];
+    let modsdp = orgSdp.replace(codecre, '');
+
+    const rtcpre = new RegExp('(a=rtcp-fb:' + rtpmap + '.*\r\n)', 'g');
+    modsdp = modsdp.replace(rtcpre, '');
+
+    const fmtpre = new RegExp('(a=fmtp:' + rtpmap + '.*\r\n)', 'g');
+    modsdp = modsdp.replace(fmtpre, '');
+
+    const aptpre = new RegExp('(a=fmtp:(\\d*) apt=' + rtpmap + '\\r\\n)');
+    const aptmaps = modsdp.match(aptpre);
+    let fmtpmap = '';
+    if (aptmaps != null && aptmaps.length >= 3) {
+      fmtpmap = aptmaps[2];
+      modsdp = modsdp.replace(aptpre, '');
+
+      const rtppre = new RegExp('(a=rtpmap:' + fmtpmap + '.*\r\n)', 'g');
+      modsdp = modsdp.replace(rtppre, '');
+    }
+
+    let videore = /(m=video.*\r\n)/;
+    const videolines = modsdp.match(videore);
+    if (videolines != null) {
+      //If many m=video are found in SDP, this program doesn't work.
+      let videoline = videolines[0].substring(0, videolines[0].length - 2);
+      const videoelems = videoline.split(' ');
+      let modvideoline = videoelems[0];
+      videoelems.forEach((videoelem, index) => {
+        if (index === 0) return;
+        if (videoelem == rtpmap || videoelem == fmtpmap) {
+          return;
+        }
+        modvideoline += ' ' + videoelem;
+      });
+      modvideoline += '\r\n';
+      modsdp = modsdp.replace(videore, modvideoline);
+    }
+    return internalFunc(modsdp);
+  };
+  return internalFunc(orgSdp);
 }
 
 /* @ignore */

@@ -34,10 +34,6 @@
     }
   }
   function getVideoCodecsFromString(codec, codecs) {
-    if (browser() !== 'chrome') {
-      throw new Error('codec 指定は chrome canary でのみ利用できます');
-    }
-
     let mimeType = '';
 
     if (codec === 'VP8') {
@@ -57,6 +53,58 @@
     }
 
     return filteredCodecs;
+  }
+  function removeCodec(orgSdp, codec) {
+    const internalFunc = orgSdp => {
+      const codecre = new RegExp('(a=rtpmap:(\\d*) ' + codec + '/90000\\r\\n)');
+      const rtpmaps = orgSdp.match(codecre);
+
+      if (rtpmaps == null || rtpmaps.length <= 2) {
+        return orgSdp;
+      }
+
+      const rtpmap = rtpmaps[2];
+      let modsdp = orgSdp.replace(codecre, '');
+      const rtcpre = new RegExp('(a=rtcp-fb:' + rtpmap + '.*\r\n)', 'g');
+      modsdp = modsdp.replace(rtcpre, '');
+      const fmtpre = new RegExp('(a=fmtp:' + rtpmap + '.*\r\n)', 'g');
+      modsdp = modsdp.replace(fmtpre, '');
+      const aptpre = new RegExp('(a=fmtp:(\\d*) apt=' + rtpmap + '\\r\\n)');
+      const aptmaps = modsdp.match(aptpre);
+      let fmtpmap = '';
+
+      if (aptmaps != null && aptmaps.length >= 3) {
+        fmtpmap = aptmaps[2];
+        modsdp = modsdp.replace(aptpre, '');
+        const rtppre = new RegExp('(a=rtpmap:' + fmtpmap + '.*\r\n)', 'g');
+        modsdp = modsdp.replace(rtppre, '');
+      }
+
+      let videore = /(m=video.*\r\n)/;
+      const videolines = modsdp.match(videore);
+
+      if (videolines != null) {
+        //If many m=video are found in SDP, this program doesn't work.
+        let videoline = videolines[0].substring(0, videolines[0].length - 2);
+        const videoelems = videoline.split(' ');
+        let modvideoline = videoelems[0];
+        videoelems.forEach((videoelem, index) => {
+          if (index === 0) return;
+
+          if (videoelem == rtpmap || videoelem == fmtpmap) {
+            return;
+          }
+
+          modvideoline += ' ' + videoelem;
+        });
+        modvideoline += '\r\n';
+        modsdp = modsdp.replace(videore, modvideoline);
+      }
+
+      return internalFunc(modsdp);
+    };
+
+    return internalFunc(orgSdp);
   }
   /* @ignore */
 
@@ -121,6 +169,7 @@
       this.signalingUrl = signalingUrl;
       this.options = options;
       this._isNegotiating = false;
+      this._removeCodec = false;
       this.stream = null;
       this._pc = null;
       this.authnMetadata = null;
@@ -212,6 +261,7 @@
       await Promise.all([closeWebSocketConnection, closePeerConnection]);
       this._ws = null;
       this._pc = null;
+      this._removeCodec = false;
     }
 
     async _signaling() {
@@ -335,12 +385,16 @@
         const videoTransceiver = this._getTransceiver(pc, videoSender);
 
         if (this._isVideoCodecSpecified()) {
-          const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
-          const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+          if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
+            const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
+            const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
 
-          this._traceLog('video codecs=', videoCodecs);
+            this._traceLog('video codecs=', videoCodecs);
 
-          videoTransceiver.setCodecPreferences(videoCodecs);
+            videoTransceiver.setCodecPreferences(videoCodecs);
+          } else {
+            this._removeCodec = true;
+          }
         }
       } else {
         const videoTransceiver = pc.addTransceiver('video', {
@@ -348,12 +402,16 @@
         });
 
         if (this._isVideoCodecSpecified()) {
-          const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
-          const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+          if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
+            const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
+            const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
 
-          this._traceLog('video codecs=', videoCodecs);
+            this._traceLog('video codecs=', videoCodecs);
 
-          videoTransceiver.setCodecPreferences(videoCodecs);
+            videoTransceiver.setCodecPreferences(videoCodecs);
+          } else if (this._isVideoCodecSpecified()) {
+            this._removeCodec = true;
+          }
         }
       }
 
@@ -410,10 +468,19 @@
           this._isNegotiating = true;
 
           if (isOffer) {
-            const offer = await pc.createOffer({
+            let offer = await pc.createOffer({
               offerToReceiveAudio: this.options.audio.enabled && this.options.audio.direction !== 'sendonly',
               offerToReceiveVideo: this.options.video.enabled && this.options.video.direction !== 'sendonly'
             });
+
+            if (this._removeCodec && this.options.video.codec) {
+              const codecs = ['VP8', 'VP9', 'H264'];
+              codecs.forEach(codec => {
+                if (this.options.video.codec !== codec) {
+                  offer.sdp = removeCodec(offer.sdp, codec);
+                }
+              });
+            }
 
             this._traceLog('create offer sdp, sdp=', offer.sdp);
 
@@ -441,7 +508,6 @@
     }
 
     _isVideoCodecSpecified() {
-      if (typeof window.RTCRtpSender.getCapabilities === 'undefined') return false;
       return this.options.video.enabled && this.options.video.codec !== null;
     }
 
@@ -452,6 +518,15 @@
 
       try {
         let answer = await this._pc.createAnswer();
+
+        if (this._removeCodec && this.options.video.codec) {
+          const codecs = ['VP8', 'VP9', 'H264'];
+          codecs.forEach(codec => {
+            if (this.options.video.codec !== codec) {
+              answer.sdp = removeCodec(answer.sdp, codec);
+            }
+          });
+        }
 
         this._traceLog('create answer sdp, sdp=', answer.sdp);
 

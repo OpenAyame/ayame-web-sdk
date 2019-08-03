@@ -1,6 +1,6 @@
 /* @flow */
 /* @private */
-import { traceLog, getVideoCodecsFromString } from '../utils';
+import { traceLog, getVideoCodecsFromString, removeCodec } from '../utils';
 
 /**
  * オーディオ、ビデオの送受信方向に関するオプションです。
@@ -62,6 +62,7 @@ class Connection {
   _ws: ?WebSocket;
   _pc: window.RTCPeerConnection;
   _callbacks: Object;
+  _removeCodec: boolean;
 
   /*
    * @private
@@ -72,6 +73,7 @@ class Connection {
     this.signalingUrl = signalingUrl;
     this.options = options;
     this._isNegotiating = false;
+    this._removeCodec = false;
     this.stream = null;
     this._pc = null;
     this.authnMetadata = null;
@@ -149,6 +151,7 @@ class Connection {
     await Promise.all([closeWebSocketConnection, closePeerConnection]);
     this._ws = null;
     this._pc = null;
+    this._removeCodec = false;
   }
 
   async _signaling() {
@@ -236,18 +239,26 @@ class Connection {
       const videoSender = pc.addTrack(videoTrack, this.stream);
       const videoTransceiver = this._getTransceiver(pc, videoSender);
       if (this._isVideoCodecSpecified()) {
-        const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
-        const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
-        this._traceLog('video codecs=', videoCodecs);
-        videoTransceiver.setCodecPreferences(videoCodecs);
+        if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
+          const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
+          const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+          this._traceLog('video codecs=', videoCodecs);
+          videoTransceiver.setCodecPreferences(videoCodecs);
+        } else {
+          this._removeCodec = true;
+        }
       }
     } else {
       const videoTransceiver = pc.addTransceiver('video', { direction: 'recvonly' });
       if (this._isVideoCodecSpecified()) {
-        const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
-        const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
-        this._traceLog('video codecs=', videoCodecs);
-        videoTransceiver.setCodecPreferences(videoCodecs);
+        if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
+          const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
+          const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+          this._traceLog('video codecs=', videoCodecs);
+          videoTransceiver.setCodecPreferences(videoCodecs);
+        } else if (this._isVideoCodecSpecified()) {
+          this._removeCodec = true;
+        }
       }
     }
     let tracks = [];
@@ -287,10 +298,18 @@ class Connection {
       try {
         this._isNegotiating = true;
         if (isOffer) {
-          const offer = await pc.createOffer({
+          let offer = await pc.createOffer({
             offerToReceiveAudio: this.options.audio.enabled && this.options.audio.direction !== 'sendonly',
             offerToReceiveVideo: this.options.video.enabled && this.options.video.direction !== 'sendonly'
           });
+          if (this._removeCodec && this.options.video.codec) {
+            const codecs = ['VP8', 'VP9', 'H264'];
+            codecs.forEach(codec => {
+              if (this.options.video.codec !== codec) {
+                offer.sdp = removeCodec(offer.sdp, codec);
+              }
+            });
+          }
           this._traceLog('create offer sdp, sdp=', offer.sdp);
           await pc.setLocalDescription(offer);
           this._sendSdp(pc.localDescription);
@@ -308,7 +327,6 @@ class Connection {
   }
 
   _isVideoCodecSpecified() {
-    if (typeof window.RTCRtpSender.getCapabilities === 'undefined') return false;
     return this.options.video.enabled && this.options.video.codec !== null;
   }
 
@@ -318,6 +336,14 @@ class Connection {
     }
     try {
       let answer = await this._pc.createAnswer();
+      if (this._removeCodec && this.options.video.codec) {
+        const codecs = ['VP8', 'VP9', 'H264'];
+        codecs.forEach(codec => {
+          if (this.options.video.codec !== codec) {
+            answer.sdp = removeCodec(answer.sdp, codec);
+          }
+        });
+      }
       this._traceLog('create answer sdp, sdp=', answer.sdp);
       await this._pc.setLocalDescription(answer);
       this._sendSdp(this._pc.localDescription);
