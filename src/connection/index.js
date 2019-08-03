@@ -98,7 +98,6 @@ class Connection {
     }
   }
 
-
   async connect(stream: ?window.RTCMediaStream, authnMetadata: ?Object = null) {
     if (this._ws || this._pc) {
       this._traceLog('connection already exists');
