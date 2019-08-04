@@ -22,6 +22,10 @@ export type ConnectionAudioOption = {
 
 /*
  * ビデオ接続のコーデックに関するオプションです。
+ * - VP8
+ * - VP9
+ * - H264
+ * @typedef {string} ConnectionDirection
  * @typedef {string} VideoCodecOption
  */
 export type VideoCodecOption = 'VP8' | 'VP9' | 'H264';
@@ -64,8 +68,16 @@ class Connection {
   _callbacks: Object;
   _removeCodec: boolean;
 
-  /*
-   * @private
+  /**
+   * オブジェクトを生成し、リモートのピアまたはサーバーに接続します。
+   * @param {string} signalingUrl シグナリングに利用する URL
+   * @param {string} roomId Ayame のルームID
+   * @param {ConnectionOptions} options Ayame の接続オプション
+   * @param {boolean} [debug=false] デバッグログの出力可否
+   * @listens {connect} PeerConnection が接続されると送信されます。
+   * @listens {disconnect} PeerConnection が切断されると送信されます。
+   * @listens {addstream} リモートのストリームが追加されると送信されます。
+   * @listens {removestream} リモートのストリームが削除されると送信されます。
    */
   constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug: boolean = false) {
     this.debug = debug;
@@ -93,6 +105,12 @@ class Connection {
     }
   }
 
+  /**
+   * PeerConnection  接続を開始します。
+   * @param {RTCMediaStream|null} stream ローカルのストリーム
+   * @param {Object|null} authnMetadtta 送信するメタデータ
+   * @return {Promise<RTCMediaStream|null>} stream ローカルのストリーム
+   */
   async connect(stream: ?window.RTCMediaStream, authnMetadata: ?Object = null) {
     if (this._ws || this._pc) {
       this._traceLog('connection already exists');
@@ -104,6 +122,10 @@ class Connection {
     return stream;
   }
 
+  /**
+   * PeerConnection  接続を切断します。
+   * @return {Promise<void>}
+   */
   async disconnect() {
     const closePeerConnection = new Promise((resolve, reject) => {
       if (browser() === 'safari' && this._pc) {

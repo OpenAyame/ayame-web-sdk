@@ -1,7 +1,7 @@
 /* @flow */
 import type { VideoCodecOption } from './connection';
 
-/* @ignore */
+/** @private */
 export function randomString(strLength: number) {
   var result = [];
   var charSet = '0123456789';
@@ -11,7 +11,7 @@ export function randomString(strLength: number) {
   return result.join('');
 }
 
-/* @ignore */
+/** @private */
 export function traceLog(title: string, value: Object | string) {
   let prefix = '';
   if (window.performance) {
@@ -24,6 +24,7 @@ export function traceLog(title: string, value: Object | string) {
   }
 }
 
+/** @private */
 export function getVideoCodecsFromString(codec: VideoCodecOption, codecs: Array<Object>) {
   let mimeType = '';
   if (codec === 'VP8') {
@@ -42,6 +43,7 @@ export function getVideoCodecsFromString(codec: VideoCodecOption, codecs: Array<
   return filteredCodecs;
 }
 
+/** @private */
 export function removeCodec(orgSdp: any, codec: VideoCodecOption) {
   const internalFunc = (orgSdp: any) => {
     const codecre = new RegExp('(a=rtpmap:(\\d*) ' + codec + '/90000\\r\\n)');

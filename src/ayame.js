@@ -14,9 +14,10 @@ export const defaultOptions: ConnectionOptions = {
 /*
  * Ayame Connection を生成します。
  *
- * @param {String} signalingUrl シグナリングに用いる websocket url
- * @param {ConnectionOptions} options 接続時のオプション
- * @param {debug} boolean デバッグログを出力するかどうかのフラグ
+ * @param {string} signalingUrl シグナリングに用いる websocket url
+ * @param {string} roomId 接続する roomId
+ * @param {ConnectionOptions} [options=defaultOptions] 接続時のオプション
+ * @param {debug} [boolean=false] デバッグログを出力するかどうかのフラグ
  */
 export function connection(
   signalingUrl: string,
