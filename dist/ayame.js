@@ -229,7 +229,7 @@
       return stream;
     }
 
-    async addDataChannel(channelId) {
+    async addDataChannel(channelId, options = undefined) {
       return new Promise((resolve, reject) => {
         if (!this._pc) return reject('PeerConnection Does Not Ready');
 
@@ -239,18 +239,18 @@
           return reject('DataChannel Already Exists!');
         }
 
-        dataChannel = this._pc.createDataChannel(channelId);
-
-        dataChannel.onopen = async event => {
-          this._traceLog('datachannel onopen=>', event);
-        };
+        dataChannel = this._pc.createDataChannel(channelId, options);
 
         dataChannel.onclose = async event => {
           this._traceLog('datachannel onclosed=>', event);
+
+          this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != channelId);
         };
 
         dataChannel.onerror = async event => {
           this._traceLog('datachannel onerror=>', event);
+
+          this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != channelId);
         };
 
         dataChannel.onmessage = event => {
@@ -261,7 +261,11 @@
           this._callbacks.data(event);
         };
 
-        this._dataChannels.push(dataChannel);
+        dataChannel.onopen = async event => {
+          this._traceLog('datachannel onopen=>', event);
+
+          this._dataChannels.push(dataChannel);
+        };
 
         return resolve();
       });
