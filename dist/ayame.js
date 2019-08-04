@@ -7,7 +7,7 @@
 
   /*       */
 
-  /* @ignore */
+  /** @private */
   function randomString(strLength) {
     var result = [];
     var charSet = '0123456789';
@@ -18,7 +18,7 @@
 
     return result.join('');
   }
-  /* @ignore */
+  /** @private */
 
   function traceLog(title, value) {
     let prefix = '';
@@ -33,6 +33,8 @@
       console.info(prefix + ' ' + title + '\n', value);
     }
   }
+  /** @private */
+
   function getVideoCodecsFromString(codec, codecs) {
     let mimeType = '';
 
@@ -54,6 +56,8 @@
 
     return filteredCodecs;
   }
+  /** @private */
+
   function removeCodec(orgSdp, codec) {
     const internalFunc = orgSdp => {
       const codecre = new RegExp('(a=rtpmap:(\\d*) ' + codec + '/90000\\r\\n)');
@@ -142,6 +146,10 @@
 
   /*
    * ビデオ接続のコーデックに関するオプションです。
+   * - VP8
+   * - VP9
+   * - H264
+   * @typedef {string} ConnectionDirection
    * @typedef {string} VideoCodecOption
    */
 
@@ -160,8 +168,16 @@
    */
 
   class Connection {
-    /*
-     * @private
+    /**
+     * オブジェクトを生成し、リモートのピアまたはサーバーに接続します。
+     * @param {string} signalingUrl シグナリングに利用する URL
+     * @param {string} roomId Ayame のルームID
+     * @param {ConnectionOptions} options Ayame の接続オプション
+     * @param {boolean} [debug=false] デバッグログの出力可否
+     * @listens {connect} PeerConnection が接続されると送信されます。
+     * @listens {disconnect} PeerConnection が切断されると送信されます。
+     * @listens {addstream} リモートのストリームが追加されると送信されます。
+     * @listens {removestream} リモートのストリームが削除されると送信されます。
      */
     constructor(signalingUrl, roomId, options, debug = false) {
       this.debug = debug;
@@ -169,11 +185,11 @@
       this.signalingUrl = signalingUrl;
       this.options = options;
       this._isNegotiating = false;
-      this._isChannelOpen = false;
       this._removeCodec = false;
       this.stream = null;
       this._pc = null;
       this.authnMetadata = null;
+      this._dataChannels = [];
       this._callbacks = {
         connect: () => {},
         disconnect: () => {},
@@ -192,6 +208,13 @@
         this._callbacks[kind] = callback;
       }
     }
+    /**
+     * PeerConnection  接続を開始します。
+     * @param {RTCMediaStream|null} stream ローカルのストリーム
+     * @param {Object|null} authnMetadtta 送信するメタデータ
+     * @return {Promise<RTCMediaStream|null>} stream ローカルのストリーム
+     */
+
 
     async connect(stream, authnMetadata = null) {
       if (this._ws || this._pc) {
@@ -205,29 +228,73 @@
       await this._signaling();
       return stream;
     }
+
+    async addDataChannel(channelId) {
+      return new Promise((resolve, reject) => {
+        if (!this._pc) return reject('PeerConnection Does Not Ready');
+
+        let dataChannel = this._findDataChannel(channelId);
+
+        if (dataChannel) {
+          return reject('DataChannel Already Exists!');
+        }
+
+        dataChannel = this._pc.createDataChannel(channelId);
+
+        dataChannel.onopen = async event => {
+          this._traceLog('datachannel onopen=>', event);
+        };
+
+        dataChannel.onclose = async event => {
+          this._traceLog('datachannel onclosed=>', event);
+        };
+
+        dataChannel.onerror = async event => {
+          this._traceLog('datachannel onerror=>', event);
+        };
+
+        dataChannel.onmessage = event => {
+          this._traceLog('datachannel onmessage=>', event.data);
+
+          event.channelId = channelId;
+
+          this._callbacks.data(event);
+        };
+
+        this._dataChannels.push(dataChannel);
+
+        return resolve();
+      });
+    }
     /*
      * Datachannel でデータを送信します。
      */
 
 
-    async sendData(params) {
+    async sendData(params, channelId = 'dataChannel') {
       return new Promise((resolve, reject) => {
         this._traceLog('datachannel sendData=>', params);
 
-        if (this._dataChannel && this._dataChannel.readyState === 'open' && this._isChannelOpen) {
-          this._dataChannel.send(params);
+        const dataChannel = this._findDataChannel(channelId);
 
+        if (dataChannel && dataChannel.readyState === 'open') {
+          dataChannel.send(params);
           return resolve();
         } else {
           return reject('datachannel is not open');
         }
       });
     }
+    /**
+     * PeerConnection  接続を切断します。
+     * @return {Promise<void>}
+     */
+
 
     async disconnect() {
-      if (this._dataChannel) {
-        this._dataChannel.close();
-      }
+      this._dataChannels.forEach(dataChannel => {
+        dataChannel.close();
+      });
 
       const closePeerConnection = new Promise((resolve, reject) => {
         if (browser() === 'safari' && this._pc) {
@@ -295,6 +362,7 @@
       this._ws = null;
       this._pc = null;
       this._removeCodec = false;
+      this._dataChannels = [];
     }
 
     async _signaling() {
@@ -304,6 +372,15 @@
         }
 
         this._ws = new WebSocket(this.signalingUrl);
+
+        this._ws.onclose = () => {
+          return reject('WS-CLOSED');
+        };
+
+        this._ws.onerror = async () => {
+          await this.disconnect();
+          return reject('WS-CLOSED');
+        };
 
         this._ws.onopen = () => {
           const registerMessage = {
@@ -336,7 +413,7 @@
                   this._callbacks.close(event);
                 } else if (message.type === 'accept') {
                   if (!this._pc) this._pc = this._createPeerConnection();
-                  await this._createDataChannel();
+                  await this.addDataChannel('dataChannel');
                   await this._sendOffer();
 
                   this._callbacks.connect({
@@ -353,12 +430,16 @@
                       });
                     };
                   }
+
+                  return resolve();
                 } else if (message.type === 'reject') {
                   await this.disconnect();
 
                   this._callbacks.disconnect({
                     reason: 'REJECTED'
                   });
+
+                  return reject('REJECTED');
                 } else if (message.type === 'offer') {
                   this._setOffer(new window.RTCSessionDescription(message));
                 } else if (message.type === 'answer') {
@@ -391,8 +472,6 @@
             this._callbacks.disconnect(event);
           };
         }
-
-        return resolve();
       });
     }
 
@@ -500,38 +579,46 @@
       return pc;
     }
 
-    async _createDataChannel() {
-      if (!this._dataChannel) this._dataChannel = this._pc.createDataChannel('dataChannel');
-
-      this._dataChannel.onopen = () => {
-        this._isChannelOpen = true;
-      };
-
-      this._dataChannel.onclose = async event => {
-        this._traceLog('datachannel onclosed=>', event);
-
-        this._isChannelOpen = false;
-      };
-
-      this._dataChannel.onerror = async event => {
-        this._traceLog('datachannel onerror=>', event);
-
-        this._isChannelOpen = false;
-      };
-
-      this._dataChannel.onmessage = event => {
-        this._traceLog('datachannel onmessage=>', event.data);
-
-        this._callbacks.data(event);
-      };
-    }
-
     _onDataChannel(event) {
       this._traceLog('on data channel', event);
 
-      this._dataChannel = event.channel;
+      if (!this._pc) return;
+      let dataChannel = event.channel;
+      let channelId = event.channel.label;
+      if (!event.channel) return;
+      if (!channelId || channelId.length < 1) return;
 
-      this._createDataChannel();
+      dataChannel.onopen = async event => {
+        this._traceLog('datachannel onopen=>', event);
+      };
+
+      dataChannel.onclose = async event => {
+        this._traceLog('datachannel onclosed=>', event);
+      };
+
+      dataChannel.onerror = async event => {
+        this._traceLog('datachannel onerror=>', event);
+      };
+
+      dataChannel.onmessage = event => {
+        this._traceLog('datachannel onmessage=>', event.data);
+
+        event.channelId = channelId;
+
+        this._callbacks.data(event);
+      };
+
+      if (!this._findDataChannel(channelId)) {
+        this._dataChannels.push(event.channel);
+      } else {
+        this._dataChannels = this._dataChannels.map(channel => {
+          if (channel.label == channelId) {
+            return dataChannel;
+          } else {
+            return channel;
+          }
+        });
+      }
     }
 
     async _sendOffer() {
@@ -673,6 +760,10 @@
       return transceiver;
     }
 
+    _findDataChannel(channelId) {
+      return this._dataChannels.find(channel => channel.label == channelId);
+    }
+
   }
 
   /*       */
@@ -694,9 +785,10 @@
   /*
    * Ayame Connection を生成します。
    *
-   * @param {String} signalingUrl シグナリングに用いる websocket url
-   * @param {ConnectionOptions} options 接続時のオプション
-   * @param {debug} boolean デバッグログを出力するかどうかのフラグ
+   * @param {string} signalingUrl シグナリングに用いる websocket url
+   * @param {string} roomId 接続する roomId
+   * @param {ConnectionOptions} [options=defaultOptions] 接続時のオプション
+   * @param {debug} [boolean=false] デバッグログを出力するかどうかのフラグ
    */
 
   function connection(signalingUrl, roomId, options = defaultOptions, debug = false) {
