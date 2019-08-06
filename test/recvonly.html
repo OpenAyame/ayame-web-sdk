@@ -32,7 +32,7 @@
         const startConn = async () => {
           const authnMetadata = {hoge: "fuga"};
           await conn.connect(null, authnMetadata);
-          conn.on('connect', ({authzMetadata}) => console.log(authzMetadata));
+          conn.on('accept', ({authzMetadata}) => console.log(authzMetadata));
           conn.on('disconnect', (e) => console.log(e));
           conn.on('addstream', (e) => {
             document.querySelector('#remote-video').srcObject = e.stream;

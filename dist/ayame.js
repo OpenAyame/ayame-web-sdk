@@ -7,7 +7,7 @@
 
   /*       */
 
-  /* @ignore */
+  /** @private */
   function randomString(strLength) {
     var result = [];
     var charSet = '0123456789';
@@ -18,7 +18,7 @@
 
     return result.join('');
   }
-  /* @ignore */
+  /** @private */
 
   function traceLog(title, value) {
     let prefix = '';
@@ -33,6 +33,8 @@
       console.info(prefix + ' ' + title + '\n', value);
     }
   }
+  /** @private */
+
   function getVideoCodecsFromString(codec, codecs) {
     let mimeType = '';
 
@@ -54,6 +56,8 @@
 
     return filteredCodecs;
   }
+  /** @private */
+
   function removeCodec(orgSdp, codec) {
     const internalFunc = orgSdp => {
       const codecre = new RegExp('(a=rtpmap:(\\d*) ' + codec + '/90000\\r\\n)');
@@ -142,6 +146,10 @@
 
   /*
    * ビデオ接続のコーデックに関するオプションです。
+   * - VP8
+   * - VP9
+   * - H264
+   * @typedef {string} ConnectionDirection
    * @typedef {string} VideoCodecOption
    */
 
@@ -160,8 +168,16 @@
    */
 
   class Connection {
-    /*
-     * @private
+    /**
+     * オブジェクトを生成し、リモートのピアまたはサーバーに接続します。
+     * @param {string} signalingUrl シグナリングに利用する URL
+     * @param {string} roomId Ayame のルームID
+     * @param {ConnectionOptions} options Ayame の接続オプション
+     * @param {boolean} [debug=false] デバッグログの出力可否
+     * @listens {connect} PeerConnection が接続されると送信されます。
+     * @listens {disconnect} PeerConnection が切断されると送信されます。
+     * @listens {addstream} リモートのストリームが追加されると送信されます。
+     * @listens {removestream} リモートのストリームが削除されると送信されます。
      */
     constructor(signalingUrl, roomId, options, debug = false) {
       this.debug = debug;
@@ -173,7 +189,9 @@
       this.stream = null;
       this._pc = null;
       this.authnMetadata = null;
+      this.connectionState = 'new';
       this._callbacks = {
+        accept: () => {},
         connect: () => {},
         disconnect: () => {},
         addstream: () => {},
@@ -190,6 +208,13 @@
         this._callbacks[kind] = callback;
       }
     }
+    /**
+     * PeerConnection  接続を開始します。
+     * @param {RTCMediaStream|null} stream ローカルのストリーム
+     * @param {Object|null} authnMetadtta 送信するメタデータ
+     * @return {Promise<RTCMediaStream|null>} stream ローカルのストリーム
+     */
+
 
     async connect(stream, authnMetadata = null) {
       if (this._ws || this._pc) {
@@ -203,6 +228,11 @@
       await this._signaling();
       return stream;
     }
+    /**
+     * PeerConnection  接続を切断します。
+     * @return {Promise<void>}
+     */
+
 
     async disconnect() {
       const closePeerConnection = new Promise((resolve, reject) => {
@@ -271,6 +301,7 @@
       this._ws = null;
       this._pc = null;
       this._removeCodec = false;
+      this.connectionState = 'new';
     }
 
     async _signaling() {
@@ -311,12 +342,12 @@
                 } else if (message.type === 'close') {
                   this._callbacks.close(event);
                 } else if (message.type === 'accept') {
-                  if (!this._pc) this._pc = this._createPeerConnection();
-                  await this._sendOffer();
-
-                  this._callbacks.connect({
+                  this._callbacks.accept({
                     authzMetadata: message.authzMetadata
                   });
+
+                  if (!this._pc) this._pc = this._createPeerConnection();
+                  await this._sendOffer();
 
                   if (this._ws) {
                     this._ws.onclose = async closeEvent => {
@@ -328,6 +359,8 @@
                       });
                     };
                   }
+
+                  return resolve();
                 } else if (message.type === 'reject') {
                   await this.disconnect();
 
@@ -366,8 +399,6 @@
             this._callbacks.disconnect(event);
           };
         }
-
-        return resolve();
       });
     }
 
@@ -451,9 +482,16 @@
       pc.oniceconnectionstatechange = async () => {
         this._traceLog('ICE connection Status has changed to ', pc.iceConnectionState);
 
-        switch (pc.iceConnectionState) {
+        if (this.connectionState != pc.iceConnectionState) {
+          this.connectionState = pc.iceConnectionState;
+
+          if (this.connectionState === 'connected') {
+            this._callbacks.connect();
+          }
+        }
+
+        switch (this.connectionState) {
           case 'connected':
-            this._isNegotiating = false;
             break;
 
           case 'failed':
@@ -634,9 +672,10 @@
   /*
    * Ayame Connection を生成します。
    *
-   * @param {String} signalingUrl シグナリングに用いる websocket url
-   * @param {ConnectionOptions} options 接続時のオプション
-   * @param {debug} boolean デバッグログを出力するかどうかのフラグ
+   * @param {string} signalingUrl シグナリングに用いる websocket url
+   * @param {string} roomId 接続する roomId
+   * @param {ConnectionOptions} [options=defaultOptions] 接続時のオプション
+   * @param {debug} [boolean=false] デバッグログを出力するかどうかのフラグ
    */
 
   function connection(signalingUrl, roomId, options = defaultOptions, debug = false) {

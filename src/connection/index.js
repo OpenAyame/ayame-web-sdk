@@ -59,9 +59,11 @@ class Connection {
   roomId: string;
   signalingUrl: string;
   options: ConnectionOptions;
+  connectionState: string;
   stream: ?window.MediaStream;
   remoteStreamId: ?string;
   authnMetadata: ?Object;
+  authzMetadata: ?Object;
   _isNegotiating: boolean;
   _ws: ?WebSocket;
   _pc: window.RTCPeerConnection;
@@ -89,7 +91,9 @@ class Connection {
     this.stream = null;
     this._pc = null;
     this.authnMetadata = null;
+    this.connectionState = 'new';
     this._callbacks = {
+      accept: () => {},
       connect: () => {},
       disconnect: () => {},
       addstream: () => {},
@@ -180,6 +184,7 @@ class Connection {
     this._ws = null;
     this._pc = null;
     this._removeCodec = false;
+    this.connectionState = 'new'
   }
 
   async _signaling() {
@@ -211,15 +216,16 @@ class Connection {
               } else if (message.type === 'close') {
                 this._callbacks.close(event);
               } else if (message.type === 'accept') {
+                this._callbacks.accept({ authzMetadata: message.authzMetadata });
                 if (!this._pc) this._pc = this._createPeerConnection();
                 await this._sendOffer();
-                this._callbacks.connect({ authzMetadata: message.authzMetadata });
                 if (this._ws) {
                   this._ws.onclose = async closeEvent => {
                     await this.disconnect();
                     this._callbacks.disconnect({ reason: 'WS-CLOSED', event: closeEvent });
                   };
                 }
+                return resolve();
               } else if (message.type === 'reject') {
                 await this.disconnect();
                 this._callbacks.disconnect({ reason: 'REJECTED' });
@@ -247,7 +253,6 @@ class Connection {
           this._callbacks.disconnect(event);
         };
       }
-      return resolve();
     });
   }
 
@@ -310,9 +315,14 @@ class Connection {
     };
     pc.oniceconnectionstatechange = async () => {
       this._traceLog('ICE connection Status has changed to ', pc.iceConnectionState);
-      switch (pc.iceConnectionState) {
+      if (this.connectionState != pc.iceConnectionState) {
+        this.connectionState = pc.iceConnectionState;
+        if (this.connectionState === 'connected') {
+          this._callbacks.connect();
+        }
+      }
+      switch (this.connectionState) {
         case 'connected':
-          this._isNegotiating = false;
           break;
         case 'failed':
           await this.disconnect();
