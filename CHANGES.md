@@ -10,6 +10,7 @@
     - バグ修正
 
 ## develop
+- [ADD] datachannel に対応する
 - [CHANGE] onconnect コールバックを signalingState が connected になったときに呼ぶ
 - [FIX] Safari 対応 (SDP 書き換えも含む)
 - [CHANGE] audio のコーデック指定をなくす

@@ -1,0 +1,48 @@
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>Ayame DataChannel Test</title>
+    </head>
+    <body>
+      <div>
+        <p>ルームID
+        <input id="roomIdInput" disabled type="text" value=""></input>
+        </p>
+        <p>クライアントID
+        <input id="clientIdInput" disabled type="text" value=""></input>
+        </p>
+        <button onclick="startConn();">接続</button>
+        <button onclick="conn && conn.disconnect();">切断</button>
+        <p> 送信するメッセージ
+        <input id="sendDataInput" type="text" value="🐶"></input>
+        </p>
+        <button onclick="sendData();">送信</button>
+        <p> 受信したメッセージ </p>
+        <textarea style="height:200px;" id="messages" disabled type="text" value=""></textarea>
+      </div>
+      <script src="../dist/ayame.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.7.0/qs.min.js"></script>
+      <script src="./main.js"></script>
+      <script type="text/javascript">
+        const remoteVideo = document.querySelector('#remote-video');
+        let conn = null;
+        const options = Ayame.defaultOptions;
+        options.clientId = clientId ? clientId : options.clientId;
+        const startConn = async () => {
+          options.video.codec = videoCodec;
+          conn = Ayame.connection(signalingUrl, roomId, options, true);
+          conn.on('data', (e) => {
+            messages = messages ? (messages + '\n' + e.data) : e.data;
+            document.querySelector("#messages").value = messages;
+          });
+          await conn.connect(null);
+        };
+        const sendData = () => {
+          const data = document.querySelector("#sendDataInput").value;
+          conn.sendData(data);
+        };
+        document.querySelector("#roomIdInput").value = roomId;
+        document.querySelector("#clientIdInput").value = options.clientId;
+      </script>
+  </body>
+</html>

@@ -1,6 +1,6 @@
 /* @flow */
 import Connection from './connection';
-import type { ConnectionOptions } from './connection';
+import type { ConnectionOptions } from './connection/options';
 /* @access private */
 import { randomString } from './utils';
 

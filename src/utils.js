@@ -1,5 +1,5 @@
 /* @flow */
-import type { VideoCodecOption } from './connection';
+import type { VideoCodecOption } from './connection/options';
 
 /** @private */
 export function randomString(strLength: number) {
