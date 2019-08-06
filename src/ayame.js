@@ -11,13 +11,14 @@ export const defaultOptions: ConnectionOptions = {
   clientId: randomString(17)
 };
 
-/*
+/**
  * Ayame Connection を生成します。
  *
  * @param {string} signalingUrl シグナリングに用いる websocket url
  * @param {string} roomId 接続する roomId
  * @param {ConnectionOptions} [options=defaultOptions] 接続時のオプション
- * @param {debug} [boolean=false] デバッグログを出力するかどうかのフラグ
+ * @param {boolean} [debug=false] デバッグログを出力するかどうかのフラグ
+ * @return {Connection}
  */
 export function connection(
   signalingUrl: string,
@@ -27,6 +28,11 @@ export function connection(
 ): Connection {
   return new Connection(signalingUrl, roomId, options, debug);
 }
+
+/**
+ * Ayame Web SDK のバージョンを出力します。
+ * @return {string}
+ */
 export function version(): string {
   return process.version;
 }

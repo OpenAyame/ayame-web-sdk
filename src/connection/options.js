@@ -9,7 +9,7 @@
  */
 export type ConnectionDirection = 'sendrecv' | 'recvonly' | 'sendonly';
 
-/*
+/**
  * オーディオ接続に関するオプションです。
  * @typedef {Object} ConnectionAudioOption
  */
@@ -18,7 +18,7 @@ export type ConnectionAudioOption = {
   enabled: boolean
 };
 
-/*
+/**
  * ビデオ接続のコーデックに関するオプションです。
  * - VP8
  * - VP9
@@ -28,7 +28,7 @@ export type ConnectionAudioOption = {
  */
 export type VideoCodecOption = 'VP8' | 'VP9' | 'H264';
 
-/*
+/**
  * ビデオ接続に関するオプションです。
  * @typedef {Object} ConnectionVideoOption
  */
@@ -38,8 +38,8 @@ export type ConnectionVideoOption = {
   enabled: boolean
 };
 
-/*
-  接続時に指定するオプションです。
+/**
+ * 接続時に指定するオプションです。
  * @typedef {Object} ConnectionOptions
  */
 export type ConnectionOptions = {

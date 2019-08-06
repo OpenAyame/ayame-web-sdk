@@ -16,6 +16,12 @@ Web SDK for WebRTC Signaling Server Ayame
 
 [OpenAyame/ayame-web-sdk-samples](https://github.com/OpenAyame/ayame-web-sdk-samples) にサンプルコードを用意しています。
 
+## API ドキュメント
+
+API ドキュメントは以下の URL を参照してください。
+
+https://openayame.github.io/ayame-web-sdk/index.html
+
 ## CDN で利用する
 
 以下のURL を

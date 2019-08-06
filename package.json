@@ -9,6 +9,7 @@
     "fmt": "$(npm bin)/eslint src --fix; exit 0;",
     "flow": "$(npm bin)/flow src  --show-all-errors",
     "flow:stop": "$(npm bin)/flow stop",
+    "deploy:docs": "$(npm bin)/gh-pages -d docs",
     "esdoc": "$(npm bin)/esdoc"
   },
   "repository": {
@@ -39,6 +40,7 @@
     "eslint-plugin-prettier": "^3.1.0",
     "flow-bin": "^0.104.0",
     "flow-typed": "^2.6.0",
+    "gh-pages": "^2.1.0",
     "prettier": "^1.18.2",
     "rollup": "^1.17.0",
     "rollup-plugin-babel": "^4.3.3",

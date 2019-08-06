@@ -3,6 +3,9 @@
 import { traceLog, getVideoCodecsFromString, removeCodec, browser } from '../utils';
 import { type ConnectionOptions } from './options';
 
+/**
+ * @ignore
+ */
 class ConnectionBase {
   debug: boolean;
   roomId: string;
@@ -21,8 +24,8 @@ class ConnectionBase {
   _dataChannels: Array<window.RTCDataChannel>;
   _callbacks: Object;
 
-  /*
-   * @private
+  /**
+   * @ignore
    */
   on(kind: string, callback: Function) {
     if (kind in this._callbacks) {
@@ -91,9 +94,7 @@ class ConnectionBase {
     this._dataChannels = [];
     this.connectionState = 'new';
   }
-  /*
-   * @private
-   */
+
   async _signaling() {
     return new Promise((resolve, reject) => {
       if (this._ws) {
@@ -279,9 +280,6 @@ class ConnectionBase {
     });
   }
 
-  /*
-   * @private
-   */
   _onDataChannel(event: Object) {
     this._traceLog('on data channel', event);
     if (!this._pc) return;
@@ -467,6 +465,7 @@ class ConnectionBase {
       this._pc.close();
     });
   }
+
   async _closeWebSocketConnection() {
     return new Promise((resolve, reject) => {
       if (!this._ws) return resolve();

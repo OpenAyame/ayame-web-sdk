@@ -1,7 +1,9 @@
 /* @flow */
 import type { VideoCodecOption } from './connection/options';
 
-/** @private */
+/**
+ * @ignore
+ */
 export function randomString(strLength: number) {
   var result = [];
   var charSet = '0123456789';
@@ -11,7 +13,9 @@ export function randomString(strLength: number) {
   return result.join('');
 }
 
-/** @private */
+/**
+ * @ignore
+ */
 export function traceLog(title: string, value: Object | string) {
   let prefix = '';
   if (window.performance) {
@@ -43,7 +47,9 @@ export function getVideoCodecsFromString(codec: VideoCodecOption, codecs: Array<
   return filteredCodecs;
 }
 
-/** @private */
+/**
+ * @ignore
+ */
 export function removeCodec(orgSdp: any, codec: VideoCodecOption) {
   const internalFunc = (orgSdp: any) => {
     const codecre = new RegExp('(a=rtpmap:(\\d*) ' + codec + '/90000\\r\\n)');
@@ -93,7 +99,9 @@ export function removeCodec(orgSdp: any, codec: VideoCodecOption) {
   return internalFunc(orgSdp);
 }
 
-/* @ignore */
+/**
+ * @ignore
+ */
 export function browser() {
   const ua = window.navigator.userAgent.toLocaleLowerCase();
   if (ua.indexOf('edge') !== -1) {

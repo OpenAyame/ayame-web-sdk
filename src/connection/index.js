@@ -1,17 +1,17 @@
 /* @flow */
 import ConnectionBase from './base';
 
-/*
+/**
  * Peer Connection 接続を管理するクラスです。
  */
 class Connection extends ConnectionBase {
   /**
    * PeerConnection  接続を開始します。
    * @param {RTCMediaStream|null} stream ローカルのストリーム
-   * @param {Object|null} authnMetadtta 送信するメタデータ
-   * @return {Promise<RTCMediaStream|null>} stream ローカルのストリーム
+   * @param {Object|null} authnMetadata 送信するメタデータ
+   * @return {Promise<null>}
    */
-  async connect(stream: ?window.RTCMediaStream, authnMetadata: ?Object = null) {
+  async connect(stream: window.RTCMediaStream | null, authnMetadata: Object | null = null) {
     if (this._ws || this._pc) {
       this._traceLog('connection already exists');
       throw new Error('Connection Already Exists!');
@@ -19,20 +19,19 @@ class Connection extends ConnectionBase {
     this.stream = stream;
     this.authnMetadata = authnMetadata;
     await this._signaling();
-    return stream;
   }
 
-  /*
+  /**
    * Datachannel を追加します。
    * @param {string} channelId dataChannel の Id
-   * @param {Object|null} dataChannel の init オプション
+   * @param {Object|null} options dataChannel の init オプション
    * @return {Promise<null>}
    */
-  async addDataChannel(channelId: string, options: Object = undefined) {
+  async addDataChannel(channelId: string, options: Object | null = null) {
     await this._addDataChannel(channelId, options);
   }
 
-  /*
+  /**
    * Datachannel を削除します。
    * @param {string} channelId 削除する dataChannel の Id
    * @return {Promise<null>}
@@ -48,9 +47,9 @@ class Connection extends ConnectionBase {
     }
   }
 
-  /*
+  /**
    * Datachannel でデータを送信します。
-   * @param {any} 送信するデータ
+   * @param {any} params 送信するデータ
    * @param {string} channelId 指定する dataChannel の id
    * @return {null}
    */
