@@ -45,11 +45,29 @@
 <div class="content" data-ice="content"><h1 data-ice="title">src/connection/index.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/* @flow */
 import ConnectionBase from &apos;./base&apos;;
+import { type ConnectionOptions } from &apos;./options&apos;;
 
 /**
  * Peer Connection &#x63A5;&#x7D9A;&#x3092;&#x7BA1;&#x7406;&#x3059;&#x308B;&#x30AF;&#x30E9;&#x30B9;&#x3067;&#x3059;&#x3002;
  */
 class Connection extends ConnectionBase {
+
+  /**
+   * &#x30AA;&#x30D6;&#x30B8;&#x30A7;&#x30AF;&#x30C8;&#x3092;&#x751F;&#x6210;&#x3057;&#x3001;&#x30EA;&#x30E2;&#x30FC;&#x30C8;&#x306E;&#x30D4;&#x30A2;&#x307E;&#x305F;&#x306F;&#x30B5;&#x30FC;&#x30D0;&#x30FC;&#x306B;&#x63A5;&#x7D9A;&#x3057;&#x307E;&#x3059;&#x3002;
+   * @param {string} signalingUrl &#x30B7;&#x30B0;&#x30CA;&#x30EA;&#x30F3;&#x30B0;&#x306B;&#x5229;&#x7528;&#x3059;&#x308B; URL
+   * @param {string} roomId Ayame &#x306E;&#x30EB;&#x30FC;&#x30E0;ID
+   * @param {ConnectionOptions} options Ayame &#x306E;&#x63A5;&#x7D9A;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;
+   * @param {boolean} [debug=false] &#x30C7;&#x30D0;&#x30C3;&#x30B0;&#x30ED;&#x30B0;&#x306E;&#x51FA;&#x529B;&#x53EF;&#x5426;
+   * @listens {open} Ayame Server &#x306B; accept &#x3055;&#x308C;&#x3001;PeerConnection &#x304C;&#x751F;&#x6210;&#x3055;&#x308C;&#x308B;&#x3068;&#x9001;&#x4FE1;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;
+   * @listens {connect} PeerConnection &#x304C;&#x63A5;&#x7D9A;&#x3055;&#x308C;&#x308B;&#x3068;&#x9001;&#x4FE1;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;
+   * @listens {disconnect} PeerConnection &#x304C;&#x5207;&#x65AD;&#x3055;&#x308C;&#x308B;&#x3068;&#x9001;&#x4FE1;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;
+   * @listens {addstream} &#x30EA;&#x30E2;&#x30FC;&#x30C8;&#x306E;&#x30B9;&#x30C8;&#x30EA;&#x30FC;&#x30E0;&#x304C;&#x8FFD;&#x52A0;&#x3055;&#x308C;&#x308B;&#x3068;&#x9001;&#x4FE1;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;
+   * @listens {removestream} &#x30EA;&#x30E2;&#x30FC;&#x30C8;&#x306E;&#x30B9;&#x30C8;&#x30EA;&#x30FC;&#x30E0;&#x304C;&#x524A;&#x9664;&#x3055;&#x308C;&#x308B;&#x3068;&#x9001;&#x4FE1;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;
+   */
+  constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug: boolean = false) {
+    super(signalingUrl, roomId, options, debug);
+  }
+
   /**
    * PeerConnection  &#x63A5;&#x7D9A;&#x3092;&#x958B;&#x59CB;&#x3057;&#x307E;&#x3059;&#x3002;
    * @param {RTCMediaStream|null} stream &#x30ED;&#x30FC;&#x30AB;&#x30EB;&#x306E;&#x30B9;&#x30C8;&#x30EA;&#x30FC;&#x30E0;

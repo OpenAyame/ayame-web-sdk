@@ -342,6 +342,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/connection/index.js~connection#constructor",
+    "class/src/connection/index.js~Connection.html#instance-constructor-constructor",
+    "src/connection/index.js~Connection#constructor",
+    "method"
+  ],
+  [
     "src/connection/index.js~connection#disconnect",
     "class/src/connection/index.js~Connection.html#instance-method-disconnect",
     "src/connection/index.js~Connection#disconnect",
