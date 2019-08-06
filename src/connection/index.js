@@ -6,7 +6,6 @@ import { type ConnectionOptions } from './options';
  * Peer Connection 接続を管理するクラスです。
  */
 class Connection extends ConnectionBase {
-
   /**
    * オブジェクトを生成し、リモートのピアまたはサーバーに接続します。
    * @param {string} signalingUrl シグナリングに利用する URL

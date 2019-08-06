@@ -50,15 +50,16 @@ export function getVideoCodecsFromString(codec: VideoCodecOption, codecs: Array<
 /**
  * @ignore
  */
-export function removeCodec(orgSdp: any, codec: VideoCodecOption) {
-  const internalFunc = (orgSdp: any) => {
+export function removeCodec(sdp: any, codec: VideoCodecOption) {
+  const internalFunc = sdp => {
+    // eslint-disable-next-line no-useless-escape
     const codecre = new RegExp('(a=rtpmap:(\\d*) ' + codec + '/90000\\r\\n)');
-    const rtpmaps = orgSdp.match(codecre);
+    const rtpmaps = sdp.match(codecre);
     if (rtpmaps == null || rtpmaps.length <= 2) {
-      return orgSdp;
+      return sdp;
     }
     const rtpmap = rtpmaps[2];
-    let modsdp = orgSdp.replace(codecre, '');
+    let modsdp = sdp.replace(codecre, '');
 
     const rtcpre = new RegExp('(a=rtcp-fb:' + rtpmap + '.*\r\n)', 'g');
     modsdp = modsdp.replace(rtcpre, '');
@@ -96,7 +97,7 @@ export function removeCodec(orgSdp: any, codec: VideoCodecOption) {
     }
     return internalFunc(modsdp);
   };
-  return internalFunc(orgSdp);
+  return internalFunc(sdp);
 }
 
 /**

@@ -50,8 +50,8 @@
               console.log('error auto play:' + error);
             }
           });
-          const stream = await conn.connect(mediaStream, authnMetadata);
-          document.querySelector('#local-video').srcObject = stream;
+          await conn.connect(mediaStream, authnMetadata);
+          document.querySelector('#local-video').srcObject = mediaStream;
         };
         document.querySelector("#roomIdInput").value = roomId;
         document.querySelector("#clientIdInput").value = options.clientId;

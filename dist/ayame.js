@@ -64,17 +64,18 @@
    * @ignore
    */
 
-  function removeCodec(orgSdp, codec) {
-    const internalFunc = orgSdp => {
+  function removeCodec(sdp, codec) {
+    const internalFunc = sdp => {
+      // eslint-disable-next-line no-useless-escape
       const codecre = new RegExp('(a=rtpmap:(\\d*) ' + codec + '/90000\\r\\n)');
-      const rtpmaps = orgSdp.match(codecre);
+      const rtpmaps = sdp.match(codecre);
 
       if (rtpmaps == null || rtpmaps.length <= 2) {
-        return orgSdp;
+        return sdp;
       }
 
       const rtpmap = rtpmaps[2];
-      let modsdp = orgSdp.replace(codecre, '');
+      let modsdp = sdp.replace(codecre, '');
       const rtcpre = new RegExp('(a=rtcp-fb:' + rtpmap + '.*\r\n)', 'g');
       modsdp = modsdp.replace(rtcpre, '');
       const fmtpre = new RegExp('(a=fmtp:' + rtpmap + '.*\r\n)', 'g');
@@ -114,7 +115,7 @@
       return internalFunc(modsdp);
     };
 
-    return internalFunc(orgSdp);
+    return internalFunc(sdp);
   }
   /**
    * @ignore
