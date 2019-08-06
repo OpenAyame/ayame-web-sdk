@@ -32,17 +32,6 @@ class ConnectionBase {
       this._callbacks[kind] = callback;
     }
   }
-  /**
-   * オブジェクトを生成し、リモートのピアまたはサーバーに接続します。
-   * @param {string} signalingUrl シグナリングに利用する URL
-   * @param {string} roomId Ayame のルームID
-   * @param {ConnectionOptions} options Ayame の接続オプション
-   * @param {boolean} [debug=false] デバッグログの出力可否
-   * @listens {connect} PeerConnection が接続されると送信されます。
-   * @listens {disconnect} PeerConnection が切断されると送信されます。
-   * @listens {addstream} リモートのストリームが追加されると送信されます。
-   * @listens {removestream} リモートのストリームが削除されると送信されます。
-   */
   constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug: boolean = false) {
     this.debug = debug;
     this.roomId = roomId;

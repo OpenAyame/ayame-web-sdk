@@ -1,10 +1,28 @@
 /* @flow */
 import ConnectionBase from './base';
+import { type ConnectionOptions } from './options';
 
 /**
  * Peer Connection 接続を管理するクラスです。
  */
 class Connection extends ConnectionBase {
+
+  /**
+   * オブジェクトを生成し、リモートのピアまたはサーバーに接続します。
+   * @param {string} signalingUrl シグナリングに利用する URL
+   * @param {string} roomId Ayame のルームID
+   * @param {ConnectionOptions} options Ayame の接続オプション
+   * @param {boolean} [debug=false] デバッグログの出力可否
+   * @listens {open} Ayame Server に accept され、PeerConnection が生成されると送信されます。
+   * @listens {connect} PeerConnection が接続されると送信されます。
+   * @listens {disconnect} PeerConnection が切断されると送信されます。
+   * @listens {addstream} リモートのストリームが追加されると送信されます。
+   * @listens {removestream} リモートのストリームが削除されると送信されます。
+   */
+  constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug: boolean = false) {
+    super(signalingUrl, roomId, options, debug);
+  }
+
   /**
    * PeerConnection  接続を開始します。
    * @param {RTCMediaStream|null} stream ローカルのストリーム

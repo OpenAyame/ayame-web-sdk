@@ -7,7 +7,9 @@
 
   /*       */
 
-  /** @private */
+  /**
+   * @ignore
+   */
   function randomString(strLength) {
     var result = [];
     var charSet = '0123456789';
@@ -18,7 +20,9 @@
 
     return result.join('');
   }
-  /** @private */
+  /**
+   * @ignore
+   */
 
   function traceLog(title, value) {
     let prefix = '';
@@ -56,7 +60,9 @@
 
     return filteredCodecs;
   }
-  /** @private */
+  /**
+   * @ignore
+   */
 
   function removeCodec(orgSdp, codec) {
     const internalFunc = orgSdp => {
@@ -110,7 +116,9 @@
 
     return internalFunc(orgSdp);
   }
-  /* @ignore */
+  /**
+   * @ignore
+   */
 
   function browser() {
     const ua = window.navigator.userAgent.toLocaleLowerCase();
@@ -131,28 +139,19 @@
   }
 
   /*       */
+  /**
+   * @ignore
+   */
 
   class ConnectionBase {
-    /*
-     * @private
+    /**
+     * @ignore
      */
     on(kind, callback) {
       if (kind in this._callbacks) {
         this._callbacks[kind] = callback;
       }
     }
-    /**
-     * オブジェクトを生成し、リモートのピアまたはサーバーに接続します。
-     * @param {string} signalingUrl シグナリングに利用する URL
-     * @param {string} roomId Ayame のルームID
-     * @param {ConnectionOptions} options Ayame の接続オプション
-     * @param {boolean} [debug=false] デバッグログの出力可否
-     * @listens {connect} PeerConnection が接続されると送信されます。
-     * @listens {disconnect} PeerConnection が切断されると送信されます。
-     * @listens {addstream} リモートのストリームが追加されると送信されます。
-     * @listens {removestream} リモートのストリームが削除されると送信されます。
-     */
-
 
     constructor(signalingUrl, roomId, options, debug = false) {
       this.debug = debug;
@@ -208,10 +207,6 @@
       this._dataChannels = [];
       this.connectionState = 'new';
     }
-    /*
-     * @private
-     */
-
 
     async _signaling() {
       return new Promise((resolve, reject) => {
@@ -469,10 +464,6 @@
         return resolve();
       });
     }
-    /*
-     * @private
-     */
-
 
     _onDataChannel(event) {
       this._traceLog('on data channel', event);
@@ -740,17 +731,34 @@
   }
 
   /*       */
-  /*
+  /**
    * Peer Connection 接続を管理するクラスです。
    */
 
   class Connection extends ConnectionBase {
     /**
+     * オブジェクトを生成し、リモートのピアまたはサーバーに接続します。
+     * @param {string} signalingUrl シグナリングに利用する URL
+     * @param {string} roomId Ayame のルームID
+     * @param {ConnectionOptions} options Ayame の接続オプション
+     * @param {boolean} [debug=false] デバッグログの出力可否
+     * @listens {open} Ayame Server に accept され、PeerConnection が生成されると送信されます。
+     * @listens {connect} PeerConnection が接続されると送信されます。
+     * @listens {disconnect} PeerConnection が切断されると送信されます。
+     * @listens {addstream} リモートのストリームが追加されると送信されます。
+     * @listens {removestream} リモートのストリームが削除されると送信されます。
+     */
+    constructor(signalingUrl, roomId, options, debug = false) {
+      super(signalingUrl, roomId, options, debug);
+    }
+    /**
      * PeerConnection  接続を開始します。
      * @param {RTCMediaStream|null} stream ローカルのストリーム
-     * @param {Object|null} authnMetadtta 送信するメタデータ
-     * @return {Promise<RTCMediaStream|null>} stream ローカルのストリーム
+     * @param {Object|null} authnMetadata 送信するメタデータ
+     * @return {Promise<null>}
      */
+
+
     async connect(stream, authnMetadata = null) {
       if (this._ws || this._pc) {
         this._traceLog('connection already exists');
@@ -761,20 +769,19 @@
       this.stream = stream;
       this.authnMetadata = authnMetadata;
       await this._signaling();
-      return stream;
     }
-    /*
+    /**
      * Datachannel を追加します。
      * @param {string} channelId dataChannel の Id
-     * @param {Object|null} dataChannel の init オプション
+     * @param {Object|null} options dataChannel の init オプション
      * @return {Promise<null>}
      */
 
 
-    async addDataChannel(channelId, options = undefined) {
+    async addDataChannel(channelId, options = null) {
       await this._addDataChannel(channelId, options);
     }
-    /*
+    /**
      * Datachannel を削除します。
      * @param {string} channelId 削除する dataChannel の Id
      * @return {Promise<null>}
@@ -793,9 +800,9 @@
         throw new Error('data channel is not exist or open');
       }
     }
-    /*
+    /**
      * Datachannel でデータを送信します。
-     * @param {any} 送信するデータ
+     * @param {any} params 送信するデータ
      * @param {string} channelId 指定する dataChannel の id
      * @return {null}
      */
@@ -840,18 +847,24 @@
     }],
     clientId: randomString(17)
   };
-  /*
+  /**
    * Ayame Connection を生成します。
    *
    * @param {string} signalingUrl シグナリングに用いる websocket url
    * @param {string} roomId 接続する roomId
    * @param {ConnectionOptions} [options=defaultOptions] 接続時のオプション
-   * @param {debug} [boolean=false] デバッグログを出力するかどうかのフラグ
+   * @param {boolean} [debug=false] デバッグログを出力するかどうかのフラグ
+   * @return {Connection}
    */
 
   function connection(signalingUrl, roomId, options = defaultOptions, debug = false) {
     return new Connection(signalingUrl, roomId, options, debug);
   }
+  /**
+   * Ayame Web SDK のバージョンを出力します。
+   * @return {string}
+   */
+
   function version() {
     return process.version;
   }
