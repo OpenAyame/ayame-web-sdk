@@ -131,43 +131,16 @@
   }
 
   /*       */
-  /**
-   * オーディオ、ビデオの送受信方向に関するオプションです。
-   * - sendrecv
-   * - recvonly
-   * - sendonly
-   * @typedef {string} ConnectionDirection
-   */
 
-  /*
-   * オーディオ接続に関するオプションです。
-   * @typedef {Object} ConnectionAudioOption
-   */
-
-  /*
-   * ビデオ接続のコーデックに関するオプションです。
-   * - VP8
-   * - VP9
-   * - H264
-   * @typedef {string} ConnectionDirection
-   * @typedef {string} VideoCodecOption
-   */
-
-  /*
-   * ビデオ接続に関するオプションです。
-   * @typedef {Object} ConnectionVideoOption
-   */
-
-  /*
-    接続時に指定するオプションです。
-   * @typedef {Object} ConnectionOptions
-   */
-
-  /*
-   * Peer Connection 接続を管理するクラスです。
-   */
-
-  class Connection {
+  class ConnectionBase {
+    /*
+     * @private
+     */
+    on(kind, callback) {
+      if (kind in this._callbacks) {
+        this._callbacks[kind] = callback;
+      }
+    }
     /**
      * オブジェクトを生成し、リモートのピアまたはサーバーに接続します。
      * @param {string} signalingUrl シグナリングに利用する URL
@@ -179,18 +152,24 @@
      * @listens {addstream} リモートのストリームが追加されると送信されます。
      * @listens {removestream} リモートのストリームが削除されると送信されます。
      */
+
+
     constructor(signalingUrl, roomId, options, debug = false) {
       this.debug = debug;
       this.roomId = roomId;
       this.signalingUrl = signalingUrl;
       this.options = options;
-      this._isNegotiating = false;
       this._removeCodec = false;
       this.stream = null;
+      this.remoteStream = null;
       this._pc = null;
       this.authnMetadata = null;
+      this.authzMetadata = null;
       this._dataChannels = [];
+      this._isOffer = false;
+      this.connectionState = 'new';
       this._callbacks = {
+        open: () => {},
         connect: () => {},
         disconnect: () => {},
         addstream: () => {},
@@ -198,159 +177,13 @@
         data: () => {}
       };
     }
-    /*
-     * @private
-     */
 
-
-    on(kind, callback) {
-      if (kind in this._callbacks) {
-        this._callbacks[kind] = callback;
-      }
-    }
-    /**
-     * PeerConnection  接続を開始します。
-     * @param {RTCMediaStream|null} stream ローカルのストリーム
-     * @param {Object|null} authnMetadtta 送信するメタデータ
-     * @return {Promise<RTCMediaStream|null>} stream ローカルのストリーム
-     */
-
-
-    async connect(stream, authnMetadata = null) {
-      if (this._ws || this._pc) {
-        this._traceLog('connection already exists');
-
-        throw new Error('Connection Already Exists!');
-      }
-
-      this.stream = stream;
-      this.authnMetadata = authnMetadata;
-      await this._signaling();
-      return stream;
-    }
-
-    async addDataChannel(channelId, options = undefined) {
-      return new Promise((resolve, reject) => {
-        if (!this._pc) return reject('PeerConnection Does Not Ready');
-
-        let dataChannel = this._findDataChannel(channelId);
-
-        if (dataChannel) {
-          return reject('DataChannel Already Exists!');
-        }
-
-        dataChannel = this._pc.createDataChannel(channelId, options);
-
-        dataChannel.onclose = async event => {
-          this._traceLog('datachannel onclosed=>', event);
-
-          this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != channelId);
-        };
-
-        dataChannel.onerror = async event => {
-          this._traceLog('datachannel onerror=>', event);
-
-          this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != channelId);
-        };
-
-        dataChannel.onmessage = event => {
-          this._traceLog('datachannel onmessage=>', event.data);
-
-          event.channelId = channelId;
-
-          this._callbacks.data(event);
-        };
-
-        dataChannel.onopen = async event => {
-          this._traceLog('datachannel onopen=>', event);
-
-          this._dataChannels.push(dataChannel);
-        };
-
-        return resolve();
+    async _disconnect() {
+      await this._dataChannels.forEach(async dataChannel => {
+        await this._closeDataChannel(dataChannel);
       });
-    }
-    /*
-     * Datachannel でデータを送信します。
-     */
-
-
-    async sendData(params, channelId = 'dataChannel') {
-      return new Promise((resolve, reject) => {
-        this._traceLog('datachannel sendData=>', params);
-
-        const dataChannel = this._findDataChannel(channelId);
-
-        if (dataChannel && dataChannel.readyState === 'open') {
-          dataChannel.send(params);
-          return resolve();
-        } else {
-          return reject('datachannel is not open');
-        }
-      });
-    }
-    /**
-     * PeerConnection  接続を切断します。
-     * @return {Promise<void>}
-     */
-
-
-    async disconnect() {
-      this._dataChannels.forEach(dataChannel => {
-        dataChannel.close();
-      });
-
-      const closePeerConnection = new Promise((resolve, reject) => {
-        if (browser() === 'safari' && this._pc) {
-          this._pc.oniceconnectionstatechange = () => {};
-
-          this._pc.close();
-
-          this._pc = null;
-          return resolve();
-        }
-
-        if (!this._pc) return resolve();
-
-        if (this._pc && this._pc.signalingState == 'closed') {
-          return resolve();
-        }
-
-        this._pc.oniceconnectionstatechange = () => {};
-
-        const timerId = setInterval(() => {
-          if (!this._pc) {
-            clearInterval(timerId);
-            return reject('PeerConnection Closing Error');
-          }
-
-          if (this._pc && this._pc.signalingState == 'closed') {
-            clearInterval(timerId);
-            return resolve();
-          }
-        }, 800);
-
-        this._pc.close();
-      });
-      const closeWebSocketConnection = new Promise((resolve, reject) => {
-        if (!this._ws) return resolve();
-        if (this._ws && this._ws.readyState === 3) return resolve();
-
-        this._ws.onclose = () => {};
-
-        const timerId = setInterval(() => {
-          if (!this._ws) {
-            clearInterval(timerId);
-            return reject('WebSocket Closing Error');
-          }
-
-          if (this._ws.readyState === 3) {
-            clearInterval(timerId);
-            return resolve();
-          }
-        }, 800);
-        this._ws && this._ws.close();
-      });
+      await this._closePeerConnection();
+      await this._closeWebSocketConnection();
 
       if (this.stream) {
         this.stream.getTracks().forEach(t => {
@@ -358,32 +191,44 @@
         });
       }
 
-      this.remoteStreamId = null;
+      if (this.remoteStream) {
+        this.remoteStream.getTracks().forEach(t => {
+          t.stop();
+        });
+      }
+
+      this.remoteStream = null;
       this.stream = null;
       this.authnMetadata = null;
-      this._isNegotiating = false;
-      await Promise.all([closeWebSocketConnection, closePeerConnection]);
+      this.authzMetadata = null;
       this._ws = null;
       this._pc = null;
       this._removeCodec = false;
+      this._isOffer = false;
       this._dataChannels = [];
+      this.connectionState = 'new';
     }
+    /*
+     * @private
+     */
+
 
     async _signaling() {
       return new Promise((resolve, reject) => {
         if (this._ws) {
-          return reject('WebSocket Connnection Already Exists!');
+          return reject('WS-ALREADY-EXISTS');
         }
 
         this._ws = new WebSocket(this.signalingUrl);
 
-        this._ws.onclose = () => {
+        this._ws.onclose = async () => {
+          await this._disconnect();
           return reject('WS-CLOSED');
         };
 
         this._ws.onerror = async () => {
-          await this.disconnect();
-          return reject('WS-CLOSED');
+          await this._disconnect();
+          return reject('WS-CLOSED-WITH-ERROR');
         };
 
         this._ws.onopen = () => {
@@ -416,28 +261,12 @@
                 } else if (message.type === 'close') {
                   this._callbacks.close(event);
                 } else if (message.type === 'accept') {
-                  if (!this._pc) this._pc = this._createPeerConnection();
-                  await this.addDataChannel('dataChannel');
+                  this.authzMetadata = message.authzMetadata;
+                  if (!this._pc) this._createPeerConnection();
                   await this._sendOffer();
-
-                  this._callbacks.connect({
-                    authzMetadata: message.authzMetadata
-                  });
-
-                  if (this._ws) {
-                    this._ws.onclose = async closeEvent => {
-                      await this.disconnect();
-
-                      this._callbacks.disconnect({
-                        reason: 'WS-CLOSED',
-                        event: closeEvent
-                      });
-                    };
-                  }
-
                   return resolve();
                 } else if (message.type === 'reject') {
-                  await this.disconnect();
+                  await this._disconnect();
 
                   this._callbacks.disconnect({
                     reason: 'REJECTED'
@@ -458,7 +287,7 @@
                   }
                 }
               } catch (error) {
-                await this.disconnect();
+                await this._disconnect();
 
                 this._callbacks.disconnect({
                   reason: 'SIGNALING-ERROR',
@@ -468,14 +297,6 @@
             };
           }
         };
-
-        if (this._ws) {
-          this._ws.onclose = async event => {
-            await this.disconnect();
-
-            this._callbacks.disconnect(event);
-          };
-        }
       });
     }
 
@@ -483,8 +304,7 @@
       const pcConfig = {
         iceServers: this.options.iceServers
       };
-      const pc = new window.RTCPeerConnection(pcConfig); // Add local stream to pc.
-
+      const pc = new window.RTCPeerConnection(pcConfig);
       const audioTrack = this.stream && this.stream.getAudioTracks()[0];
 
       if (audioTrack && this.options.audio.direction !== 'recvonly') {
@@ -533,15 +353,20 @@
         }
       }
 
-      let tracks = [];
-
       pc.ontrack = event => {
+        let tracks = [];
+
         this._traceLog('peer.ontrack()', event);
 
-        tracks.push(event.track);
-        let mediaStream = new window.MediaStream(tracks);
-        this.remoteStreamId = mediaStream.id;
-        event.stream = mediaStream;
+        if (browser() === 'safari') {
+          tracks.push(event.track);
+          let mediaStream = new window.MediaStream(tracks);
+          this.remoteStream = mediaStream;
+        } else {
+          this.remoteStream = event.streams[0];
+        }
+
+        event.stream = this.remoteStream;
 
         this._callbacks.addstream(event);
       };
@@ -559,19 +384,27 @@
       pc.oniceconnectionstatechange = async () => {
         this._traceLog('ICE connection Status has changed to ', pc.iceConnectionState);
 
-        switch (pc.iceConnectionState) {
-          case 'connected':
-            this._isNegotiating = false;
-            break;
+        if (this.connectionState !== pc.iceConnectionState) {
+          this.connectionState = pc.iceConnectionState;
 
-          case 'failed':
-            await this.disconnect();
+          switch (this.connectionState) {
+            case 'connected':
+              this._isOffer = false;
 
-            this._callbacks.disconnect({
-              reason: 'ICE-CONNECTION-STATE-FAILED'
-            });
+              this._callbacks.connect();
 
-            break;
+              break;
+
+            case 'disconnected':
+            case 'failed':
+              await this._disconnect();
+
+              this._callbacks.disconnect({
+                reason: 'ICE-CONNECTION-STATE-FAILED'
+              });
+
+              break;
+          }
         }
       };
 
@@ -580,8 +413,66 @@
       };
 
       pc.ondatachannel = this._onDataChannel.bind(this);
-      return pc;
+
+      if (!this._pc) {
+        this._pc = pc;
+
+        this._addDataChannel('dataChannel');
+
+        this._callbacks.open({
+          authzMetadata: this.authzMetadata
+        });
+      } else {
+        this._pc = pc;
+      }
     }
+
+    async _addDataChannel(channelId, options = undefined) {
+      return new Promise((resolve, reject) => {
+        if (!this._pc) return reject('PeerConnection Does Not Ready');
+        if (this._isOffer) return reject('PeerConnection Has Local Offer');
+
+        let dataChannel = this._findDataChannel(channelId);
+
+        if (dataChannel) {
+          return reject('DataChannel Already Exists!');
+        }
+
+        dataChannel = this._pc.createDataChannel(channelId, options);
+
+        dataChannel.onclose = event => {
+          this._traceLog('datachannel onclosed=>', event);
+
+          this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != channelId);
+        };
+
+        dataChannel.onerror = event => {
+          this._traceLog('datachannel onerror=>', event);
+
+          this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != channelId);
+        };
+
+        dataChannel.onmessage = event => {
+          this._traceLog('datachannel onmessage=>', event.data);
+
+          event.channelId = channelId;
+
+          this._callbacks.data(event);
+        };
+
+        dataChannel.onopen = event => {
+          this._traceLog('datachannel onopen=>', event);
+        };
+
+        this._dataChannels.push(dataChannel);
+
+        return resolve();
+      });
+    }
+    /*
+     * @private
+     */
+
 
     _onDataChannel(event) {
       this._traceLog('on data channel', event);
@@ -663,6 +554,8 @@
       await this._pc.setLocalDescription(offer);
 
       this._sendSdp(this._pc.localDescription);
+
+      this._isOffer = true;
     }
 
     _isVideoCodecSpecified() {
@@ -683,7 +576,7 @@
 
         this._sendSdp(this._pc.localDescription);
       } catch (error) {
-        await this.disconnect();
+        await this._disconnect();
 
         this._callbacks.disconnect({
           reason: 'CREATE-ANSWER-ERROR',
@@ -699,7 +592,7 @@
     }
 
     async _setOffer(sessionDescription) {
-      this._pc = this._createPeerConnection();
+      this._createPeerConnection();
 
       try {
         await this._pc.setRemoteDescription(sessionDescription);
@@ -708,7 +601,7 @@
 
         await this._createAnswer();
       } catch (error) {
-        await this.disconnect();
+        await this._disconnect();
 
         this._callbacks.disconnect({
           reason: 'SET-OFFER-ERROR',
@@ -746,11 +639,6 @@
       }
     }
 
-    _traceLog(title, message) {
-      if (!this.debug) return;
-      traceLog(title, message);
-    }
-
     _getTransceiver(pc, track) {
       let transceiver = null;
       pc.getTransceivers().forEach(t => {
@@ -766,6 +654,172 @@
 
     _findDataChannel(channelId) {
       return this._dataChannels.find(channel => channel.label == channelId);
+    }
+
+    async _closeDataChannel(dataChannel) {
+      return new Promise((resolve, reject) => {
+        if (!dataChannel) return resolve();
+        if (dataChannel.readyState === 'closed') return resolve();
+        dataChannel.onclose = null;
+        const timerId = setInterval(() => {
+          if (!dataChannel) {
+            clearInterval(timerId);
+            return reject('DataChannel Closing Error');
+          }
+
+          if (dataChannel.readyState === 'closed') {
+            clearInterval(timerId);
+            return resolve();
+          }
+        }, 800);
+        dataChannel && dataChannel.close();
+      });
+    }
+
+    async _closePeerConnection() {
+      return new Promise((resolve, reject) => {
+        if (browser() === 'safari' && this._pc) {
+          this._pc.oniceconnectionstatechange = null;
+
+          this._pc.close();
+
+          this._pc = null;
+          return resolve();
+        }
+
+        if (!this._pc) return resolve();
+
+        if (this._pc && this._pc.signalingState == 'closed') {
+          return resolve();
+        }
+
+        this._pc.oniceconnectionstatechange = null;
+        const timerId = setInterval(() => {
+          if (!this._pc) {
+            clearInterval(timerId);
+            return reject('PeerConnection Closing Error');
+          }
+
+          if (this._pc && this._pc.signalingState == 'closed') {
+            clearInterval(timerId);
+            return resolve();
+          }
+        }, 800);
+
+        this._pc.close();
+      });
+    }
+
+    async _closeWebSocketConnection() {
+      return new Promise((resolve, reject) => {
+        if (!this._ws) return resolve();
+        if (this._ws && this._ws.readyState === 3) return resolve();
+
+        this._ws.onclose = () => {};
+
+        const timerId = setInterval(() => {
+          if (!this._ws) {
+            clearInterval(timerId);
+            return reject('WebSocket Closing Error');
+          }
+
+          if (this._ws.readyState === 3) {
+            clearInterval(timerId);
+            return resolve();
+          }
+        }, 800);
+        this._ws && this._ws.close();
+      });
+    }
+
+    _traceLog(title, message) {
+      if (!this.debug) return;
+      traceLog(title, message);
+    }
+
+  }
+
+  /*       */
+  /*
+   * Peer Connection 接続を管理するクラスです。
+   */
+
+  class Connection extends ConnectionBase {
+    /**
+     * PeerConnection  接続を開始します。
+     * @param {RTCMediaStream|null} stream ローカルのストリーム
+     * @param {Object|null} authnMetadtta 送信するメタデータ
+     * @return {Promise<RTCMediaStream|null>} stream ローカルのストリーム
+     */
+    async connect(stream, authnMetadata = null) {
+      if (this._ws || this._pc) {
+        this._traceLog('connection already exists');
+
+        throw new Error('Connection Already Exists!');
+      }
+
+      this.stream = stream;
+      this.authnMetadata = authnMetadata;
+      await this._signaling();
+      return stream;
+    }
+    /*
+     * Datachannel を追加します。
+     * @param {string} channelId dataChannel の Id
+     * @param {Object|null} dataChannel の init オプション
+     * @return {Promise<null>}
+     */
+
+
+    async addDataChannel(channelId, options = undefined) {
+      await this._addDataChannel(channelId, options);
+    }
+    /*
+     * Datachannel を削除します。
+     * @param {string} channelId 削除する dataChannel の Id
+     * @return {Promise<null>}
+     */
+
+
+    async removeDataChannel(channelId) {
+      this._traceLog('datachannel remove=>', channelId);
+
+      const dataChannel = this._findDataChannel(channelId);
+
+      if (dataChannel && dataChannel.readyState === 'open') {
+        await this._closeDataChannel(dataChannel);
+        return;
+      } else {
+        throw new Error('data channel is not exist or open');
+      }
+    }
+    /*
+     * Datachannel でデータを送信します。
+     * @param {any} 送信するデータ
+     * @param {string} channelId 指定する dataChannel の id
+     * @return {null}
+     */
+
+
+    sendData(params, channelId = 'dataChannel') {
+      this._traceLog('datachannel sendData=>', params);
+
+      const dataChannel = this._findDataChannel(channelId);
+
+      if (dataChannel && dataChannel.readyState === 'open') {
+        dataChannel.send(params);
+      } else {
+        throw new Error('datachannel is not open');
+      }
+    }
+    /**
+     * PeerConnection  接続を切断します。
+     * @return {Promise<void>}
+     */
+
+
+    async disconnect() {
+      await this._disconnect();
     }
 
   }

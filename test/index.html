@@ -39,7 +39,7 @@
           conn = Ayame.connection(signalingUrl, roomId, options, true);
           const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true})
           const authnMetadata = {hoge: "fuga"};
-          conn.on('connect', ({authzMetadata}) => console.log(authzMetadata));
+          conn.on('open', ({authzMetadata}) => console.log(authzMetadata));
           conn.on('disconnect', (e) => console.log(e));
           conn.on('addstream', async (e) => {
             console.log(e.stream);

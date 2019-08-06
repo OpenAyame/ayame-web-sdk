@@ -14,29 +14,27 @@
         <button onclick="startConn();">接続</button>
         <button onclick="conn && conn.disconnect();">切断</button>
         <div>
-        <p> 送信するメッセージA
-        <input id="sendDataInputA" type="text" value="🐶"></input>
-        </p>
-        <button onclick="sendDataA();">送信</button>
-        <p> 受信したメッセージA</p>
+          <p> 送信するメッセージA
+          <input id="sendDataInputA" type="text" value="🐶"></input>
+          </p>
+          <button onclick="sendDataA();">送信</button>
+          <p> 受信したメッセージA</p>
         </div>
         <textarea style="height:200px;" id="messagesA" disabled type="text" value=""></textarea>
-        </div>
-        <div>
+      </div>
+      <div>
         <p> 送信するメッセージB
         <input id="sendDataInputB" type="text" value="😿"></input>
         </p>
         <button onclick="sendDataB();">送信</button>
         <p> 受信したメッセージB</p>
-        </div>
-        <textarea style="height:200px;" id="messagesB" disabled type="text" value=""></textarea>
-        </div>
+      </div>
+      <textarea style="height:200px;" id="messagesB" disabled type="text" value=""></textarea>
       </div>
       <script src="../dist/ayame.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.7.0/qs.min.js"></script>
       <script src="./main.js"></script>
       <script type="text/javascript">
-        const remoteVideo = document.querySelector('#remote-video');
         let conn = null;
         const options = Ayame.defaultOptions;
         let messagesA = null;
@@ -46,7 +44,7 @@
         const startConn = async () => {
           options.video.codec = videoCodec;
           conn = Ayame.connection(signalingUrl, roomId, options, true);
-          conn.on('connect', (e) => {
+          conn.on('open', (e) => {
             conn.addDataChannel(anotherChannel);
           });
           conn.on('data', (e) => {
