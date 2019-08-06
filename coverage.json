@@ -1,0 +1,32 @@
+{
+  "coverage": "94.44%",
+  "expectCount": 54,
+  "actualCount": 51,
+  "files": {
+    "src/ayame.js": {
+      "expectCount": 3,
+      "actualCount": 2,
+      "undocumentLines": [
+        7
+      ]
+    },
+    "src/connection/base.js": {
+      "expectCount": 38,
+      "actualCount": 38,
+      "undocumentLines": []
+    },
+    "src/connection/index.js": {
+      "expectCount": 8,
+      "actualCount": 6,
+      "undocumentLines": [
+        19,
+        20
+      ]
+    },
+    "src/utils.js": {
+      "expectCount": 5,
+      "actualCount": 5,
+      "undocumentLines": []
+    }
+  }
+}
