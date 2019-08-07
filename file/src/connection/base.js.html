@@ -37,6 +37,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionDirection">ConnectionDirection</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionOptions">ConnectionOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionVideoOption">ConnectionVideoOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MetadataOption">MetadataOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VideoCodecOption">VideoCodecOption</a></span></span></li>
 </ul>
 </div>
@@ -60,6 +61,7 @@ class ConnectionBase {
   stream: ?window.MediaStream;
   remoteStream: ?window.MediaStream;
   authnMetadata: ?Object;
+  signalingKey: ?string;
   authzMetadata: ?Object;
   _ws: ?WebSocket;
   _pc: window.RTCPeerConnection;
@@ -68,6 +70,9 @@ class ConnectionBase {
   _isOffer: boolean;
   _dataChannels: Array&lt;window.RTCDataChannel&gt;;
   _callbacks: Object;
+  _pcConfig: {
+    iceServers: Array&lt;Object&gt;
+  };
 
   /**
    * @ignore
@@ -86,11 +91,15 @@ class ConnectionBase {
     this.stream = null;
     this.remoteStream = null;
     this._pc = null;
+    this.signalingKey = null;
     this.authnMetadata = null;
     this.authzMetadata = null;
     this._dataChannels = [];
     this._isOffer = false;
     this.connectionState = &apos;new&apos;;
+    this._pcConfig = {
+      iceServers: this.options.iceServers
+    };
     this._callbacks = {
       open: () =&gt; {},
       connect: () =&gt; {},
@@ -119,6 +128,7 @@ class ConnectionBase {
     }
     this.remoteStream = null;
     this.stream = null;
+    this.signalingKey = null;
     this.authnMetadata = null;
     this.authzMetadata = null;
     this._ws = null;
@@ -148,10 +158,14 @@ class ConnectionBase {
           type: &apos;register&apos;,
           roomId: this.roomId,
           clientId: this.options.clientId,
-          authnMetadata: undefined
+          authnMetadata: undefined,
+          key: undefined
         };
         if (this.authnMetadata !== null) {
           registerMessage.authnMetadata = this.authnMetadata;
+        }
+        if (this.signalingKey !== null) {
+          registerMessage.key = this.signalingKey;
         }
         this._sendWs(registerMessage);
         if (this._ws) {
@@ -167,6 +181,10 @@ class ConnectionBase {
                 this._callbacks.close(event);
               } else if (message.type === &apos;accept&apos;) {
                 this.authzMetadata = message.authzMetadata;
+                if (Array.isArray(message.iceServers) &amp;&amp; message.iceServers.length &gt; 0) {
+                  this._traceLog(&apos;iceServers=&gt;&apos;, message.iceServers);
+                  this._pcConfig.iceServers = message.iceServers;
+                }
                 if (!this._pc) this._createPeerConnection();
                 await this._sendOffer();
                 return resolve();
@@ -196,10 +214,7 @@ class ConnectionBase {
   }
 
   _createPeerConnection() {
-    const pcConfig = {
-      iceServers: this.options.iceServers
-    };
-    const pc = new window.RTCPeerConnection(pcConfig);
+    const pc = new window.RTCPeerConnection(this._pcConfig);
     const audioTrack = this.stream &amp;&amp; this.stream.getAudioTracks()[0];
     if (audioTrack &amp;&amp; this.options.audio.direction !== &apos;recvonly&apos;) {
       pc.addTrack(audioTrack, this.stream);

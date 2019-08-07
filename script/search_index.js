@@ -366,6 +366,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/connection/index.js~connection#signalingkey",
+    "class/src/connection/index.js~Connection.html#instance-member-signalingKey",
+    "src/connection/index.js~Connection#signalingKey",
+    "member"
+  ],
+  [
     "src/connection/index.js~connection#stream",
     "class/src/connection/index.js~Connection.html#instance-member-stream",
     "src/connection/index.js~Connection#stream",
@@ -399,6 +405,12 @@ window.esdocSearchIndex = [
     "src/connection/options.js~connectionvideooption",
     "typedef/index.html#static-typedef-ConnectionVideoOption",
     "src/connection/options.js~ConnectionVideoOption",
+    "typedef"
+  ],
+  [
+    "src/connection/options.js~metadataoption",
+    "typedef/index.html#static-typedef-MetadataOption",
+    "src/connection/options.js~MetadataOption",
     "typedef"
   ],
   [

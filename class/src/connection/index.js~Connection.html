@@ -37,6 +37,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionDirection">ConnectionDirection</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionOptions">ConnectionOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionVideoOption">ConnectionVideoOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MetadataOption">MetadataOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VideoCodecOption">VideoCodecOption</a></span></span></li>
 </ul>
 </div>
@@ -166,6 +167,34 @@
           
           
           
+          <span class="code" data-ice="name"><span><a href="class/src/connection/index.js~Connection.html#instance-member-signalingKey">signalingKey</a></span></span><span class="code" data-ice="signature">: <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
           <span class="code" data-ice="name"><span><a href="class/src/connection/index.js~Connection.html#instance-member-stream">stream</a></span></span><span class="code" data-ice="signature">: <span>*</span></span>
         </p>
       </div>
@@ -230,7 +259,7 @@
           
           <span data-ice="async">async</span>
           
-          <span class="code" data-ice="name"><span><a href="class/src/connection/index.js~Connection.html#instance-method-connect">connect</a></span></span><span class="code" data-ice="signature">(stream: <span>RTCMediaStream</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span>, authnMetadata: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span>&gt;</span>
+          <span class="code" data-ice="name"><span><a href="class/src/connection/index.js~Connection.html#instance-method-connect">connect</a></span></span><span class="code" data-ice="signature">(stream: <span>RTCMediaStream</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span>, metadataOption: <span><a href="typedef/index.html#static-typedef-MetadataOption">MetadataOption</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span>&gt;</span>
         </p>
       </div>
       <div>
@@ -354,7 +383,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/connection/index.js.html#lineNumber22">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/connection/index.js.html#lineNumber21">source</a></span></span>
     </span>
   </h3>
 
@@ -504,6 +533,49 @@
   
 </div>
 <div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-signalingKey">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">signalingKey</span><span class="code" data-ice="signature">: <span>*</span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/connection/index.js.html#lineNumber39">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
   <h3 data-ice="anchor" id="instance-member-stream">
     <span class="access" data-ice="access">public</span>
     
@@ -515,7 +587,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/connection/index.js.html#lineNumber37">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/connection/index.js.html#lineNumber36">source</a></span></span>
     </span>
   </h3>
 
@@ -561,7 +633,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/connection/index.js.html#lineNumber48">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/connection/index.js.html#lineNumber50">source</a></span></span>
     </span>
   </h3>
 
@@ -637,11 +709,11 @@
     
     <span data-ice="async">async</span>
     
-    <span class="code" data-ice="name">connect</span><span class="code" data-ice="signature">(stream: <span>RTCMediaStream</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span>, authnMetadata: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span>&gt;</span>
+    <span class="code" data-ice="name">connect</span><span class="code" data-ice="signature">(stream: <span>RTCMediaStream</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span>, metadataOption: <span><a href="typedef/index.html#static-typedef-MetadataOption">MetadataOption</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span>&gt;</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/connection/index.js.html#lineNumber32">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/connection/index.js.html#lineNumber31">source</a></span></span>
     </span>
   </h3>
 
@@ -669,10 +741,10 @@
 </td>
     </tr>
 <tr data-ice="property" data-depth="0">
-      <td data-ice="name" class="code" data-depth="0">authnMetadata</td>
-      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></td>
+      <td data-ice="name" class="code" data-depth="0">metadataOption</td>
+      <td data-ice="type" class="code"><span><a href="typedef/index.html#static-typedef-MetadataOption">MetadataOption</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"><p>&#x9001;&#x4FE1;&#x3059;&#x308B;&#x30E1;&#x30BF;&#x30C7;&#x30FC;&#x30BF;</p>
+      <td data-ice="description"><p>&#x9001;&#x4FE1;&#x3059;&#x308B;&#x30E1;&#x30BF;&#x30C7;&#x30FC;&#x30BF;&#x3068;&#x30B7;&#x30B0;&#x30CA;&#x30EA;&#x30F3;&#x30B0;&#x30AD;&#x30FC;</p>
 </td>
     </tr>
 </tbody>
@@ -721,7 +793,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/connection/index.js.html#lineNumber88">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/connection/index.js.html#lineNumber90">source</a></span></span>
     </span>
   </h3>
 
@@ -777,7 +849,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/connection/index.js.html#lineNumber57">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/connection/index.js.html#lineNumber59">source</a></span></span>
     </span>
   </h3>
 
@@ -850,7 +922,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/connection/index.js.html#lineNumber74">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/connection/index.js.html#lineNumber76">source</a></span></span>
     </span>
   </h3>
 

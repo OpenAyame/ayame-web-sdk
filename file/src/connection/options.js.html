@@ -37,6 +37,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionDirection">ConnectionDirection</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionOptions">ConnectionOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionVideoOption">ConnectionVideoOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MetadataOption">MetadataOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VideoCodecOption">VideoCodecOption</a></span></span></li>
 </ul>
 </div>
@@ -92,6 +93,15 @@ export type ConnectionOptions = {
   video: ConnectionVideoOption,
   clientId: string,
   iceServers: Array&lt;Object&gt;
+};
+
+/**
+ * &#x63A5;&#x7D9A;&#x6642;&#x306B;&#x6307;&#x5B9A;&#x3067;&#x304D;&#x308B;&#x30E1;&#x30BF;&#x30C7;&#x30FC;&#x30BF;&#x3067;&#x3059;&#x3002;
+ * @typedef {Object} MetadataOption
+ */
+export type MetadataOption = {
+  authnMetadata: ?Object,
+  key: ?string
 };
 </code></pre>
 

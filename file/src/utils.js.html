@@ -37,6 +37,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionDirection">ConnectionDirection</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionOptions">ConnectionOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionVideoOption">ConnectionVideoOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MetadataOption">MetadataOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VideoCodecOption">VideoCodecOption</a></span></span></li>
 </ul>
 </div>
@@ -95,15 +96,16 @@ export function getVideoCodecsFromString(codec: VideoCodecOption, codecs: Array&
 /**
  * @ignore
  */
-export function removeCodec(orgSdp: any, codec: VideoCodecOption) {
-  const internalFunc = (orgSdp: any) =&gt; {
+export function removeCodec(sdp: any, codec: VideoCodecOption) {
+  const internalFunc = sdp =&gt; {
+    // eslint-disable-next-line no-useless-escape
     const codecre = new RegExp(&apos;(a=rtpmap:(\\d*) &apos; + codec + &apos;/90000\\r\\n)&apos;);
-    const rtpmaps = orgSdp.match(codecre);
+    const rtpmaps = sdp.match(codecre);
     if (rtpmaps == null || rtpmaps.length &lt;= 2) {
-      return orgSdp;
+      return sdp;
     }
     const rtpmap = rtpmaps[2];
-    let modsdp = orgSdp.replace(codecre, &apos;&apos;);
+    let modsdp = sdp.replace(codecre, &apos;&apos;);
 
     const rtcpre = new RegExp(&apos;(a=rtcp-fb:&apos; + rtpmap + &apos;.*\r\n)&apos;, &apos;g&apos;);
     modsdp = modsdp.replace(rtcpre, &apos;&apos;);
@@ -141,7 +143,7 @@ export function removeCodec(orgSdp: any, codec: VideoCodecOption) {
     }
     return internalFunc(modsdp);
   };
-  return internalFunc(orgSdp);
+  return internalFunc(sdp);
 }
 
 /**

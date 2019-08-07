@@ -693,7 +693,7 @@
     "__docId__": 52,
     "kind": "file",
     "name": "src/connection/base.js",
-    "content": "/* @flow */\n/* @private */\nimport { traceLog, getVideoCodecsFromString, removeCodec, browser } from '../utils';\nimport { type ConnectionOptions } from './options';\n\n/**\n * @ignore\n */\nclass ConnectionBase {\n  debug: boolean;\n  roomId: string;\n  signalingUrl: string;\n  options: ConnectionOptions;\n  connectionState: string;\n  stream: ?window.MediaStream;\n  remoteStream: ?window.MediaStream;\n  authnMetadata: ?Object;\n  authzMetadata: ?Object;\n  _ws: ?WebSocket;\n  _pc: window.RTCPeerConnection;\n  _callbacks: Object;\n  _removeCodec: boolean;\n  _isOffer: boolean;\n  _dataChannels: Array<window.RTCDataChannel>;\n  _callbacks: Object;\n\n  /**\n   * @ignore\n   */\n  on(kind: string, callback: Function) {\n    if (kind in this._callbacks) {\n      this._callbacks[kind] = callback;\n    }\n  }\n  constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug: boolean = false) {\n    this.debug = debug;\n    this.roomId = roomId;\n    this.signalingUrl = signalingUrl;\n    this.options = options;\n    this._removeCodec = false;\n    this.stream = null;\n    this.remoteStream = null;\n    this._pc = null;\n    this.authnMetadata = null;\n    this.authzMetadata = null;\n    this._dataChannels = [];\n    this._isOffer = false;\n    this.connectionState = 'new';\n    this._callbacks = {\n      open: () => {},\n      connect: () => {},\n      disconnect: () => {},\n      addstream: () => {},\n      removestream: () => {},\n      data: () => {}\n    };\n  }\n\n  async _disconnect() {\n    await this._dataChannels.forEach(async dataChannel => {\n      await this._closeDataChannel(dataChannel);\n    });\n    await this._closePeerConnection();\n    await this._closeWebSocketConnection();\n    if (this.stream) {\n      this.stream.getTracks().forEach(t => {\n        t.stop();\n      });\n    }\n    if (this.remoteStream) {\n      this.remoteStream.getTracks().forEach(t => {\n        t.stop();\n      });\n    }\n    this.remoteStream = null;\n    this.stream = null;\n    this.authnMetadata = null;\n    this.authzMetadata = null;\n    this._ws = null;\n    this._pc = null;\n    this._removeCodec = false;\n    this._isOffer = false;\n    this._dataChannels = [];\n    this.connectionState = 'new';\n  }\n\n  async _signaling() {\n    return new Promise((resolve, reject) => {\n      if (this._ws) {\n        return reject('WS-ALREADY-EXISTS');\n      }\n      this._ws = new WebSocket(this.signalingUrl);\n      this._ws.onclose = async () => {\n        await this._disconnect();\n        return reject('WS-CLOSED');\n      };\n      this._ws.onerror = async () => {\n        await this._disconnect();\n        return reject('WS-CLOSED-WITH-ERROR');\n      };\n      this._ws.onopen = () => {\n        const registerMessage = {\n          type: 'register',\n          roomId: this.roomId,\n          clientId: this.options.clientId,\n          authnMetadata: undefined\n        };\n        if (this.authnMetadata !== null) {\n          registerMessage.authnMetadata = this.authnMetadata;\n        }\n        this._sendWs(registerMessage);\n        if (this._ws) {\n          this._ws.onmessage = async (event: MessageEvent) => {\n            try {\n              if (typeof event.data !== 'string') {\n                return;\n              }\n              const message = JSON.parse(event.data);\n              if (message.type === 'ping') {\n                this._sendWs({ type: 'pong' });\n              } else if (message.type === 'close') {\n                this._callbacks.close(event);\n              } else if (message.type === 'accept') {\n                this.authzMetadata = message.authzMetadata;\n                if (!this._pc) this._createPeerConnection();\n                await this._sendOffer();\n                return resolve();\n              } else if (message.type === 'reject') {\n                await this._disconnect();\n                this._callbacks.disconnect({ reason: 'REJECTED' });\n                return reject('REJECTED');\n              } else if (message.type === 'offer') {\n                this._setOffer(new window.RTCSessionDescription(message));\n              } else if (message.type === 'answer') {\n                await this._setAnswer(new window.RTCSessionDescription(message));\n              } else if (message.type === 'candidate') {\n                if (message.ice) {\n                  this._traceLog('Received ICE candidate ...', message.ice);\n                  const candidate = new window.RTCIceCandidate(message.ice);\n                  this._addIceCandidate(candidate);\n                }\n              }\n            } catch (error) {\n              await this._disconnect();\n              this._callbacks.disconnect({ reason: 'SIGNALING-ERROR', error: error });\n            }\n          };\n        }\n      };\n    });\n  }\n\n  _createPeerConnection() {\n    const pcConfig = {\n      iceServers: this.options.iceServers\n    };\n    const pc = new window.RTCPeerConnection(pcConfig);\n    const audioTrack = this.stream && this.stream.getAudioTracks()[0];\n    if (audioTrack && this.options.audio.direction !== 'recvonly') {\n      pc.addTrack(audioTrack, this.stream);\n    } else if (this.options.audio.enabled) {\n      pc.addTransceiver('audio', { direction: 'recvonly' });\n    }\n    const videoTrack = this.stream && this.stream.getVideoTracks()[0];\n    if (videoTrack && this.options.video.direction !== 'recvonly') {\n      const videoSender = pc.addTrack(videoTrack, this.stream);\n      const videoTransceiver = this._getTransceiver(pc, videoSender);\n      if (this._isVideoCodecSpecified()) {\n        if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {\n          const videoCapabilities = window.RTCRtpSender.getCapabilities('video');\n          const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);\n          this._traceLog('video codecs=', videoCodecs);\n          videoTransceiver.setCodecPreferences(videoCodecs);\n        } else {\n          this._removeCodec = true;\n        }\n      }\n    } else if (this.options.video.enabled) {\n      const videoTransceiver = pc.addTransceiver('video', { direction: 'recvonly' });\n      if (this._isVideoCodecSpecified()) {\n        if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {\n          const videoCapabilities = window.RTCRtpSender.getCapabilities('video');\n          const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);\n          this._traceLog('video codecs=', videoCodecs);\n          videoTransceiver.setCodecPreferences(videoCodecs);\n        } else {\n          this._removeCodec = true;\n        }\n      }\n    }\n    pc.ontrack = (event: window.RTCTrackEvent) => {\n      let tracks = [];\n      this._traceLog('peer.ontrack()', event);\n      if (browser() === 'safari') {\n        tracks.push(event.track);\n        let mediaStream = new window.MediaStream(tracks);\n        this.remoteStream = mediaStream;\n      } else {\n        this.remoteStream = event.streams[0];\n      }\n      event.stream = this.remoteStream;\n      this._callbacks.addstream(event);\n    };\n    pc.onicecandidate = event => {\n      this._traceLog('peer.onicecandidate()', event);\n      if (event.candidate) {\n        this._sendIceCandidate(event.candidate);\n      } else {\n        this._traceLog('empty ice event', '');\n      }\n    };\n    pc.oniceconnectionstatechange = async () => {\n      this._traceLog('ICE connection Status has changed to ', pc.iceConnectionState);\n      if (this.connectionState !== pc.iceConnectionState) {\n        this.connectionState = pc.iceConnectionState;\n        switch (this.connectionState) {\n          case 'connected':\n            this._isOffer = false;\n            this._callbacks.connect();\n            break;\n          case 'disconnected':\n          case 'failed':\n            await this._disconnect();\n            this._callbacks.disconnect({ reason: 'ICE-CONNECTION-STATE-FAILED' });\n            break;\n        }\n      }\n    };\n    pc.onsignalingstatechange = _ => {\n      this._traceLog('signaling state changes:', pc.signalingState);\n    };\n    pc.ondatachannel = this._onDataChannel.bind(this);\n    if (!this._pc) {\n      this._pc = pc;\n      this._addDataChannel('dataChannel');\n      this._callbacks.open({ authzMetadata: this.authzMetadata });\n    } else {\n      this._pc = pc;\n    }\n  }\n\n  async _addDataChannel(channelId: string, options: Object = undefined) {\n    return new Promise((resolve, reject) => {\n      if (!this._pc) return reject('PeerConnection Does Not Ready');\n      if (this._isOffer) return reject('PeerConnection Has Local Offer');\n      let dataChannel = this._findDataChannel(channelId);\n      if (dataChannel) {\n        return reject('DataChannel Already Exists!');\n      }\n      dataChannel = this._pc.createDataChannel(channelId, options);\n      dataChannel.onclose = (event: Object) => {\n        this._traceLog('datachannel onclosed=>', event);\n        this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != channelId);\n      };\n      dataChannel.onerror = (event: Object) => {\n        this._traceLog('datachannel onerror=>', event);\n        this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != channelId);\n      };\n      dataChannel.onmessage = (event: Object) => {\n        this._traceLog('datachannel onmessage=>', event.data);\n        event.channelId = channelId;\n        this._callbacks.data(event);\n      };\n      dataChannel.onopen = (event: Object) => {\n        this._traceLog('datachannel onopen=>', event);\n      };\n      this._dataChannels.push(dataChannel);\n      return resolve();\n    });\n  }\n\n  _onDataChannel(event: Object) {\n    this._traceLog('on data channel', event);\n    if (!this._pc) return;\n    let dataChannel = event.channel;\n    let channelId = event.channel.label;\n    if (!event.channel) return;\n    if (!channelId || channelId.length < 1) return;\n    dataChannel.onopen = async (event: Object) => {\n      this._traceLog('datachannel onopen=>', event);\n    };\n    dataChannel.onclose = async (event: Object) => {\n      this._traceLog('datachannel onclosed=>', event);\n    };\n    dataChannel.onerror = async (event: Object) => {\n      this._traceLog('datachannel onerror=>', event);\n    };\n    dataChannel.onmessage = (event: Object) => {\n      this._traceLog('datachannel onmessage=>', event.data);\n      event.channelId = channelId;\n      this._callbacks.data(event);\n    };\n    if (!this._findDataChannel(channelId)) {\n      this._dataChannels.push(event.channel);\n    } else {\n      this._dataChannels = this._dataChannels.map(channel => {\n        if (channel.label == channelId) {\n          return dataChannel;\n        } else {\n          return channel;\n        }\n      });\n    }\n  }\n\n  async _sendOffer() {\n    if (!this._pc) {\n      return;\n    }\n    if (browser() === 'safari') {\n      if (this.options.video.enabled && this.options.video.direction === 'sendrecv') {\n        this._pc.addTransceiver('video', { direction: 'recvonly' });\n      }\n      if (this.options.audio.enabled && this.options.audio.direction === 'sendrecv') {\n        this._pc.addTransceiver('audio', { direction: 'recvonly' });\n      }\n    }\n    let offer = await this._pc.createOffer({\n      offerToReceiveAudio: this.options.audio.enabled && this.options.audio.direction !== 'sendonly',\n      offerToReceiveVideo: this.options.video.enabled && this.options.video.direction !== 'sendonly'\n    });\n    if (this._removeCodec && this.options.video.codec) {\n      const codecs = ['VP8', 'VP9', 'H264'];\n      codecs.forEach(codec => {\n        if (this.options.video.codec !== codec) {\n          offer.sdp = removeCodec(offer.sdp, codec);\n        }\n      });\n    }\n    this._traceLog('create offer sdp, sdp=', offer.sdp);\n    await this._pc.setLocalDescription(offer);\n    this._sendSdp(this._pc.localDescription);\n    this._isOffer = true;\n  }\n\n  _isVideoCodecSpecified() {\n    return this.options.video.enabled && this.options.video.codec !== null;\n  }\n\n  async _createAnswer() {\n    if (!this._pc) {\n      return;\n    }\n    try {\n      let answer = await this._pc.createAnswer();\n      this._traceLog('create answer sdp, sdp=', answer.sdp);\n      await this._pc.setLocalDescription(answer);\n      this._sendSdp(this._pc.localDescription);\n    } catch (error) {\n      await this._disconnect();\n      this._callbacks.disconnect({ reason: 'CREATE-ANSWER-ERROR', error: error });\n    }\n  }\n\n  async _setAnswer(sessionDescription: window.RTCSessionDescription) {\n    await this._pc.setRemoteDescription(sessionDescription);\n    this._traceLog('set answer sdp=', sessionDescription.sdp);\n  }\n\n  async _setOffer(sessionDescription: window.RTCSessionDescription) {\n    this._createPeerConnection();\n    try {\n      await this._pc.setRemoteDescription(sessionDescription);\n      this._traceLog('set offer sdp=', sessionDescription.sdp);\n      await this._createAnswer();\n    } catch (error) {\n      await this._disconnect();\n      this._callbacks.disconnect({ reason: 'SET-OFFER-ERROR', error: error });\n    }\n  }\n\n  async _addIceCandidate(candidate: window.RTCIceCandidate) {\n    try {\n      if (this._pc) {\n        await this._pc.addIceCandidate(candidate);\n      }\n    } catch (_error) {\n      this._traceLog('invalid ice candidate', candidate);\n    }\n  }\n\n  _sendIceCandidate(candidate: window.RTCIceCandidate) {\n    const message = { type: 'candidate', ice: candidate };\n    this._sendWs(message);\n  }\n\n  _sendSdp(sessionDescription: Object) {\n    this._sendWs(sessionDescription);\n  }\n\n  _sendWs(message: Object) {\n    if (this._ws) {\n      this._ws.send(JSON.stringify(message));\n    }\n  }\n\n  _getTransceiver(pc: window.RTCPeerConnection, track: any) {\n    let transceiver = null;\n    pc.getTransceivers().forEach(t => {\n      if (t.sender == track || t.receiver == track) transceiver = t;\n    });\n    if (!transceiver) {\n      throw new Error('invalid transceiver');\n    }\n    return transceiver;\n  }\n\n  _findDataChannel(channelId: string) {\n    return this._dataChannels.find(channel => channel.label == channelId);\n  }\n\n  async _closeDataChannel(dataChannel: window.RTCDataChannel) {\n    return new Promise((resolve, reject) => {\n      if (!dataChannel) return resolve();\n      if (dataChannel.readyState === 'closed') return resolve();\n      dataChannel.onclose = null;\n      const timerId = setInterval(() => {\n        if (!dataChannel) {\n          clearInterval(timerId);\n          return reject('DataChannel Closing Error');\n        }\n        if (dataChannel.readyState === 'closed') {\n          clearInterval(timerId);\n          return resolve();\n        }\n      }, 800);\n      dataChannel && dataChannel.close();\n    });\n  }\n\n  async _closePeerConnection() {\n    return new Promise((resolve, reject) => {\n      if (browser() === 'safari' && this._pc) {\n        this._pc.oniceconnectionstatechange = null;\n        this._pc.close();\n        this._pc = null;\n        return resolve();\n      }\n      if (!this._pc) return resolve();\n      if (this._pc && this._pc.signalingState == 'closed') {\n        return resolve();\n      }\n      this._pc.oniceconnectionstatechange = null;\n      const timerId = setInterval(() => {\n        if (!this._pc) {\n          clearInterval(timerId);\n          return reject('PeerConnection Closing Error');\n        }\n        if (this._pc && this._pc.signalingState == 'closed') {\n          clearInterval(timerId);\n          return resolve();\n        }\n      }, 800);\n      this._pc.close();\n    });\n  }\n\n  async _closeWebSocketConnection() {\n    return new Promise((resolve, reject) => {\n      if (!this._ws) return resolve();\n      if (this._ws && this._ws.readyState === 3) return resolve();\n      this._ws.onclose = () => {};\n      const timerId = setInterval(() => {\n        if (!this._ws) {\n          clearInterval(timerId);\n          return reject('WebSocket Closing Error');\n        }\n        if (this._ws.readyState === 3) {\n          clearInterval(timerId);\n          return resolve();\n        }\n      }, 800);\n      this._ws && this._ws.close();\n    });\n  }\n\n  _traceLog(title: string, message: Object | string) {\n    if (!this.debug) return;\n    traceLog(title, message);\n  }\n}\n\nexport default ConnectionBase;\n",
+    "content": "/* @flow */\n/* @private */\nimport { traceLog, getVideoCodecsFromString, removeCodec, browser } from '../utils';\nimport { type ConnectionOptions } from './options';\n\n/**\n * @ignore\n */\nclass ConnectionBase {\n  debug: boolean;\n  roomId: string;\n  signalingUrl: string;\n  options: ConnectionOptions;\n  connectionState: string;\n  stream: ?window.MediaStream;\n  remoteStream: ?window.MediaStream;\n  authnMetadata: ?Object;\n  signalingKey: ?string;\n  authzMetadata: ?Object;\n  _ws: ?WebSocket;\n  _pc: window.RTCPeerConnection;\n  _callbacks: Object;\n  _removeCodec: boolean;\n  _isOffer: boolean;\n  _dataChannels: Array<window.RTCDataChannel>;\n  _callbacks: Object;\n  _pcConfig: {\n    iceServers: Array<Object>\n  };\n\n  /**\n   * @ignore\n   */\n  on(kind: string, callback: Function) {\n    if (kind in this._callbacks) {\n      this._callbacks[kind] = callback;\n    }\n  }\n  constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug: boolean = false) {\n    this.debug = debug;\n    this.roomId = roomId;\n    this.signalingUrl = signalingUrl;\n    this.options = options;\n    this._removeCodec = false;\n    this.stream = null;\n    this.remoteStream = null;\n    this._pc = null;\n    this.signalingKey = null;\n    this.authnMetadata = null;\n    this.authzMetadata = null;\n    this._dataChannels = [];\n    this._isOffer = false;\n    this.connectionState = 'new';\n    this._pcConfig = {\n      iceServers: this.options.iceServers\n    };\n    this._callbacks = {\n      open: () => {},\n      connect: () => {},\n      disconnect: () => {},\n      addstream: () => {},\n      removestream: () => {},\n      data: () => {}\n    };\n  }\n\n  async _disconnect() {\n    await this._dataChannels.forEach(async dataChannel => {\n      await this._closeDataChannel(dataChannel);\n    });\n    await this._closePeerConnection();\n    await this._closeWebSocketConnection();\n    if (this.stream) {\n      this.stream.getTracks().forEach(t => {\n        t.stop();\n      });\n    }\n    if (this.remoteStream) {\n      this.remoteStream.getTracks().forEach(t => {\n        t.stop();\n      });\n    }\n    this.remoteStream = null;\n    this.stream = null;\n    this.signalingKey = null;\n    this.authnMetadata = null;\n    this.authzMetadata = null;\n    this._ws = null;\n    this._pc = null;\n    this._removeCodec = false;\n    this._isOffer = false;\n    this._dataChannels = [];\n    this.connectionState = 'new';\n  }\n\n  async _signaling() {\n    return new Promise((resolve, reject) => {\n      if (this._ws) {\n        return reject('WS-ALREADY-EXISTS');\n      }\n      this._ws = new WebSocket(this.signalingUrl);\n      this._ws.onclose = async () => {\n        await this._disconnect();\n        return reject('WS-CLOSED');\n      };\n      this._ws.onerror = async () => {\n        await this._disconnect();\n        return reject('WS-CLOSED-WITH-ERROR');\n      };\n      this._ws.onopen = () => {\n        const registerMessage = {\n          type: 'register',\n          roomId: this.roomId,\n          clientId: this.options.clientId,\n          authnMetadata: undefined,\n          key: undefined\n        };\n        if (this.authnMetadata !== null) {\n          registerMessage.authnMetadata = this.authnMetadata;\n        }\n        if (this.signalingKey !== null) {\n          registerMessage.key = this.signalingKey;\n        }\n        this._sendWs(registerMessage);\n        if (this._ws) {\n          this._ws.onmessage = async (event: MessageEvent) => {\n            try {\n              if (typeof event.data !== 'string') {\n                return;\n              }\n              const message = JSON.parse(event.data);\n              if (message.type === 'ping') {\n                this._sendWs({ type: 'pong' });\n              } else if (message.type === 'close') {\n                this._callbacks.close(event);\n              } else if (message.type === 'accept') {\n                this.authzMetadata = message.authzMetadata;\n                if (Array.isArray(message.iceServers) && message.iceServers.length > 0) {\n                  this._traceLog('iceServers=>', message.iceServers);\n                  this._pcConfig.iceServers = message.iceServers;\n                }\n                if (!this._pc) this._createPeerConnection();\n                await this._sendOffer();\n                return resolve();\n              } else if (message.type === 'reject') {\n                await this._disconnect();\n                this._callbacks.disconnect({ reason: 'REJECTED' });\n                return reject('REJECTED');\n              } else if (message.type === 'offer') {\n                this._setOffer(new window.RTCSessionDescription(message));\n              } else if (message.type === 'answer') {\n                await this._setAnswer(new window.RTCSessionDescription(message));\n              } else if (message.type === 'candidate') {\n                if (message.ice) {\n                  this._traceLog('Received ICE candidate ...', message.ice);\n                  const candidate = new window.RTCIceCandidate(message.ice);\n                  this._addIceCandidate(candidate);\n                }\n              }\n            } catch (error) {\n              await this._disconnect();\n              this._callbacks.disconnect({ reason: 'SIGNALING-ERROR', error: error });\n            }\n          };\n        }\n      };\n    });\n  }\n\n  _createPeerConnection() {\n    const pc = new window.RTCPeerConnection(this._pcConfig);\n    const audioTrack = this.stream && this.stream.getAudioTracks()[0];\n    if (audioTrack && this.options.audio.direction !== 'recvonly') {\n      pc.addTrack(audioTrack, this.stream);\n    } else if (this.options.audio.enabled) {\n      pc.addTransceiver('audio', { direction: 'recvonly' });\n    }\n    const videoTrack = this.stream && this.stream.getVideoTracks()[0];\n    if (videoTrack && this.options.video.direction !== 'recvonly') {\n      const videoSender = pc.addTrack(videoTrack, this.stream);\n      const videoTransceiver = this._getTransceiver(pc, videoSender);\n      if (this._isVideoCodecSpecified()) {\n        if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {\n          const videoCapabilities = window.RTCRtpSender.getCapabilities('video');\n          const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);\n          this._traceLog('video codecs=', videoCodecs);\n          videoTransceiver.setCodecPreferences(videoCodecs);\n        } else {\n          this._removeCodec = true;\n        }\n      }\n    } else if (this.options.video.enabled) {\n      const videoTransceiver = pc.addTransceiver('video', { direction: 'recvonly' });\n      if (this._isVideoCodecSpecified()) {\n        if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {\n          const videoCapabilities = window.RTCRtpSender.getCapabilities('video');\n          const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);\n          this._traceLog('video codecs=', videoCodecs);\n          videoTransceiver.setCodecPreferences(videoCodecs);\n        } else {\n          this._removeCodec = true;\n        }\n      }\n    }\n    pc.ontrack = (event: window.RTCTrackEvent) => {\n      let tracks = [];\n      this._traceLog('peer.ontrack()', event);\n      if (browser() === 'safari') {\n        tracks.push(event.track);\n        let mediaStream = new window.MediaStream(tracks);\n        this.remoteStream = mediaStream;\n      } else {\n        this.remoteStream = event.streams[0];\n      }\n      event.stream = this.remoteStream;\n      this._callbacks.addstream(event);\n    };\n    pc.onicecandidate = event => {\n      this._traceLog('peer.onicecandidate()', event);\n      if (event.candidate) {\n        this._sendIceCandidate(event.candidate);\n      } else {\n        this._traceLog('empty ice event', '');\n      }\n    };\n    pc.oniceconnectionstatechange = async () => {\n      this._traceLog('ICE connection Status has changed to ', pc.iceConnectionState);\n      if (this.connectionState !== pc.iceConnectionState) {\n        this.connectionState = pc.iceConnectionState;\n        switch (this.connectionState) {\n          case 'connected':\n            this._isOffer = false;\n            this._callbacks.connect();\n            break;\n          case 'disconnected':\n          case 'failed':\n            await this._disconnect();\n            this._callbacks.disconnect({ reason: 'ICE-CONNECTION-STATE-FAILED' });\n            break;\n        }\n      }\n    };\n    pc.onsignalingstatechange = _ => {\n      this._traceLog('signaling state changes:', pc.signalingState);\n    };\n    pc.ondatachannel = this._onDataChannel.bind(this);\n    if (!this._pc) {\n      this._pc = pc;\n      this._addDataChannel('dataChannel');\n      this._callbacks.open({ authzMetadata: this.authzMetadata });\n    } else {\n      this._pc = pc;\n    }\n  }\n\n  async _addDataChannel(channelId: string, options: Object = undefined) {\n    return new Promise((resolve, reject) => {\n      if (!this._pc) return reject('PeerConnection Does Not Ready');\n      if (this._isOffer) return reject('PeerConnection Has Local Offer');\n      let dataChannel = this._findDataChannel(channelId);\n      if (dataChannel) {\n        return reject('DataChannel Already Exists!');\n      }\n      dataChannel = this._pc.createDataChannel(channelId, options);\n      dataChannel.onclose = (event: Object) => {\n        this._traceLog('datachannel onclosed=>', event);\n        this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != channelId);\n      };\n      dataChannel.onerror = (event: Object) => {\n        this._traceLog('datachannel onerror=>', event);\n        this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != channelId);\n      };\n      dataChannel.onmessage = (event: Object) => {\n        this._traceLog('datachannel onmessage=>', event.data);\n        event.channelId = channelId;\n        this._callbacks.data(event);\n      };\n      dataChannel.onopen = (event: Object) => {\n        this._traceLog('datachannel onopen=>', event);\n      };\n      this._dataChannels.push(dataChannel);\n      return resolve();\n    });\n  }\n\n  _onDataChannel(event: Object) {\n    this._traceLog('on data channel', event);\n    if (!this._pc) return;\n    let dataChannel = event.channel;\n    let channelId = event.channel.label;\n    if (!event.channel) return;\n    if (!channelId || channelId.length < 1) return;\n    dataChannel.onopen = async (event: Object) => {\n      this._traceLog('datachannel onopen=>', event);\n    };\n    dataChannel.onclose = async (event: Object) => {\n      this._traceLog('datachannel onclosed=>', event);\n    };\n    dataChannel.onerror = async (event: Object) => {\n      this._traceLog('datachannel onerror=>', event);\n    };\n    dataChannel.onmessage = (event: Object) => {\n      this._traceLog('datachannel onmessage=>', event.data);\n      event.channelId = channelId;\n      this._callbacks.data(event);\n    };\n    if (!this._findDataChannel(channelId)) {\n      this._dataChannels.push(event.channel);\n    } else {\n      this._dataChannels = this._dataChannels.map(channel => {\n        if (channel.label == channelId) {\n          return dataChannel;\n        } else {\n          return channel;\n        }\n      });\n    }\n  }\n\n  async _sendOffer() {\n    if (!this._pc) {\n      return;\n    }\n    if (browser() === 'safari') {\n      if (this.options.video.enabled && this.options.video.direction === 'sendrecv') {\n        this._pc.addTransceiver('video', { direction: 'recvonly' });\n      }\n      if (this.options.audio.enabled && this.options.audio.direction === 'sendrecv') {\n        this._pc.addTransceiver('audio', { direction: 'recvonly' });\n      }\n    }\n    let offer = await this._pc.createOffer({\n      offerToReceiveAudio: this.options.audio.enabled && this.options.audio.direction !== 'sendonly',\n      offerToReceiveVideo: this.options.video.enabled && this.options.video.direction !== 'sendonly'\n    });\n    if (this._removeCodec && this.options.video.codec) {\n      const codecs = ['VP8', 'VP9', 'H264'];\n      codecs.forEach(codec => {\n        if (this.options.video.codec !== codec) {\n          offer.sdp = removeCodec(offer.sdp, codec);\n        }\n      });\n    }\n    this._traceLog('create offer sdp, sdp=', offer.sdp);\n    await this._pc.setLocalDescription(offer);\n    this._sendSdp(this._pc.localDescription);\n    this._isOffer = true;\n  }\n\n  _isVideoCodecSpecified() {\n    return this.options.video.enabled && this.options.video.codec !== null;\n  }\n\n  async _createAnswer() {\n    if (!this._pc) {\n      return;\n    }\n    try {\n      let answer = await this._pc.createAnswer();\n      this._traceLog('create answer sdp, sdp=', answer.sdp);\n      await this._pc.setLocalDescription(answer);\n      this._sendSdp(this._pc.localDescription);\n    } catch (error) {\n      await this._disconnect();\n      this._callbacks.disconnect({ reason: 'CREATE-ANSWER-ERROR', error: error });\n    }\n  }\n\n  async _setAnswer(sessionDescription: window.RTCSessionDescription) {\n    await this._pc.setRemoteDescription(sessionDescription);\n    this._traceLog('set answer sdp=', sessionDescription.sdp);\n  }\n\n  async _setOffer(sessionDescription: window.RTCSessionDescription) {\n    this._createPeerConnection();\n    try {\n      await this._pc.setRemoteDescription(sessionDescription);\n      this._traceLog('set offer sdp=', sessionDescription.sdp);\n      await this._createAnswer();\n    } catch (error) {\n      await this._disconnect();\n      this._callbacks.disconnect({ reason: 'SET-OFFER-ERROR', error: error });\n    }\n  }\n\n  async _addIceCandidate(candidate: window.RTCIceCandidate) {\n    try {\n      if (this._pc) {\n        await this._pc.addIceCandidate(candidate);\n      }\n    } catch (_error) {\n      this._traceLog('invalid ice candidate', candidate);\n    }\n  }\n\n  _sendIceCandidate(candidate: window.RTCIceCandidate) {\n    const message = { type: 'candidate', ice: candidate };\n    this._sendWs(message);\n  }\n\n  _sendSdp(sessionDescription: Object) {\n    this._sendWs(sessionDescription);\n  }\n\n  _sendWs(message: Object) {\n    if (this._ws) {\n      this._ws.send(JSON.stringify(message));\n    }\n  }\n\n  _getTransceiver(pc: window.RTCPeerConnection, track: any) {\n    let transceiver = null;\n    pc.getTransceivers().forEach(t => {\n      if (t.sender == track || t.receiver == track) transceiver = t;\n    });\n    if (!transceiver) {\n      throw new Error('invalid transceiver');\n    }\n    return transceiver;\n  }\n\n  _findDataChannel(channelId: string) {\n    return this._dataChannels.find(channel => channel.label == channelId);\n  }\n\n  async _closeDataChannel(dataChannel: window.RTCDataChannel) {\n    return new Promise((resolve, reject) => {\n      if (!dataChannel) return resolve();\n      if (dataChannel.readyState === 'closed') return resolve();\n      dataChannel.onclose = null;\n      const timerId = setInterval(() => {\n        if (!dataChannel) {\n          clearInterval(timerId);\n          return reject('DataChannel Closing Error');\n        }\n        if (dataChannel.readyState === 'closed') {\n          clearInterval(timerId);\n          return resolve();\n        }\n      }, 800);\n      dataChannel && dataChannel.close();\n    });\n  }\n\n  async _closePeerConnection() {\n    return new Promise((resolve, reject) => {\n      if (browser() === 'safari' && this._pc) {\n        this._pc.oniceconnectionstatechange = null;\n        this._pc.close();\n        this._pc = null;\n        return resolve();\n      }\n      if (!this._pc) return resolve();\n      if (this._pc && this._pc.signalingState == 'closed') {\n        return resolve();\n      }\n      this._pc.oniceconnectionstatechange = null;\n      const timerId = setInterval(() => {\n        if (!this._pc) {\n          clearInterval(timerId);\n          return reject('PeerConnection Closing Error');\n        }\n        if (this._pc && this._pc.signalingState == 'closed') {\n          clearInterval(timerId);\n          return resolve();\n        }\n      }, 800);\n      this._pc.close();\n    });\n  }\n\n  async _closeWebSocketConnection() {\n    return new Promise((resolve, reject) => {\n      if (!this._ws) return resolve();\n      if (this._ws && this._ws.readyState === 3) return resolve();\n      this._ws.onclose = () => {};\n      const timerId = setInterval(() => {\n        if (!this._ws) {\n          clearInterval(timerId);\n          return reject('WebSocket Closing Error');\n        }\n        if (this._ws.readyState === 3) {\n          clearInterval(timerId);\n          return resolve();\n        }\n      }, 800);\n      this._ws && this._ws.close();\n    });\n  }\n\n  _traceLog(title: string, message: Object | string) {\n    if (!this.debug) return;\n    traceLog(title, message);\n  }\n}\n\nexport default ConnectionBase;\n",
     "static": true,
     "longname": "/Users/kyoko/ghq/src/github.com/OpenAyame/ayame-web-sdk/src/connection/base.js",
     "access": "public",
@@ -871,13 +871,32 @@
   {
     "__docId__": 62,
     "kind": "member",
+    "name": "signalingKey",
+    "memberof": "src/connection/base.js~ConnectionBase",
+    "static": false,
+    "longname": "src/connection/base.js~ConnectionBase#signalingKey",
+    "access": "public",
+    "description": "",
+    "lineNumber": 18,
+    "type": {
+      "nullable": true,
+      "types": [
+        "string"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 63,
+    "kind": "member",
     "name": "authzMetadata",
     "memberof": "src/connection/base.js~ConnectionBase",
     "static": false,
     "longname": "src/connection/base.js~ConnectionBase#authzMetadata",
     "access": "public",
     "description": "",
-    "lineNumber": 18,
+    "lineNumber": 19,
     "type": {
       "nullable": true,
       "types": [
@@ -888,7 +907,7 @@
     }
   },
   {
-    "__docId__": 63,
+    "__docId__": 64,
     "kind": "member",
     "name": "_ws",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -896,7 +915,7 @@
     "longname": "src/connection/base.js~ConnectionBase#_ws",
     "access": "private",
     "description": "",
-    "lineNumber": 19,
+    "lineNumber": 20,
     "type": {
       "nullable": true,
       "types": [
@@ -908,7 +927,7 @@
     "ignore": true
   },
   {
-    "__docId__": 64,
+    "__docId__": 65,
     "kind": "member",
     "name": "_pc",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -916,7 +935,7 @@
     "longname": "src/connection/base.js~ConnectionBase#_pc",
     "access": "private",
     "description": "",
-    "lineNumber": 20,
+    "lineNumber": 21,
     "type": {
       "nullable": null,
       "types": [
@@ -928,7 +947,7 @@
     "ignore": true
   },
   {
-    "__docId__": 65,
+    "__docId__": 66,
     "kind": "member",
     "name": "_callbacks",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -936,7 +955,7 @@
     "longname": "src/connection/base.js~ConnectionBase#_callbacks",
     "access": "private",
     "description": "",
-    "lineNumber": 21,
+    "lineNumber": 22,
     "type": {
       "nullable": null,
       "types": [
@@ -948,32 +967,12 @@
     "ignore": true
   },
   {
-    "__docId__": 66,
+    "__docId__": 67,
     "kind": "member",
     "name": "_removeCodec",
     "memberof": "src/connection/base.js~ConnectionBase",
     "static": false,
     "longname": "src/connection/base.js~ConnectionBase#_removeCodec",
-    "access": "private",
-    "description": "",
-    "lineNumber": 22,
-    "type": {
-      "nullable": null,
-      "types": [
-        "boolean"
-      ],
-      "spread": false,
-      "description": null
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 67,
-    "kind": "member",
-    "name": "_isOffer",
-    "memberof": "src/connection/base.js~ConnectionBase",
-    "static": false,
-    "longname": "src/connection/base.js~ConnectionBase#_isOffer",
     "access": "private",
     "description": "",
     "lineNumber": 23,
@@ -990,13 +989,33 @@
   {
     "__docId__": 68,
     "kind": "member",
+    "name": "_isOffer",
+    "memberof": "src/connection/base.js~ConnectionBase",
+    "static": false,
+    "longname": "src/connection/base.js~ConnectionBase#_isOffer",
+    "access": "private",
+    "description": "",
+    "lineNumber": 24,
+    "type": {
+      "nullable": null,
+      "types": [
+        "boolean"
+      ],
+      "spread": false,
+      "description": null
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 69,
+    "kind": "member",
     "name": "_dataChannels",
     "memberof": "src/connection/base.js~ConnectionBase",
     "static": false,
     "longname": "src/connection/base.js~ConnectionBase#_dataChannels",
     "access": "private",
     "description": "",
-    "lineNumber": 24,
+    "lineNumber": 25,
     "type": {
       "nullable": null,
       "types": [
@@ -1008,7 +1027,27 @@
     "ignore": true
   },
   {
-    "__docId__": 70,
+    "__docId__": 71,
+    "kind": "member",
+    "name": "_pcConfig",
+    "memberof": "src/connection/base.js~ConnectionBase",
+    "static": false,
+    "longname": "src/connection/base.js~ConnectionBase#_pcConfig",
+    "access": "private",
+    "description": "",
+    "lineNumber": 27,
+    "type": {
+      "nullable": null,
+      "types": [
+        "object"
+      ],
+      "spread": false,
+      "description": null
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 72,
     "kind": "method",
     "name": "on",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -1018,7 +1057,7 @@
     "longname": "src/connection/base.js~ConnectionBase#on",
     "access": "public",
     "description": " ",
-    "lineNumber": 30,
+    "lineNumber": 34,
     "ignore": true,
     "params": [
       {
@@ -1045,7 +1084,7 @@
     "return": null
   },
   {
-    "__docId__": 71,
+    "__docId__": 73,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -1055,7 +1094,7 @@
     "longname": "src/connection/base.js~ConnectionBase#constructor",
     "access": "public",
     "description": "",
-    "lineNumber": 35,
+    "lineNumber": 39,
     "params": [
       {
         "nullable": null,
@@ -1102,7 +1141,7 @@
     ]
   },
   {
-    "__docId__": 86,
+    "__docId__": 90,
     "kind": "method",
     "name": "_disconnect",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -1112,13 +1151,13 @@
     "longname": "src/connection/base.js~ConnectionBase#_disconnect",
     "access": "private",
     "description": "",
-    "lineNumber": 59,
+    "lineNumber": 67,
     "ignore": true,
     "params": [],
     "return": null
   },
   {
-    "__docId__": 97,
+    "__docId__": 102,
     "kind": "method",
     "name": "_signaling",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -1128,7 +1167,7 @@
     "longname": "src/connection/base.js~ConnectionBase#_signaling",
     "access": "private",
     "description": "",
-    "lineNumber": 87,
+    "lineNumber": 96,
     "ignore": true,
     "params": [],
     "return": {
@@ -1138,7 +1177,7 @@
     }
   },
   {
-    "__docId__": 100,
+    "__docId__": 105,
     "kind": "method",
     "name": "_createPeerConnection",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -1148,13 +1187,13 @@
     "longname": "src/connection/base.js~ConnectionBase#_createPeerConnection",
     "access": "private",
     "description": "",
-    "lineNumber": 153,
+    "lineNumber": 170,
     "ignore": true,
     "params": [],
     "return": null
   },
   {
-    "__docId__": 109,
+    "__docId__": 114,
     "kind": "method",
     "name": "_addDataChannel",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -1164,7 +1203,7 @@
     "longname": "src/connection/base.js~ConnectionBase#_addDataChannel",
     "access": "private",
     "description": "",
-    "lineNumber": 242,
+    "lineNumber": 256,
     "params": [
       {
         "nullable": null,
@@ -1197,7 +1236,7 @@
     }
   },
   {
-    "__docId__": 112,
+    "__docId__": 117,
     "kind": "method",
     "name": "_onDataChannel",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -1207,7 +1246,7 @@
     "longname": "src/connection/base.js~ConnectionBase#_onDataChannel",
     "access": "private",
     "description": "",
-    "lineNumber": 272,
+    "lineNumber": 286,
     "params": [
       {
         "nullable": null,
@@ -1224,7 +1263,7 @@
     "return": null
   },
   {
-    "__docId__": 114,
+    "__docId__": 119,
     "kind": "method",
     "name": "_sendOffer",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -1234,13 +1273,13 @@
     "longname": "src/connection/base.js~ConnectionBase#_sendOffer",
     "access": "private",
     "description": "",
-    "lineNumber": 306,
+    "lineNumber": 320,
     "ignore": true,
     "params": [],
     "return": null
   },
   {
-    "__docId__": 116,
+    "__docId__": 121,
     "kind": "method",
     "name": "_isVideoCodecSpecified",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -1250,7 +1289,7 @@
     "longname": "src/connection/base.js~ConnectionBase#_isVideoCodecSpecified",
     "access": "private",
     "description": "",
-    "lineNumber": 336,
+    "lineNumber": 350,
     "ignore": true,
     "params": [],
     "return": {
@@ -1260,7 +1299,7 @@
     }
   },
   {
-    "__docId__": 117,
+    "__docId__": 122,
     "kind": "method",
     "name": "_createAnswer",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -1270,13 +1309,13 @@
     "longname": "src/connection/base.js~ConnectionBase#_createAnswer",
     "access": "private",
     "description": "",
-    "lineNumber": 340,
+    "lineNumber": 354,
     "ignore": true,
     "params": [],
     "return": null
   },
   {
-    "__docId__": 118,
+    "__docId__": 123,
     "kind": "method",
     "name": "_setAnswer",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -1286,7 +1325,7 @@
     "longname": "src/connection/base.js~ConnectionBase#_setAnswer",
     "access": "private",
     "description": "",
-    "lineNumber": 355,
+    "lineNumber": 369,
     "params": [
       {
         "nullable": null,
@@ -1303,7 +1342,7 @@
     "return": null
   },
   {
-    "__docId__": 119,
+    "__docId__": 124,
     "kind": "method",
     "name": "_setOffer",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -1313,7 +1352,7 @@
     "longname": "src/connection/base.js~ConnectionBase#_setOffer",
     "access": "private",
     "description": "",
-    "lineNumber": 360,
+    "lineNumber": 374,
     "params": [
       {
         "nullable": null,
@@ -1330,7 +1369,7 @@
     "return": null
   },
   {
-    "__docId__": 120,
+    "__docId__": 125,
     "kind": "method",
     "name": "_addIceCandidate",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -1340,7 +1379,7 @@
     "longname": "src/connection/base.js~ConnectionBase#_addIceCandidate",
     "access": "private",
     "description": "",
-    "lineNumber": 372,
+    "lineNumber": 386,
     "params": [
       {
         "nullable": null,
@@ -1357,7 +1396,7 @@
     "return": null
   },
   {
-    "__docId__": 121,
+    "__docId__": 126,
     "kind": "method",
     "name": "_sendIceCandidate",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -1367,7 +1406,7 @@
     "longname": "src/connection/base.js~ConnectionBase#_sendIceCandidate",
     "access": "private",
     "description": "",
-    "lineNumber": 382,
+    "lineNumber": 396,
     "params": [
       {
         "nullable": null,
@@ -1384,7 +1423,7 @@
     "return": null
   },
   {
-    "__docId__": 122,
+    "__docId__": 127,
     "kind": "method",
     "name": "_sendSdp",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -1394,7 +1433,7 @@
     "longname": "src/connection/base.js~ConnectionBase#_sendSdp",
     "access": "private",
     "description": "",
-    "lineNumber": 387,
+    "lineNumber": 401,
     "params": [
       {
         "nullable": null,
@@ -1411,7 +1450,7 @@
     "return": null
   },
   {
-    "__docId__": 123,
+    "__docId__": 128,
     "kind": "method",
     "name": "_sendWs",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -1421,7 +1460,7 @@
     "longname": "src/connection/base.js~ConnectionBase#_sendWs",
     "access": "private",
     "description": "",
-    "lineNumber": 391,
+    "lineNumber": 405,
     "params": [
       {
         "nullable": null,
@@ -1438,7 +1477,7 @@
     "return": null
   },
   {
-    "__docId__": 124,
+    "__docId__": 129,
     "kind": "method",
     "name": "_getTransceiver",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -1448,7 +1487,7 @@
     "longname": "src/connection/base.js~ConnectionBase#_getTransceiver",
     "access": "private",
     "description": "",
-    "lineNumber": 397,
+    "lineNumber": 411,
     "params": [
       {
         "nullable": null,
@@ -1479,7 +1518,7 @@
     }
   },
   {
-    "__docId__": 125,
+    "__docId__": 130,
     "kind": "method",
     "name": "_findDataChannel",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -1489,7 +1528,7 @@
     "longname": "src/connection/base.js~ConnectionBase#_findDataChannel",
     "access": "private",
     "description": "",
-    "lineNumber": 408,
+    "lineNumber": 422,
     "params": [
       {
         "nullable": null,
@@ -1510,7 +1549,7 @@
     }
   },
   {
-    "__docId__": 126,
+    "__docId__": 131,
     "kind": "method",
     "name": "_closeDataChannel",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -1520,7 +1559,7 @@
     "longname": "src/connection/base.js~ConnectionBase#_closeDataChannel",
     "access": "private",
     "description": "",
-    "lineNumber": 412,
+    "lineNumber": 426,
     "params": [
       {
         "nullable": null,
@@ -1541,7 +1580,7 @@
     }
   },
   {
-    "__docId__": 127,
+    "__docId__": 132,
     "kind": "method",
     "name": "_closePeerConnection",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -1551,7 +1590,7 @@
     "longname": "src/connection/base.js~ConnectionBase#_closePeerConnection",
     "access": "private",
     "description": "",
-    "lineNumber": 431,
+    "lineNumber": 445,
     "ignore": true,
     "params": [],
     "return": {
@@ -1561,7 +1600,7 @@
     }
   },
   {
-    "__docId__": 129,
+    "__docId__": 134,
     "kind": "method",
     "name": "_closeWebSocketConnection",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -1571,7 +1610,7 @@
     "longname": "src/connection/base.js~ConnectionBase#_closeWebSocketConnection",
     "access": "private",
     "description": "",
-    "lineNumber": 458,
+    "lineNumber": 472,
     "ignore": true,
     "params": [],
     "return": {
@@ -1581,7 +1620,7 @@
     }
   },
   {
-    "__docId__": 131,
+    "__docId__": 136,
     "kind": "method",
     "name": "_traceLog",
     "memberof": "src/connection/base.js~ConnectionBase",
@@ -1591,7 +1630,7 @@
     "longname": "src/connection/base.js~ConnectionBase#_traceLog",
     "access": "private",
     "description": "",
-    "lineNumber": 477,
+    "lineNumber": 491,
     "params": [
       {
         "nullable": null,
@@ -1619,10 +1658,10 @@
     "return": null
   },
   {
-    "__docId__": 132,
+    "__docId__": 137,
     "kind": "file",
     "name": "src/connection/index.js",
-    "content": "/* @flow */\nimport ConnectionBase from './base';\nimport { type ConnectionOptions } from './options';\n\n/**\n * Peer Connection 接続を管理するクラスです。\n */\nclass Connection extends ConnectionBase {\n\n  /**\n   * オブジェクトを生成し、リモートのピアまたはサーバーに接続します。\n   * @param {string} signalingUrl シグナリングに利用する URL\n   * @param {string} roomId Ayame のルームID\n   * @param {ConnectionOptions} options Ayame の接続オプション\n   * @param {boolean} [debug=false] デバッグログの出力可否\n   * @listens {open} Ayame Server に accept され、PeerConnection が生成されると送信されます。\n   * @listens {connect} PeerConnection が接続されると送信されます。\n   * @listens {disconnect} PeerConnection が切断されると送信されます。\n   * @listens {addstream} リモートのストリームが追加されると送信されます。\n   * @listens {removestream} リモートのストリームが削除されると送信されます。\n   */\n  constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug: boolean = false) {\n    super(signalingUrl, roomId, options, debug);\n  }\n\n  /**\n   * PeerConnection  接続を開始します。\n   * @param {RTCMediaStream|null} stream ローカルのストリーム\n   * @param {Object|null} authnMetadata 送信するメタデータ\n   * @return {Promise<null>}\n   */\n  async connect(stream: window.RTCMediaStream | null, authnMetadata: Object | null = null) {\n    if (this._ws || this._pc) {\n      this._traceLog('connection already exists');\n      throw new Error('Connection Already Exists!');\n    }\n    this.stream = stream;\n    this.authnMetadata = authnMetadata;\n    await this._signaling();\n  }\n\n  /**\n   * Datachannel を追加します。\n   * @param {string} channelId dataChannel の Id\n   * @param {Object|null} options dataChannel の init オプション\n   * @return {Promise<null>}\n   */\n  async addDataChannel(channelId: string, options: Object | null = null) {\n    await this._addDataChannel(channelId, options);\n  }\n\n  /**\n   * Datachannel を削除します。\n   * @param {string} channelId 削除する dataChannel の Id\n   * @return {Promise<null>}\n   */\n  async removeDataChannel(channelId: string) {\n    this._traceLog('datachannel remove=>', channelId);\n    const dataChannel = this._findDataChannel(channelId);\n    if (dataChannel && dataChannel.readyState === 'open') {\n      await this._closeDataChannel(dataChannel);\n      return;\n    } else {\n      throw new Error('data channel is not exist or open');\n    }\n  }\n\n  /**\n   * Datachannel でデータを送信します。\n   * @param {any} params 送信するデータ\n   * @param {string} channelId 指定する dataChannel の id\n   * @return {null}\n   */\n  sendData(params: any, channelId: string = 'dataChannel') {\n    this._traceLog('datachannel sendData=>', params);\n    const dataChannel = this._findDataChannel(channelId);\n    if (dataChannel && dataChannel.readyState === 'open') {\n      dataChannel.send(params);\n    } else {\n      throw new Error('datachannel is not open');\n    }\n  }\n\n  /**\n   * PeerConnection  接続を切断します。\n   * @return {Promise<void>}\n   */\n  async disconnect() {\n    await this._disconnect();\n  }\n}\n\nexport default Connection;\n",
+    "content": "/* @flow */\nimport ConnectionBase from './base';\nimport { type ConnectionOptions, type MetadataOption } from './options';\n\n/**\n * Peer Connection 接続を管理するクラスです。\n */\nclass Connection extends ConnectionBase {\n  /**\n   * オブジェクトを生成し、リモートのピアまたはサーバーに接続します。\n   * @param {string} signalingUrl シグナリングに利用する URL\n   * @param {string} roomId Ayame のルームID\n   * @param {ConnectionOptions} options Ayame の接続オプション\n   * @param {boolean} [debug=false] デバッグログの出力可否\n   * @listens {open} Ayame Server に accept され、PeerConnection が生成されると送信されます。\n   * @listens {connect} PeerConnection が接続されると送信されます。\n   * @listens {disconnect} PeerConnection が切断されると送信されます。\n   * @listens {addstream} リモートのストリームが追加されると送信されます。\n   * @listens {removestream} リモートのストリームが削除されると送信されます。\n   */\n  constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug: boolean = false) {\n    super(signalingUrl, roomId, options, debug);\n  }\n\n  /**\n   * PeerConnection  接続を開始します。\n   * @param {RTCMediaStream|null} stream ローカルのストリーム\n   * @param {MetadataOption|null} metadataOption 送信するメタデータとシグナリングキー\n   * @return {Promise<null>}\n   */\n  async connect(stream: window.RTCMediaStream | null, metadataOption: ?MetadataOption = null) {\n    if (this._ws || this._pc) {\n      this._traceLog('connection already exists');\n      throw new Error('Connection Already Exists!');\n    }\n    this.stream = stream;\n    if (metadataOption) {\n      this.authnMetadata = metadataOption.authnMetadata;\n      this.signalingKey = metadataOption.key;\n    }\n    await this._signaling();\n  }\n\n  /**\n   * Datachannel を追加します。\n   * @param {string} channelId dataChannel の Id\n   * @param {Object|null} options dataChannel の init オプション\n   * @return {Promise<null>}\n   */\n  async addDataChannel(channelId: string, options: Object | null = null) {\n    await this._addDataChannel(channelId, options);\n  }\n\n  /**\n   * Datachannel を削除します。\n   * @param {string} channelId 削除する dataChannel の Id\n   * @return {Promise<null>}\n   */\n  async removeDataChannel(channelId: string) {\n    this._traceLog('datachannel remove=>', channelId);\n    const dataChannel = this._findDataChannel(channelId);\n    if (dataChannel && dataChannel.readyState === 'open') {\n      await this._closeDataChannel(dataChannel);\n      return;\n    } else {\n      throw new Error('data channel is not exist or open');\n    }\n  }\n\n  /**\n   * Datachannel でデータを送信します。\n   * @param {any} params 送信するデータ\n   * @param {string} channelId 指定する dataChannel の id\n   * @return {null}\n   */\n  sendData(params: any, channelId: string = 'dataChannel') {\n    this._traceLog('datachannel sendData=>', params);\n    const dataChannel = this._findDataChannel(channelId);\n    if (dataChannel && dataChannel.readyState === 'open') {\n      dataChannel.send(params);\n    } else {\n      throw new Error('datachannel is not open');\n    }\n  }\n\n  /**\n   * PeerConnection  接続を切断します。\n   * @return {Promise<void>}\n   */\n  async disconnect() {\n    await this._disconnect();\n  }\n}\n\nexport default Connection;\n",
     "static": true,
     "longname": "/Users/kyoko/ghq/src/github.com/OpenAyame/ayame-web-sdk/src/connection/index.js",
     "access": "public",
@@ -1630,7 +1669,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 133,
+    "__docId__": 138,
     "kind": "class",
     "name": "Connection",
     "memberof": "src/connection/index.js",
@@ -1648,7 +1687,7 @@
     ]
   },
   {
-    "__docId__": 134,
+    "__docId__": 139,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/connection/index.js~Connection",
@@ -1658,7 +1697,7 @@
     "longname": "src/connection/index.js~Connection#constructor",
     "access": "public",
     "description": "オブジェクトを生成し、リモートのピアまたはサーバーに接続します。 ",
-    "lineNumber": 22,
+    "lineNumber": 21,
     "params": [
       {
         "nullable": null,
@@ -1737,7 +1776,7 @@
     ]
   },
   {
-    "__docId__": 135,
+    "__docId__": 140,
     "kind": "method",
     "name": "connect",
     "memberof": "src/connection/index.js~Connection",
@@ -1747,7 +1786,7 @@
     "longname": "src/connection/index.js~Connection#connect",
     "access": "public",
     "description": "PeerConnection  接続を開始します。 ",
-    "lineNumber": 32,
+    "lineNumber": 31,
     "params": [
       {
         "nullable": null,
@@ -1763,13 +1802,13 @@
       {
         "nullable": null,
         "types": [
-          "Object",
+          "MetadataOption",
           "null"
         ],
         "spread": false,
         "optional": false,
-        "name": "authnMetadata",
-        "description": "送信するメタデータ"
+        "name": "metadataOption",
+        "description": "送信するメタデータとシグナリングキー"
       }
     ],
     "return": {
@@ -1782,7 +1821,7 @@
     }
   },
   {
-    "__docId__": 136,
+    "__docId__": 141,
     "kind": "member",
     "name": "stream",
     "memberof": "src/connection/index.js~Connection",
@@ -1790,7 +1829,7 @@
     "longname": "src/connection/index.js~Connection#stream",
     "access": "public",
     "description": null,
-    "lineNumber": 37,
+    "lineNumber": 36,
     "undocument": true,
     "type": {
       "types": [
@@ -1799,7 +1838,7 @@
     }
   },
   {
-    "__docId__": 137,
+    "__docId__": 142,
     "kind": "member",
     "name": "authnMetadata",
     "memberof": "src/connection/index.js~Connection",
@@ -1816,7 +1855,24 @@
     }
   },
   {
-    "__docId__": 138,
+    "__docId__": 143,
+    "kind": "member",
+    "name": "signalingKey",
+    "memberof": "src/connection/index.js~Connection",
+    "static": false,
+    "longname": "src/connection/index.js~Connection#signalingKey",
+    "access": "public",
+    "description": null,
+    "lineNumber": 39,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 144,
     "kind": "method",
     "name": "addDataChannel",
     "memberof": "src/connection/index.js~Connection",
@@ -1826,7 +1882,7 @@
     "longname": "src/connection/index.js~Connection#addDataChannel",
     "access": "public",
     "description": "Datachannel を追加します。 ",
-    "lineNumber": 48,
+    "lineNumber": 50,
     "params": [
       {
         "nullable": null,
@@ -1860,7 +1916,7 @@
     }
   },
   {
-    "__docId__": 139,
+    "__docId__": 145,
     "kind": "method",
     "name": "removeDataChannel",
     "memberof": "src/connection/index.js~Connection",
@@ -1870,7 +1926,7 @@
     "longname": "src/connection/index.js~Connection#removeDataChannel",
     "access": "public",
     "description": "Datachannel を削除します。 ",
-    "lineNumber": 57,
+    "lineNumber": 59,
     "params": [
       {
         "nullable": null,
@@ -1893,7 +1949,7 @@
     }
   },
   {
-    "__docId__": 140,
+    "__docId__": 146,
     "kind": "method",
     "name": "sendData",
     "memberof": "src/connection/index.js~Connection",
@@ -1903,7 +1959,7 @@
     "longname": "src/connection/index.js~Connection#sendData",
     "access": "public",
     "description": "Datachannel でデータを送信します。 ",
-    "lineNumber": 74,
+    "lineNumber": 76,
     "params": [
       {
         "nullable": null,
@@ -1936,7 +1992,7 @@
     }
   },
   {
-    "__docId__": 141,
+    "__docId__": 147,
     "kind": "method",
     "name": "disconnect",
     "memberof": "src/connection/index.js~Connection",
@@ -1946,7 +2002,7 @@
     "longname": "src/connection/index.js~Connection#disconnect",
     "access": "public",
     "description": "PeerConnection  接続を切断します。 ",
-    "lineNumber": 88,
+    "lineNumber": 90,
     "return": {
       "nullable": null,
       "types": [
@@ -1958,10 +2014,10 @@
     "params": []
   },
   {
-    "__docId__": 142,
+    "__docId__": 148,
     "kind": "file",
     "name": "src/connection/options.js",
-    "content": "/* @flow */\n\n/**\n * オーディオ、ビデオの送受信方向に関するオプションです。\n * - sendrecv\n * - recvonly\n * - sendonly\n * @typedef {string} ConnectionDirection\n */\nexport type ConnectionDirection = 'sendrecv' | 'recvonly' | 'sendonly';\n\n/**\n * オーディオ接続に関するオプションです。\n * @typedef {Object} ConnectionAudioOption\n */\nexport type ConnectionAudioOption = {\n  direction: ConnectionDirection,\n  enabled: boolean\n};\n\n/**\n * ビデオ接続のコーデックに関するオプションです。\n * - VP8\n * - VP9\n * - H264\n * @typedef {string} ConnectionDirection\n * @typedef {string} VideoCodecOption\n */\nexport type VideoCodecOption = 'VP8' | 'VP9' | 'H264';\n\n/**\n * ビデオ接続に関するオプションです。\n * @typedef {Object} ConnectionVideoOption\n */\nexport type ConnectionVideoOption = {\n  codec: ?VideoCodecOption,\n  direction: ConnectionDirection,\n  enabled: boolean\n};\n\n/**\n * 接続時に指定するオプションです。\n * @typedef {Object} ConnectionOptions\n */\nexport type ConnectionOptions = {\n  audio: ConnectionAudioOption,\n  video: ConnectionVideoOption,\n  clientId: string,\n  iceServers: Array<Object>\n};\n",
+    "content": "/* @flow */\n\n/**\n * オーディオ、ビデオの送受信方向に関するオプションです。\n * - sendrecv\n * - recvonly\n * - sendonly\n * @typedef {string} ConnectionDirection\n */\nexport type ConnectionDirection = 'sendrecv' | 'recvonly' | 'sendonly';\n\n/**\n * オーディオ接続に関するオプションです。\n * @typedef {Object} ConnectionAudioOption\n */\nexport type ConnectionAudioOption = {\n  direction: ConnectionDirection,\n  enabled: boolean\n};\n\n/**\n * ビデオ接続のコーデックに関するオプションです。\n * - VP8\n * - VP9\n * - H264\n * @typedef {string} ConnectionDirection\n * @typedef {string} VideoCodecOption\n */\nexport type VideoCodecOption = 'VP8' | 'VP9' | 'H264';\n\n/**\n * ビデオ接続に関するオプションです。\n * @typedef {Object} ConnectionVideoOption\n */\nexport type ConnectionVideoOption = {\n  codec: ?VideoCodecOption,\n  direction: ConnectionDirection,\n  enabled: boolean\n};\n\n/**\n * 接続時に指定するオプションです。\n * @typedef {Object} ConnectionOptions\n */\nexport type ConnectionOptions = {\n  audio: ConnectionAudioOption,\n  video: ConnectionVideoOption,\n  clientId: string,\n  iceServers: Array<Object>\n};\n\n/**\n * 接続時に指定できるメタデータです。\n * @typedef {Object} MetadataOption\n */\nexport type MetadataOption = {\n  authnMetadata: ?Object,\n  key: ?string\n};\n",
     "static": true,
     "longname": "/Users/kyoko/ghq/src/github.com/OpenAyame/ayame-web-sdk/src/connection/options.js",
     "access": "public",
@@ -1969,7 +2025,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 143,
+    "__docId__": 149,
     "kind": "typedef",
     "name": "ConnectionDirection",
     "memberof": "src/connection/options.js",
@@ -1987,7 +2043,7 @@
     }
   },
   {
-    "__docId__": 144,
+    "__docId__": 150,
     "kind": "typedef",
     "name": "ConnectionAudioOption",
     "memberof": "src/connection/options.js",
@@ -2005,7 +2061,7 @@
     }
   },
   {
-    "__docId__": 145,
+    "__docId__": 151,
     "kind": "typedef",
     "name": "VideoCodecOption",
     "memberof": "src/connection/options.js",
@@ -2023,7 +2079,7 @@
     }
   },
   {
-    "__docId__": 146,
+    "__docId__": 152,
     "kind": "typedef",
     "name": "ConnectionVideoOption",
     "memberof": "src/connection/options.js",
@@ -2041,7 +2097,7 @@
     }
   },
   {
-    "__docId__": 147,
+    "__docId__": 153,
     "kind": "typedef",
     "name": "ConnectionOptions",
     "memberof": "src/connection/options.js",
@@ -2059,10 +2115,28 @@
     }
   },
   {
-    "__docId__": 148,
+    "__docId__": 154,
+    "kind": "typedef",
+    "name": "MetadataOption",
+    "memberof": "src/connection/options.js",
+    "static": true,
+    "longname": "src/connection/options.js~MetadataOption",
+    "access": "public",
+    "description": "接続時に指定できるメタデータです。",
+    "lineNumber": 56,
+    "type": {
+      "types": [
+        "Object"
+      ],
+      "optional": false,
+      "name": "MetadataOption"
+    }
+  },
+  {
+    "__docId__": 155,
     "kind": "file",
     "name": "src/utils.js",
-    "content": "/* @flow */\nimport type { VideoCodecOption } from './connection/options';\n\n/**\n * @ignore\n */\nexport function randomString(strLength: number) {\n  var result = [];\n  var charSet = '0123456789';\n  while (strLength--) {\n    result.push(charSet.charAt(Math.floor(Math.random() * charSet.length)));\n  }\n  return result.join('');\n}\n\n/**\n * @ignore\n */\nexport function traceLog(title: string, value: Object | string) {\n  let prefix = '';\n  if (window.performance) {\n    prefix = '[Ayame ' + (window.performance.now() / 1000).toFixed(3) + ']';\n  }\n  if (browser() === 'edge') {\n    console.log(prefix + ' ' + title + '\\n', value);\n  } else {\n    console.info(prefix + ' ' + title + '\\n', value);\n  }\n}\n\n/** @private */\nexport function getVideoCodecsFromString(codec: VideoCodecOption, codecs: Array<Object>) {\n  let mimeType = '';\n  if (codec === 'VP8') {\n    mimeType = 'video/VP8';\n  } else if (codec === 'VP9') {\n    mimeType = 'video/VP9';\n  } else if (codec === 'H264') {\n    mimeType = 'video/H264';\n  } else {\n    mimeType = `video/${codec}`;\n  }\n  const filteredCodecs: Array<Object> = codecs.filter(c => c.mimeType == mimeType);\n  if (filteredCodecs.length < 1) {\n    throw new Error('invalid video codec type');\n  }\n  return filteredCodecs;\n}\n\n/**\n * @ignore\n */\nexport function removeCodec(orgSdp: any, codec: VideoCodecOption) {\n  const internalFunc = (orgSdp: any) => {\n    const codecre = new RegExp('(a=rtpmap:(\\\\d*) ' + codec + '/90000\\\\r\\\\n)');\n    const rtpmaps = orgSdp.match(codecre);\n    if (rtpmaps == null || rtpmaps.length <= 2) {\n      return orgSdp;\n    }\n    const rtpmap = rtpmaps[2];\n    let modsdp = orgSdp.replace(codecre, '');\n\n    const rtcpre = new RegExp('(a=rtcp-fb:' + rtpmap + '.*\\r\\n)', 'g');\n    modsdp = modsdp.replace(rtcpre, '');\n\n    const fmtpre = new RegExp('(a=fmtp:' + rtpmap + '.*\\r\\n)', 'g');\n    modsdp = modsdp.replace(fmtpre, '');\n\n    const aptpre = new RegExp('(a=fmtp:(\\\\d*) apt=' + rtpmap + '\\\\r\\\\n)');\n    const aptmaps = modsdp.match(aptpre);\n    let fmtpmap = '';\n    if (aptmaps != null && aptmaps.length >= 3) {\n      fmtpmap = aptmaps[2];\n      modsdp = modsdp.replace(aptpre, '');\n\n      const rtppre = new RegExp('(a=rtpmap:' + fmtpmap + '.*\\r\\n)', 'g');\n      modsdp = modsdp.replace(rtppre, '');\n    }\n\n    let videore = /(m=video.*\\r\\n)/;\n    const videolines = modsdp.match(videore);\n    if (videolines != null) {\n      //If many m=video are found in SDP, this program doesn't work.\n      let videoline = videolines[0].substring(0, videolines[0].length - 2);\n      const videoelems = videoline.split(' ');\n      let modvideoline = videoelems[0];\n      videoelems.forEach((videoelem, index) => {\n        if (index === 0) return;\n        if (videoelem == rtpmap || videoelem == fmtpmap) {\n          return;\n        }\n        modvideoline += ' ' + videoelem;\n      });\n      modvideoline += '\\r\\n';\n      modsdp = modsdp.replace(videore, modvideoline);\n    }\n    return internalFunc(modsdp);\n  };\n  return internalFunc(orgSdp);\n}\n\n/**\n * @ignore\n */\nexport function browser() {\n  const ua = window.navigator.userAgent.toLocaleLowerCase();\n  if (ua.indexOf('edge') !== -1) {\n    return 'edge';\n  } else if (ua.indexOf('chrome') !== -1 && ua.indexOf('edge') === -1) {\n    return 'chrome';\n  } else if (ua.indexOf('safari') !== -1 && ua.indexOf('chrome') === -1) {\n    return 'safari';\n  } else if (ua.indexOf('opera') !== -1) {\n    return 'opera';\n  } else if (ua.indexOf('firefox') !== -1) {\n    return 'firefox';\n  }\n  return;\n}\n",
+    "content": "/* @flow */\nimport type { VideoCodecOption } from './connection/options';\n\n/**\n * @ignore\n */\nexport function randomString(strLength: number) {\n  var result = [];\n  var charSet = '0123456789';\n  while (strLength--) {\n    result.push(charSet.charAt(Math.floor(Math.random() * charSet.length)));\n  }\n  return result.join('');\n}\n\n/**\n * @ignore\n */\nexport function traceLog(title: string, value: Object | string) {\n  let prefix = '';\n  if (window.performance) {\n    prefix = '[Ayame ' + (window.performance.now() / 1000).toFixed(3) + ']';\n  }\n  if (browser() === 'edge') {\n    console.log(prefix + ' ' + title + '\\n', value);\n  } else {\n    console.info(prefix + ' ' + title + '\\n', value);\n  }\n}\n\n/** @private */\nexport function getVideoCodecsFromString(codec: VideoCodecOption, codecs: Array<Object>) {\n  let mimeType = '';\n  if (codec === 'VP8') {\n    mimeType = 'video/VP8';\n  } else if (codec === 'VP9') {\n    mimeType = 'video/VP9';\n  } else if (codec === 'H264') {\n    mimeType = 'video/H264';\n  } else {\n    mimeType = `video/${codec}`;\n  }\n  const filteredCodecs: Array<Object> = codecs.filter(c => c.mimeType == mimeType);\n  if (filteredCodecs.length < 1) {\n    throw new Error('invalid video codec type');\n  }\n  return filteredCodecs;\n}\n\n/**\n * @ignore\n */\nexport function removeCodec(sdp: any, codec: VideoCodecOption) {\n  const internalFunc = sdp => {\n    // eslint-disable-next-line no-useless-escape\n    const codecre = new RegExp('(a=rtpmap:(\\\\d*) ' + codec + '/90000\\\\r\\\\n)');\n    const rtpmaps = sdp.match(codecre);\n    if (rtpmaps == null || rtpmaps.length <= 2) {\n      return sdp;\n    }\n    const rtpmap = rtpmaps[2];\n    let modsdp = sdp.replace(codecre, '');\n\n    const rtcpre = new RegExp('(a=rtcp-fb:' + rtpmap + '.*\\r\\n)', 'g');\n    modsdp = modsdp.replace(rtcpre, '');\n\n    const fmtpre = new RegExp('(a=fmtp:' + rtpmap + '.*\\r\\n)', 'g');\n    modsdp = modsdp.replace(fmtpre, '');\n\n    const aptpre = new RegExp('(a=fmtp:(\\\\d*) apt=' + rtpmap + '\\\\r\\\\n)');\n    const aptmaps = modsdp.match(aptpre);\n    let fmtpmap = '';\n    if (aptmaps != null && aptmaps.length >= 3) {\n      fmtpmap = aptmaps[2];\n      modsdp = modsdp.replace(aptpre, '');\n\n      const rtppre = new RegExp('(a=rtpmap:' + fmtpmap + '.*\\r\\n)', 'g');\n      modsdp = modsdp.replace(rtppre, '');\n    }\n\n    let videore = /(m=video.*\\r\\n)/;\n    const videolines = modsdp.match(videore);\n    if (videolines != null) {\n      //If many m=video are found in SDP, this program doesn't work.\n      let videoline = videolines[0].substring(0, videolines[0].length - 2);\n      const videoelems = videoline.split(' ');\n      let modvideoline = videoelems[0];\n      videoelems.forEach((videoelem, index) => {\n        if (index === 0) return;\n        if (videoelem == rtpmap || videoelem == fmtpmap) {\n          return;\n        }\n        modvideoline += ' ' + videoelem;\n      });\n      modvideoline += '\\r\\n';\n      modsdp = modsdp.replace(videore, modvideoline);\n    }\n    return internalFunc(modsdp);\n  };\n  return internalFunc(sdp);\n}\n\n/**\n * @ignore\n */\nexport function browser() {\n  const ua = window.navigator.userAgent.toLocaleLowerCase();\n  if (ua.indexOf('edge') !== -1) {\n    return 'edge';\n  } else if (ua.indexOf('chrome') !== -1 && ua.indexOf('edge') === -1) {\n    return 'chrome';\n  } else if (ua.indexOf('safari') !== -1 && ua.indexOf('chrome') === -1) {\n    return 'safari';\n  } else if (ua.indexOf('opera') !== -1) {\n    return 'opera';\n  } else if (ua.indexOf('firefox') !== -1) {\n    return 'firefox';\n  }\n  return;\n}\n",
     "static": true,
     "longname": "/Users/kyoko/ghq/src/github.com/OpenAyame/ayame-web-sdk/src/utils.js",
     "access": "public",
@@ -2070,7 +2144,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 149,
+    "__docId__": 156,
     "kind": "function",
     "name": "randomString",
     "memberof": "src/utils.js",
@@ -2100,7 +2174,7 @@
     }
   },
   {
-    "__docId__": 150,
+    "__docId__": 157,
     "kind": "function",
     "name": "traceLog",
     "memberof": "src/utils.js",
@@ -2132,7 +2206,7 @@
     "return": null
   },
   {
-    "__docId__": 151,
+    "__docId__": 158,
     "kind": "function",
     "name": "getVideoCodecsFromString",
     "memberof": "src/utils.js",
@@ -2168,7 +2242,7 @@
     }
   },
   {
-    "__docId__": 152,
+    "__docId__": 159,
     "kind": "function",
     "name": "removeCodec",
     "memberof": "src/utils.js",
@@ -2185,7 +2259,7 @@
     "ignore": true,
     "params": [
       {
-        "name": "orgSdp",
+        "name": "sdp",
         "types": [
           "*"
         ]
@@ -2204,7 +2278,7 @@
     }
   },
   {
-    "__docId__": 153,
+    "__docId__": 160,
     "kind": "function",
     "name": "browser",
     "memberof": "src/utils.js",
@@ -2217,7 +2291,7 @@
     "importPath": "@open-ayame/ayame-web-sdk/src/utils.js",
     "importStyle": "{browser}",
     "description": "",
-    "lineNumber": 105,
+    "lineNumber": 106,
     "ignore": true,
     "params": [],
     "return": {
