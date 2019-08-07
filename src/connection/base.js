@@ -15,6 +15,7 @@ class ConnectionBase {
   stream: ?window.MediaStream;
   remoteStream: ?window.MediaStream;
   authnMetadata: ?Object;
+  signalingKey: ?string;
   authzMetadata: ?Object;
   _ws: ?WebSocket;
   _pc: window.RTCPeerConnection;
@@ -23,6 +24,9 @@ class ConnectionBase {
   _isOffer: boolean;
   _dataChannels: Array<window.RTCDataChannel>;
   _callbacks: Object;
+  _pcConfig: {
+    iceServers: Array<Object>
+  };
 
   /**
    * @ignore
@@ -41,11 +45,15 @@ class ConnectionBase {
     this.stream = null;
     this.remoteStream = null;
     this._pc = null;
+    this.signalingKey = null;
     this.authnMetadata = null;
     this.authzMetadata = null;
     this._dataChannels = [];
     this._isOffer = false;
     this.connectionState = 'new';
+    this._pcConfig = {
+      iceServers: this.options.iceServers
+    };
     this._callbacks = {
       open: () => {},
       connect: () => {},
@@ -74,6 +82,7 @@ class ConnectionBase {
     }
     this.remoteStream = null;
     this.stream = null;
+    this.signalingKey = null;
     this.authnMetadata = null;
     this.authzMetadata = null;
     this._ws = null;
@@ -103,10 +112,14 @@ class ConnectionBase {
           type: 'register',
           roomId: this.roomId,
           clientId: this.options.clientId,
-          authnMetadata: undefined
+          authnMetadata: undefined,
+          key: undefined
         };
         if (this.authnMetadata !== null) {
           registerMessage.authnMetadata = this.authnMetadata;
+        }
+        if (this.signalingKey !== null) {
+          registerMessage.key = this.signalingKey;
         }
         this._sendWs(registerMessage);
         if (this._ws) {
@@ -122,6 +135,10 @@ class ConnectionBase {
                 this._callbacks.close(event);
               } else if (message.type === 'accept') {
                 this.authzMetadata = message.authzMetadata;
+                if (Array.isArray(message.iceServers) && message.iceServers.length > 0) {
+                  this._traceLog('iceServers=>', message.iceServers);
+                  this._pcConfig.iceServers = message.iceServers;
+                }
                 if (!this._pc) this._createPeerConnection();
                 await this._sendOffer();
                 return resolve();
@@ -151,10 +168,7 @@ class ConnectionBase {
   }
 
   _createPeerConnection() {
-    const pcConfig = {
-      iceServers: this.options.iceServers
-    };
-    const pc = new window.RTCPeerConnection(pcConfig);
+    const pc = new window.RTCPeerConnection(this._pcConfig);
     const audioTrack = this.stream && this.stream.getAudioTracks()[0];
     if (audioTrack && this.options.audio.direction !== 'recvonly') {
       pc.addTrack(audioTrack, this.stream);

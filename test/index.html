@@ -39,6 +39,7 @@
           conn = Ayame.connection(signalingUrl, roomId, options, true);
           const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true})
           const authnMetadata = {hoge: "fuga"};
+          const key = "xxx";
           conn.on('open', ({authzMetadata}) => console.log(authzMetadata));
           conn.on('disconnect', (e) => console.log(e));
           conn.on('addstream', async (e) => {
@@ -50,7 +51,7 @@
               console.log('error auto play:' + error);
             }
           });
-          await conn.connect(mediaStream, authnMetadata);
+          await conn.connect(mediaStream, {authnMetadata, key});
           document.querySelector('#local-video').srcObject = mediaStream;
         };
         document.querySelector("#roomIdInput").value = roomId;

@@ -48,3 +48,12 @@ export type ConnectionOptions = {
   clientId: string,
   iceServers: Array<Object>
 };
+
+/**
+ * 接続時に指定できるメタデータです。
+ * @typedef {Object} MetadataOption
+ */
+export type MetadataOption = {
+  authnMetadata: ?Object,
+  key: ?string
+};

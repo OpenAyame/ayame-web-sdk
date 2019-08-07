@@ -1,6 +1,6 @@
 /* @flow */
 import ConnectionBase from './base';
-import { type ConnectionOptions } from './options';
+import { type ConnectionOptions, type MetadataOption } from './options';
 
 /**
  * Peer Connection 接続を管理するクラスです。
@@ -25,16 +25,19 @@ class Connection extends ConnectionBase {
   /**
    * PeerConnection  接続を開始します。
    * @param {RTCMediaStream|null} stream ローカルのストリーム
-   * @param {Object|null} authnMetadata 送信するメタデータ
+   * @param {MetadataOption|null} metadataOption 送信するメタデータとシグナリングキー
    * @return {Promise<null>}
    */
-  async connect(stream: window.RTCMediaStream | null, authnMetadata: Object | null = null) {
+  async connect(stream: window.RTCMediaStream | null, metadataOption: ?MetadataOption = null) {
     if (this._ws || this._pc) {
       this._traceLog('connection already exists');
       throw new Error('Connection Already Exists!');
     }
     this.stream = stream;
-    this.authnMetadata = authnMetadata;
+    if (metadataOption) {
+      this.authnMetadata = metadataOption.authnMetadata;
+      this.signalingKey = metadataOption.key;
+    }
     await this._signaling();
   }
 

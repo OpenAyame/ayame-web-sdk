@@ -163,11 +163,15 @@
       this.stream = null;
       this.remoteStream = null;
       this._pc = null;
+      this.signalingKey = null;
       this.authnMetadata = null;
       this.authzMetadata = null;
       this._dataChannels = [];
       this._isOffer = false;
       this.connectionState = 'new';
+      this._pcConfig = {
+        iceServers: this.options.iceServers
+      };
       this._callbacks = {
         open: () => {},
         connect: () => {},
@@ -199,6 +203,7 @@
 
       this.remoteStream = null;
       this.stream = null;
+      this.signalingKey = null;
       this.authnMetadata = null;
       this.authzMetadata = null;
       this._ws = null;
@@ -232,11 +237,16 @@
             type: 'register',
             roomId: this.roomId,
             clientId: this.options.clientId,
-            authnMetadata: undefined
+            authnMetadata: undefined,
+            key: undefined
           };
 
           if (this.authnMetadata !== null) {
             registerMessage.authnMetadata = this.authnMetadata;
+          }
+
+          if (this.signalingKey !== null) {
+            registerMessage.key = this.signalingKey;
           }
 
           this._sendWs(registerMessage);
@@ -258,6 +268,13 @@
                   this._callbacks.close(event);
                 } else if (message.type === 'accept') {
                   this.authzMetadata = message.authzMetadata;
+
+                  if (Array.isArray(message.iceServers) && message.iceServers.length > 0) {
+                    this._traceLog('iceServers=>', message.iceServers);
+
+                    this._pcConfig.iceServers = message.iceServers;
+                  }
+
                   if (!this._pc) this._createPeerConnection();
                   await this._sendOffer();
                   return resolve();
@@ -297,10 +314,7 @@
     }
 
     _createPeerConnection() {
-      const pcConfig = {
-        iceServers: this.options.iceServers
-      };
-      const pc = new window.RTCPeerConnection(pcConfig);
+      const pc = new window.RTCPeerConnection(this._pcConfig);
       const audioTrack = this.stream && this.stream.getAudioTracks()[0];
 
       if (audioTrack && this.options.audio.direction !== 'recvonly') {
@@ -755,12 +769,12 @@
     /**
      * PeerConnection  接続を開始します。
      * @param {RTCMediaStream|null} stream ローカルのストリーム
-     * @param {Object|null} authnMetadata 送信するメタデータ
+     * @param {MetadataOption|null} authnMetadata 送信するメタデータ
      * @return {Promise<null>}
      */
 
 
-    async connect(stream, authnMetadata = null) {
+    async connect(stream, metadataOption = null) {
       if (this._ws || this._pc) {
         this._traceLog('connection already exists');
 
@@ -768,7 +782,12 @@
       }
 
       this.stream = stream;
-      this.authnMetadata = authnMetadata;
+
+      if (metadataOption) {
+        this.authnMetadata = metadataOption.authnMetadata;
+        this.signalingKey = metadataOption.key;
+      }
+
       await this._signaling();
     }
     /**
