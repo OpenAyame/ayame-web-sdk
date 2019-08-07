@@ -10,6 +10,8 @@
     - バグ修正
 
 ## develop
+- [UPDATE] register 時に iceServers の値を server 経由で設定できるようにする
+- [CHANGE] signaling key を指定できるようにする
 - [ADD] datachannel に対応する
 - [CHANGE] onconnect コールバックを signalingState が connected になったときに呼ぶ
 - [FIX] Safari 対応 (SDP 書き換えも含む)
