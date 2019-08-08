@@ -282,7 +282,7 @@
                   await this._disconnect();
 
                   this._callbacks.disconnect({
-                    reason: 'REJECTED'
+                    reason: message.reason || 'REJECTED'
                   });
 
                   return reject('REJECTED');
@@ -363,9 +363,9 @@
         }
       }
 
-      pc.ontrack = event => {
-        let tracks = [];
+      let tracks = [];
 
+      pc.ontrack = event => {
         this._traceLog('peer.ontrack()', event);
 
         if (browser() === 'safari') {
@@ -769,7 +769,7 @@
     /**
      * PeerConnection  接続を開始します。
      * @param {RTCMediaStream|null} stream ローカルのストリーム
-     * @param {MetadataOption|null} authnMetadata 送信するメタデータ
+     * @param {MetadataOption|null} metadataOption 送信するメタデータとシグナリングキー
      * @return {Promise<null>}
      */
 

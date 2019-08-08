@@ -144,7 +144,7 @@ class ConnectionBase {
                 return resolve();
               } else if (message.type === 'reject') {
                 await this._disconnect();
-                this._callbacks.disconnect({ reason: 'REJECTED' });
+                this._callbacks.disconnect({ reason: message.reason || 'REJECTED' });
                 return reject('REJECTED');
               } else if (message.type === 'offer') {
                 this._setOffer(new window.RTCSessionDescription(message));
@@ -202,8 +202,8 @@ class ConnectionBase {
         }
       }
     }
+    let tracks = [];
     pc.ontrack = (event: window.RTCTrackEvent) => {
-      let tracks = [];
       this._traceLog('peer.ontrack()', event);
       if (browser() === 'safari') {
         tracks.push(event.track);
