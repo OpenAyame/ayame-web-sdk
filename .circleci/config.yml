@@ -31,4 +31,7 @@ workflows:
   version: 2
   test:
     jobs:
-      - eslint_job
+      eslint_job:
+        branches:
+          ignore:
+            - gh-pages
