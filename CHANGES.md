@@ -10,6 +10,8 @@
     - バグ修正
 
 ## develop
+
+## 19.08.0
 - [UPDATE] register 時に iceServers の値を server 経由で設定できるようにする
 - [CHANGE] signaling key を指定できるようにする
 - [ADD] datachannel に対応する
