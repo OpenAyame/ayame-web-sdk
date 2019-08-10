@@ -35,14 +35,14 @@ https://openayame.github.io/ayame-web-sdk/index.html
 ### unpkg
 
 ```
-https://unpkg.com/@open-ayame/ayame-web-sdk@19.7.1/dist/ayame.min.js
+https://unpkg.com/@open-ayame/ayame-web-sdk@19.8.0/dist/ayame.min.js
 
 ```
 
 ### jsdelivr
 
 ```
-https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@19.7.1/dist/ayame.min.js
+https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@19.8.0/dist/ayame.min.js
 
 ```
 
@@ -71,12 +71,12 @@ conn.options.video.direction = 'sendonly';
 conn.options.audio.direction = 'sendonly';
 const startConn = async () => {
     const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
-    const stream = await conn.connect(mediaStream);
+    await conn.connect(mediaStream);
     conn.on('disconnect', (e) => console.log(e));
     conn.on('addstream', (e) => {
         document.querySelector('#remote-video').srcObject = e.stream;
     });
-    document.querySelector('#local-video').srcObject = stream;
+    document.querySelector('#local-video').srcObject = mediaStream;
 };
 startConn();
 ```
@@ -105,12 +105,28 @@ const conn = Ayame.connection('wss://example.com/ws', 'test-room');
 conn.options.video.codec = 'H264';
 const startConn = async () => {
     const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
-    const stream = await conn.connect(mediaStream);
+    await conn.connect(mediaStream);
     conn.on('disconnect', (e) => console.log(e));
     conn.on('addstream', (e) => {
         document.querySelector('#remote-video').srcObject = e.stream;
     });
-    document.querySelector('#local-video').srcObject = stream;
+    document.querySelector('#local-video').srcObject = mediaStream;
 };
 startConn();
+```
+
+### datachannel でデータを送受信する
+
+```javascript
+
+const startConn = async () => {
+  const conn = Ayame.connection('wss://example.com/ws', 'test-room');
+  conn.on('data', (e) => {
+      console.log('data received: ',e.data);
+      });
+  await conn.connect(null);
+};
+const sendData = (data) => {
+  conn.sendData(data);
+};
 ```
