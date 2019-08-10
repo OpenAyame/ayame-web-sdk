@@ -57,9 +57,9 @@
 <h2 id="cdn-&#x3067;&#x5229;&#x7528;&#x3059;&#x308B;">CDN &#x3067;&#x5229;&#x7528;&#x3059;&#x308B;</h2><p>&#x4EE5;&#x4E0B;&#x306E;URL &#x3092;</p>
 <pre><code><code class="source-code prettyprint">&lt;script src=&quot;https://unpkg.com/@open-ayame/ayame-web-sdk@19.07.1/dist/ayame.min.js&quot;&gt;&lt;/script&gt;</code>
 </code></pre><p>&#x306E;&#x3088;&#x3046;&#x306B;&#x6307;&#x5B9A;&#x3059;&#x308B;&#x3068;&#x3001;npm &#x306A;&#x3069;&#x3092;&#x7D4C;&#x7531;&#x305B;&#x305A;&#x7C21;&#x5358;&#x306B; Ayame &#x3092;&#x5229;&#x7528;&#x3059;&#x308B;&#x3053;&#x3068;&#x304C;&#x3067;&#x304D;&#x307E;&#x3059;&#x3002;</p>
-<h3 id="unpkg">unpkg</h3><pre><code><code class="source-code prettyprint">https://unpkg.com/@open-ayame/ayame-web-sdk@19.7.1/dist/ayame.min.js
+<h3 id="unpkg">unpkg</h3><pre><code><code class="source-code prettyprint">https://unpkg.com/@open-ayame/ayame-web-sdk@19.8.0/dist/ayame.min.js
 </code>
-</code></pre><h3 id="jsdelivr">jsdelivr</h3><pre><code><code class="source-code prettyprint">https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@19.7.1/dist/ayame.min.js
+</code></pre><h3 id="jsdelivr">jsdelivr</h3><pre><code><code class="source-code prettyprint">https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@19.8.0/dist/ayame.min.js
 </code>
 </code></pre><h3 id="&#x53CC;&#x65B9;&#x5411;&#x9001;&#x53D7;&#x4FE1;&#x63A5;&#x7D9A;&#x3059;&#x308B;">&#x53CC;&#x65B9;&#x5411;&#x9001;&#x53D7;&#x4FE1;&#x63A5;&#x7D9A;&#x3059;&#x308B;</h3><pre><code class="lang-javascript"><code class="source-code prettyprint">const conn = Ayame.connection(&apos;wss://example.com/ws&apos;, &apos;test-room&apos;);
 const startConn = async () =&gt; {
@@ -78,12 +78,12 @@ conn.options.video.direction = &apos;sendonly&apos;;
 conn.options.audio.direction = &apos;sendonly&apos;;
 const startConn = async () =&gt; {
     const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
-    const stream = await conn.connect(mediaStream);
+    await conn.connect(mediaStream);
     conn.on(&apos;disconnect&apos;, (e) =&gt; console.log(e));
     conn.on(&apos;addstream&apos;, (e) =&gt; {
         document.querySelector(&apos;#remote-video&apos;).srcObject = e.stream;
     });
-    document.querySelector(&apos;#local-video&apos;).srcObject = stream;
+    document.querySelector(&apos;#local-video&apos;).srcObject = mediaStream;
 };
 startConn();</code>
 </code></pre>
@@ -103,14 +103,26 @@ startConn();</code>
 conn.options.video.codec = &apos;H264&apos;;
 const startConn = async () =&gt; {
     const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
-    const stream = await conn.connect(mediaStream);
+    await conn.connect(mediaStream);
     conn.on(&apos;disconnect&apos;, (e) =&gt; console.log(e));
     conn.on(&apos;addstream&apos;, (e) =&gt; {
         document.querySelector(&apos;#remote-video&apos;).srcObject = e.stream;
     });
-    document.querySelector(&apos;#local-video&apos;).srcObject = stream;
+    document.querySelector(&apos;#local-video&apos;).srcObject = mediaStream;
 };
 startConn();</code>
+</code></pre>
+<h3 id="datachannel-&#x3067;&#x30C7;&#x30FC;&#x30BF;&#x3092;&#x9001;&#x53D7;&#x4FE1;&#x3059;&#x308B;">datachannel &#x3067;&#x30C7;&#x30FC;&#x30BF;&#x3092;&#x9001;&#x53D7;&#x4FE1;&#x3059;&#x308B;</h3><pre><code class="lang-javascript"><code class="source-code prettyprint">
+const startConn = async () =&gt; {
+  const conn = Ayame.connection(&apos;wss://example.com/ws&apos;, &apos;test-room&apos;);
+  conn.on(&apos;data&apos;, (e) =&gt; {
+      console.log(&apos;data received: &apos;,e.data);
+      });
+  await conn.connect(null);
+};
+const sendData = (data) =&gt; {
+  conn.sendData(data);
+};</code>
 </code></pre>
 </div>
 </div>
