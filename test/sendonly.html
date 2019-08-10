@@ -1,0 +1,42 @@
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>Ayame SendOnly Sample</title>
+    </head>
+    <body>
+      <header class="sticky row">
+          <h4>Ayame SendOnly Sample</h4>
+      </header>
+      <div>
+        <p>ルームID
+        <input id="roomIdInput" disabled type="text" value=""></input>
+        </p>
+        <p>クライアントID
+        <input id="clientIdInput" disabled type="text" value=""></input>
+        </p>
+        <button onclick="startConn();">接続</button>
+        <button onclick="conn.disconnect();">切断</button>
+      </div>
+      <div style="float:left;">
+        <video id="local-video" muted autoplay style="width: 400px; height: 300px; border: 1px solid black;"></video>
+      </div>
+      <script src="../dist/ayame.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.7.0/qs.min.js"></script>
+      <script src="./main.js"></script>
+      <script type="text/javascript">
+        const options = Ayame.defaultOptions;
+        options.clientId = clientId ? clientId : options.clientId;
+        options.video.direction = 'sendonly';
+        options.audio.direction = 'sendonly';
+        const conn = Ayame.connection(signalingUrl, roomId, options, true);
+        const startConn = async () => {
+          const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
+          conn.on('disconnect', (e) => console.log(e));
+          await conn.connect(mediaStream);
+          document.querySelector('#local-video').srcObject = mediaStream;
+        };
+        document.querySelector("#roomIdInput").value = roomId;
+        document.querySelector("#clientIdInput").value = options.clientId;
+      </script>
+  </body>
+</html>

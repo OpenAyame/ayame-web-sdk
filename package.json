@@ -1,0 +1,51 @@
+{
+  "name": "@open-ayame/ayame-web-sdk",
+  "version": "19.08.0",
+  "description": "Web SDK for WebRTC Signaling Server Ayame",
+  "main": "dist/ayame.min.js",
+  "scripts": {
+    "watch": "rollup -w -c ./rollup.config.js",
+    "build": "rollup -c ./rollup.config.js",
+    "fmt": "$(npm bin)/eslint src --fix; exit 0;",
+    "flow": "$(npm bin)/flow src  --show-all-errors",
+    "flow:stop": "$(npm bin)/flow stop",
+    "deploy:docs": "$(npm bin)/gh-pages -d docs",
+    "esdoc": "$(npm bin)/esdoc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenAyame/ayame-web-sdk.git"
+  },
+  "directories": {
+    "doc": "docs/"
+  },
+  "homepage": "https://github.com/OpenAyame/ayame-web-sdk",
+  "author": "Shiguredo Inc.",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-transform-flow-strip-types": "^7.4.4",
+    "@babel/preset-flow": "^7.0.0",
+    "babel-eslint": "^10.0.2",
+    "babel-loader": "^8.0.6",
+    "esdoc": "^1.1.0",
+    "esdoc-ecmascript-proposal-plugin": "^1.0.0",
+    "esdoc-flow-type-plugin": "^1.1.0",
+    "esdoc-react-plugin": "^1.0.1",
+    "esdoc-standard-plugin": "^1.0.0",
+    "eslint": "^6.1.0",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-plugin-flowtype": "^3.12.2",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-prettier": "^3.1.0",
+    "flow-bin": "^0.104.0",
+    "flow-typed": "^2.6.0",
+    "gh-pages": "^2.1.0",
+    "prettier": "^1.18.2",
+    "rollup": "^1.17.0",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-flow": "^1.1.1",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-terser": "^5.1.1"
+  }
+}

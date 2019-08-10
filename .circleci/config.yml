@@ -1,0 +1,34 @@
+version: 2
+jobs:
+  eslint_job:
+    docker:
+      - image: circleci/node:11.10.1-stretch
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - restore_cache:
+          key: yarn-package-{{ checksum "package.json" }}
+      - run:
+          name: install assets yarn packages
+          command: |
+            if [ ! -e ./node_modules ]; then
+              yarn install
+            fi
+      - save_cache:
+          name: save assets node_modules
+          key: yarn-package-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: run eslint
+          command: |
+            $(npm bin)/eslint --debug src/
+      - run:
+          name: run flow
+          command: |
+            $(npm bin)/flow src/
+workflows:
+  version: 2
+  test:
+    jobs:
+      - eslint_job
