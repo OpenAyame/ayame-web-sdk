@@ -3,7 +3,6 @@
 import { traceLog, getVideoCodecsFromString, removeCodec, browser } from '../utils';
 import { type ConnectionOptions } from './options';
 
-
 /**
  * @ignore
  */
@@ -13,7 +12,7 @@ type AyameRegisterMessage = {
   clientId: string,
   key: ?string,
   authnMetadata: ?Object
-}
+};
 
 /**
  * @ignore
