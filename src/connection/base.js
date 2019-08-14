@@ -3,6 +3,18 @@
 import { traceLog, getVideoCodecsFromString, removeCodec, browser } from '../utils';
 import { type ConnectionOptions } from './options';
 
+
+/**
+ * @ignore
+ */
+type AyameRegisterMessage = {
+  type: string,
+  roomId: string,
+  clientId: string,
+  key: ?string,
+  authnMetadata: ?Object
+}
+
 /**
  * @ignore
  */
@@ -68,19 +80,6 @@ class ConnectionBase {
     });
     await this._closePeerConnection();
     await this._closeWebSocketConnection();
-    if (this.stream) {
-      this.stream.getTracks().forEach(t => {
-        t.stop();
-      });
-    }
-    if (this.remoteStream) {
-      this.remoteStream.getTracks().forEach(t => {
-        t.stop();
-      });
-    }
-    this.remoteStream = null;
-    this.stream = null;
-    this.authnMetadata = null;
     this.authzMetadata = null;
     this._ws = null;
     this._pc = null;
@@ -105,7 +104,7 @@ class ConnectionBase {
         return reject('WS-CLOSED-WITH-ERROR');
       };
       this._ws.onopen = () => {
-        const registerMessage = {
+        const registerMessage: AyameRegisterMessage = {
           type: 'register',
           roomId: this.roomId,
           clientId: this.options.clientId,
@@ -120,7 +119,7 @@ class ConnectionBase {
         }
         this._sendWs(registerMessage);
         if (this._ws) {
-          this._ws.onmessage = async (event: MessageEvent) => {
+          this._ws.onmessage = async (event: window.MessageEvent) => {
             try {
               if (typeof event.data !== 'string') {
                 return;
