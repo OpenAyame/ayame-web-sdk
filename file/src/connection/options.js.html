@@ -58,6 +58,8 @@ export type ConnectionDirection = &apos;sendrecv&apos; | &apos;recvonly&apos; | 
 /**
  * &#x30AA;&#x30FC;&#x30C7;&#x30A3;&#x30AA;&#x63A5;&#x7D9A;&#x306B;&#x95A2;&#x3059;&#x308B;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&#x3067;&#x3059;&#x3002;
  * @typedef {Object} ConnectionAudioOption
+ * @property {ConnectionDirection} direction &#x9001;&#x53D7;&#x4FE1;&#x65B9;&#x5411;
+ * @property {boolean} enabled &#x6709;&#x52B9;&#x304B;&#x3069;&#x3046;&#x304B;&#x306E;&#x30D5;&#x30E9;&#x30B0;
  */
 export type ConnectionAudioOption = {
   direction: ConnectionDirection,
@@ -77,6 +79,9 @@ export type VideoCodecOption = &apos;VP8&apos; | &apos;VP9&apos; | &apos;H264&ap
 /**
  * &#x30D3;&#x30C7;&#x30AA;&#x63A5;&#x7D9A;&#x306B;&#x95A2;&#x3059;&#x308B;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&#x3067;&#x3059;&#x3002;
  * @typedef {Object} ConnectionVideoOption
+ * @property {VideoCodecOption | null} codec &#x30B3;&#x30FC;&#x30C7;&#x30C3;&#x30AF;&#x306E;&#x8A2D;&#x5B9A;
+ * @property {ConnectionDirection} direction &#x9001;&#x53D7;&#x4FE1;&#x65B9;&#x5411;
+ * @property {boolean} enabled &#x6709;&#x52B9;&#x304B;&#x3069;&#x3046;&#x304B;&#x306E;&#x30D5;&#x30E9;&#x30B0;
  */
 export type ConnectionVideoOption = {
   codec: ?VideoCodecOption,
@@ -87,6 +92,9 @@ export type ConnectionVideoOption = {
 /**
  * &#x63A5;&#x7D9A;&#x6642;&#x306B;&#x6307;&#x5B9A;&#x3059;&#x308B;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&#x3067;&#x3059;&#x3002;
  * @typedef {Object} ConnectionOptions
+ * @property {ConnectionAudioOption} video &#x30AA;&#x30FC;&#x30C7;&#x30A3;&#x30AA;&#x306E;&#x8A2D;&#x5B9A;
+ * @property {ConnectionVideoOption} audio &#x30D3;&#x30C7;&#x30AA;&#x306E;&#x8A2D;&#x5B9A;
+ * @property {string} clientId &#x30D3;&#x30C7;&#x30AA;&#x306E;&#x8A2D;&#x5B9A;
  */
 export type ConnectionOptions = {
   audio: ConnectionAudioOption,
@@ -98,6 +106,8 @@ export type ConnectionOptions = {
 /**
  * &#x63A5;&#x7D9A;&#x6642;&#x306B;&#x6307;&#x5B9A;&#x3067;&#x304D;&#x308B;&#x30E1;&#x30BF;&#x30C7;&#x30FC;&#x30BF;&#x3067;&#x3059;&#x3002;
  * @typedef {Object} MetadataOption
+ * @property {Object | null} authnMetadata &#x9001;&#x4FE1;&#x3059;&#x308B;&#x30E1;&#x30BF;&#x30C7;&#x30FC;&#x30BF;
+ * @property {string | null} key &#x9001;&#x4FE1;&#x3059;&#x308B;&#x30B7;&#x30B0;&#x30CA;&#x30EA;&#x30F3;&#x30AD;&#x30FC;
  */
 export type MetadataOption = {
   authnMetadata: ?Object,

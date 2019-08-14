@@ -1,28 +1,28 @@
 {
   "type": "File",
   "start": 0,
-  "end": 1127,
+  "end": 1605,
   "loc": {
     "start": {
       "line": 1,
       "column": 0
     },
     "end": {
-      "line": 60,
+      "line": 70,
       "column": 0
     }
   },
   "program": {
     "type": "Program",
     "start": 0,
-    "end": 1127,
+    "end": 1605,
     "loc": {
       "start": {
         "line": 1,
         "column": 0
       },
       "end": {
-        "line": 60,
+        "line": 70,
         "column": 0
       }
     },
@@ -192,16 +192,16 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * オーディオ接続に関するオプションです。\n * @typedef {Object} ConnectionAudioOption\n ",
+              "value": "*\n * オーディオ接続に関するオプションです。\n * @typedef {Object} ConnectionAudioOption\n * @property {ConnectionDirection} direction 送受信方向\n * @property {boolean} enabled 有効かどうかのフラグ\n ",
               "start": 208,
-              "end": 281,
+              "end": 374,
               "loc": {
                 "start": {
                   "line": 12,
                   "column": 0
                 },
                 "end": {
-                  "line": 15,
+                  "line": 17,
                   "column": 3
                 }
               }
@@ -245,16 +245,16 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * オーディオ接続に関するオプションです。\n * @typedef {Object} ConnectionAudioOption\n ",
+            "value": "*\n * オーディオ接続に関するオプションです。\n * @typedef {Object} ConnectionAudioOption\n * @property {ConnectionDirection} direction 送受信方向\n * @property {boolean} enabled 有効かどうかのフラグ\n ",
             "start": 208,
-            "end": 281,
+            "end": 374,
             "loc": {
               "start": {
                 "line": 12,
                 "column": 0
               },
               "end": {
-                "line": 15,
+                "line": 17,
                 "column": 3
               }
             }
@@ -263,15 +263,15 @@
       },
       {
         "type": "ExportNamedDeclaration",
-        "start": 282,
-        "end": 375,
+        "start": 375,
+        "end": 468,
         "loc": {
           "start": {
-            "line": 16,
+            "line": 18,
             "column": 0
           },
           "end": {
-            "line": 19,
+            "line": 21,
             "column": 2
           }
         },
@@ -280,29 +280,29 @@
         "exportKind": "type",
         "declaration": {
           "type": "TypeAlias",
-          "start": 289,
-          "end": 375,
+          "start": 382,
+          "end": 468,
           "loc": {
             "start": {
-              "line": 16,
+              "line": 18,
               "column": 7
             },
             "end": {
-              "line": 19,
+              "line": 21,
               "column": 2
             }
           },
           "id": {
             "type": "Identifier",
-            "start": 294,
-            "end": 315,
+            "start": 387,
+            "end": 408,
             "loc": {
               "start": {
-                "line": 16,
+                "line": 18,
                 "column": 12
               },
               "end": {
-                "line": 16,
+                "line": 18,
                 "column": 33
               },
               "identifierName": "ConnectionAudioOption"
@@ -313,15 +313,15 @@
           "typeParameters": null,
           "right": {
             "type": "ObjectTypeAnnotation",
-            "start": 318,
-            "end": 374,
+            "start": 411,
+            "end": 467,
             "loc": {
               "start": {
-                "line": 16,
+                "line": 18,
                 "column": 36
               },
               "end": {
-                "line": 19,
+                "line": 21,
                 "column": 1
               }
             },
@@ -329,29 +329,29 @@
             "properties": [
               {
                 "type": "ObjectTypeProperty",
-                "start": 322,
-                "end": 353,
+                "start": 415,
+                "end": 446,
                 "loc": {
                   "start": {
-                    "line": 17,
+                    "line": 19,
                     "column": 2
                   },
                   "end": {
-                    "line": 17,
+                    "line": 19,
                     "column": 33
                   }
                 },
                 "key": {
                   "type": "Identifier",
-                  "start": 322,
-                  "end": 331,
+                  "start": 415,
+                  "end": 424,
                   "loc": {
                     "start": {
-                      "line": 17,
+                      "line": 19,
                       "column": 2
                     },
                     "end": {
-                      "line": 17,
+                      "line": 19,
                       "column": 11
                     },
                     "identifierName": "direction"
@@ -360,30 +360,30 @@
                 },
                 "value": {
                   "type": "GenericTypeAnnotation",
-                  "start": 333,
-                  "end": 352,
+                  "start": 426,
+                  "end": 445,
                   "loc": {
                     "start": {
-                      "line": 17,
+                      "line": 19,
                       "column": 13
                     },
                     "end": {
-                      "line": 17,
+                      "line": 19,
                       "column": 32
                     }
                   },
                   "typeParameters": null,
                   "id": {
                     "type": "Identifier",
-                    "start": 333,
-                    "end": 352,
+                    "start": 426,
+                    "end": 445,
                     "loc": {
                       "start": {
-                        "line": 17,
+                        "line": 19,
                         "column": 13
                       },
                       "end": {
-                        "line": 17,
+                        "line": 19,
                         "column": 32
                       },
                       "identifierName": "ConnectionDirection"
@@ -397,29 +397,29 @@
               },
               {
                 "type": "ObjectTypeProperty",
-                "start": 356,
-                "end": 372,
+                "start": 449,
+                "end": 465,
                 "loc": {
                   "start": {
-                    "line": 18,
+                    "line": 20,
                     "column": 2
                   },
                   "end": {
-                    "line": 18,
+                    "line": 20,
                     "column": 18
                   }
                 },
                 "key": {
                   "type": "Identifier",
-                  "start": 356,
-                  "end": 363,
+                  "start": 449,
+                  "end": 456,
                   "loc": {
                     "start": {
-                      "line": 18,
+                      "line": 20,
                       "column": 2
                     },
                     "end": {
-                      "line": 18,
+                      "line": 20,
                       "column": 9
                     },
                     "identifierName": "enabled"
@@ -428,15 +428,15 @@
                 },
                 "value": {
                   "type": "BooleanTypeAnnotation",
-                  "start": 365,
-                  "end": 372,
+                  "start": 458,
+                  "end": 465,
                   "loc": {
                     "start": {
-                      "line": 18,
+                      "line": 20,
                       "column": 11
                     },
                     "end": {
-                      "line": 18,
+                      "line": 20,
                       "column": 18
                     }
                   }
@@ -452,16 +452,16 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * オーディオ接続に関するオプションです。\n * @typedef {Object} ConnectionAudioOption\n ",
+              "value": "*\n * オーディオ接続に関するオプションです。\n * @typedef {Object} ConnectionAudioOption\n * @property {ConnectionDirection} direction 送受信方向\n * @property {boolean} enabled 有効かどうかのフラグ\n ",
               "start": 208,
-              "end": 281,
+              "end": 374,
               "loc": {
                 "start": {
                   "line": 12,
                   "column": 0
                 },
                 "end": {
-                  "line": 15,
+                  "line": 17,
                   "column": 3
                 }
               }
@@ -471,15 +471,15 @@
             {
               "type": "CommentBlock",
               "value": "*\n * ビデオ接続のコーデックに関するオプションです。\n * - VP8\n * - VP9\n * - H264\n * @typedef {string} ConnectionDirection\n * @typedef {string} VideoCodecOption\n ",
-              "start": 377,
-              "end": 518,
+              "start": 470,
+              "end": 611,
               "loc": {
                 "start": {
-                  "line": 21,
+                  "line": 23,
                   "column": 0
                 },
                 "end": {
-                  "line": 28,
+                  "line": 30,
                   "column": 3
                 }
               }
@@ -489,16 +489,16 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * オーディオ接続に関するオプションです。\n * @typedef {Object} ConnectionAudioOption\n ",
+            "value": "*\n * オーディオ接続に関するオプションです。\n * @typedef {Object} ConnectionAudioOption\n * @property {ConnectionDirection} direction 送受信方向\n * @property {boolean} enabled 有効かどうかのフラグ\n ",
             "start": 208,
-            "end": 281,
+            "end": 374,
             "loc": {
               "start": {
                 "line": 12,
                 "column": 0
               },
               "end": {
-                "line": 15,
+                "line": 17,
                 "column": 3
               }
             }
@@ -508,15 +508,15 @@
           {
             "type": "CommentBlock",
             "value": "*\n * ビデオ接続のコーデックに関するオプションです。\n * - VP8\n * - VP9\n * - H264\n * @typedef {string} ConnectionDirection\n * @typedef {string} VideoCodecOption\n ",
-            "start": 377,
-            "end": 518,
+            "start": 470,
+            "end": 611,
             "loc": {
               "start": {
-                "line": 21,
+                "line": 23,
                 "column": 0
               },
               "end": {
-                "line": 28,
+                "line": 30,
                 "column": 3
               }
             }
@@ -525,15 +525,15 @@
       },
       {
         "type": "ExportNamedDeclaration",
-        "start": 519,
-        "end": 573,
+        "start": 612,
+        "end": 666,
         "loc": {
           "start": {
-            "line": 29,
+            "line": 31,
             "column": 0
           },
           "end": {
-            "line": 29,
+            "line": 31,
             "column": 54
           }
         },
@@ -542,29 +542,29 @@
         "exportKind": "type",
         "declaration": {
           "type": "TypeAlias",
-          "start": 526,
-          "end": 573,
+          "start": 619,
+          "end": 666,
           "loc": {
             "start": {
-              "line": 29,
+              "line": 31,
               "column": 7
             },
             "end": {
-              "line": 29,
+              "line": 31,
               "column": 54
             }
           },
           "id": {
             "type": "Identifier",
-            "start": 531,
-            "end": 547,
+            "start": 624,
+            "end": 640,
             "loc": {
               "start": {
-                "line": 29,
+                "line": 31,
                 "column": 12
               },
               "end": {
-                "line": 29,
+                "line": 31,
                 "column": 28
               },
               "identifierName": "VideoCodecOption"
@@ -575,30 +575,30 @@
           "typeParameters": null,
           "right": {
             "type": "UnionTypeAnnotation",
-            "start": 550,
-            "end": 572,
+            "start": 643,
+            "end": 665,
             "loc": {
               "start": {
-                "line": 29,
+                "line": 31,
                 "column": 31
               },
               "end": {
-                "line": 29,
+                "line": 31,
                 "column": 53
               }
             },
             "types": [
               {
                 "type": "StringLiteralTypeAnnotation",
-                "start": 550,
-                "end": 555,
+                "start": 643,
+                "end": 648,
                 "loc": {
                   "start": {
-                    "line": 29,
+                    "line": 31,
                     "column": 31
                   },
                   "end": {
-                    "line": 29,
+                    "line": 31,
                     "column": 36
                   }
                 },
@@ -610,15 +610,15 @@
               },
               {
                 "type": "StringLiteralTypeAnnotation",
-                "start": 558,
-                "end": 563,
+                "start": 651,
+                "end": 656,
                 "loc": {
                   "start": {
-                    "line": 29,
+                    "line": 31,
                     "column": 39
                   },
                   "end": {
-                    "line": 29,
+                    "line": 31,
                     "column": 44
                   }
                 },
@@ -630,15 +630,15 @@
               },
               {
                 "type": "StringLiteralTypeAnnotation",
-                "start": 566,
-                "end": 572,
+                "start": 659,
+                "end": 665,
                 "loc": {
                   "start": {
-                    "line": 29,
+                    "line": 31,
                     "column": 47
                   },
                   "end": {
-                    "line": 29,
+                    "line": 31,
                     "column": 53
                   }
                 },
@@ -654,15 +654,15 @@
             {
               "type": "CommentBlock",
               "value": "*\n * ビデオ接続のコーデックに関するオプションです。\n * - VP8\n * - VP9\n * - H264\n * @typedef {string} ConnectionDirection\n * @typedef {string} VideoCodecOption\n ",
-              "start": 377,
-              "end": 518,
+              "start": 470,
+              "end": 611,
               "loc": {
                 "start": {
-                  "line": 21,
+                  "line": 23,
                   "column": 0
                 },
                 "end": {
-                  "line": 28,
+                  "line": 30,
                   "column": 3
                 }
               }
@@ -671,16 +671,16 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * ビデオ接続に関するオプションです。\n * @typedef {Object} ConnectionVideoOption\n ",
-              "start": 575,
-              "end": 646,
+              "value": "*\n * ビデオ接続に関するオプションです。\n * @typedef {Object} ConnectionVideoOption\n * @property {VideoCodecOption | null} codec コーデックの設定\n * @property {ConnectionDirection} direction 送受信方向\n * @property {boolean} enabled 有効かどうかのフラグ\n ",
+              "start": 668,
+              "end": 886,
               "loc": {
                 "start": {
-                  "line": 31,
+                  "line": 33,
                   "column": 0
                 },
                 "end": {
-                  "line": 34,
+                  "line": 39,
                   "column": 3
                 }
               }
@@ -691,15 +691,15 @@
           {
             "type": "CommentBlock",
             "value": "*\n * ビデオ接続のコーデックに関するオプションです。\n * - VP8\n * - VP9\n * - H264\n * @typedef {string} ConnectionDirection\n * @typedef {string} VideoCodecOption\n ",
-            "start": 377,
-            "end": 518,
+            "start": 470,
+            "end": 611,
             "loc": {
               "start": {
-                "line": 21,
+                "line": 23,
                 "column": 0
               },
               "end": {
-                "line": 28,
+                "line": 30,
                 "column": 3
               }
             }
@@ -708,16 +708,16 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * ビデオ接続に関するオプションです。\n * @typedef {Object} ConnectionVideoOption\n ",
-            "start": 575,
-            "end": 646,
+            "value": "*\n * ビデオ接続に関するオプションです。\n * @typedef {Object} ConnectionVideoOption\n * @property {VideoCodecOption | null} codec コーデックの設定\n * @property {ConnectionDirection} direction 送受信方向\n * @property {boolean} enabled 有効かどうかのフラグ\n ",
+            "start": 668,
+            "end": 886,
             "loc": {
               "start": {
-                "line": 31,
+                "line": 33,
                 "column": 0
               },
               "end": {
-                "line": 34,
+                "line": 39,
                 "column": 3
               }
             }
@@ -726,15 +726,15 @@
       },
       {
         "type": "ExportNamedDeclaration",
-        "start": 647,
-        "end": 768,
+        "start": 887,
+        "end": 1008,
         "loc": {
           "start": {
-            "line": 35,
+            "line": 40,
             "column": 0
           },
           "end": {
-            "line": 39,
+            "line": 44,
             "column": 2
           }
         },
@@ -743,29 +743,29 @@
         "exportKind": "type",
         "declaration": {
           "type": "TypeAlias",
-          "start": 654,
-          "end": 768,
+          "start": 894,
+          "end": 1008,
           "loc": {
             "start": {
-              "line": 35,
+              "line": 40,
               "column": 7
             },
             "end": {
-              "line": 39,
+              "line": 44,
               "column": 2
             }
           },
           "id": {
             "type": "Identifier",
-            "start": 659,
-            "end": 680,
+            "start": 899,
+            "end": 920,
             "loc": {
               "start": {
-                "line": 35,
+                "line": 40,
                 "column": 12
               },
               "end": {
-                "line": 35,
+                "line": 40,
                 "column": 33
               },
               "identifierName": "ConnectionVideoOption"
@@ -776,15 +776,15 @@
           "typeParameters": null,
           "right": {
             "type": "ObjectTypeAnnotation",
-            "start": 683,
-            "end": 767,
+            "start": 923,
+            "end": 1007,
             "loc": {
               "start": {
-                "line": 35,
+                "line": 40,
                 "column": 36
               },
               "end": {
-                "line": 39,
+                "line": 44,
                 "column": 1
               }
             },
@@ -792,29 +792,29 @@
             "properties": [
               {
                 "type": "ObjectTypeProperty",
-                "start": 687,
-                "end": 712,
+                "start": 927,
+                "end": 952,
                 "loc": {
                   "start": {
-                    "line": 36,
+                    "line": 41,
                     "column": 2
                   },
                   "end": {
-                    "line": 36,
+                    "line": 41,
                     "column": 27
                   }
                 },
                 "key": {
                   "type": "Identifier",
-                  "start": 687,
-                  "end": 692,
+                  "start": 927,
+                  "end": 932,
                   "loc": {
                     "start": {
-                      "line": 36,
+                      "line": 41,
                       "column": 2
                     },
                     "end": {
-                      "line": 36,
+                      "line": 41,
                       "column": 7
                     },
                     "identifierName": "codec"
@@ -823,44 +823,44 @@
                 },
                 "value": {
                   "type": "NullableTypeAnnotation",
-                  "start": 694,
-                  "end": 711,
+                  "start": 934,
+                  "end": 951,
                   "loc": {
                     "start": {
-                      "line": 36,
+                      "line": 41,
                       "column": 9
                     },
                     "end": {
-                      "line": 36,
+                      "line": 41,
                       "column": 26
                     }
                   },
                   "typeAnnotation": {
                     "type": "GenericTypeAnnotation",
-                    "start": 695,
-                    "end": 711,
+                    "start": 935,
+                    "end": 951,
                     "loc": {
                       "start": {
-                        "line": 36,
+                        "line": 41,
                         "column": 10
                       },
                       "end": {
-                        "line": 36,
+                        "line": 41,
                         "column": 26
                       }
                     },
                     "typeParameters": null,
                     "id": {
                       "type": "Identifier",
-                      "start": 695,
-                      "end": 711,
+                      "start": 935,
+                      "end": 951,
                       "loc": {
                         "start": {
-                          "line": 36,
+                          "line": 41,
                           "column": 10
                         },
                         "end": {
-                          "line": 36,
+                          "line": 41,
                           "column": 26
                         },
                         "identifierName": "VideoCodecOption"
@@ -875,29 +875,29 @@
               },
               {
                 "type": "ObjectTypeProperty",
-                "start": 715,
-                "end": 746,
+                "start": 955,
+                "end": 986,
                 "loc": {
                   "start": {
-                    "line": 37,
+                    "line": 42,
                     "column": 2
                   },
                   "end": {
-                    "line": 37,
+                    "line": 42,
                     "column": 33
                   }
                 },
                 "key": {
                   "type": "Identifier",
-                  "start": 715,
-                  "end": 724,
+                  "start": 955,
+                  "end": 964,
                   "loc": {
                     "start": {
-                      "line": 37,
+                      "line": 42,
                       "column": 2
                     },
                     "end": {
-                      "line": 37,
+                      "line": 42,
                       "column": 11
                     },
                     "identifierName": "direction"
@@ -906,30 +906,30 @@
                 },
                 "value": {
                   "type": "GenericTypeAnnotation",
-                  "start": 726,
-                  "end": 745,
+                  "start": 966,
+                  "end": 985,
                   "loc": {
                     "start": {
-                      "line": 37,
+                      "line": 42,
                       "column": 13
                     },
                     "end": {
-                      "line": 37,
+                      "line": 42,
                       "column": 32
                     }
                   },
                   "typeParameters": null,
                   "id": {
                     "type": "Identifier",
-                    "start": 726,
-                    "end": 745,
+                    "start": 966,
+                    "end": 985,
                     "loc": {
                       "start": {
-                        "line": 37,
+                        "line": 42,
                         "column": 13
                       },
                       "end": {
-                        "line": 37,
+                        "line": 42,
                         "column": 32
                       },
                       "identifierName": "ConnectionDirection"
@@ -943,29 +943,29 @@
               },
               {
                 "type": "ObjectTypeProperty",
-                "start": 749,
-                "end": 765,
+                "start": 989,
+                "end": 1005,
                 "loc": {
                   "start": {
-                    "line": 38,
+                    "line": 43,
                     "column": 2
                   },
                   "end": {
-                    "line": 38,
+                    "line": 43,
                     "column": 18
                   }
                 },
                 "key": {
                   "type": "Identifier",
-                  "start": 749,
-                  "end": 756,
+                  "start": 989,
+                  "end": 996,
                   "loc": {
                     "start": {
-                      "line": 38,
+                      "line": 43,
                       "column": 2
                     },
                     "end": {
-                      "line": 38,
+                      "line": 43,
                       "column": 9
                     },
                     "identifierName": "enabled"
@@ -974,15 +974,15 @@
                 },
                 "value": {
                   "type": "BooleanTypeAnnotation",
-                  "start": 758,
-                  "end": 765,
+                  "start": 998,
+                  "end": 1005,
                   "loc": {
                     "start": {
-                      "line": 38,
+                      "line": 43,
                       "column": 11
                     },
                     "end": {
-                      "line": 38,
+                      "line": 43,
                       "column": 18
                     }
                   }
@@ -998,16 +998,16 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * ビデオ接続に関するオプションです。\n * @typedef {Object} ConnectionVideoOption\n ",
-              "start": 575,
-              "end": 646,
+              "value": "*\n * ビデオ接続に関するオプションです。\n * @typedef {Object} ConnectionVideoOption\n * @property {VideoCodecOption | null} codec コーデックの設定\n * @property {ConnectionDirection} direction 送受信方向\n * @property {boolean} enabled 有効かどうかのフラグ\n ",
+              "start": 668,
+              "end": 886,
               "loc": {
                 "start": {
-                  "line": 31,
+                  "line": 33,
                   "column": 0
                 },
                 "end": {
-                  "line": 34,
+                  "line": 39,
                   "column": 3
                 }
               }
@@ -1016,16 +1016,16 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * 接続時に指定するオプションです。\n * @typedef {Object} ConnectionOptions\n ",
-              "start": 770,
-              "end": 836,
+              "value": "*\n * 接続時に指定するオプションです。\n * @typedef {Object} ConnectionOptions\n * @property {ConnectionAudioOption} video オーディオの設定\n * @property {ConnectionVideoOption} audio ビデオの設定\n * @property {string} clientId ビデオの設定\n ",
+              "start": 1010,
+              "end": 1216,
               "loc": {
                 "start": {
-                  "line": 41,
+                  "line": 46,
                   "column": 0
                 },
                 "end": {
-                  "line": 44,
+                  "line": 52,
                   "column": 3
                 }
               }
@@ -1035,16 +1035,16 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * ビデオ接続に関するオプションです。\n * @typedef {Object} ConnectionVideoOption\n ",
-            "start": 575,
-            "end": 646,
+            "value": "*\n * ビデオ接続に関するオプションです。\n * @typedef {Object} ConnectionVideoOption\n * @property {VideoCodecOption | null} codec コーデックの設定\n * @property {ConnectionDirection} direction 送受信方向\n * @property {boolean} enabled 有効かどうかのフラグ\n ",
+            "start": 668,
+            "end": 886,
             "loc": {
               "start": {
-                "line": 31,
+                "line": 33,
                 "column": 0
               },
               "end": {
-                "line": 34,
+                "line": 39,
                 "column": 3
               }
             }
@@ -1053,16 +1053,16 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * 接続時に指定するオプションです。\n * @typedef {Object} ConnectionOptions\n ",
-            "start": 770,
-            "end": 836,
+            "value": "*\n * 接続時に指定するオプションです。\n * @typedef {Object} ConnectionOptions\n * @property {ConnectionAudioOption} video オーディオの設定\n * @property {ConnectionVideoOption} audio ビデオの設定\n * @property {string} clientId ビデオの設定\n ",
+            "start": 1010,
+            "end": 1216,
             "loc": {
               "start": {
-                "line": 41,
+                "line": 46,
                 "column": 0
               },
               "end": {
-                "line": 44,
+                "line": 52,
                 "column": 3
               }
             }
@@ -1071,15 +1071,15 @@
       },
       {
         "type": "ExportNamedDeclaration",
-        "start": 837,
-        "end": 985,
+        "start": 1217,
+        "end": 1365,
         "loc": {
           "start": {
-            "line": 45,
+            "line": 53,
             "column": 0
           },
           "end": {
-            "line": 50,
+            "line": 58,
             "column": 2
           }
         },
@@ -1088,29 +1088,29 @@
         "exportKind": "type",
         "declaration": {
           "type": "TypeAlias",
-          "start": 844,
-          "end": 985,
+          "start": 1224,
+          "end": 1365,
           "loc": {
             "start": {
-              "line": 45,
+              "line": 53,
               "column": 7
             },
             "end": {
-              "line": 50,
+              "line": 58,
               "column": 2
             }
           },
           "id": {
             "type": "Identifier",
-            "start": 849,
-            "end": 866,
+            "start": 1229,
+            "end": 1246,
             "loc": {
               "start": {
-                "line": 45,
+                "line": 53,
                 "column": 12
               },
               "end": {
-                "line": 45,
+                "line": 53,
                 "column": 29
               },
               "identifierName": "ConnectionOptions"
@@ -1121,15 +1121,15 @@
           "typeParameters": null,
           "right": {
             "type": "ObjectTypeAnnotation",
-            "start": 869,
-            "end": 984,
+            "start": 1249,
+            "end": 1364,
             "loc": {
               "start": {
-                "line": 45,
+                "line": 53,
                 "column": 32
               },
               "end": {
-                "line": 50,
+                "line": 58,
                 "column": 1
               }
             },
@@ -1137,29 +1137,29 @@
             "properties": [
               {
                 "type": "ObjectTypeProperty",
-                "start": 873,
-                "end": 902,
+                "start": 1253,
+                "end": 1282,
                 "loc": {
                   "start": {
-                    "line": 46,
+                    "line": 54,
                     "column": 2
                   },
                   "end": {
-                    "line": 46,
+                    "line": 54,
                     "column": 31
                   }
                 },
                 "key": {
                   "type": "Identifier",
-                  "start": 873,
-                  "end": 878,
+                  "start": 1253,
+                  "end": 1258,
                   "loc": {
                     "start": {
-                      "line": 46,
+                      "line": 54,
                       "column": 2
                     },
                     "end": {
-                      "line": 46,
+                      "line": 54,
                       "column": 7
                     },
                     "identifierName": "audio"
@@ -1168,30 +1168,30 @@
                 },
                 "value": {
                   "type": "GenericTypeAnnotation",
-                  "start": 880,
-                  "end": 901,
+                  "start": 1260,
+                  "end": 1281,
                   "loc": {
                     "start": {
-                      "line": 46,
+                      "line": 54,
                       "column": 9
                     },
                     "end": {
-                      "line": 46,
+                      "line": 54,
                       "column": 30
                     }
                   },
                   "typeParameters": null,
                   "id": {
                     "type": "Identifier",
-                    "start": 880,
-                    "end": 901,
+                    "start": 1260,
+                    "end": 1281,
                     "loc": {
                       "start": {
-                        "line": 46,
+                        "line": 54,
                         "column": 9
                       },
                       "end": {
-                        "line": 46,
+                        "line": 54,
                         "column": 30
                       },
                       "identifierName": "ConnectionAudioOption"
@@ -1205,29 +1205,29 @@
               },
               {
                 "type": "ObjectTypeProperty",
-                "start": 905,
-                "end": 934,
+                "start": 1285,
+                "end": 1314,
                 "loc": {
                   "start": {
-                    "line": 47,
+                    "line": 55,
                     "column": 2
                   },
                   "end": {
-                    "line": 47,
+                    "line": 55,
                     "column": 31
                   }
                 },
                 "key": {
                   "type": "Identifier",
-                  "start": 905,
-                  "end": 910,
+                  "start": 1285,
+                  "end": 1290,
                   "loc": {
                     "start": {
-                      "line": 47,
+                      "line": 55,
                       "column": 2
                     },
                     "end": {
-                      "line": 47,
+                      "line": 55,
                       "column": 7
                     },
                     "identifierName": "video"
@@ -1236,30 +1236,30 @@
                 },
                 "value": {
                   "type": "GenericTypeAnnotation",
-                  "start": 912,
-                  "end": 933,
+                  "start": 1292,
+                  "end": 1313,
                   "loc": {
                     "start": {
-                      "line": 47,
+                      "line": 55,
                       "column": 9
                     },
                     "end": {
-                      "line": 47,
+                      "line": 55,
                       "column": 30
                     }
                   },
                   "typeParameters": null,
                   "id": {
                     "type": "Identifier",
-                    "start": 912,
-                    "end": 933,
+                    "start": 1292,
+                    "end": 1313,
                     "loc": {
                       "start": {
-                        "line": 47,
+                        "line": 55,
                         "column": 9
                       },
                       "end": {
-                        "line": 47,
+                        "line": 55,
                         "column": 30
                       },
                       "identifierName": "ConnectionVideoOption"
@@ -1273,29 +1273,29 @@
               },
               {
                 "type": "ObjectTypeProperty",
-                "start": 937,
-                "end": 954,
+                "start": 1317,
+                "end": 1334,
                 "loc": {
                   "start": {
-                    "line": 48,
+                    "line": 56,
                     "column": 2
                   },
                   "end": {
-                    "line": 48,
+                    "line": 56,
                     "column": 19
                   }
                 },
                 "key": {
                   "type": "Identifier",
-                  "start": 937,
-                  "end": 945,
+                  "start": 1317,
+                  "end": 1325,
                   "loc": {
                     "start": {
-                      "line": 48,
+                      "line": 56,
                       "column": 2
                     },
                     "end": {
-                      "line": 48,
+                      "line": 56,
                       "column": 10
                     },
                     "identifierName": "clientId"
@@ -1304,15 +1304,15 @@
                 },
                 "value": {
                   "type": "StringTypeAnnotation",
-                  "start": 947,
-                  "end": 953,
+                  "start": 1327,
+                  "end": 1333,
                   "loc": {
                     "start": {
-                      "line": 48,
+                      "line": 56,
                       "column": 12
                     },
                     "end": {
-                      "line": 48,
+                      "line": 56,
                       "column": 18
                     }
                   }
@@ -1323,29 +1323,29 @@
               },
               {
                 "type": "ObjectTypeProperty",
-                "start": 957,
-                "end": 982,
+                "start": 1337,
+                "end": 1362,
                 "loc": {
                   "start": {
-                    "line": 49,
+                    "line": 57,
                     "column": 2
                   },
                   "end": {
-                    "line": 49,
+                    "line": 57,
                     "column": 27
                   }
                 },
                 "key": {
                   "type": "Identifier",
-                  "start": 957,
-                  "end": 967,
+                  "start": 1337,
+                  "end": 1347,
                   "loc": {
                     "start": {
-                      "line": 49,
+                      "line": 57,
                       "column": 2
                     },
                     "end": {
-                      "line": 49,
+                      "line": 57,
                       "column": 12
                     },
                     "identifierName": "iceServers"
@@ -1354,59 +1354,59 @@
                 },
                 "value": {
                   "type": "GenericTypeAnnotation",
-                  "start": 969,
-                  "end": 982,
+                  "start": 1349,
+                  "end": 1362,
                   "loc": {
                     "start": {
-                      "line": 49,
+                      "line": 57,
                       "column": 14
                     },
                     "end": {
-                      "line": 49,
+                      "line": 57,
                       "column": 27
                     }
                   },
                   "typeParameters": {
                     "type": "TypeParameterInstantiation",
-                    "start": 974,
-                    "end": 982,
+                    "start": 1354,
+                    "end": 1362,
                     "loc": {
                       "start": {
-                        "line": 49,
+                        "line": 57,
                         "column": 19
                       },
                       "end": {
-                        "line": 49,
+                        "line": 57,
                         "column": 27
                       }
                     },
                     "params": [
                       {
                         "type": "GenericTypeAnnotation",
-                        "start": 975,
-                        "end": 981,
+                        "start": 1355,
+                        "end": 1361,
                         "loc": {
                           "start": {
-                            "line": 49,
+                            "line": 57,
                             "column": 20
                           },
                           "end": {
-                            "line": 49,
+                            "line": 57,
                             "column": 26
                           }
                         },
                         "typeParameters": null,
                         "id": {
                           "type": "Identifier",
-                          "start": 975,
-                          "end": 981,
+                          "start": 1355,
+                          "end": 1361,
                           "loc": {
                             "start": {
-                              "line": 49,
+                              "line": 57,
                               "column": 20
                             },
                             "end": {
-                              "line": 49,
+                              "line": 57,
                               "column": 26
                             },
                             "identifierName": "Object"
@@ -1418,15 +1418,15 @@
                   },
                   "id": {
                     "type": "Identifier",
-                    "start": 969,
-                    "end": 974,
+                    "start": 1349,
+                    "end": 1354,
                     "loc": {
                       "start": {
-                        "line": 49,
+                        "line": 57,
                         "column": 14
                       },
                       "end": {
-                        "line": 49,
+                        "line": 57,
                         "column": 19
                       },
                       "identifierName": "Array"
@@ -1445,16 +1445,16 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * 接続時に指定するオプションです。\n * @typedef {Object} ConnectionOptions\n ",
-              "start": 770,
-              "end": 836,
+              "value": "*\n * 接続時に指定するオプションです。\n * @typedef {Object} ConnectionOptions\n * @property {ConnectionAudioOption} video オーディオの設定\n * @property {ConnectionVideoOption} audio ビデオの設定\n * @property {string} clientId ビデオの設定\n ",
+              "start": 1010,
+              "end": 1216,
               "loc": {
                 "start": {
-                  "line": 41,
+                  "line": 46,
                   "column": 0
                 },
                 "end": {
-                  "line": 44,
+                  "line": 52,
                   "column": 3
                 }
               }
@@ -1463,16 +1463,16 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * 接続時に指定できるメタデータです。\n * @typedef {Object} MetadataOption\n ",
-              "start": 987,
-              "end": 1051,
+              "value": "*\n * 接続時に指定できるメタデータです。\n * @typedef {Object} MetadataOption\n * @property {Object | null} authnMetadata 送信するメタデータ\n * @property {string | null} key 送信するシグナリンキー\n ",
+              "start": 1367,
+              "end": 1529,
               "loc": {
                 "start": {
-                  "line": 52,
+                  "line": 60,
                   "column": 0
                 },
                 "end": {
-                  "line": 55,
+                  "line": 65,
                   "column": 3
                 }
               }
@@ -1482,16 +1482,16 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * 接続時に指定するオプションです。\n * @typedef {Object} ConnectionOptions\n ",
-            "start": 770,
-            "end": 836,
+            "value": "*\n * 接続時に指定するオプションです。\n * @typedef {Object} ConnectionOptions\n * @property {ConnectionAudioOption} video オーディオの設定\n * @property {ConnectionVideoOption} audio ビデオの設定\n * @property {string} clientId ビデオの設定\n ",
+            "start": 1010,
+            "end": 1216,
             "loc": {
               "start": {
-                "line": 41,
+                "line": 46,
                 "column": 0
               },
               "end": {
-                "line": 44,
+                "line": 52,
                 "column": 3
               }
             }
@@ -1500,16 +1500,16 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * 接続時に指定できるメタデータです。\n * @typedef {Object} MetadataOption\n ",
-            "start": 987,
-            "end": 1051,
+            "value": "*\n * 接続時に指定できるメタデータです。\n * @typedef {Object} MetadataOption\n * @property {Object | null} authnMetadata 送信するメタデータ\n * @property {string | null} key 送信するシグナリンキー\n ",
+            "start": 1367,
+            "end": 1529,
             "loc": {
               "start": {
-                "line": 52,
+                "line": 60,
                 "column": 0
               },
               "end": {
-                "line": 55,
+                "line": 65,
                 "column": 3
               }
             }
@@ -1518,15 +1518,15 @@
       },
       {
         "type": "ExportNamedDeclaration",
-        "start": 1052,
-        "end": 1126,
+        "start": 1530,
+        "end": 1604,
         "loc": {
           "start": {
-            "line": 56,
+            "line": 66,
             "column": 0
           },
           "end": {
-            "line": 59,
+            "line": 69,
             "column": 2
           }
         },
@@ -1535,29 +1535,29 @@
         "exportKind": "type",
         "declaration": {
           "type": "TypeAlias",
-          "start": 1059,
-          "end": 1126,
+          "start": 1537,
+          "end": 1604,
           "loc": {
             "start": {
-              "line": 56,
+              "line": 66,
               "column": 7
             },
             "end": {
-              "line": 59,
+              "line": 69,
               "column": 2
             }
           },
           "id": {
             "type": "Identifier",
-            "start": 1064,
-            "end": 1078,
+            "start": 1542,
+            "end": 1556,
             "loc": {
               "start": {
-                "line": 56,
+                "line": 66,
                 "column": 12
               },
               "end": {
-                "line": 56,
+                "line": 66,
                 "column": 26
               },
               "identifierName": "MetadataOption"
@@ -1568,15 +1568,15 @@
           "typeParameters": null,
           "right": {
             "type": "ObjectTypeAnnotation",
-            "start": 1081,
-            "end": 1125,
+            "start": 1559,
+            "end": 1603,
             "loc": {
               "start": {
-                "line": 56,
+                "line": 66,
                 "column": 29
               },
               "end": {
-                "line": 59,
+                "line": 69,
                 "column": 1
               }
             },
@@ -1584,29 +1584,29 @@
             "properties": [
               {
                 "type": "ObjectTypeProperty",
-                "start": 1085,
-                "end": 1108,
+                "start": 1563,
+                "end": 1586,
                 "loc": {
                   "start": {
-                    "line": 57,
+                    "line": 67,
                     "column": 2
                   },
                   "end": {
-                    "line": 57,
+                    "line": 67,
                     "column": 25
                   }
                 },
                 "key": {
                   "type": "Identifier",
-                  "start": 1085,
-                  "end": 1098,
+                  "start": 1563,
+                  "end": 1576,
                   "loc": {
                     "start": {
-                      "line": 57,
+                      "line": 67,
                       "column": 2
                     },
                     "end": {
-                      "line": 57,
+                      "line": 67,
                       "column": 15
                     },
                     "identifierName": "authnMetadata"
@@ -1615,44 +1615,44 @@
                 },
                 "value": {
                   "type": "NullableTypeAnnotation",
-                  "start": 1100,
-                  "end": 1107,
+                  "start": 1578,
+                  "end": 1585,
                   "loc": {
                     "start": {
-                      "line": 57,
+                      "line": 67,
                       "column": 17
                     },
                     "end": {
-                      "line": 57,
+                      "line": 67,
                       "column": 24
                     }
                   },
                   "typeAnnotation": {
                     "type": "GenericTypeAnnotation",
-                    "start": 1101,
-                    "end": 1107,
+                    "start": 1579,
+                    "end": 1585,
                     "loc": {
                       "start": {
-                        "line": 57,
+                        "line": 67,
                         "column": 18
                       },
                       "end": {
-                        "line": 57,
+                        "line": 67,
                         "column": 24
                       }
                     },
                     "typeParameters": null,
                     "id": {
                       "type": "Identifier",
-                      "start": 1101,
-                      "end": 1107,
+                      "start": 1579,
+                      "end": 1585,
                       "loc": {
                         "start": {
-                          "line": 57,
+                          "line": 67,
                           "column": 18
                         },
                         "end": {
-                          "line": 57,
+                          "line": 67,
                           "column": 24
                         },
                         "identifierName": "Object"
@@ -1667,29 +1667,29 @@
               },
               {
                 "type": "ObjectTypeProperty",
-                "start": 1111,
-                "end": 1123,
+                "start": 1589,
+                "end": 1601,
                 "loc": {
                   "start": {
-                    "line": 58,
+                    "line": 68,
                     "column": 2
                   },
                   "end": {
-                    "line": 58,
+                    "line": 68,
                     "column": 14
                   }
                 },
                 "key": {
                   "type": "Identifier",
-                  "start": 1111,
-                  "end": 1114,
+                  "start": 1589,
+                  "end": 1592,
                   "loc": {
                     "start": {
-                      "line": 58,
+                      "line": 68,
                       "column": 2
                     },
                     "end": {
-                      "line": 58,
+                      "line": 68,
                       "column": 5
                     },
                     "identifierName": "key"
@@ -1698,29 +1698,29 @@
                 },
                 "value": {
                   "type": "NullableTypeAnnotation",
-                  "start": 1116,
-                  "end": 1123,
+                  "start": 1594,
+                  "end": 1601,
                   "loc": {
                     "start": {
-                      "line": 58,
+                      "line": 68,
                       "column": 7
                     },
                     "end": {
-                      "line": 58,
+                      "line": 68,
                       "column": 14
                     }
                   },
                   "typeAnnotation": {
                     "type": "StringTypeAnnotation",
-                    "start": 1117,
-                    "end": 1123,
+                    "start": 1595,
+                    "end": 1601,
                     "loc": {
                       "start": {
-                        "line": 58,
+                        "line": 68,
                         "column": 8
                       },
                       "end": {
-                        "line": 58,
+                        "line": 68,
                         "column": 14
                       }
                     }
@@ -1737,16 +1737,16 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * 接続時に指定できるメタデータです。\n * @typedef {Object} MetadataOption\n ",
-              "start": 987,
-              "end": 1051,
+              "value": "*\n * 接続時に指定できるメタデータです。\n * @typedef {Object} MetadataOption\n * @property {Object | null} authnMetadata 送信するメタデータ\n * @property {string | null} key 送信するシグナリンキー\n ",
+              "start": 1367,
+              "end": 1529,
               "loc": {
                 "start": {
-                  "line": 52,
+                  "line": 60,
                   "column": 0
                 },
                 "end": {
-                  "line": 55,
+                  "line": 65,
                   "column": 3
                 }
               }
@@ -1757,16 +1757,16 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * 接続時に指定できるメタデータです。\n * @typedef {Object} MetadataOption\n ",
-            "start": 987,
-            "end": 1051,
+            "value": "*\n * 接続時に指定できるメタデータです。\n * @typedef {Object} MetadataOption\n * @property {Object | null} authnMetadata 送信するメタデータ\n * @property {string | null} key 送信するシグナリンキー\n ",
+            "start": 1367,
+            "end": 1529,
             "loc": {
               "start": {
-                "line": 52,
+                "line": 60,
                 "column": 0
               },
               "end": {
-                "line": 55,
+                "line": 65,
                 "column": 3
               }
             }
@@ -1811,16 +1811,16 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * オーディオ接続に関するオプションです。\n * @typedef {Object} ConnectionAudioOption\n ",
+      "value": "*\n * オーディオ接続に関するオプションです。\n * @typedef {Object} ConnectionAudioOption\n * @property {ConnectionDirection} direction 送受信方向\n * @property {boolean} enabled 有効かどうかのフラグ\n ",
       "start": 208,
-      "end": 281,
+      "end": 374,
       "loc": {
         "start": {
           "line": 12,
           "column": 0
         },
         "end": {
-          "line": 15,
+          "line": 17,
           "column": 3
         }
       }
@@ -1828,63 +1828,63 @@
     {
       "type": "CommentBlock",
       "value": "*\n * ビデオ接続のコーデックに関するオプションです。\n * - VP8\n * - VP9\n * - H264\n * @typedef {string} ConnectionDirection\n * @typedef {string} VideoCodecOption\n ",
-      "start": 377,
-      "end": 518,
+      "start": 470,
+      "end": 611,
       "loc": {
         "start": {
-          "line": 21,
+          "line": 23,
           "column": 0
         },
         "end": {
-          "line": 28,
+          "line": 30,
           "column": 3
         }
       }
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * ビデオ接続に関するオプションです。\n * @typedef {Object} ConnectionVideoOption\n ",
-      "start": 575,
-      "end": 646,
+      "value": "*\n * ビデオ接続に関するオプションです。\n * @typedef {Object} ConnectionVideoOption\n * @property {VideoCodecOption | null} codec コーデックの設定\n * @property {ConnectionDirection} direction 送受信方向\n * @property {boolean} enabled 有効かどうかのフラグ\n ",
+      "start": 668,
+      "end": 886,
       "loc": {
         "start": {
-          "line": 31,
+          "line": 33,
           "column": 0
         },
         "end": {
-          "line": 34,
+          "line": 39,
           "column": 3
         }
       }
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * 接続時に指定するオプションです。\n * @typedef {Object} ConnectionOptions\n ",
-      "start": 770,
-      "end": 836,
+      "value": "*\n * 接続時に指定するオプションです。\n * @typedef {Object} ConnectionOptions\n * @property {ConnectionAudioOption} video オーディオの設定\n * @property {ConnectionVideoOption} audio ビデオの設定\n * @property {string} clientId ビデオの設定\n ",
+      "start": 1010,
+      "end": 1216,
       "loc": {
         "start": {
-          "line": 41,
+          "line": 46,
           "column": 0
         },
         "end": {
-          "line": 44,
-          "column": 3
-        }
-      }
-    },
-    {
-      "type": "CommentBlock",
-      "value": "*\n * 接続時に指定できるメタデータです。\n * @typedef {Object} MetadataOption\n ",
-      "start": 987,
-      "end": 1051,
-      "loc": {
-        "start": {
           "line": 52,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * 接続時に指定できるメタデータです。\n * @typedef {Object} MetadataOption\n * @property {Object | null} authnMetadata 送信するメタデータ\n * @property {string | null} key 送信するシグナリンキー\n ",
+      "start": 1367,
+      "end": 1529,
+      "loc": {
+        "start": {
+          "line": 60,
           "column": 0
         },
         "end": {
-          "line": 55,
+          "line": 65,
           "column": 3
         }
       }
@@ -2193,16 +2193,16 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * オーディオ接続に関するオプションです。\n * @typedef {Object} ConnectionAudioOption\n ",
+      "value": "*\n * オーディオ接続に関するオプションです。\n * @typedef {Object} ConnectionAudioOption\n * @property {ConnectionDirection} direction 送受信方向\n * @property {boolean} enabled 有効かどうかのフラグ\n ",
       "start": 208,
-      "end": 281,
+      "end": 374,
       "loc": {
         "start": {
           "line": 12,
           "column": 0
         },
         "end": {
-          "line": 15,
+          "line": 17,
           "column": 3
         }
       }
@@ -2222,15 +2222,15 @@
         "updateContext": null
       },
       "value": "export",
-      "start": 282,
-      "end": 288,
+      "start": 375,
+      "end": 381,
       "loc": {
         "start": {
-          "line": 16,
+          "line": 18,
           "column": 0
         },
         "end": {
-          "line": 16,
+          "line": 18,
           "column": 6
         }
       }
@@ -2248,15 +2248,15 @@
         "binop": null
       },
       "value": "type",
-      "start": 289,
-      "end": 293,
+      "start": 382,
+      "end": 386,
       "loc": {
         "start": {
-          "line": 16,
+          "line": 18,
           "column": 7
         },
         "end": {
-          "line": 16,
+          "line": 18,
           "column": 11
         }
       }
@@ -2274,15 +2274,15 @@
         "binop": null
       },
       "value": "ConnectionAudioOption",
-      "start": 294,
-      "end": 315,
+      "start": 387,
+      "end": 408,
       "loc": {
         "start": {
-          "line": 16,
+          "line": 18,
           "column": 12
         },
         "end": {
-          "line": 16,
+          "line": 18,
           "column": 33
         }
       }
@@ -2301,15 +2301,15 @@
         "updateContext": null
       },
       "value": "=",
-      "start": 316,
-      "end": 317,
+      "start": 409,
+      "end": 410,
       "loc": {
         "start": {
-          "line": 16,
+          "line": 18,
           "column": 34
         },
         "end": {
-          "line": 16,
+          "line": 18,
           "column": 35
         }
       }
@@ -2326,15 +2326,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 318,
-      "end": 319,
+      "start": 411,
+      "end": 412,
       "loc": {
         "start": {
-          "line": 16,
+          "line": 18,
           "column": 36
         },
         "end": {
-          "line": 16,
+          "line": 18,
           "column": 37
         }
       }
@@ -2352,15 +2352,15 @@
         "binop": null
       },
       "value": "direction",
-      "start": 322,
-      "end": 331,
+      "start": 415,
+      "end": 424,
       "loc": {
         "start": {
-          "line": 17,
+          "line": 19,
           "column": 2
         },
         "end": {
-          "line": 17,
+          "line": 19,
           "column": 11
         }
       }
@@ -2378,15 +2378,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 331,
-      "end": 332,
+      "start": 424,
+      "end": 425,
       "loc": {
         "start": {
-          "line": 17,
+          "line": 19,
           "column": 11
         },
         "end": {
-          "line": 17,
+          "line": 19,
           "column": 12
         }
       }
@@ -2404,15 +2404,15 @@
         "binop": null
       },
       "value": "ConnectionDirection",
-      "start": 333,
-      "end": 352,
+      "start": 426,
+      "end": 445,
       "loc": {
         "start": {
-          "line": 17,
+          "line": 19,
           "column": 13
         },
         "end": {
-          "line": 17,
+          "line": 19,
           "column": 32
         }
       }
@@ -2430,15 +2430,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 352,
-      "end": 353,
+      "start": 445,
+      "end": 446,
       "loc": {
         "start": {
-          "line": 17,
+          "line": 19,
           "column": 32
         },
         "end": {
-          "line": 17,
+          "line": 19,
           "column": 33
         }
       }
@@ -2456,15 +2456,15 @@
         "binop": null
       },
       "value": "enabled",
-      "start": 356,
-      "end": 363,
+      "start": 449,
+      "end": 456,
       "loc": {
         "start": {
-          "line": 18,
+          "line": 20,
           "column": 2
         },
         "end": {
-          "line": 18,
+          "line": 20,
           "column": 9
         }
       }
@@ -2482,15 +2482,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 363,
-      "end": 364,
+      "start": 456,
+      "end": 457,
       "loc": {
         "start": {
-          "line": 18,
+          "line": 20,
           "column": 9
         },
         "end": {
-          "line": 18,
+          "line": 20,
           "column": 10
         }
       }
@@ -2508,15 +2508,15 @@
         "binop": null
       },
       "value": "boolean",
-      "start": 365,
-      "end": 372,
+      "start": 458,
+      "end": 465,
       "loc": {
         "start": {
-          "line": 18,
+          "line": 20,
           "column": 11
         },
         "end": {
-          "line": 18,
+          "line": 20,
           "column": 18
         }
       }
@@ -2533,15 +2533,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 373,
-      "end": 374,
+      "start": 466,
+      "end": 467,
       "loc": {
         "start": {
-          "line": 19,
+          "line": 21,
           "column": 0
         },
         "end": {
-          "line": 19,
+          "line": 21,
           "column": 1
         }
       }
@@ -2559,15 +2559,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 374,
-      "end": 375,
+      "start": 467,
+      "end": 468,
       "loc": {
         "start": {
-          "line": 19,
+          "line": 21,
           "column": 1
         },
         "end": {
-          "line": 19,
+          "line": 21,
           "column": 2
         }
       }
@@ -2575,15 +2575,15 @@
     {
       "type": "CommentBlock",
       "value": "*\n * ビデオ接続のコーデックに関するオプションです。\n * - VP8\n * - VP9\n * - H264\n * @typedef {string} ConnectionDirection\n * @typedef {string} VideoCodecOption\n ",
-      "start": 377,
-      "end": 518,
+      "start": 470,
+      "end": 611,
       "loc": {
         "start": {
-          "line": 21,
+          "line": 23,
           "column": 0
         },
         "end": {
-          "line": 28,
+          "line": 30,
           "column": 3
         }
       }
@@ -2603,15 +2603,15 @@
         "updateContext": null
       },
       "value": "export",
-      "start": 519,
-      "end": 525,
+      "start": 612,
+      "end": 618,
       "loc": {
         "start": {
-          "line": 29,
+          "line": 31,
           "column": 0
         },
         "end": {
-          "line": 29,
+          "line": 31,
           "column": 6
         }
       }
@@ -2629,15 +2629,15 @@
         "binop": null
       },
       "value": "type",
-      "start": 526,
-      "end": 530,
+      "start": 619,
+      "end": 623,
       "loc": {
         "start": {
-          "line": 29,
+          "line": 31,
           "column": 7
         },
         "end": {
-          "line": 29,
+          "line": 31,
           "column": 11
         }
       }
@@ -2655,15 +2655,15 @@
         "binop": null
       },
       "value": "VideoCodecOption",
-      "start": 531,
-      "end": 547,
+      "start": 624,
+      "end": 640,
       "loc": {
         "start": {
-          "line": 29,
+          "line": 31,
           "column": 12
         },
         "end": {
-          "line": 29,
+          "line": 31,
           "column": 28
         }
       }
@@ -2682,15 +2682,15 @@
         "updateContext": null
       },
       "value": "=",
-      "start": 548,
-      "end": 549,
+      "start": 641,
+      "end": 642,
       "loc": {
         "start": {
-          "line": 29,
+          "line": 31,
           "column": 29
         },
         "end": {
-          "line": 29,
+          "line": 31,
           "column": 30
         }
       }
@@ -2709,15 +2709,15 @@
         "updateContext": null
       },
       "value": "VP8",
-      "start": 550,
-      "end": 555,
+      "start": 643,
+      "end": 648,
       "loc": {
         "start": {
-          "line": 29,
+          "line": 31,
           "column": 31
         },
         "end": {
-          "line": 29,
+          "line": 31,
           "column": 36
         }
       }
@@ -2736,15 +2736,15 @@
         "updateContext": null
       },
       "value": "|",
-      "start": 556,
-      "end": 557,
+      "start": 649,
+      "end": 650,
       "loc": {
         "start": {
-          "line": 29,
+          "line": 31,
           "column": 37
         },
         "end": {
-          "line": 29,
+          "line": 31,
           "column": 38
         }
       }
@@ -2763,15 +2763,15 @@
         "updateContext": null
       },
       "value": "VP9",
-      "start": 558,
-      "end": 563,
+      "start": 651,
+      "end": 656,
       "loc": {
         "start": {
-          "line": 29,
+          "line": 31,
           "column": 39
         },
         "end": {
-          "line": 29,
+          "line": 31,
           "column": 44
         }
       }
@@ -2790,15 +2790,15 @@
         "updateContext": null
       },
       "value": "|",
-      "start": 564,
-      "end": 565,
+      "start": 657,
+      "end": 658,
       "loc": {
         "start": {
-          "line": 29,
+          "line": 31,
           "column": 45
         },
         "end": {
-          "line": 29,
+          "line": 31,
           "column": 46
         }
       }
@@ -2817,15 +2817,15 @@
         "updateContext": null
       },
       "value": "H264",
-      "start": 566,
-      "end": 572,
+      "start": 659,
+      "end": 665,
       "loc": {
         "start": {
-          "line": 29,
+          "line": 31,
           "column": 47
         },
         "end": {
-          "line": 29,
+          "line": 31,
           "column": 53
         }
       }
@@ -2843,31 +2843,31 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 572,
-      "end": 573,
+      "start": 665,
+      "end": 666,
       "loc": {
         "start": {
-          "line": 29,
+          "line": 31,
           "column": 53
         },
         "end": {
-          "line": 29,
+          "line": 31,
           "column": 54
         }
       }
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * ビデオ接続に関するオプションです。\n * @typedef {Object} ConnectionVideoOption\n ",
-      "start": 575,
-      "end": 646,
+      "value": "*\n * ビデオ接続に関するオプションです。\n * @typedef {Object} ConnectionVideoOption\n * @property {VideoCodecOption | null} codec コーデックの設定\n * @property {ConnectionDirection} direction 送受信方向\n * @property {boolean} enabled 有効かどうかのフラグ\n ",
+      "start": 668,
+      "end": 886,
       "loc": {
         "start": {
-          "line": 31,
+          "line": 33,
           "column": 0
         },
         "end": {
-          "line": 34,
+          "line": 39,
           "column": 3
         }
       }
@@ -2887,15 +2887,15 @@
         "updateContext": null
       },
       "value": "export",
-      "start": 647,
-      "end": 653,
+      "start": 887,
+      "end": 893,
       "loc": {
         "start": {
-          "line": 35,
+          "line": 40,
           "column": 0
         },
         "end": {
-          "line": 35,
+          "line": 40,
           "column": 6
         }
       }
@@ -2913,15 +2913,15 @@
         "binop": null
       },
       "value": "type",
-      "start": 654,
-      "end": 658,
+      "start": 894,
+      "end": 898,
       "loc": {
         "start": {
-          "line": 35,
+          "line": 40,
           "column": 7
         },
         "end": {
-          "line": 35,
+          "line": 40,
           "column": 11
         }
       }
@@ -2939,15 +2939,15 @@
         "binop": null
       },
       "value": "ConnectionVideoOption",
-      "start": 659,
-      "end": 680,
+      "start": 899,
+      "end": 920,
       "loc": {
         "start": {
-          "line": 35,
+          "line": 40,
           "column": 12
         },
         "end": {
-          "line": 35,
+          "line": 40,
           "column": 33
         }
       }
@@ -2966,15 +2966,15 @@
         "updateContext": null
       },
       "value": "=",
-      "start": 681,
-      "end": 682,
+      "start": 921,
+      "end": 922,
       "loc": {
         "start": {
-          "line": 35,
+          "line": 40,
           "column": 34
         },
         "end": {
-          "line": 35,
+          "line": 40,
           "column": 35
         }
       }
@@ -2991,15 +2991,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 683,
-      "end": 684,
+      "start": 923,
+      "end": 924,
       "loc": {
         "start": {
-          "line": 35,
+          "line": 40,
           "column": 36
         },
         "end": {
-          "line": 35,
+          "line": 40,
           "column": 37
         }
       }
@@ -3017,15 +3017,15 @@
         "binop": null
       },
       "value": "codec",
-      "start": 687,
-      "end": 692,
+      "start": 927,
+      "end": 932,
       "loc": {
         "start": {
-          "line": 36,
+          "line": 41,
           "column": 2
         },
         "end": {
-          "line": 36,
+          "line": 41,
           "column": 7
         }
       }
@@ -3043,15 +3043,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 692,
-      "end": 693,
+      "start": 932,
+      "end": 933,
       "loc": {
         "start": {
-          "line": 36,
+          "line": 41,
           "column": 7
         },
         "end": {
-          "line": 36,
+          "line": 41,
           "column": 8
         }
       }
@@ -3069,15 +3069,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 694,
-      "end": 695,
+      "start": 934,
+      "end": 935,
       "loc": {
         "start": {
-          "line": 36,
+          "line": 41,
           "column": 9
         },
         "end": {
-          "line": 36,
+          "line": 41,
           "column": 10
         }
       }
@@ -3095,15 +3095,15 @@
         "binop": null
       },
       "value": "VideoCodecOption",
-      "start": 695,
-      "end": 711,
+      "start": 935,
+      "end": 951,
       "loc": {
         "start": {
-          "line": 36,
+          "line": 41,
           "column": 10
         },
         "end": {
-          "line": 36,
+          "line": 41,
           "column": 26
         }
       }
@@ -3121,15 +3121,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 711,
-      "end": 712,
+      "start": 951,
+      "end": 952,
       "loc": {
         "start": {
-          "line": 36,
+          "line": 41,
           "column": 26
         },
         "end": {
-          "line": 36,
+          "line": 41,
           "column": 27
         }
       }
@@ -3147,15 +3147,15 @@
         "binop": null
       },
       "value": "direction",
-      "start": 715,
-      "end": 724,
+      "start": 955,
+      "end": 964,
       "loc": {
         "start": {
-          "line": 37,
+          "line": 42,
           "column": 2
         },
         "end": {
-          "line": 37,
+          "line": 42,
           "column": 11
         }
       }
@@ -3173,15 +3173,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 724,
-      "end": 725,
+      "start": 964,
+      "end": 965,
       "loc": {
         "start": {
-          "line": 37,
+          "line": 42,
           "column": 11
         },
         "end": {
-          "line": 37,
+          "line": 42,
           "column": 12
         }
       }
@@ -3199,15 +3199,15 @@
         "binop": null
       },
       "value": "ConnectionDirection",
-      "start": 726,
-      "end": 745,
+      "start": 966,
+      "end": 985,
       "loc": {
         "start": {
-          "line": 37,
+          "line": 42,
           "column": 13
         },
         "end": {
-          "line": 37,
+          "line": 42,
           "column": 32
         }
       }
@@ -3225,15 +3225,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 745,
-      "end": 746,
+      "start": 985,
+      "end": 986,
       "loc": {
         "start": {
-          "line": 37,
+          "line": 42,
           "column": 32
         },
         "end": {
-          "line": 37,
+          "line": 42,
           "column": 33
         }
       }
@@ -3251,15 +3251,15 @@
         "binop": null
       },
       "value": "enabled",
-      "start": 749,
-      "end": 756,
+      "start": 989,
+      "end": 996,
       "loc": {
         "start": {
-          "line": 38,
+          "line": 43,
           "column": 2
         },
         "end": {
-          "line": 38,
+          "line": 43,
           "column": 9
         }
       }
@@ -3277,15 +3277,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 756,
-      "end": 757,
+      "start": 996,
+      "end": 997,
       "loc": {
         "start": {
-          "line": 38,
+          "line": 43,
           "column": 9
         },
         "end": {
-          "line": 38,
+          "line": 43,
           "column": 10
         }
       }
@@ -3303,15 +3303,15 @@
         "binop": null
       },
       "value": "boolean",
-      "start": 758,
-      "end": 765,
+      "start": 998,
+      "end": 1005,
       "loc": {
         "start": {
-          "line": 38,
+          "line": 43,
           "column": 11
         },
         "end": {
-          "line": 38,
+          "line": 43,
           "column": 18
         }
       }
@@ -3328,15 +3328,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 766,
-      "end": 767,
+      "start": 1006,
+      "end": 1007,
       "loc": {
         "start": {
-          "line": 39,
+          "line": 44,
           "column": 0
         },
         "end": {
-          "line": 39,
+          "line": 44,
           "column": 1
         }
       }
@@ -3354,31 +3354,31 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 767,
-      "end": 768,
+      "start": 1007,
+      "end": 1008,
       "loc": {
         "start": {
-          "line": 39,
+          "line": 44,
           "column": 1
         },
         "end": {
-          "line": 39,
+          "line": 44,
           "column": 2
         }
       }
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * 接続時に指定するオプションです。\n * @typedef {Object} ConnectionOptions\n ",
-      "start": 770,
-      "end": 836,
+      "value": "*\n * 接続時に指定するオプションです。\n * @typedef {Object} ConnectionOptions\n * @property {ConnectionAudioOption} video オーディオの設定\n * @property {ConnectionVideoOption} audio ビデオの設定\n * @property {string} clientId ビデオの設定\n ",
+      "start": 1010,
+      "end": 1216,
       "loc": {
         "start": {
-          "line": 41,
+          "line": 46,
           "column": 0
         },
         "end": {
-          "line": 44,
+          "line": 52,
           "column": 3
         }
       }
@@ -3398,15 +3398,15 @@
         "updateContext": null
       },
       "value": "export",
-      "start": 837,
-      "end": 843,
+      "start": 1217,
+      "end": 1223,
       "loc": {
         "start": {
-          "line": 45,
+          "line": 53,
           "column": 0
         },
         "end": {
-          "line": 45,
+          "line": 53,
           "column": 6
         }
       }
@@ -3424,15 +3424,15 @@
         "binop": null
       },
       "value": "type",
-      "start": 844,
-      "end": 848,
+      "start": 1224,
+      "end": 1228,
       "loc": {
         "start": {
-          "line": 45,
+          "line": 53,
           "column": 7
         },
         "end": {
-          "line": 45,
+          "line": 53,
           "column": 11
         }
       }
@@ -3450,15 +3450,15 @@
         "binop": null
       },
       "value": "ConnectionOptions",
-      "start": 849,
-      "end": 866,
+      "start": 1229,
+      "end": 1246,
       "loc": {
         "start": {
-          "line": 45,
+          "line": 53,
           "column": 12
         },
         "end": {
-          "line": 45,
+          "line": 53,
           "column": 29
         }
       }
@@ -3477,15 +3477,15 @@
         "updateContext": null
       },
       "value": "=",
-      "start": 867,
-      "end": 868,
+      "start": 1247,
+      "end": 1248,
       "loc": {
         "start": {
-          "line": 45,
+          "line": 53,
           "column": 30
         },
         "end": {
-          "line": 45,
+          "line": 53,
           "column": 31
         }
       }
@@ -3502,15 +3502,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 869,
-      "end": 870,
+      "start": 1249,
+      "end": 1250,
       "loc": {
         "start": {
-          "line": 45,
+          "line": 53,
           "column": 32
         },
         "end": {
-          "line": 45,
+          "line": 53,
           "column": 33
         }
       }
@@ -3528,15 +3528,15 @@
         "binop": null
       },
       "value": "audio",
-      "start": 873,
-      "end": 878,
+      "start": 1253,
+      "end": 1258,
       "loc": {
         "start": {
-          "line": 46,
+          "line": 54,
           "column": 2
         },
         "end": {
-          "line": 46,
+          "line": 54,
           "column": 7
         }
       }
@@ -3554,15 +3554,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 878,
-      "end": 879,
+      "start": 1258,
+      "end": 1259,
       "loc": {
         "start": {
-          "line": 46,
+          "line": 54,
           "column": 7
         },
         "end": {
-          "line": 46,
+          "line": 54,
           "column": 8
         }
       }
@@ -3580,15 +3580,15 @@
         "binop": null
       },
       "value": "ConnectionAudioOption",
-      "start": 880,
-      "end": 901,
+      "start": 1260,
+      "end": 1281,
       "loc": {
         "start": {
-          "line": 46,
+          "line": 54,
           "column": 9
         },
         "end": {
-          "line": 46,
+          "line": 54,
           "column": 30
         }
       }
@@ -3606,15 +3606,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 901,
-      "end": 902,
+      "start": 1281,
+      "end": 1282,
       "loc": {
         "start": {
-          "line": 46,
+          "line": 54,
           "column": 30
         },
         "end": {
-          "line": 46,
+          "line": 54,
           "column": 31
         }
       }
@@ -3632,15 +3632,15 @@
         "binop": null
       },
       "value": "video",
-      "start": 905,
-      "end": 910,
+      "start": 1285,
+      "end": 1290,
       "loc": {
         "start": {
-          "line": 47,
+          "line": 55,
           "column": 2
         },
         "end": {
-          "line": 47,
+          "line": 55,
           "column": 7
         }
       }
@@ -3658,15 +3658,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 910,
-      "end": 911,
+      "start": 1290,
+      "end": 1291,
       "loc": {
         "start": {
-          "line": 47,
+          "line": 55,
           "column": 7
         },
         "end": {
-          "line": 47,
+          "line": 55,
           "column": 8
         }
       }
@@ -3684,15 +3684,15 @@
         "binop": null
       },
       "value": "ConnectionVideoOption",
-      "start": 912,
-      "end": 933,
+      "start": 1292,
+      "end": 1313,
       "loc": {
         "start": {
-          "line": 47,
+          "line": 55,
           "column": 9
         },
         "end": {
-          "line": 47,
+          "line": 55,
           "column": 30
         }
       }
@@ -3710,15 +3710,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 933,
-      "end": 934,
+      "start": 1313,
+      "end": 1314,
       "loc": {
         "start": {
-          "line": 47,
+          "line": 55,
           "column": 30
         },
         "end": {
-          "line": 47,
+          "line": 55,
           "column": 31
         }
       }
@@ -3736,15 +3736,15 @@
         "binop": null
       },
       "value": "clientId",
-      "start": 937,
-      "end": 945,
+      "start": 1317,
+      "end": 1325,
       "loc": {
         "start": {
-          "line": 48,
+          "line": 56,
           "column": 2
         },
         "end": {
-          "line": 48,
+          "line": 56,
           "column": 10
         }
       }
@@ -3762,15 +3762,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 945,
-      "end": 946,
+      "start": 1325,
+      "end": 1326,
       "loc": {
         "start": {
-          "line": 48,
+          "line": 56,
           "column": 10
         },
         "end": {
-          "line": 48,
+          "line": 56,
           "column": 11
         }
       }
@@ -3788,15 +3788,15 @@
         "binop": null
       },
       "value": "string",
-      "start": 947,
-      "end": 953,
+      "start": 1327,
+      "end": 1333,
       "loc": {
         "start": {
-          "line": 48,
+          "line": 56,
           "column": 12
         },
         "end": {
-          "line": 48,
+          "line": 56,
           "column": 18
         }
       }
@@ -3814,15 +3814,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 953,
-      "end": 954,
+      "start": 1333,
+      "end": 1334,
       "loc": {
         "start": {
-          "line": 48,
+          "line": 56,
           "column": 18
         },
         "end": {
-          "line": 48,
+          "line": 56,
           "column": 19
         }
       }
@@ -3840,15 +3840,15 @@
         "binop": null
       },
       "value": "iceServers",
-      "start": 957,
-      "end": 967,
+      "start": 1337,
+      "end": 1347,
       "loc": {
         "start": {
-          "line": 49,
+          "line": 57,
           "column": 2
         },
         "end": {
-          "line": 49,
+          "line": 57,
           "column": 12
         }
       }
@@ -3866,15 +3866,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 967,
-      "end": 968,
+      "start": 1347,
+      "end": 1348,
       "loc": {
         "start": {
-          "line": 49,
+          "line": 57,
           "column": 12
         },
         "end": {
-          "line": 49,
+          "line": 57,
           "column": 13
         }
       }
@@ -3892,15 +3892,15 @@
         "binop": null
       },
       "value": "Array",
-      "start": 969,
-      "end": 974,
+      "start": 1349,
+      "end": 1354,
       "loc": {
         "start": {
-          "line": 49,
+          "line": 57,
           "column": 14
         },
         "end": {
-          "line": 49,
+          "line": 57,
           "column": 19
         }
       }
@@ -3919,15 +3919,15 @@
         "updateContext": null
       },
       "value": "<",
-      "start": 974,
-      "end": 975,
+      "start": 1354,
+      "end": 1355,
       "loc": {
         "start": {
-          "line": 49,
+          "line": 57,
           "column": 19
         },
         "end": {
-          "line": 49,
+          "line": 57,
           "column": 20
         }
       }
@@ -3945,15 +3945,15 @@
         "binop": null
       },
       "value": "Object",
-      "start": 975,
-      "end": 981,
+      "start": 1355,
+      "end": 1361,
       "loc": {
         "start": {
-          "line": 49,
+          "line": 57,
           "column": 20
         },
         "end": {
-          "line": 49,
+          "line": 57,
           "column": 26
         }
       }
@@ -3972,15 +3972,15 @@
         "updateContext": null
       },
       "value": ">",
-      "start": 981,
-      "end": 982,
+      "start": 1361,
+      "end": 1362,
       "loc": {
         "start": {
-          "line": 49,
+          "line": 57,
           "column": 26
         },
         "end": {
-          "line": 49,
+          "line": 57,
           "column": 27
         }
       }
@@ -3997,15 +3997,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 983,
-      "end": 984,
+      "start": 1363,
+      "end": 1364,
       "loc": {
         "start": {
-          "line": 50,
+          "line": 58,
           "column": 0
         },
         "end": {
-          "line": 50,
+          "line": 58,
           "column": 1
         }
       }
@@ -4023,31 +4023,31 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 984,
-      "end": 985,
+      "start": 1364,
+      "end": 1365,
       "loc": {
         "start": {
-          "line": 50,
+          "line": 58,
           "column": 1
         },
         "end": {
-          "line": 50,
+          "line": 58,
           "column": 2
         }
       }
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * 接続時に指定できるメタデータです。\n * @typedef {Object} MetadataOption\n ",
-      "start": 987,
-      "end": 1051,
+      "value": "*\n * 接続時に指定できるメタデータです。\n * @typedef {Object} MetadataOption\n * @property {Object | null} authnMetadata 送信するメタデータ\n * @property {string | null} key 送信するシグナリンキー\n ",
+      "start": 1367,
+      "end": 1529,
       "loc": {
         "start": {
-          "line": 52,
+          "line": 60,
           "column": 0
         },
         "end": {
-          "line": 55,
+          "line": 65,
           "column": 3
         }
       }
@@ -4067,15 +4067,15 @@
         "updateContext": null
       },
       "value": "export",
-      "start": 1052,
-      "end": 1058,
+      "start": 1530,
+      "end": 1536,
       "loc": {
         "start": {
-          "line": 56,
+          "line": 66,
           "column": 0
         },
         "end": {
-          "line": 56,
+          "line": 66,
           "column": 6
         }
       }
@@ -4093,15 +4093,15 @@
         "binop": null
       },
       "value": "type",
-      "start": 1059,
-      "end": 1063,
+      "start": 1537,
+      "end": 1541,
       "loc": {
         "start": {
-          "line": 56,
+          "line": 66,
           "column": 7
         },
         "end": {
-          "line": 56,
+          "line": 66,
           "column": 11
         }
       }
@@ -4119,15 +4119,15 @@
         "binop": null
       },
       "value": "MetadataOption",
-      "start": 1064,
-      "end": 1078,
+      "start": 1542,
+      "end": 1556,
       "loc": {
         "start": {
-          "line": 56,
+          "line": 66,
           "column": 12
         },
         "end": {
-          "line": 56,
+          "line": 66,
           "column": 26
         }
       }
@@ -4146,15 +4146,15 @@
         "updateContext": null
       },
       "value": "=",
-      "start": 1079,
-      "end": 1080,
+      "start": 1557,
+      "end": 1558,
       "loc": {
         "start": {
-          "line": 56,
+          "line": 66,
           "column": 27
         },
         "end": {
-          "line": 56,
+          "line": 66,
           "column": 28
         }
       }
@@ -4171,15 +4171,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 1081,
-      "end": 1082,
+      "start": 1559,
+      "end": 1560,
       "loc": {
         "start": {
-          "line": 56,
+          "line": 66,
           "column": 29
         },
         "end": {
-          "line": 56,
+          "line": 66,
           "column": 30
         }
       }
@@ -4197,15 +4197,15 @@
         "binop": null
       },
       "value": "authnMetadata",
-      "start": 1085,
-      "end": 1098,
+      "start": 1563,
+      "end": 1576,
       "loc": {
         "start": {
-          "line": 57,
+          "line": 67,
           "column": 2
         },
         "end": {
-          "line": 57,
+          "line": 67,
           "column": 15
         }
       }
@@ -4223,15 +4223,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 1098,
-      "end": 1099,
+      "start": 1576,
+      "end": 1577,
       "loc": {
         "start": {
-          "line": 57,
+          "line": 67,
           "column": 15
         },
         "end": {
-          "line": 57,
+          "line": 67,
           "column": 16
         }
       }
@@ -4249,15 +4249,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 1100,
-      "end": 1101,
+      "start": 1578,
+      "end": 1579,
       "loc": {
         "start": {
-          "line": 57,
+          "line": 67,
           "column": 17
         },
         "end": {
-          "line": 57,
+          "line": 67,
           "column": 18
         }
       }
@@ -4275,15 +4275,15 @@
         "binop": null
       },
       "value": "Object",
-      "start": 1101,
-      "end": 1107,
+      "start": 1579,
+      "end": 1585,
       "loc": {
         "start": {
-          "line": 57,
+          "line": 67,
           "column": 18
         },
         "end": {
-          "line": 57,
+          "line": 67,
           "column": 24
         }
       }
@@ -4301,15 +4301,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 1107,
-      "end": 1108,
+      "start": 1585,
+      "end": 1586,
       "loc": {
         "start": {
-          "line": 57,
+          "line": 67,
           "column": 24
         },
         "end": {
-          "line": 57,
+          "line": 67,
           "column": 25
         }
       }
@@ -4327,15 +4327,15 @@
         "binop": null
       },
       "value": "key",
-      "start": 1111,
-      "end": 1114,
+      "start": 1589,
+      "end": 1592,
       "loc": {
         "start": {
-          "line": 58,
+          "line": 68,
           "column": 2
         },
         "end": {
-          "line": 58,
+          "line": 68,
           "column": 5
         }
       }
@@ -4353,15 +4353,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 1114,
-      "end": 1115,
+      "start": 1592,
+      "end": 1593,
       "loc": {
         "start": {
-          "line": 58,
+          "line": 68,
           "column": 5
         },
         "end": {
-          "line": 58,
+          "line": 68,
           "column": 6
         }
       }
@@ -4379,15 +4379,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 1116,
-      "end": 1117,
+      "start": 1594,
+      "end": 1595,
       "loc": {
         "start": {
-          "line": 58,
+          "line": 68,
           "column": 7
         },
         "end": {
-          "line": 58,
+          "line": 68,
           "column": 8
         }
       }
@@ -4405,15 +4405,15 @@
         "binop": null
       },
       "value": "string",
-      "start": 1117,
-      "end": 1123,
+      "start": 1595,
+      "end": 1601,
       "loc": {
         "start": {
-          "line": 58,
+          "line": 68,
           "column": 8
         },
         "end": {
-          "line": 58,
+          "line": 68,
           "column": 14
         }
       }
@@ -4430,15 +4430,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 1124,
-      "end": 1125,
+      "start": 1602,
+      "end": 1603,
       "loc": {
         "start": {
-          "line": 59,
+          "line": 69,
           "column": 0
         },
         "end": {
-          "line": 59,
+          "line": 69,
           "column": 1
         }
       }
@@ -4456,15 +4456,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 1125,
-      "end": 1126,
+      "start": 1603,
+      "end": 1604,
       "loc": {
         "start": {
-          "line": 59,
+          "line": 69,
           "column": 1
         },
         "end": {
-          "line": 59,
+          "line": 69,
           "column": 2
         }
       }
@@ -4482,15 +4482,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 1127,
-      "end": 1127,
+      "start": 1605,
+      "end": 1605,
       "loc": {
         "start": {
-          "line": 60,
+          "line": 70,
           "column": 0
         },
         "end": {
-          "line": 60,
+          "line": 70,
           "column": 0
         }
       }

@@ -2017,7 +2017,7 @@
     "__docId__": 148,
     "kind": "file",
     "name": "src/connection/options.js",
-    "content": "/* @flow */\n\n/**\n * オーディオ、ビデオの送受信方向に関するオプションです。\n * - sendrecv\n * - recvonly\n * - sendonly\n * @typedef {string} ConnectionDirection\n */\nexport type ConnectionDirection = 'sendrecv' | 'recvonly' | 'sendonly';\n\n/**\n * オーディオ接続に関するオプションです。\n * @typedef {Object} ConnectionAudioOption\n */\nexport type ConnectionAudioOption = {\n  direction: ConnectionDirection,\n  enabled: boolean\n};\n\n/**\n * ビデオ接続のコーデックに関するオプションです。\n * - VP8\n * - VP9\n * - H264\n * @typedef {string} ConnectionDirection\n * @typedef {string} VideoCodecOption\n */\nexport type VideoCodecOption = 'VP8' | 'VP9' | 'H264';\n\n/**\n * ビデオ接続に関するオプションです。\n * @typedef {Object} ConnectionVideoOption\n */\nexport type ConnectionVideoOption = {\n  codec: ?VideoCodecOption,\n  direction: ConnectionDirection,\n  enabled: boolean\n};\n\n/**\n * 接続時に指定するオプションです。\n * @typedef {Object} ConnectionOptions\n */\nexport type ConnectionOptions = {\n  audio: ConnectionAudioOption,\n  video: ConnectionVideoOption,\n  clientId: string,\n  iceServers: Array<Object>\n};\n\n/**\n * 接続時に指定できるメタデータです。\n * @typedef {Object} MetadataOption\n */\nexport type MetadataOption = {\n  authnMetadata: ?Object,\n  key: ?string\n};\n",
+    "content": "/* @flow */\n\n/**\n * オーディオ、ビデオの送受信方向に関するオプションです。\n * - sendrecv\n * - recvonly\n * - sendonly\n * @typedef {string} ConnectionDirection\n */\nexport type ConnectionDirection = 'sendrecv' | 'recvonly' | 'sendonly';\n\n/**\n * オーディオ接続に関するオプションです。\n * @typedef {Object} ConnectionAudioOption\n * @property {ConnectionDirection} direction 送受信方向\n * @property {boolean} enabled 有効かどうかのフラグ\n */\nexport type ConnectionAudioOption = {\n  direction: ConnectionDirection,\n  enabled: boolean\n};\n\n/**\n * ビデオ接続のコーデックに関するオプションです。\n * - VP8\n * - VP9\n * - H264\n * @typedef {string} ConnectionDirection\n * @typedef {string} VideoCodecOption\n */\nexport type VideoCodecOption = 'VP8' | 'VP9' | 'H264';\n\n/**\n * ビデオ接続に関するオプションです。\n * @typedef {Object} ConnectionVideoOption\n * @property {VideoCodecOption | null} codec コーデックの設定\n * @property {ConnectionDirection} direction 送受信方向\n * @property {boolean} enabled 有効かどうかのフラグ\n */\nexport type ConnectionVideoOption = {\n  codec: ?VideoCodecOption,\n  direction: ConnectionDirection,\n  enabled: boolean\n};\n\n/**\n * 接続時に指定するオプションです。\n * @typedef {Object} ConnectionOptions\n * @property {ConnectionAudioOption} video オーディオの設定\n * @property {ConnectionVideoOption} audio ビデオの設定\n * @property {string} clientId ビデオの設定\n */\nexport type ConnectionOptions = {\n  audio: ConnectionAudioOption,\n  video: ConnectionVideoOption,\n  clientId: string,\n  iceServers: Array<Object>\n};\n\n/**\n * 接続時に指定できるメタデータです。\n * @typedef {Object} MetadataOption\n * @property {Object | null} authnMetadata 送信するメタデータ\n * @property {string | null} key 送信するシグナリンキー\n */\nexport type MetadataOption = {\n  authnMetadata: ?Object,\n  key: ?string\n};\n",
     "static": true,
     "longname": "/Users/kyoko/ghq/src/github.com/OpenAyame/ayame-web-sdk/src/connection/options.js",
     "access": "public",
@@ -2051,7 +2051,29 @@
     "longname": "src/connection/options.js~ConnectionAudioOption",
     "access": "public",
     "description": "オーディオ接続に関するオプションです。",
-    "lineNumber": 16,
+    "lineNumber": 18,
+    "properties": [
+      {
+        "nullable": null,
+        "types": [
+          "ConnectionDirection"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "direction",
+        "description": "送受信方向"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "boolean"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "enabled",
+        "description": "有効かどうかのフラグ"
+      }
+    ],
     "type": {
       "types": [
         "Object"
@@ -2069,7 +2091,7 @@
     "longname": "src/connection/options.js~VideoCodecOption",
     "access": "public",
     "description": "ビデオ接続のコーデックに関するオプションです。\n- VP8\n- VP9\n- H264",
-    "lineNumber": 29,
+    "lineNumber": 31,
     "type": {
       "types": [
         "string"
@@ -2087,7 +2109,40 @@
     "longname": "src/connection/options.js~ConnectionVideoOption",
     "access": "public",
     "description": "ビデオ接続に関するオプションです。",
-    "lineNumber": 35,
+    "lineNumber": 40,
+    "properties": [
+      {
+        "nullable": null,
+        "types": [
+          "VideoCodecOption ",
+          " null"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "codec",
+        "description": "コーデックの設定"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "ConnectionDirection"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "direction",
+        "description": "送受信方向"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "boolean"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "enabled",
+        "description": "有効かどうかのフラグ"
+      }
+    ],
     "type": {
       "types": [
         "Object"
@@ -2105,7 +2160,39 @@
     "longname": "src/connection/options.js~ConnectionOptions",
     "access": "public",
     "description": "接続時に指定するオプションです。",
-    "lineNumber": 45,
+    "lineNumber": 53,
+    "properties": [
+      {
+        "nullable": null,
+        "types": [
+          "ConnectionAudioOption"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "video",
+        "description": "オーディオの設定"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "ConnectionVideoOption"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "audio",
+        "description": "ビデオの設定"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "clientId",
+        "description": "ビデオの設定"
+      }
+    ],
     "type": {
       "types": [
         "Object"
@@ -2123,7 +2210,31 @@
     "longname": "src/connection/options.js~MetadataOption",
     "access": "public",
     "description": "接続時に指定できるメタデータです。",
-    "lineNumber": 56,
+    "lineNumber": 66,
+    "properties": [
+      {
+        "nullable": null,
+        "types": [
+          "Object ",
+          " null"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "authnMetadata",
+        "description": "送信するメタデータ"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string ",
+          " null"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "key",
+        "description": "送信するシグナリンキー"
+      }
+    ],
     "type": {
       "types": [
         "Object"
