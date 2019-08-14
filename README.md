@@ -52,7 +52,7 @@ https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@19.8.0/dist/ayame.min.js
 const conn = Ayame.connection('wss://example.com/ws', 'test-room');
 const startConn = async () => {
     const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
-    const stream = await conn.connect(mediaStream);
+    await conn.connect(mediaStream);
     conn.on('disconnect', (e) => console.log(e));
     conn.on('addstream', (e) => {
         document.querySelector('#remote-video').srcObject = e.stream;
