@@ -10,6 +10,7 @@
     - バグ修正
 
 ## develop
+- [CHANGE] signaling key を ConnectionOptions に追加するよう変更する
 
 ## 19.08.0
 - [UPDATE] register 時に iceServers の値を server 経由で設定できるようにする
