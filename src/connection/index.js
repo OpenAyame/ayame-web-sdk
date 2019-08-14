@@ -36,7 +36,6 @@ class Connection extends ConnectionBase {
     this.stream = stream;
     if (metadataOption) {
       this.authnMetadata = metadataOption.authnMetadata;
-      this.signalingKey = metadataOption.key;
     }
     await this._signaling();
   }

@@ -1,4 +1,4 @@
-/* @OpenAyame/ayame-web-sdk@19.07.2-rc0 */
+/* @OpenAyame/ayame-web-sdk@19.08.0 */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -163,7 +163,6 @@
       this.stream = null;
       this.remoteStream = null;
       this._pc = null;
-      this.signalingKey = null;
       this.authnMetadata = null;
       this.authzMetadata = null;
       this._dataChannels = [];
@@ -203,7 +202,6 @@
 
       this.remoteStream = null;
       this.stream = null;
-      this.signalingKey = null;
       this.authnMetadata = null;
       this.authzMetadata = null;
       this._ws = null;
@@ -245,8 +243,8 @@
             registerMessage.authnMetadata = this.authnMetadata;
           }
 
-          if (this.signalingKey !== null) {
-            registerMessage.key = this.signalingKey;
+          if (this.options.signalingKey !== null) {
+            registerMessage.key = this.options.signalingKey;
           }
 
           this._sendWs(registerMessage);
@@ -865,7 +863,8 @@
     iceServers: [{
       urls: 'stun:stun.l.google.com:19302'
     }],
-    clientId: randomString(17)
+    clientId: randomString(17),
+    signalingKey: null
   };
   /**
    * Ayame Connection を生成します。

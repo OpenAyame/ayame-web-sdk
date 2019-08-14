@@ -15,7 +15,6 @@ class ConnectionBase {
   stream: ?window.MediaStream;
   remoteStream: ?window.MediaStream;
   authnMetadata: ?Object;
-  signalingKey: ?string;
   authzMetadata: ?Object;
   _ws: ?WebSocket;
   _pc: window.RTCPeerConnection;
@@ -45,7 +44,6 @@ class ConnectionBase {
     this.stream = null;
     this.remoteStream = null;
     this._pc = null;
-    this.signalingKey = null;
     this.authnMetadata = null;
     this.authzMetadata = null;
     this._dataChannels = [];
@@ -82,7 +80,6 @@ class ConnectionBase {
     }
     this.remoteStream = null;
     this.stream = null;
-    this.signalingKey = null;
     this.authnMetadata = null;
     this.authzMetadata = null;
     this._ws = null;
@@ -118,8 +115,8 @@ class ConnectionBase {
         if (this.authnMetadata !== null) {
           registerMessage.authnMetadata = this.authnMetadata;
         }
-        if (this.signalingKey !== null) {
-          registerMessage.key = this.signalingKey;
+        if (this.options.signalingKey !== null) {
+          registerMessage.key = this.options.signalingKey;
         }
         this._sendWs(registerMessage);
         if (this._ws) {
