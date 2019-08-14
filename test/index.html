@@ -33,13 +33,13 @@
         const remoteVideo = document.querySelector('#remote-video');
         let conn = null;
         const options = Ayame.defaultOptions;
+        options.signalingKey = signalingKey ? signalingKey : options.signalingKey;
         options.clientId = clientId ? clientId : options.clientId;
         const startConn = async () => {
           options.video.codec = videoCodec;
           conn = Ayame.connection(signalingUrl, roomId, options, true);
           const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true})
           const authnMetadata = {hoge: "fuga"};
-          const key = "xxx";
           conn.on('open', ({authzMetadata}) => console.log(authzMetadata));
           conn.on('disconnect', (e) => console.log(e));
           conn.on('addstream', async (e) => {
@@ -51,7 +51,7 @@
               console.log('error auto play:' + error);
             }
           });
-          await conn.connect(mediaStream, {authnMetadata, key});
+          await conn.connect(mediaStream, {authnMetadata});
           document.querySelector('#local-video').srcObject = mediaStream;
         };
         document.querySelector("#roomIdInput").value = roomId;

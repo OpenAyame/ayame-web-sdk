@@ -1,8 +1,9 @@
-const signalingUrl = 'wss://ayame.shiguredo.jp/ws';
+const signalingUrl = 'wss://ayame-lite.shiguredo.jp/signaling';
 let roomId = 'ayame-test-sdk';
 let clientId = null;
 let videoCodec = null;
 let messages = "";
+let signalingKey = null;
 
 function onChangeVideoCodec() {
   videoCodec = document.getElementById("video-codec").value;
@@ -21,6 +22,9 @@ function parseQueryString() {
     }
     if (params.clientId) {
       clientId = params.clientId;
+    }
+    if (params.key) {
+      signalingKey = params.key;
     }
   }
 }
