@@ -144,6 +144,10 @@
    * @ignore
    */
 
+  /**
+   * @ignore
+   */
+
   class ConnectionBase {
     /**
      * @ignore
@@ -187,22 +191,6 @@
       });
       await this._closePeerConnection();
       await this._closeWebSocketConnection();
-
-      if (this.stream) {
-        this.stream.getTracks().forEach(t => {
-          t.stop();
-        });
-      }
-
-      if (this.remoteStream) {
-        this.remoteStream.getTracks().forEach(t => {
-          t.stop();
-        });
-      }
-
-      this.remoteStream = null;
-      this.stream = null;
-      this.authnMetadata = null;
       this.authzMetadata = null;
       this._ws = null;
       this._pc = null;
@@ -783,7 +771,6 @@
 
       if (metadataOption) {
         this.authnMetadata = metadataOption.authnMetadata;
-        this.signalingKey = metadataOption.key;
       }
 
       await this._signaling();

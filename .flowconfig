@@ -10,4 +10,4 @@
 suppress_comment=\\(.\\|\n\\)*\\$FlowIgnore
 
 [version]
-^0.105.2
+^0.106.2
