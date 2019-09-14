@@ -28,6 +28,8 @@ export function traceLog(title: string, value: Object | string) {
   }
 }
 
+// Stack Overflow より引用: https://stackoverflow.com/a/52760103
+// https://stackoverflow.com/questions/52738290/how-to-remove-video-codecs-in-webrtc-sdp
 /** @private */
 export function getVideoCodecsFromString(codec: VideoCodecOption, codecs: Array<Object>) {
   let mimeType = '';

@@ -36,7 +36,9 @@
     } else {
       console.info(prefix + ' ' + title + '\n', value);
     }
-  }
+  } // Stack Overflow より引用: https://stackoverflow.com/a/52760103
+  // https://stackoverflow.com/questions/52738290/how-to-remove-video-codecs-in-webrtc-sdp
+
   /** @private */
 
   function getVideoCodecsFromString(codec, codecs) {
