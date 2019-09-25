@@ -19,7 +19,13 @@ class Connection extends ConnectionBase {
    * @listens {addstream} リモートのストリームが追加されると送信されます。
    * @listens {removestream} リモートのストリームが削除されると送信されます。
    */
-  constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug: boolean = false, isRelay: boolean = false) {
+  constructor(
+    signalingUrl: string,
+    roomId: string,
+    options: ConnectionOptions,
+    debug: boolean = false,
+    isRelay: boolean = false
+  ) {
     super(signalingUrl, roomId, options, debug, isRelay);
   }
 

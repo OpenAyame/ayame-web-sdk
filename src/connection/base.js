@@ -36,7 +36,7 @@ class ConnectionBase {
   _callbacks: Object;
   _pcConfig: {
     iceServers: Array<Object>,
-    iceTransportPolicy: string,
+    iceTransportPolicy: string
   };
 
   /**
@@ -47,7 +47,13 @@ class ConnectionBase {
       this._callbacks[kind] = callback;
     }
   }
-  constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug: boolean = false, isRelay = false) {
+  constructor(
+    signalingUrl: string,
+    roomId: string,
+    options: ConnectionOptions,
+    debug: boolean = false,
+    isRelay: boolean = false
+  ) {
     this.debug = debug;
     this.roomId = roomId;
     this.signalingUrl = signalingUrl;
@@ -63,7 +69,7 @@ class ConnectionBase {
     this.connectionState = 'new';
     this._pcConfig = {
       iceServers: this.options.iceServers,
-      iceTransportPolicy: isRelay ? "relay" : "all"
+      iceTransportPolicy: isRelay ? 'relay' : 'all'
     };
     this._callbacks = {
       open: () => {},
