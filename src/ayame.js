@@ -19,15 +19,17 @@ export const defaultOptions: ConnectionOptions = {
  * @param {string} roomId 接続する roomId
  * @param {ConnectionOptions} [options=defaultOptions] 接続時のオプション
  * @param {boolean} [debug=false] デバッグログを出力するかどうかのフラグ
+ * @param {boolean} [isRelay=false] iceTranspolicy を強制的に relay するかどうかのフラグ(デバッグ用)
  * @return {Connection}
  */
 export function connection(
   signalingUrl: string,
   roomId: string,
   options: ConnectionOptions = defaultOptions,
-  debug: boolean = false
+  debug: boolean = false,
+  isRelay: boolean = false
 ): Connection {
-  return new Connection(signalingUrl, roomId, options, debug);
+  return new Connection(signalingUrl, roomId, options, debug, isRelay);
 }
 
 /**

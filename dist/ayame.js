@@ -160,7 +160,7 @@
       }
     }
 
-    constructor(signalingUrl, roomId, options, debug = false) {
+    constructor(signalingUrl, roomId, options, debug = false, isRelay = false) {
       this.debug = debug;
       this.roomId = roomId;
       this.signalingUrl = signalingUrl;
@@ -175,7 +175,8 @@
       this._isOffer = false;
       this.connectionState = 'new';
       this._pcConfig = {
-        iceServers: this.options.iceServers
+        iceServers: this.options.iceServers,
+        iceTransportPolicy: isRelay ? "relay" : "all"
       };
       this._callbacks = {
         open: () => {},
@@ -302,6 +303,8 @@
     }
 
     _createPeerConnection() {
+      this._traceLog('RTCConfiguration=>', this._pcConfig);
+
       const pc = new window.RTCPeerConnection(this._pcConfig);
       const audioTrack = this.stream && this.stream.getAudioTracks()[0];
 
@@ -745,14 +748,15 @@
      * @param {string} roomId Ayame のルームID
      * @param {ConnectionOptions} options Ayame の接続オプション
      * @param {boolean} [debug=false] デバッグログの出力可否
+     * @param {boolean} [isRelay=false] iceTransportPolicy を強制的に relay にするか
      * @listens {open} Ayame Server に accept され、PeerConnection が生成されると送信されます。
      * @listens {connect} PeerConnection が接続されると送信されます。
      * @listens {disconnect} PeerConnection が切断されると送信されます。
      * @listens {addstream} リモートのストリームが追加されると送信されます。
      * @listens {removestream} リモートのストリームが削除されると送信されます。
      */
-    constructor(signalingUrl, roomId, options, debug = false) {
-      super(signalingUrl, roomId, options, debug);
+    constructor(signalingUrl, roomId, options, debug = false, isRelay = false) {
+      super(signalingUrl, roomId, options, debug, isRelay);
     }
     /**
      * PeerConnection  接続を開始します。
@@ -862,11 +866,12 @@
    * @param {string} roomId 接続する roomId
    * @param {ConnectionOptions} [options=defaultOptions] 接続時のオプション
    * @param {boolean} [debug=false] デバッグログを出力するかどうかのフラグ
+   * @param {boolean} [isRelay=false] iceTranspolicy を強制的に relay するかどうかのフラグ(デバッグ用)
    * @return {Connection}
    */
 
-  function connection(signalingUrl, roomId, options = defaultOptions, debug = false) {
-    return new Connection(signalingUrl, roomId, options, debug);
+  function connection(signalingUrl, roomId, options = defaultOptions, debug = false, isRelay = false) {
+    return new Connection(signalingUrl, roomId, options, debug, isRelay);
   }
   /**
    * Ayame Web SDK のバージョンを出力します。

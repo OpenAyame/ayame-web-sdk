@@ -12,14 +12,15 @@ class Connection extends ConnectionBase {
    * @param {string} roomId Ayame のルームID
    * @param {ConnectionOptions} options Ayame の接続オプション
    * @param {boolean} [debug=false] デバッグログの出力可否
+   * @param {boolean} [isRelay=false] iceTransportPolicy を強制的に relay にするか
    * @listens {open} Ayame Server に accept され、PeerConnection が生成されると送信されます。
    * @listens {connect} PeerConnection が接続されると送信されます。
    * @listens {disconnect} PeerConnection が切断されると送信されます。
    * @listens {addstream} リモートのストリームが追加されると送信されます。
    * @listens {removestream} リモートのストリームが削除されると送信されます。
    */
-  constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug: boolean = false) {
-    super(signalingUrl, roomId, options, debug);
+  constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug: boolean = false, isRelay: boolean = false) {
+    super(signalingUrl, roomId, options, debug, isRelay);
   }
 
   /**

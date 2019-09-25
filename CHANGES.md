@@ -10,6 +10,7 @@
     - バグ修正
 
 ## develop
+- [ADD] isRelay オプションを追加する。iceTransportPolicy を強制的に 'relay' にできるようにした
 - [CHANGE] signaling key を ConnectionOptions に追加するよう変更する
 
 ## 19.08.0
