@@ -1,7 +1,7 @@
 # ayame-web-sdk
 
 [![npm version](https://badge.fury.io/js/%40open-ayame%2Fayame-web-sdk.svg)](https://badge.fury.io/js/%40open-ayame%2Fayame-web-sdk)
-[![Actions Status](https://github.com/OpenAyame/ayame-web-sdk/workflows/node-test-workflow/badge.svg)](https://github.com/OpenAyame/ayame-web-sdk/actions)
+[![Actions Status](https://github.com/OpenAyame/ayame-web-sdk/workflows/Lint%20And%20Flow%20Test/badge.svg)](https://github.com/OpenAyame/ayame-web-sdk/actions)
 
 Web SDK for WebRTC Signaling Server Ayame
 
@@ -28,7 +28,7 @@ https://openayame.github.io/ayame-web-sdk/index.html
 以下のURL を
 
 ```
-<script src="https://unpkg.com/@open-ayame/ayame-web-sdk@19.07.1/dist/ayame.min.js"></script>
+<script src="https://unpkg.com/@open-ayame/ayame-web-sdk@19.8.0/dist/ayame.min.js"></script>
 ```
 
 のように指定すると、npm などを経由せず簡単に Ayame を利用することができます。
