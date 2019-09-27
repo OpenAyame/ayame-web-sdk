@@ -3,15 +3,13 @@
  * - sendrecv
  * - recvonly
  * - sendonly
- * @typedef {string} ConnectionDirection
  */
 export type ConnectionDirection = 'sendrecv' | 'recvonly' | 'sendonly';
 
 /**
  * オーディオ接続に関するオプションです。
- * @typedef {Object} ConnectionAudioOption
- * @property {ConnectionDirection} direction 送受信方向
- * @property {boolean} enabled 有効かどうかのフラグ
+ * @member direction 送受信方向
+ * @member enabled 有効かどうかのフラグ
  */
 export interface ConnectionAudioOption {
   direction: ConnectionDirection;
@@ -23,17 +21,14 @@ export interface ConnectionAudioOption {
  * - VP8
  * - VP9
  * - H264
- * @typedef {string} ConnectionDirection
- * @typedef {string} VideoCodecOption
  */
 export type VideoCodecOption = 'VP8' | 'VP9' | 'H264';
 
 /**
  * ビデオ接続に関するオプションです。
- * @typedef {Object} ConnectionVideoOption
- * @property {VideoCodecOption | null} codec コーデックの設定
- * @property {ConnectionDirection} direction 送受信方向
- * @property {boolean} enabled 有効かどうかのフラグ
+ * @member codec コーデックの設定
+ * @member direction 送受信方向
+ * @member enabled 有効かどうかのフラグ
  */
 export interface ConnectionVideoOption {
   codec?: VideoCodecOption;
@@ -43,12 +38,11 @@ export interface ConnectionVideoOption {
 
 /**
  * 接続時に指定するオプションです。
- * @typedef {Object} ConnectionOptions
- * @property {ConnectionAudioOption} video オーディオの設定
- * @property {ConnectionVideoOption} audio ビデオの設定
- * @property {string} clientId ビデオの設定
- * @property {Array<Object>} iceServers ayame server から iceServers が返って来なかった場合に使われる iceServer の情報
- * @property {string | null} signalingKey 送信するシグナリンキー
+ * @member video オーディオの設定
+ * @member audio ビデオの設定
+ * @member clientId ビデオの設定
+ * @member iceServers ayame server から iceServers が返って来なかった場合に使われる iceServer の情報
+ * @member signalingKey 送信するシグナリンキー
  */
 export interface ConnectionOptions {
   audio: ConnectionAudioOption;
@@ -60,10 +54,10 @@ export interface ConnectionOptions {
 
 /**
  * 接続時に指定できるメタデータです。
- * @typedef {Object} MetadataOption
- * @property {Object | null} authnMetadata 送信するメタデータ
+ * @member authnMetadata 送信するメタデータ
+ * @member key シグナリングキー
  */
 export interface MetadataOption {
-  authnMetadata: Record<string, any> | null;
-  key: string | null;
+  authnMetadata?: any;
+  key?: string;
 }

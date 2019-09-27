@@ -616,11 +616,11 @@
   class Connection extends ConnectionBase {
       /**
        * オブジェクトを生成し、リモートのピアまたはサーバーに接続します。
-       * @param {string} signalingUrl シグナリングに利用する URL
-       * @param {string} roomId Ayame のルームID
-       * @param {ConnectionOptions} options Ayame の接続オプション
-       * @param {boolean} [debug=false] デバッグログの出力可否
-       * @param {boolean} [isRelay=false] iceTransportPolicy を強制的に relay にするか
+       * @param signalingUrl シグナリングに利用する URL
+       * @param roomId Ayame のルームID
+       * @param options Ayame の接続オプション
+       * @param debug デバッグログの出力可否
+       * @param isRelay iceTransportPolicy を強制的に relay にするか
        * @listens {open} Ayame Server に accept され、PeerConnection が生成されると送信されます。
        * @listens {connect} PeerConnection が接続されると送信されます。
        * @listens {disconnect} PeerConnection が切断されると送信されます。
@@ -685,7 +685,6 @@
       }
       /**
        * PeerConnection  接続を切断します。
-       * @return {Promise<void>}
        */
       async disconnect() {
           await this._disconnect();
@@ -694,27 +693,26 @@
 
   const defaultOptions = {
       audio: { direction: 'sendrecv', enabled: true },
-      video: { direction: 'sendrecv', enabled: true, codec: undefined },
+      video: { direction: 'sendrecv', enabled: true },
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
-      clientId: randomString(17),
-      signalingKey: undefined
+      clientId: randomString(17)
   };
   /**
    * Ayame Connection を生成します。
    *
-   * @param {string} signalingUrl シグナリングに用いる websocket url
-   * @param {string} roomId 接続する roomId
-   * @param {ConnectionOptions} [options=defaultOptions] 接続時のオプション
-   * @param {boolean} [debug=false] デバッグログを出力するかどうかのフラグ
-   * @param {boolean} [isRelay=false] iceTranspolicy を強制的に relay するかどうかのフラグ(デバッグ用)
-   * @return {Connection}
+   * @param signalingUrl シグナリングに用いる websocket url
+   * @param roomId 接続する roomId
+   * @param options 接続時のオプション
+   * @param debug デバッグログを出力するかどうかのフラグ
+   * @param isRelay iceTranspolicy を強制的に relay するかどうかのフラグ(デバッグ用)
+   * @return Connection
    */
   function connection(signalingUrl, roomId, options = defaultOptions, debug = false, isRelay = false) {
       return new Connection(signalingUrl, roomId, options, debug, isRelay);
   }
   /**
    * Ayame Web SDK のバージョンを出力します。
-   * @return {string}
+   * @return string
    */
   function version() {
       return process.version;

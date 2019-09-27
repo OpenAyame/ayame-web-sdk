@@ -7,11 +7,11 @@ import { ConnectionOptions, MetadataOption } from './options';
 class Connection extends ConnectionBase {
   /**
    * オブジェクトを生成し、リモートのピアまたはサーバーに接続します。
-   * @param {string} signalingUrl シグナリングに利用する URL
-   * @param {string} roomId Ayame のルームID
-   * @param {ConnectionOptions} options Ayame の接続オプション
-   * @param {boolean} [debug=false] デバッグログの出力可否
-   * @param {boolean} [isRelay=false] iceTransportPolicy を強制的に relay にするか
+   * @param signalingUrl シグナリングに利用する URL
+   * @param roomId Ayame のルームID
+   * @param options Ayame の接続オプション
+   * @param debug デバッグログの出力可否
+   * @param isRelay iceTransportPolicy を強制的に relay にするか
    * @listens {open} Ayame Server に accept され、PeerConnection が生成されると送信されます。
    * @listens {connect} PeerConnection が接続されると送信されます。
    * @listens {disconnect} PeerConnection が切断されると送信されます。
@@ -79,7 +79,6 @@ class Connection extends ConnectionBase {
 
   /**
    * PeerConnection  接続を切断します。
-   * @return {Promise<void>}
    */
   public async disconnect(): Promise<void> {
     await this._disconnect();

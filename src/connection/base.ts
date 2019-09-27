@@ -40,7 +40,7 @@ class ConnectionBase {
   /**
    * @ignore
    */
-  on(kind: string, callback: Function) {
+  on(kind: string, callback: Function): void {
     if (kind in this._callbacks) {
       this._callbacks[kind] = callback;
     }
@@ -74,7 +74,7 @@ class ConnectionBase {
     };
   }
 
-  async _disconnect() {
+  async _disconnect(): Promise<void> {
     await this._dataChannels.forEach(async (dataChannel: RTCDataChannel) => {
       await this._closeDataChannel(dataChannel);
     });
@@ -89,7 +89,7 @@ class ConnectionBase {
     this.connectionState = 'new';
   }
 
-  async _signaling() {
+  async _signaling(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this._ws) {
         return reject('WS-ALREADY-EXISTS');
@@ -163,7 +163,7 @@ class ConnectionBase {
     });
   }
 
-  _createPeerConnection() {
+  _createPeerConnection(): void {
     this._traceLog('RTCConfiguration=>', this._pcConfig);
     const pc = new RTCPeerConnection(this._pcConfig);
     const audioTrack = this.stream && this.stream.getAudioTracks()[0];
@@ -255,7 +255,7 @@ class ConnectionBase {
     }
   }
 
-  async _addDataChannel(channelId: string, options: RTCDataChannelInit | undefined) {
+  async _addDataChannel(channelId: string, options: RTCDataChannelInit | undefined): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this._pc) return reject('PeerConnection Does Not Ready');
       if (this._isOffer) return reject('PeerConnection Has Local Offer');
@@ -285,7 +285,7 @@ class ConnectionBase {
     });
   }
 
-  _onDataChannel(event: RTCDataChannelEvent) {
+  _onDataChannel(event: RTCDataChannelEvent): void {
     this._traceLog('on data channel', event);
     if (!this._pc) return;
     const dataChannel = event.channel;
@@ -351,11 +351,11 @@ class ConnectionBase {
     this._isOffer = true;
   }
 
-  _isVideoCodecSpecified() {
+  _isVideoCodecSpecified(): boolean {
     return this.options.video.enabled && this.options.video.codec !== null;
   }
 
-  async _createAnswer() {
+  async _createAnswer(): Promise<void> {
     if (!this._pc) {
       return;
     }
@@ -370,7 +370,7 @@ class ConnectionBase {
     }
   }
 
-  async _setAnswer(sessionDescription: RTCSessionDescription) {
+  async _setAnswer(sessionDescription: RTCSessionDescription): Promise<void> {
     if (!this._pc) {
       return;
     }
@@ -378,7 +378,7 @@ class ConnectionBase {
     this._traceLog('set answer sdp=', sessionDescription.sdp);
   }
 
-  async _setOffer(sessionDescription: RTCSessionDescription) {
+  async _setOffer(sessionDescription: RTCSessionDescription): Promise<void> {
     this._createPeerConnection();
     try {
       if (!this._pc) {
@@ -393,7 +393,7 @@ class ConnectionBase {
     }
   }
 
-  async _addIceCandidate(candidate: RTCIceCandidate) {
+  async _addIceCandidate(candidate: RTCIceCandidate): Promise<void> {
     try {
       if (this._pc) {
         await this._pc.addIceCandidate(candidate);
@@ -403,12 +403,12 @@ class ConnectionBase {
     }
   }
 
-  _sendIceCandidate(candidate: RTCIceCandidate) {
+  _sendIceCandidate(candidate: RTCIceCandidate): void {
     const message = { type: 'candidate', ice: candidate };
     this._sendWs(message);
   }
 
-  _sendSdp(sessionDescription: RTCSessionDescription) {
+  _sendSdp(sessionDescription: RTCSessionDescription): void {
     this._sendWs(sessionDescription);
   }
 
@@ -429,11 +429,11 @@ class ConnectionBase {
     return transceiver;
   }
 
-  _findDataChannel(channelId: string) {
+  _findDataChannel(channelId: string): RTCDataChannel | undefined {
     return this._dataChannels.find(channel => channel.label == channelId);
   }
 
-  async _closeDataChannel(dataChannel: RTCDataChannel) {
+  async _closeDataChannel(dataChannel: RTCDataChannel): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!dataChannel) return resolve();
       if (dataChannel.readyState === 'closed') return resolve();
@@ -452,7 +452,7 @@ class ConnectionBase {
     });
   }
 
-  async _closePeerConnection() {
+  async _closePeerConnection(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (browser() === 'safari' && this._pc) {
         this._pc.oniceconnectionstatechange = () => {};
@@ -479,7 +479,7 @@ class ConnectionBase {
     });
   }
 
-  async _closeWebSocketConnection() {
+  async _closeWebSocketConnection(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this._ws) return resolve();
       if (this._ws && this._ws.readyState === 3) return resolve();
