@@ -1,4 +1,4 @@
-import flow from 'rollup-plugin-flow';
+import typescript from 'rollup-plugin-typescript2';
 import babel from 'rollup-plugin-babel';
 import resolve from 'rollup-plugin-node-resolve';
 import { terser } from 'rollup-plugin-terser';
@@ -6,15 +6,15 @@ const pkg = require('./package.json');
 let version = pkg.version;
 const banner = `/* @OpenAyame/ayame-web-sdk@${version} */`;
 const plugins = [
-  resolve(),
-  flow({ all: true }),
+ 	typescript(),
+  resolve({ browser: true }),
   babel({
     exclude: 'node_modules/**'
   })
 ];
 module.exports = [
   {
-    input: 'src/ayame.js',
+    input: 'src/ayame.ts',
     output: {
       banner: banner,
       name: 'Ayame',
@@ -27,7 +27,7 @@ module.exports = [
     plugins: [...plugins, terser()]
   },
   {
-    input: 'src/ayame.js',
+    input: 'src/ayame.ts',
     output: {
       banner: banner,
       name: 'Ayame',

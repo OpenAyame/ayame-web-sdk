@@ -15,13 +15,7 @@
       }
     },
     {
-      "name": "esdoc-ecmascript-proposal-plugin",
-      "option": {
-        "all": true
-      }
-    },
-    {
-      "name": "esdoc-flow-type-plugin",
+      "name": "esdoc-typescript-plugin",
       "option": {
         "enable": true
       }

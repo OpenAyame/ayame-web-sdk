@@ -1,18 +1,17 @@
-/* @flow */
 /* @private */
 import { traceLog, getVideoCodecsFromString, removeCodec, browser } from '../utils';
-import { type ConnectionOptions } from './options';
+import { ConnectionOptions, VideoCodecOption } from './options';
 
 /**
  * @ignore
  */
-type AyameRegisterMessage = {
-  type: string,
-  roomId: string,
-  clientId: string,
-  key: ?string,
-  authnMetadata: ?Object
-};
+interface AyameRegisterMessage {
+  type: string;
+  roomId: string;
+  clientId: string;
+  key?: string;
+  authnMetadata?: Record<string, any>;
+}
 
 /**
  * @ignore
@@ -23,20 +22,19 @@ class ConnectionBase {
   signalingUrl: string;
   options: ConnectionOptions;
   connectionState: string;
-  stream: ?window.MediaStream;
-  remoteStream: ?window.MediaStream;
-  authnMetadata: ?Object;
-  authzMetadata: ?Object;
-  _ws: ?WebSocket;
-  _pc: window.RTCPeerConnection;
-  _callbacks: Object;
+  stream: MediaStream | null;
+  remoteStream: MediaStream | null;
+  authnMetadata: Record<string, any> | null;
+  authzMetadata: Record<string, any> | null;
+  _ws: WebSocket | null;
+  _pc: RTCPeerConnection | null;
+  _callbacks: any;
   _removeCodec: boolean;
   _isOffer: boolean;
-  _dataChannels: Array<window.RTCDataChannel>;
-  _callbacks: Object;
+  _dataChannels: Array<RTCDataChannel>;
   _pcConfig: {
-    iceServers: Array<Object>,
-    iceTransportPolicy: string
+    iceServers: Array<RTCIceServer>;
+    iceTransportPolicy: RTCIceTransportPolicy;
   };
 
   /**
@@ -47,13 +45,7 @@ class ConnectionBase {
       this._callbacks[kind] = callback;
     }
   }
-  constructor(
-    signalingUrl: string,
-    roomId: string,
-    options: ConnectionOptions,
-    debug: boolean = false,
-    isRelay: boolean = false
-  ) {
+  constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug = false, isRelay = false) {
     this.debug = debug;
     this.roomId = roomId;
     this.signalingUrl = signalingUrl;
@@ -62,6 +54,7 @@ class ConnectionBase {
     this.stream = null;
     this.remoteStream = null;
     this._pc = null;
+    this._ws = null;
     this.authnMetadata = null;
     this.authzMetadata = null;
     this._dataChannels = [];
@@ -82,7 +75,7 @@ class ConnectionBase {
   }
 
   async _disconnect() {
-    await this._dataChannels.forEach(async dataChannel => {
+    await this._dataChannels.forEach(async (dataChannel: RTCDataChannel) => {
       await this._closeDataChannel(dataChannel);
     });
     await this._closePeerConnection();
@@ -126,7 +119,7 @@ class ConnectionBase {
         }
         this._sendWs(registerMessage);
         if (this._ws) {
-          this._ws.onmessage = async (event: window.MessageEvent) => {
+          this._ws.onmessage = async (event: MessageEvent) => {
             try {
               if (typeof event.data !== 'string') {
                 return;
@@ -150,13 +143,13 @@ class ConnectionBase {
                 this._callbacks.disconnect({ reason: message.reason || 'REJECTED' });
                 return reject('REJECTED');
               } else if (message.type === 'offer') {
-                this._setOffer(new window.RTCSessionDescription(message));
+                this._setOffer(new RTCSessionDescription(message));
               } else if (message.type === 'answer') {
-                await this._setAnswer(new window.RTCSessionDescription(message));
+                await this._setAnswer(new RTCSessionDescription(message));
               } else if (message.type === 'candidate') {
                 if (message.ice) {
                   this._traceLog('Received ICE candidate ...', message.ice);
-                  const candidate = new window.RTCIceCandidate(message.ice);
+                  const candidate = new RTCIceCandidate(message.ice);
                   this._addIceCandidate(candidate);
                 }
               }
@@ -172,23 +165,25 @@ class ConnectionBase {
 
   _createPeerConnection() {
     this._traceLog('RTCConfiguration=>', this._pcConfig);
-    const pc = new window.RTCPeerConnection(this._pcConfig);
+    const pc = new RTCPeerConnection(this._pcConfig);
     const audioTrack = this.stream && this.stream.getAudioTracks()[0];
     if (audioTrack && this.options.audio.direction !== 'recvonly') {
-      pc.addTrack(audioTrack, this.stream);
+      pc.addTrack(audioTrack, this.stream!);
     } else if (this.options.audio.enabled) {
       pc.addTransceiver('audio', { direction: 'recvonly' });
     }
     const videoTrack = this.stream && this.stream.getVideoTracks()[0];
     if (videoTrack && this.options.video.direction !== 'recvonly') {
-      const videoSender = pc.addTrack(videoTrack, this.stream);
+      const videoSender = pc.addTrack(videoTrack, this.stream!);
       const videoTransceiver = this._getTransceiver(pc, videoSender);
-      if (this._isVideoCodecSpecified()) {
+      if (this._isVideoCodecSpecified() && videoTransceiver !== null) {
         if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
-          const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
-          const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
-          this._traceLog('video codecs=', videoCodecs);
-          videoTransceiver.setCodecPreferences(videoCodecs);
+          const videoCapabilities = RTCRtpSender.getCapabilities('video');
+          if (videoCapabilities) {
+            const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+            this._traceLog('video codecs=', videoCodecs);
+            videoTransceiver.setCodecPreferences(videoCodecs);
+          }
         } else {
           this._removeCodec = true;
         }
@@ -197,29 +192,32 @@ class ConnectionBase {
       const videoTransceiver = pc.addTransceiver('video', { direction: 'recvonly' });
       if (this._isVideoCodecSpecified()) {
         if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
-          const videoCapabilities = window.RTCRtpSender.getCapabilities('video');
-          const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
-          this._traceLog('video codecs=', videoCodecs);
-          videoTransceiver.setCodecPreferences(videoCodecs);
+          const videoCapabilities = RTCRtpSender.getCapabilities('video');
+          if (videoCapabilities) {
+            const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+            this._traceLog('video codecs=', videoCodecs);
+            videoTransceiver.setCodecPreferences(videoCodecs);
+          }
         } else {
           this._removeCodec = true;
         }
       }
     }
-    let tracks = [];
-    pc.ontrack = (event: window.RTCTrackEvent) => {
+    const tracks: Array<MediaStreamTrack> = [];
+    pc.ontrack = (event: RTCTrackEvent) => {
+      const callbackEvent: any = event;
       this._traceLog('peer.ontrack()', event);
       if (browser() === 'safari') {
         tracks.push(event.track);
-        let mediaStream = new window.MediaStream(tracks);
+        const mediaStream = new MediaStream(tracks);
         this.remoteStream = mediaStream;
       } else {
         this.remoteStream = event.streams[0];
       }
-      event.stream = this.remoteStream;
-      this._callbacks.addstream(event);
+      callbackEvent.stream = this.remoteStream;
+      this._callbacks.addstream(callbackEvent);
     };
-    pc.onicecandidate = event => {
+    pc.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
       this._traceLog('peer.onicecandidate()', event);
       if (event.candidate) {
         this._sendIceCandidate(event.candidate);
@@ -250,14 +248,14 @@ class ConnectionBase {
     pc.ondatachannel = this._onDataChannel.bind(this);
     if (!this._pc) {
       this._pc = pc;
-      this._addDataChannel('dataChannel');
+      this._addDataChannel('dataChannel', undefined);
       this._callbacks.open({ authzMetadata: this.authzMetadata });
     } else {
       this._pc = pc;
     }
   }
 
-  async _addDataChannel(channelId: string, options: Object = undefined) {
+  async _addDataChannel(channelId: string, options: RTCDataChannelInit | undefined) {
     return new Promise((resolve, reject) => {
       if (!this._pc) return reject('PeerConnection Does Not Ready');
       if (this._isOffer) return reject('PeerConnection Has Local Offer');
@@ -266,20 +264,20 @@ class ConnectionBase {
         return reject('DataChannel Already Exists!');
       }
       dataChannel = this._pc.createDataChannel(channelId, options);
-      dataChannel.onclose = (event: Object) => {
+      dataChannel.onclose = (event: Record<string, any>) => {
         this._traceLog('datachannel onclosed=>', event);
         this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != channelId);
       };
-      dataChannel.onerror = (event: Object) => {
+      dataChannel.onerror = (event: Record<string, any>) => {
         this._traceLog('datachannel onerror=>', event);
         this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != channelId);
       };
-      dataChannel.onmessage = (event: Object) => {
+      dataChannel.onmessage = (event: any) => {
         this._traceLog('datachannel onmessage=>', event.data);
         event.channelId = channelId;
         this._callbacks.data(event);
       };
-      dataChannel.onopen = (event: Object) => {
+      dataChannel.onopen = (event: Record<string, any>) => {
         this._traceLog('datachannel onopen=>', event);
       };
       this._dataChannels.push(dataChannel);
@@ -287,23 +285,23 @@ class ConnectionBase {
     });
   }
 
-  _onDataChannel(event: Object) {
+  _onDataChannel(event: RTCDataChannelEvent) {
     this._traceLog('on data channel', event);
     if (!this._pc) return;
-    let dataChannel = event.channel;
-    let channelId = event.channel.label;
+    const dataChannel = event.channel;
+    const channelId = event.channel.label;
     if (!event.channel) return;
     if (!channelId || channelId.length < 1) return;
-    dataChannel.onopen = async (event: Object) => {
+    dataChannel.onopen = async (event: Record<string, any>) => {
       this._traceLog('datachannel onopen=>', event);
     };
-    dataChannel.onclose = async (event: Object) => {
+    dataChannel.onclose = async (event: Record<string, any>) => {
       this._traceLog('datachannel onclosed=>', event);
     };
-    dataChannel.onerror = async (event: Object) => {
+    dataChannel.onerror = async (event: Record<string, any>) => {
       this._traceLog('datachannel onerror=>', event);
     };
-    dataChannel.onmessage = (event: Object) => {
+    dataChannel.onmessage = (event: any) => {
       this._traceLog('datachannel onmessage=>', event.data);
       event.channelId = channelId;
       this._callbacks.data(event);
@@ -333,13 +331,13 @@ class ConnectionBase {
         this._pc.addTransceiver('audio', { direction: 'recvonly' });
       }
     }
-    let offer = await this._pc.createOffer({
+    const offer: any = await this._pc.createOffer({
       offerToReceiveAudio: this.options.audio.enabled && this.options.audio.direction !== 'sendonly',
       offerToReceiveVideo: this.options.video.enabled && this.options.video.direction !== 'sendonly'
     });
     if (this._removeCodec && this.options.video.codec) {
-      const codecs = ['VP8', 'VP9', 'H264'];
-      codecs.forEach(codec => {
+      const codecs: Array<VideoCodecOption> = ['VP8', 'VP9', 'H264'];
+      codecs.forEach((codec: VideoCodecOption) => {
         if (this.options.video.codec !== codec) {
           offer.sdp = removeCodec(offer.sdp, codec);
         }
@@ -347,7 +345,9 @@ class ConnectionBase {
     }
     this._traceLog('create offer sdp, sdp=', offer.sdp);
     await this._pc.setLocalDescription(offer);
-    this._sendSdp(this._pc.localDescription);
+    if (this._pc.localDescription) {
+      this._sendSdp(this._pc.localDescription);
+    }
     this._isOffer = true;
   }
 
@@ -360,24 +360,30 @@ class ConnectionBase {
       return;
     }
     try {
-      let answer = await this._pc.createAnswer();
+      const answer = await this._pc.createAnswer();
       this._traceLog('create answer sdp, sdp=', answer.sdp);
       await this._pc.setLocalDescription(answer);
-      this._sendSdp(this._pc.localDescription);
+      if (this._pc.localDescription) this._sendSdp(this._pc.localDescription);
     } catch (error) {
       await this._disconnect();
       this._callbacks.disconnect({ reason: 'CREATE-ANSWER-ERROR', error: error });
     }
   }
 
-  async _setAnswer(sessionDescription: window.RTCSessionDescription) {
+  async _setAnswer(sessionDescription: RTCSessionDescription) {
+    if (!this._pc) {
+      return;
+    }
     await this._pc.setRemoteDescription(sessionDescription);
     this._traceLog('set answer sdp=', sessionDescription.sdp);
   }
 
-  async _setOffer(sessionDescription: window.RTCSessionDescription) {
+  async _setOffer(sessionDescription: RTCSessionDescription) {
     this._createPeerConnection();
     try {
+      if (!this._pc) {
+        return;
+      }
       await this._pc.setRemoteDescription(sessionDescription);
       this._traceLog('set offer sdp=', sessionDescription.sdp);
       await this._createAnswer();
@@ -387,7 +393,7 @@ class ConnectionBase {
     }
   }
 
-  async _addIceCandidate(candidate: window.RTCIceCandidate) {
+  async _addIceCandidate(candidate: RTCIceCandidate) {
     try {
       if (this._pc) {
         await this._pc.addIceCandidate(candidate);
@@ -397,24 +403,24 @@ class ConnectionBase {
     }
   }
 
-  _sendIceCandidate(candidate: window.RTCIceCandidate) {
+  _sendIceCandidate(candidate: RTCIceCandidate) {
     const message = { type: 'candidate', ice: candidate };
     this._sendWs(message);
   }
 
-  _sendSdp(sessionDescription: Object) {
+  _sendSdp(sessionDescription: RTCSessionDescription) {
     this._sendWs(sessionDescription);
   }
 
-  _sendWs(message: Object) {
+  _sendWs(message: Record<string, any>) {
     if (this._ws) {
       this._ws.send(JSON.stringify(message));
     }
   }
 
-  _getTransceiver(pc: window.RTCPeerConnection, track: any) {
+  _getTransceiver(pc: RTCPeerConnection, track: any): RTCRtpTransceiver | null {
     let transceiver = null;
-    pc.getTransceivers().forEach(t => {
+    pc.getTransceivers().forEach((t: RTCRtpTransceiver) => {
       if (t.sender == track || t.receiver == track) transceiver = t;
     });
     if (!transceiver) {
@@ -427,7 +433,7 @@ class ConnectionBase {
     return this._dataChannels.find(channel => channel.label == channelId);
   }
 
-  async _closeDataChannel(dataChannel: window.RTCDataChannel) {
+  async _closeDataChannel(dataChannel: RTCDataChannel) {
     return new Promise((resolve, reject) => {
       if (!dataChannel) return resolve();
       if (dataChannel.readyState === 'closed') return resolve();
@@ -449,7 +455,7 @@ class ConnectionBase {
   async _closePeerConnection() {
     return new Promise((resolve, reject) => {
       if (browser() === 'safari' && this._pc) {
-        this._pc.oniceconnectionstatechange = null;
+        this._pc.oniceconnectionstatechange = () => {};
         this._pc.close();
         this._pc = null;
         return resolve();
@@ -458,7 +464,7 @@ class ConnectionBase {
       if (this._pc && this._pc.signalingState == 'closed') {
         return resolve();
       }
-      this._pc.oniceconnectionstatechange = null;
+      this._pc.oniceconnectionstatechange = () => {};
       const timerId = setInterval(() => {
         if (!this._pc) {
           clearInterval(timerId);
@@ -492,7 +498,7 @@ class ConnectionBase {
     });
   }
 
-  _traceLog(title: string, message: Object | string) {
+  _traceLog(title: string, message?: Record<string, any> | string) {
     if (!this.debug) return;
     traceLog(title, message);
   }

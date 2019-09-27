@@ -1,7 +1,8 @@
 module.exports = {
-  "parser": "babel-eslint",
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "sourceType": "module"
+    "sourceType": "module",
+    "project": "./tsconfig.json"
   },
   "env": {
     "browser": true,
@@ -9,16 +10,15 @@ module.exports = {
     "es6": true
   },
   "plugins": [
-    "flowtype",
+    "@typescript-eslint",
     "import",
     "prettier"
   ],
   "extends": [
     "eslint:recommended",
-    "plugin:flowtype/recommended",
-    "plugin:import/errors",
+    "plugin:@typescript-eslint/recommended",
+    "prettier/@typescript-eslint",
     "prettier",
-    "prettier/flowtype",
   ],
   "globals": {
     "process": true
@@ -33,39 +33,20 @@ module.exports = {
         "printWidth": 120
       }
     ],
+    "@typescript-eslint/no-explicit-any": 0,
+    "@typescript-eslint/ban-ts-ignore": 0,
+    "@typescript-eslint/camelcase": 0,
+    "@typescript-eslint/explicit-function-return-type": 0,
+    "@typescript-eslint/no-non-null-assertion": 0,
+    "quotes" : [2, "single"],
+    "@typescript-eslint/no-unused-vars": [2, {
+      "args": "all",
+      "argsIgnorePattern": "^_"
+    }],
     "import/newline-after-import": 2,
     "import/imports-first": 2,
     "import/no-dynamic-require": 2,
     "import/no-extraneous-dependencies": 2,
     "import/no-mutable-exports": 2,
-    "flowtype/define-flow-type": 1,
-    "flowtype/no-dupe-keys": 2,
-    "flowtype/no-primitive-constructor-types": 2,
-    "flowtype/object-type-delimiter": [
-      2,
-      "comma"
-    ],
-    "flowtype/require-parameter-type": [
-      2,
-      {"excludeArrowFunctions": true}
-    ],
-    "flowtype/require-valid-file-annotation": [
-      1,
-      "always",
-      {"annotationStyle": "block"}
-    ],
-    "flowtype/space-after-type-colon": 2,
-    "flowtype/space-before-type-colon": [
-      2,
-      "never"
-    ],
-    "flowtype/space-before-generic-bracket": [
-      2,
-      "never"
-    ],
-    "no-unused-vars": [
-      "error",
-      { "args": "all", "argsIgnorePattern": "^_" }
-    ],
   }
 }

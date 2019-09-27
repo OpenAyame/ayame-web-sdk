@@ -1,5 +1,3 @@
-/* @flow */
-
 /**
  * オーディオ、ビデオの送受信方向に関するオプションです。
  * - sendrecv
@@ -15,10 +13,10 @@ export type ConnectionDirection = 'sendrecv' | 'recvonly' | 'sendonly';
  * @property {ConnectionDirection} direction 送受信方向
  * @property {boolean} enabled 有効かどうかのフラグ
  */
-export type ConnectionAudioOption = {
-  direction: ConnectionDirection,
-  enabled: boolean
-};
+export interface ConnectionAudioOption {
+  direction: ConnectionDirection;
+  enabled: boolean;
+}
 
 /**
  * ビデオ接続のコーデックに関するオプションです。
@@ -37,11 +35,11 @@ export type VideoCodecOption = 'VP8' | 'VP9' | 'H264';
  * @property {ConnectionDirection} direction 送受信方向
  * @property {boolean} enabled 有効かどうかのフラグ
  */
-export type ConnectionVideoOption = {
-  codec: ?VideoCodecOption,
-  direction: ConnectionDirection,
-  enabled: boolean
-};
+export interface ConnectionVideoOption {
+  codec?: VideoCodecOption;
+  direction: ConnectionDirection;
+  enabled: boolean;
+}
 
 /**
  * 接続時に指定するオプションです。
@@ -52,20 +50,20 @@ export type ConnectionVideoOption = {
  * @property {Array<Object>} iceServers ayame server から iceServers が返って来なかった場合に使われる iceServer の情報
  * @property {string | null} signalingKey 送信するシグナリンキー
  */
-export type ConnectionOptions = {
-  audio: ConnectionAudioOption,
-  video: ConnectionVideoOption,
-  clientId: string,
-  iceServers: Array<Object>,
-  signalingKey: ?string
-};
+export interface ConnectionOptions {
+  audio: ConnectionAudioOption;
+  video: ConnectionVideoOption;
+  clientId: string;
+  iceServers: Array<RTCIceServer>;
+  signalingKey?: string;
+}
 
 /**
  * 接続時に指定できるメタデータです。
  * @typedef {Object} MetadataOption
  * @property {Object | null} authnMetadata 送信するメタデータ
  */
-export type MetadataOption = {
-  authnMetadata: ?Object,
-  key: ?string
-};
+export interface MetadataOption {
+  authnMetadata: Record<string, any> | null;
+  key: string | null;
+}

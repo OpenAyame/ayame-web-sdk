@@ -1,12 +1,23 @@
-/* @flow */
-import type { VideoCodecOption } from './connection/options';
+import { VideoCodecOption } from './connection/options';
 
 /**
  * @ignore
  */
-export function randomString(strLength: number) {
-  var result = [];
-  var charSet = '0123456789';
+interface Window {
+  performance: WindowPerformance;
+  navigator: any;
+}
+interface WindowPerformance {
+  now(): number;
+}
+declare let window: Window;
+
+/**
+ * @ignore
+ */
+export function randomString(strLength: number): string {
+  const result = [];
+  const charSet = '0123456789';
   while (strLength--) {
     result.push(charSet.charAt(Math.floor(Math.random() * charSet.length)));
   }
@@ -16,7 +27,26 @@ export function randomString(strLength: number) {
 /**
  * @ignore
  */
-export function traceLog(title: string, value: Object | string) {
+export function browser(): string {
+  const ua = window.navigator.userAgent.toLocaleLowerCase();
+  if (ua.indexOf('edge') !== -1) {
+    return 'edge';
+  } else if (ua.indexOf('chrome') !== -1 && ua.indexOf('edge') === -1) {
+    return 'chrome';
+  } else if (ua.indexOf('safari') !== -1 && ua.indexOf('chrome') === -1) {
+    return 'safari';
+  } else if (ua.indexOf('opera') !== -1) {
+    return 'opera';
+  } else if (ua.indexOf('firefox') !== -1) {
+    return 'firefox';
+  }
+  return 'unknown';
+}
+
+/**
+ * @ignore
+ */
+export function traceLog(title: string, value?: string | Record<string, any>): void {
   let prefix = '';
   if (window.performance) {
     prefix = '[Ayame ' + (window.performance.now() / 1000).toFixed(3) + ']';
@@ -31,7 +61,7 @@ export function traceLog(title: string, value: Object | string) {
 // Stack Overflow より引用: https://stackoverflow.com/a/52760103
 // https://stackoverflow.com/questions/52738290/how-to-remove-video-codecs-in-webrtc-sdp
 /** @private */
-export function getVideoCodecsFromString(codec: VideoCodecOption, codecs: Array<Object>) {
+export function getVideoCodecsFromString(codec: VideoCodecOption, codecs: Array<any>) {
   let mimeType = '';
   if (codec === 'VP8') {
     mimeType = 'video/VP8';
@@ -42,7 +72,7 @@ export function getVideoCodecsFromString(codec: VideoCodecOption, codecs: Array<
   } else {
     mimeType = `video/${codec}`;
   }
-  const filteredCodecs: Array<Object> = codecs.filter(c => c.mimeType == mimeType);
+  const filteredCodecs: Array<any> = codecs.filter(c => c.mimeType == mimeType);
   if (filteredCodecs.length < 1) {
     throw new Error('invalid video codec type');
   }
@@ -52,16 +82,16 @@ export function getVideoCodecsFromString(codec: VideoCodecOption, codecs: Array<
 /**
  * @ignore
  */
-export function removeCodec(sdp: any, codec: VideoCodecOption) {
-  const internalFunc = sdp => {
+export function removeCodec(sdp: string, codec: VideoCodecOption): string {
+  function internalFunc(tmpSdp: string): string {
     // eslint-disable-next-line no-useless-escape
     const codecre = new RegExp('(a=rtpmap:(\\d*) ' + codec + '/90000\\r\\n)');
-    const rtpmaps = sdp.match(codecre);
+    const rtpmaps = tmpSdp.match(codecre);
     if (rtpmaps == null || rtpmaps.length <= 2) {
       return sdp;
     }
     const rtpmap = rtpmaps[2];
-    let modsdp = sdp.replace(codecre, '');
+    let modsdp = tmpSdp.replace(codecre, '');
 
     const rtcpre = new RegExp('(a=rtcp-fb:' + rtpmap + '.*\r\n)', 'g');
     modsdp = modsdp.replace(rtcpre, '');
@@ -80,11 +110,11 @@ export function removeCodec(sdp: any, codec: VideoCodecOption) {
       modsdp = modsdp.replace(rtppre, '');
     }
 
-    let videore = /(m=video.*\r\n)/;
+    const videore = /(m=video.*\r\n)/;
     const videolines = modsdp.match(videore);
     if (videolines != null) {
       //If many m=video are found in SDP, this program doesn't work.
-      let videoline = videolines[0].substring(0, videolines[0].length - 2);
+      const videoline = videolines[0].substring(0, videolines[0].length - 2);
       const videoelems = videoline.split(' ');
       let modvideoline = videoelems[0];
       videoelems.forEach((videoelem, index) => {
@@ -98,25 +128,6 @@ export function removeCodec(sdp: any, codec: VideoCodecOption) {
       modsdp = modsdp.replace(videore, modvideoline);
     }
     return internalFunc(modsdp);
-  };
-  return internalFunc(sdp);
-}
-
-/**
- * @ignore
- */
-export function browser() {
-  const ua = window.navigator.userAgent.toLocaleLowerCase();
-  if (ua.indexOf('edge') !== -1) {
-    return 'edge';
-  } else if (ua.indexOf('chrome') !== -1 && ua.indexOf('edge') === -1) {
-    return 'chrome';
-  } else if (ua.indexOf('safari') !== -1 && ua.indexOf('chrome') === -1) {
-    return 'safari';
-  } else if (ua.indexOf('opera') !== -1) {
-    return 'opera';
-  } else if (ua.indexOf('firefox') !== -1) {
-    return 'firefox';
   }
-  return;
+  return internalFunc(sdp);
 }

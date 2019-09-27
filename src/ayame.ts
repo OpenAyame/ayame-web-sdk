@@ -1,15 +1,13 @@
-/* @flow */
 import Connection from './connection';
-import type { ConnectionOptions } from './connection/options';
-/* @access private */
+import { ConnectionOptions } from './connection/options';
 import { randomString } from './utils';
 
 export const defaultOptions: ConnectionOptions = {
   audio: { direction: 'sendrecv', enabled: true },
-  video: { direction: 'sendrecv', enabled: true, codec: null },
+  video: { direction: 'sendrecv', enabled: true, codec: undefined },
   iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
   clientId: randomString(17),
-  signalingKey: null
+  signalingKey: undefined
 };
 
 /**
@@ -26,8 +24,8 @@ export function connection(
   signalingUrl: string,
   roomId: string,
   options: ConnectionOptions = defaultOptions,
-  debug: boolean = false,
-  isRelay: boolean = false
+  debug = false,
+  isRelay = false
 ): Connection {
   return new Connection(signalingUrl, roomId, options, debug, isRelay);
 }

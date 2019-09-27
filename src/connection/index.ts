@@ -1,6 +1,5 @@
-/* @flow */
 import ConnectionBase from './base';
-import { type ConnectionOptions, type MetadataOption } from './options';
+import { ConnectionOptions, MetadataOption } from './options';
 
 /**
  * Peer Connection 接続を管理するクラスです。
@@ -19,23 +18,16 @@ class Connection extends ConnectionBase {
    * @listens {addstream} リモートのストリームが追加されると送信されます。
    * @listens {removestream} リモートのストリームが削除されると送信されます。
    */
-  constructor(
-    signalingUrl: string,
-    roomId: string,
-    options: ConnectionOptions,
-    debug: boolean = false,
-    isRelay: boolean = false
-  ) {
+  constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug = false, isRelay = false) {
     super(signalingUrl, roomId, options, debug, isRelay);
   }
 
   /**
    * PeerConnection  接続を開始します。
-   * @param {RTCMediaStream|null} stream ローカルのストリーム
-   * @param {MetadataOption|null} metadataOption 送信するメタデータとシグナリングキー
-   * @return {Promise<null>}
+   * @param stream ローカルのストリーム
+   * @param metadataOption 送信するメタデータとシグナリングキー
    */
-  async connect(stream: window.RTCMediaStream | null, metadataOption: ?MetadataOption = null) {
+  public async connect(stream: MediaStream | null, metadataOption: MetadataOption | null = null): Promise<void> {
     if (this._ws || this._pc) {
       this._traceLog('connection already exists');
       throw new Error('Connection Already Exists!');
@@ -49,25 +41,22 @@ class Connection extends ConnectionBase {
 
   /**
    * Datachannel を追加します。
-   * @param {string} channelId dataChannel の Id
-   * @param {Object|null} options dataChannel の init オプション
-   * @return {Promise<null>}
+   * @param channelId dataChannel の Id
+   * @param options dataChannel の init オプション
    */
-  async addDataChannel(channelId: string, options: Object | null = null) {
+  public async addDataChannel(channelId: string, options: RTCDataChannelInit | undefined = undefined): Promise<void> {
     await this._addDataChannel(channelId, options);
   }
 
   /**
    * Datachannel を削除します。
-   * @param {string} channelId 削除する dataChannel の Id
-   * @return {Promise<null>}
+   * @param channelId 削除する dataChannel の Id
    */
-  async removeDataChannel(channelId: string) {
+  public async removeDataChannel(channelId: string): Promise<void> {
     this._traceLog('datachannel remove=>', channelId);
     const dataChannel = this._findDataChannel(channelId);
     if (dataChannel && dataChannel.readyState === 'open') {
       await this._closeDataChannel(dataChannel);
-      return;
     } else {
       throw new Error('data channel is not exist or open');
     }
@@ -75,11 +64,10 @@ class Connection extends ConnectionBase {
 
   /**
    * Datachannel でデータを送信します。
-   * @param {any} params 送信するデータ
-   * @param {string} channelId 指定する dataChannel の id
-   * @return {null}
+   * @param params 送信するデータ
+   * @param channelId 指定する dataChannel の id
    */
-  sendData(params: any, channelId: string = 'dataChannel') {
+  public sendData(params: any, channelId = 'dataChannel'): void {
     this._traceLog('datachannel sendData=>', params);
     const dataChannel = this._findDataChannel(channelId);
     if (dataChannel && dataChannel.readyState === 'open') {
@@ -93,7 +81,7 @@ class Connection extends ConnectionBase {
    * PeerConnection  接続を切断します。
    * @return {Promise<void>}
    */
-  async disconnect() {
+  public async disconnect(): Promise<void> {
     await this._disconnect();
   }
 }
