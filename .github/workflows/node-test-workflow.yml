@@ -22,6 +22,6 @@ jobs:
     - name: yarn install, lint
       run: |
         yarn install
-        $(npm bin)/eslint --debug src/
+        $(npm bin)/eslint --ext .tsx,.ts src/
       env:
         CI: true
