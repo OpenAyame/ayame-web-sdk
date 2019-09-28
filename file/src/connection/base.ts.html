@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/connection/base.ts | @open-ayame/ayame-web-sdk</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="Web SDK for WebRTC Signaling Server Ayame"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="@open-ayame/ayame-web-sdk"><meta property="twitter:description" content="Web SDK for WebRTC Signaling Server Ayame"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/OpenAyame/ayame-web-sdk"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-connection">connection</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-version">version</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-defaultOptions">defaultOptions</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#connection">connection</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html">Connection</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/connection/base.ts</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/* @private */
+import { traceLog, getVideoCodecsFromString, removeCodec, browser } from &apos;../utils&apos;;
+import { ConnectionOptions, VideoCodecOption } from &apos;./options&apos;;
+
+/**
+ * @ignore
+ */
+interface AyameRegisterMessage {
+  type: string;
+  roomId: string;
+  clientId: string;
+  key?: string;
+  authnMetadata?: Record&lt;string, any&gt;;
+}
+
+/**
+ * @ignore
+ */
+class ConnectionBase {
+  debug: boolean;
+  roomId: string;
+  signalingUrl: string;
+  options: ConnectionOptions;
+  connectionState: string;
+  stream: MediaStream | null;
+  remoteStream: MediaStream | null;
+  authnMetadata: Record&lt;string, any&gt; | null;
+  authzMetadata: Record&lt;string, any&gt; | null;
+  _ws: WebSocket | null;
+  _pc: RTCPeerConnection | null;
+  _callbacks: any;
+  _removeCodec: boolean;
+  _isOffer: boolean;
+  _dataChannels: Array&lt;RTCDataChannel&gt;;
+  _pcConfig: {
+    iceServers: Array&lt;RTCIceServer&gt;;
+    iceTransportPolicy: RTCIceTransportPolicy;
+  };
+
+  /**
+   * @ignore
+   */
+  on(kind: string, callback: Function): void {
+    if (kind in this._callbacks) {
+      this._callbacks[kind] = callback;
+    }
+  }
+  constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug = false, isRelay = false) {
+    this.debug = debug;
+    this.roomId = roomId;
+    this.signalingUrl = signalingUrl;
+    this.options = options;
+    this._removeCodec = false;
+    this.stream = null;
+    this.remoteStream = null;
+    this._pc = null;
+    this._ws = null;
+    this.authnMetadata = null;
+    this.authzMetadata = null;
+    this._dataChannels = [];
+    this._isOffer = false;
+    this.connectionState = &apos;new&apos;;
+    this._pcConfig = {
+      iceServers: this.options.iceServers,
+      iceTransportPolicy: isRelay ? &apos;relay&apos; : &apos;all&apos;
+    };
+    this._callbacks = {
+      open: () =&gt; {},
+      connect: () =&gt; {},
+      disconnect: () =&gt; {},
+      addstream: () =&gt; {},
+      removestream: () =&gt; {},
+      data: () =&gt; {}
+    };
+  }
+
+  async _disconnect(): Promise&lt;void&gt; {
+    await this._dataChannels.forEach(async (dataChannel: RTCDataChannel) =&gt; {
+      await this._closeDataChannel(dataChannel);
+    });
+    await this._closePeerConnection();
+    await this._closeWebSocketConnection();
+    this.authzMetadata = null;
+    this._ws = null;
+    this._pc = null;
+    this._removeCodec = false;
+    this._isOffer = false;
+    this._dataChannels = [];
+    this.connectionState = &apos;new&apos;;
+  }
+
+  async _signaling(): Promise&lt;void&gt; {
+    return new Promise((resolve, reject) =&gt; {
+      if (this._ws) {
+        return reject(&apos;WS-ALREADY-EXISTS&apos;);
+      }
+      this._ws = new WebSocket(this.signalingUrl);
+      this._ws.onclose = async () =&gt; {
+        await this._disconnect();
+        return reject(&apos;WS-CLOSED&apos;);
+      };
+      this._ws.onerror = async () =&gt; {
+        await this._disconnect();
+        return reject(&apos;WS-CLOSED-WITH-ERROR&apos;);
+      };
+      this._ws.onopen = () =&gt; {
+        const registerMessage: AyameRegisterMessage = {
+          type: &apos;register&apos;,
+          roomId: this.roomId,
+          clientId: this.options.clientId,
+          authnMetadata: undefined,
+          key: undefined
+        };
+        if (this.authnMetadata !== null) {
+          registerMessage.authnMetadata = this.authnMetadata;
+        }
+        if (this.options.signalingKey !== null) {
+          registerMessage.key = this.options.signalingKey;
+        }
+        this._sendWs(registerMessage);
+        if (this._ws) {
+          this._ws.onmessage = async (event: MessageEvent) =&gt; {
+            try {
+              if (typeof event.data !== &apos;string&apos;) {
+                return;
+              }
+              const message = JSON.parse(event.data);
+              if (message.type === &apos;ping&apos;) {
+                this._sendWs({ type: &apos;pong&apos; });
+              } else if (message.type === &apos;close&apos;) {
+                this._callbacks.close(event);
+              } else if (message.type === &apos;accept&apos;) {
+                this.authzMetadata = message.authzMetadata;
+                if (Array.isArray(message.iceServers) &amp;&amp; message.iceServers.length &gt; 0) {
+                  this._traceLog(&apos;iceServers=&gt;&apos;, message.iceServers);
+                  this._pcConfig.iceServers = message.iceServers;
+                }
+                if (!this._pc) this._createPeerConnection();
+                await this._sendOffer();
+                return resolve();
+              } else if (message.type === &apos;reject&apos;) {
+                await this._disconnect();
+                this._callbacks.disconnect({ reason: message.reason || &apos;REJECTED&apos; });
+                return reject(&apos;REJECTED&apos;);
+              } else if (message.type === &apos;offer&apos;) {
+                this._setOffer(new RTCSessionDescription(message));
+              } else if (message.type === &apos;answer&apos;) {
+                await this._setAnswer(new RTCSessionDescription(message));
+              } else if (message.type === &apos;candidate&apos;) {
+                if (message.ice) {
+                  this._traceLog(&apos;Received ICE candidate ...&apos;, message.ice);
+                  const candidate = new RTCIceCandidate(message.ice);
+                  this._addIceCandidate(candidate);
+                }
+              }
+            } catch (error) {
+              await this._disconnect();
+              this._callbacks.disconnect({ reason: &apos;SIGNALING-ERROR&apos;, error: error });
+            }
+          };
+        }
+      };
+    });
+  }
+
+  _createPeerConnection(): void {
+    this._traceLog(&apos;RTCConfiguration=&gt;&apos;, this._pcConfig);
+    const pc = new RTCPeerConnection(this._pcConfig);
+    const audioTrack = this.stream &amp;&amp; this.stream.getAudioTracks()[0];
+    if (audioTrack &amp;&amp; this.options.audio.direction !== &apos;recvonly&apos;) {
+      pc.addTrack(audioTrack, this.stream!);
+    } else if (this.options.audio.enabled) {
+      pc.addTransceiver(&apos;audio&apos;, { direction: &apos;recvonly&apos; });
+    }
+    const videoTrack = this.stream &amp;&amp; this.stream.getVideoTracks()[0];
+    if (videoTrack &amp;&amp; this.options.video.direction !== &apos;recvonly&apos;) {
+      const videoSender = pc.addTrack(videoTrack, this.stream!);
+      const videoTransceiver = this._getTransceiver(pc, videoSender);
+      if (this._isVideoCodecSpecified() &amp;&amp; videoTransceiver !== null) {
+        if (typeof videoTransceiver.setCodecPreferences !== &apos;undefined&apos;) {
+          const videoCapabilities = RTCRtpSender.getCapabilities(&apos;video&apos;);
+          if (videoCapabilities) {
+            const videoCodecs = getVideoCodecsFromString(this.options.video.codec || &apos;VP9&apos;, videoCapabilities.codecs);
+            this._traceLog(&apos;video codecs=&apos;, videoCodecs);
+            videoTransceiver.setCodecPreferences(videoCodecs);
+          }
+        } else {
+          this._removeCodec = true;
+        }
+      }
+    } else if (this.options.video.enabled) {
+      const videoTransceiver = pc.addTransceiver(&apos;video&apos;, { direction: &apos;recvonly&apos; });
+      if (this._isVideoCodecSpecified()) {
+        if (typeof videoTransceiver.setCodecPreferences !== &apos;undefined&apos;) {
+          const videoCapabilities = RTCRtpSender.getCapabilities(&apos;video&apos;);
+          if (videoCapabilities) {
+            const videoCodecs = getVideoCodecsFromString(this.options.video.codec || &apos;VP9&apos;, videoCapabilities.codecs);
+            this._traceLog(&apos;video codecs=&apos;, videoCodecs);
+            videoTransceiver.setCodecPreferences(videoCodecs);
+          }
+        } else {
+          this._removeCodec = true;
+        }
+      }
+    }
+    const tracks: Array&lt;MediaStreamTrack&gt; = [];
+    pc.ontrack = (event: RTCTrackEvent) =&gt; {
+      const callbackEvent: any = event;
+      this._traceLog(&apos;peer.ontrack()&apos;, event);
+      if (browser() === &apos;safari&apos;) {
+        tracks.push(event.track);
+        const mediaStream = new MediaStream(tracks);
+        this.remoteStream = mediaStream;
+      } else {
+        this.remoteStream = event.streams[0];
+      }
+      callbackEvent.stream = this.remoteStream;
+      this._callbacks.addstream(callbackEvent);
+    };
+    pc.onicecandidate = (event: RTCPeerConnectionIceEvent) =&gt; {
+      this._traceLog(&apos;peer.onicecandidate()&apos;, event);
+      if (event.candidate) {
+        this._sendIceCandidate(event.candidate);
+      } else {
+        this._traceLog(&apos;empty ice event&apos;, &apos;&apos;);
+      }
+    };
+    pc.oniceconnectionstatechange = async () =&gt; {
+      this._traceLog(&apos;ICE connection Status has changed to &apos;, pc.iceConnectionState);
+      if (this.connectionState !== pc.iceConnectionState) {
+        this.connectionState = pc.iceConnectionState;
+        switch (this.connectionState) {
+          case &apos;connected&apos;:
+            this._isOffer = false;
+            this._callbacks.connect();
+            break;
+          case &apos;disconnected&apos;:
+          case &apos;failed&apos;:
+            await this._disconnect();
+            this._callbacks.disconnect({ reason: &apos;ICE-CONNECTION-STATE-FAILED&apos; });
+            break;
+        }
+      }
+    };
+    pc.onsignalingstatechange = _ =&gt; {
+      this._traceLog(&apos;signaling state changes:&apos;, pc.signalingState);
+    };
+    pc.ondatachannel = this._onDataChannel.bind(this);
+    if (!this._pc) {
+      this._pc = pc;
+      this._addDataChannel(&apos;dataChannel&apos;, undefined);
+      this._callbacks.open({ authzMetadata: this.authzMetadata });
+    } else {
+      this._pc = pc;
+    }
+  }
+
+  async _addDataChannel(channelId: string, options: RTCDataChannelInit | undefined): Promise&lt;void&gt; {
+    return new Promise((resolve, reject) =&gt; {
+      if (!this._pc) return reject(&apos;PeerConnection Does Not Ready&apos;);
+      if (this._isOffer) return reject(&apos;PeerConnection Has Local Offer&apos;);
+      let dataChannel = this._findDataChannel(channelId);
+      if (dataChannel) {
+        return reject(&apos;DataChannel Already Exists!&apos;);
+      }
+      dataChannel = this._pc.createDataChannel(channelId, options);
+      dataChannel.onclose = (event: Record&lt;string, any&gt;) =&gt; {
+        this._traceLog(&apos;datachannel onclosed=&gt;&apos;, event);
+        this._dataChannels = this._dataChannels.filter(dataChannel =&gt; dataChannel.label != channelId);
+      };
+      dataChannel.onerror = (event: Record&lt;string, any&gt;) =&gt; {
+        this._traceLog(&apos;datachannel onerror=&gt;&apos;, event);
+        this._dataChannels = this._dataChannels.filter(dataChannel =&gt; dataChannel.label != channelId);
+      };
+      dataChannel.onmessage = (event: any) =&gt; {
+        this._traceLog(&apos;datachannel onmessage=&gt;&apos;, event.data);
+        event.channelId = channelId;
+        this._callbacks.data(event);
+      };
+      dataChannel.onopen = (event: Record&lt;string, any&gt;) =&gt; {
+        this._traceLog(&apos;datachannel onopen=&gt;&apos;, event);
+      };
+      this._dataChannels.push(dataChannel);
+      return resolve();
+    });
+  }
+
+  _onDataChannel(event: RTCDataChannelEvent): void {
+    this._traceLog(&apos;on data channel&apos;, event);
+    if (!this._pc) return;
+    const dataChannel = event.channel;
+    const channelId = event.channel.label;
+    if (!event.channel) return;
+    if (!channelId || channelId.length &lt; 1) return;
+    dataChannel.onopen = async (event: Record&lt;string, any&gt;) =&gt; {
+      this._traceLog(&apos;datachannel onopen=&gt;&apos;, event);
+    };
+    dataChannel.onclose = async (event: Record&lt;string, any&gt;) =&gt; {
+      this._traceLog(&apos;datachannel onclosed=&gt;&apos;, event);
+    };
+    dataChannel.onerror = async (event: Record&lt;string, any&gt;) =&gt; {
+      this._traceLog(&apos;datachannel onerror=&gt;&apos;, event);
+    };
+    dataChannel.onmessage = (event: any) =&gt; {
+      this._traceLog(&apos;datachannel onmessage=&gt;&apos;, event.data);
+      event.channelId = channelId;
+      this._callbacks.data(event);
+    };
+    if (!this._findDataChannel(channelId)) {
+      this._dataChannels.push(event.channel);
+    } else {
+      this._dataChannels = this._dataChannels.map(channel =&gt; {
+        if (channel.label == channelId) {
+          return dataChannel;
+        } else {
+          return channel;
+        }
+      });
+    }
+  }
+
+  async _sendOffer() {
+    if (!this._pc) {
+      return;
+    }
+    if (browser() === &apos;safari&apos;) {
+      if (this.options.video.enabled &amp;&amp; this.options.video.direction === &apos;sendrecv&apos;) {
+        this._pc.addTransceiver(&apos;video&apos;, { direction: &apos;recvonly&apos; });
+      }
+      if (this.options.audio.enabled &amp;&amp; this.options.audio.direction === &apos;sendrecv&apos;) {
+        this._pc.addTransceiver(&apos;audio&apos;, { direction: &apos;recvonly&apos; });
+      }
+    }
+    const offer: any = await this._pc.createOffer({
+      offerToReceiveAudio: this.options.audio.enabled &amp;&amp; this.options.audio.direction !== &apos;sendonly&apos;,
+      offerToReceiveVideo: this.options.video.enabled &amp;&amp; this.options.video.direction !== &apos;sendonly&apos;
+    });
+    if (this._removeCodec &amp;&amp; this.options.video.codec) {
+      const codecs: Array&lt;VideoCodecOption&gt; = [&apos;VP8&apos;, &apos;VP9&apos;, &apos;H264&apos;];
+      codecs.forEach((codec: VideoCodecOption) =&gt; {
+        if (this.options.video.codec !== codec) {
+          offer.sdp = removeCodec(offer.sdp, codec);
+        }
+      });
+    }
+    this._traceLog(&apos;create offer sdp, sdp=&apos;, offer.sdp);
+    await this._pc.setLocalDescription(offer);
+    if (this._pc.localDescription) {
+      this._sendSdp(this._pc.localDescription);
+    }
+    this._isOffer = true;
+  }
+
+  _isVideoCodecSpecified(): boolean {
+    return this.options.video.enabled &amp;&amp; this.options.video.codec !== null;
+  }
+
+  async _createAnswer(): Promise&lt;void&gt; {
+    if (!this._pc) {
+      return;
+    }
+    try {
+      const answer = await this._pc.createAnswer();
+      this._traceLog(&apos;create answer sdp, sdp=&apos;, answer.sdp);
+      await this._pc.setLocalDescription(answer);
+      if (this._pc.localDescription) this._sendSdp(this._pc.localDescription);
+    } catch (error) {
+      await this._disconnect();
+      this._callbacks.disconnect({ reason: &apos;CREATE-ANSWER-ERROR&apos;, error: error });
+    }
+  }
+
+  async _setAnswer(sessionDescription: RTCSessionDescription): Promise&lt;void&gt; {
+    if (!this._pc) {
+      return;
+    }
+    await this._pc.setRemoteDescription(sessionDescription);
+    this._traceLog(&apos;set answer sdp=&apos;, sessionDescription.sdp);
+  }
+
+  async _setOffer(sessionDescription: RTCSessionDescription): Promise&lt;void&gt; {
+    this._createPeerConnection();
+    try {
+      if (!this._pc) {
+        return;
+      }
+      await this._pc.setRemoteDescription(sessionDescription);
+      this._traceLog(&apos;set offer sdp=&apos;, sessionDescription.sdp);
+      await this._createAnswer();
+    } catch (error) {
+      await this._disconnect();
+      this._callbacks.disconnect({ reason: &apos;SET-OFFER-ERROR&apos;, error: error });
+    }
+  }
+
+  async _addIceCandidate(candidate: RTCIceCandidate): Promise&lt;void&gt; {
+    try {
+      if (this._pc) {
+        await this._pc.addIceCandidate(candidate);
+      }
+    } catch (_error) {
+      this._traceLog(&apos;invalid ice candidate&apos;, candidate);
+    }
+  }
+
+  _sendIceCandidate(candidate: RTCIceCandidate): void {
+    const message = { type: &apos;candidate&apos;, ice: candidate };
+    this._sendWs(message);
+  }
+
+  _sendSdp(sessionDescription: RTCSessionDescription): void {
+    this._sendWs(sessionDescription);
+  }
+
+  _sendWs(message: Record&lt;string, any&gt;) {
+    if (this._ws) {
+      this._ws.send(JSON.stringify(message));
+    }
+  }
+
+  _getTransceiver(pc: RTCPeerConnection, track: any): RTCRtpTransceiver | null {
+    let transceiver = null;
+    pc.getTransceivers().forEach((t: RTCRtpTransceiver) =&gt; {
+      if (t.sender == track || t.receiver == track) transceiver = t;
+    });
+    if (!transceiver) {
+      throw new Error(&apos;invalid transceiver&apos;);
+    }
+    return transceiver;
+  }
+
+  _findDataChannel(channelId: string): RTCDataChannel | undefined {
+    return this._dataChannels.find(channel =&gt; channel.label == channelId);
+  }
+
+  async _closeDataChannel(dataChannel: RTCDataChannel): Promise&lt;void&gt; {
+    return new Promise((resolve, reject) =&gt; {
+      if (!dataChannel) return resolve();
+      if (dataChannel.readyState === &apos;closed&apos;) return resolve();
+      dataChannel.onclose = null;
+      const timerId = setInterval(() =&gt; {
+        if (!dataChannel) {
+          clearInterval(timerId);
+          return reject(&apos;DataChannel Closing Error&apos;);
+        }
+        if (dataChannel.readyState === &apos;closed&apos;) {
+          clearInterval(timerId);
+          return resolve();
+        }
+      }, 800);
+      dataChannel &amp;&amp; dataChannel.close();
+    });
+  }
+
+  async _closePeerConnection(): Promise&lt;void&gt; {
+    return new Promise((resolve, reject) =&gt; {
+      if (browser() === &apos;safari&apos; &amp;&amp; this._pc) {
+        this._pc.oniceconnectionstatechange = () =&gt; {};
+        this._pc.close();
+        this._pc = null;
+        return resolve();
+      }
+      if (!this._pc) return resolve();
+      if (this._pc &amp;&amp; this._pc.signalingState == &apos;closed&apos;) {
+        return resolve();
+      }
+      this._pc.oniceconnectionstatechange = () =&gt; {};
+      const timerId = setInterval(() =&gt; {
+        if (!this._pc) {
+          clearInterval(timerId);
+          return reject(&apos;PeerConnection Closing Error&apos;);
+        }
+        if (this._pc &amp;&amp; this._pc.signalingState == &apos;closed&apos;) {
+          clearInterval(timerId);
+          return resolve();
+        }
+      }, 800);
+      this._pc.close();
+    });
+  }
+
+  async _closeWebSocketConnection(): Promise&lt;void&gt; {
+    return new Promise((resolve, reject) =&gt; {
+      if (!this._ws) return resolve();
+      if (this._ws &amp;&amp; this._ws.readyState === 3) return resolve();
+      this._ws.onclose = () =&gt; {};
+      const timerId = setInterval(() =&gt; {
+        if (!this._ws) {
+          clearInterval(timerId);
+          return reject(&apos;WebSocket Closing Error&apos;);
+        }
+        if (this._ws.readyState === 3) {
+          clearInterval(timerId);
+          return resolve();
+        }
+      }, 800);
+      this._ws &amp;&amp; this._ws.close();
+    });
+  }
+
+  _traceLog(title: string, message?: Record&lt;string, any&gt; | string) {
+    if (!this.debug) return;
+    traceLog(title, message);
+  }
+}
+
+export default ConnectionBase;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

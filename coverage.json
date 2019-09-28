@@ -1,30 +1,47 @@
 {
-  "coverage": "93.1%",
-  "expectCount": 58,
-  "actualCount": 54,
+  "coverage": "64.28%",
+  "expectCount": 56,
+  "actualCount": 36,
   "files": {
-    "src/ayame.js": {
+    "src/ayame.ts": {
       "expectCount": 3,
       "actualCount": 2,
       "undocumentLines": [
-        7
+        3
       ]
     },
-    "src/connection/base.js": {
-      "expectCount": 40,
-      "actualCount": 40,
-      "undocumentLines": []
+    "src/connection/base.ts": {
+      "expectCount": 39,
+      "actualCount": 22,
+      "undocumentLines": [
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        50
+      ]
     },
-    "src/connection/index.js": {
-      "expectCount": 10,
+    "src/connection/index.ts": {
+      "expectCount": 9,
       "actualCount": 7,
       "undocumentLines": [
-        36,
-        38,
-        39
+        42,
+        44
       ]
     },
-    "src/utils.js": {
+    "src/utils.ts": {
       "expectCount": 5,
       "actualCount": 5,
       "undocumentLines": []

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/connection/index.ts | @open-ayame/ayame-web-sdk</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="Web SDK for WebRTC Signaling Server Ayame"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="@open-ayame/ayame-web-sdk"><meta property="twitter:description" content="Web SDK for WebRTC Signaling Server Ayame"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/OpenAyame/ayame-web-sdk"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-connection">connection</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-version">version</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-defaultOptions">defaultOptions</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#connection">connection</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html">Connection</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/connection/index.ts</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import ConnectionBase from &apos;./base&apos;;
+import { ConnectionOptions, MetadataOption } from &apos;./options&apos;;
+
+/**
+ * Peer Connection &#x63A5;&#x7D9A;&#x3092;&#x7BA1;&#x7406;&#x3059;&#x308B;&#x30AF;&#x30E9;&#x30B9;&#x3067;&#x3059;&#x3002;
+ */
+class Connection extends ConnectionBase {
+  /**
+   * &#x30AA;&#x30D6;&#x30B8;&#x30A7;&#x30AF;&#x30C8;&#x3092;&#x751F;&#x6210;&#x3057;&#x3001;&#x30EA;&#x30E2;&#x30FC;&#x30C8;&#x306E;&#x30D4;&#x30A2;&#x307E;&#x305F;&#x306F;&#x30B5;&#x30FC;&#x30D0;&#x30FC;&#x306B;&#x63A5;&#x7D9A;&#x3057;&#x307E;&#x3059;&#x3002;
+   * @param signalingUrl &#x30B7;&#x30B0;&#x30CA;&#x30EA;&#x30F3;&#x30B0;&#x306B;&#x5229;&#x7528;&#x3059;&#x308B; URL
+   * @param roomId Ayame &#x306E;&#x30EB;&#x30FC;&#x30E0;ID
+   * @param options Ayame &#x306E;&#x63A5;&#x7D9A;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;
+   * @param debug &#x30C7;&#x30D0;&#x30C3;&#x30B0;&#x30ED;&#x30B0;&#x306E;&#x51FA;&#x529B;&#x53EF;&#x5426;
+   * @param isRelay iceTransportPolicy &#x3092;&#x5F37;&#x5236;&#x7684;&#x306B; relay &#x306B;&#x3059;&#x308B;&#x304B;
+   * @listens {open} Ayame Server &#x306B; accept &#x3055;&#x308C;&#x3001;PeerConnection &#x304C;&#x751F;&#x6210;&#x3055;&#x308C;&#x308B;&#x3068;&#x9001;&#x4FE1;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;
+   * @listens {connect} PeerConnection &#x304C;&#x63A5;&#x7D9A;&#x3055;&#x308C;&#x308B;&#x3068;&#x9001;&#x4FE1;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;
+   * @listens {disconnect} PeerConnection &#x304C;&#x5207;&#x65AD;&#x3055;&#x308C;&#x308B;&#x3068;&#x9001;&#x4FE1;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;
+   * @listens {addstream} &#x30EA;&#x30E2;&#x30FC;&#x30C8;&#x306E;&#x30B9;&#x30C8;&#x30EA;&#x30FC;&#x30E0;&#x304C;&#x8FFD;&#x52A0;&#x3055;&#x308C;&#x308B;&#x3068;&#x9001;&#x4FE1;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;
+   * @listens {removestream} &#x30EA;&#x30E2;&#x30FC;&#x30C8;&#x306E;&#x30B9;&#x30C8;&#x30EA;&#x30FC;&#x30E0;&#x304C;&#x524A;&#x9664;&#x3055;&#x308C;&#x308B;&#x3068;&#x9001;&#x4FE1;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;
+   */
+  constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug = false, isRelay = false) {
+    super(signalingUrl, roomId, options, debug, isRelay);
+  }
+
+  /**
+   * PeerConnection  &#x63A5;&#x7D9A;&#x3092;&#x958B;&#x59CB;&#x3057;&#x307E;&#x3059;&#x3002;
+   * @param stream &#x30ED;&#x30FC;&#x30AB;&#x30EB;&#x306E;&#x30B9;&#x30C8;&#x30EA;&#x30FC;&#x30E0;
+   * @param metadataOption &#x9001;&#x4FE1;&#x3059;&#x308B;&#x30E1;&#x30BF;&#x30C7;&#x30FC;&#x30BF;&#x3068;&#x30B7;&#x30B0;&#x30CA;&#x30EA;&#x30F3;&#x30B0;&#x30AD;&#x30FC;
+   */
+  public async connect(stream: MediaStream | null, metadataOption: MetadataOption | null = null): Promise&lt;void&gt; {
+    if (this._ws || this._pc) {
+      this._traceLog(&apos;connection already exists&apos;);
+      throw new Error(&apos;Connection Already Exists!&apos;);
+    }
+    this.stream = stream;
+    if (metadataOption) {
+      this.authnMetadata = metadataOption.authnMetadata;
+    }
+    await this._signaling();
+  }
+
+  /**
+   * Datachannel &#x3092;&#x8FFD;&#x52A0;&#x3057;&#x307E;&#x3059;&#x3002;
+   * @param channelId dataChannel &#x306E; Id
+   * @param options dataChannel &#x306E; init &#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;
+   */
+  public async addDataChannel(channelId: string, options: RTCDataChannelInit | undefined = undefined): Promise&lt;void&gt; {
+    await this._addDataChannel(channelId, options);
+  }
+
+  /**
+   * Datachannel &#x3092;&#x524A;&#x9664;&#x3057;&#x307E;&#x3059;&#x3002;
+   * @param channelId &#x524A;&#x9664;&#x3059;&#x308B; dataChannel &#x306E; Id
+   */
+  public async removeDataChannel(channelId: string): Promise&lt;void&gt; {
+    this._traceLog(&apos;datachannel remove=&gt;&apos;, channelId);
+    const dataChannel = this._findDataChannel(channelId);
+    if (dataChannel &amp;&amp; dataChannel.readyState === &apos;open&apos;) {
+      await this._closeDataChannel(dataChannel);
+    } else {
+      throw new Error(&apos;data channel is not exist or open&apos;);
+    }
+  }
+
+  /**
+   * Datachannel &#x3067;&#x30C7;&#x30FC;&#x30BF;&#x3092;&#x9001;&#x4FE1;&#x3057;&#x307E;&#x3059;&#x3002;
+   * @param params &#x9001;&#x4FE1;&#x3059;&#x308B;&#x30C7;&#x30FC;&#x30BF;
+   * @param channelId &#x6307;&#x5B9A;&#x3059;&#x308B; dataChannel &#x306E; id
+   */
+  public sendData(params: any, channelId = &apos;dataChannel&apos;): void {
+    this._traceLog(&apos;datachannel sendData=&gt;&apos;, params);
+    const dataChannel = this._findDataChannel(channelId);
+    if (dataChannel &amp;&amp; dataChannel.readyState === &apos;open&apos;) {
+      dataChannel.send(params);
+    } else {
+      throw new Error(&apos;datachannel is not open&apos;);
+    }
+  }
+
+  /**
+   * PeerConnection  &#x63A5;&#x7D9A;&#x3092;&#x5207;&#x65AD;&#x3057;&#x307E;&#x3059;&#x3002;
+   */
+  public async disconnect(): Promise&lt;void&gt; {
+    await this._disconnect();
+  }
+}
+
+export default Connection;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

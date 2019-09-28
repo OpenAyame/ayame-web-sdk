@@ -1,26 +1,26 @@
 window.esdocSearchIndex = [
   [
-    "@open-ayame/ayame-web-sdk/src/connection/index.js~connection",
-    "class/src/connection/index.js~Connection.html",
-    "<span>Connection</span> <span class=\"search-result-import-path\">@open-ayame/ayame-web-sdk/src/connection/index.js</span>",
+    "@open-ayame/ayame-web-sdk/src/connection/index.ts~connection",
+    "class/src/connection/index.ts~Connection.html",
+    "<span>Connection</span> <span class=\"search-result-import-path\">@open-ayame/ayame-web-sdk/src/connection/index.ts</span>",
     "class"
   ],
   [
-    "@open-ayame/ayame-web-sdk/src/ayame.js~connection",
+    "@open-ayame/ayame-web-sdk/src/ayame.ts~connection",
     "function/index.html#static-function-connection",
-    "<span>connection</span> <span class=\"search-result-import-path\">@open-ayame/ayame-web-sdk/src/ayame.js</span>",
+    "<span>connection</span> <span class=\"search-result-import-path\">@open-ayame/ayame-web-sdk/src/ayame.ts</span>",
     "function"
   ],
   [
-    "@open-ayame/ayame-web-sdk/src/ayame.js~defaultoptions",
+    "@open-ayame/ayame-web-sdk/src/ayame.ts~defaultoptions",
     "variable/index.html#static-variable-defaultOptions",
-    "<span>defaultOptions</span> <span class=\"search-result-import-path\">@open-ayame/ayame-web-sdk/src/ayame.js</span>",
+    "<span>defaultOptions</span> <span class=\"search-result-import-path\">@open-ayame/ayame-web-sdk/src/ayame.ts</span>",
     "variable"
   ],
   [
-    "@open-ayame/ayame-web-sdk/src/ayame.js~version",
+    "@open-ayame/ayame-web-sdk/src/ayame.ts~version",
     "function/index.html#static-function-version",
-    "<span>version</span> <span class=\"search-result-import-path\">@open-ayame/ayame-web-sdk/src/ayame.js</span>",
+    "<span>version</span> <span class=\"search-result-import-path\">@open-ayame/ayame-web-sdk/src/ayame.ts</span>",
     "function"
   ],
   [
@@ -306,123 +306,81 @@ window.esdocSearchIndex = [
     "external"
   ],
   [
-    "src/ayame.js",
-    "file/src/ayame.js.html",
-    "src/ayame.js",
+    "src/ayame.ts",
+    "file/src/ayame.ts.html",
+    "src/ayame.ts",
     "file"
   ],
   [
-    "src/connection/base.js",
-    "file/src/connection/base.js.html",
-    "src/connection/base.js",
+    "src/connection/base.ts",
+    "file/src/connection/base.ts.html",
+    "src/connection/base.ts",
     "file"
   ],
   [
-    "src/connection/index.js",
-    "file/src/connection/index.js.html",
-    "src/connection/index.js",
+    "src/connection/index.ts",
+    "file/src/connection/index.ts.html",
+    "src/connection/index.ts",
     "file"
   ],
   [
-    "src/connection/index.js~connection#adddatachannel",
-    "class/src/connection/index.js~Connection.html#instance-method-addDataChannel",
-    "src/connection/index.js~Connection#addDataChannel",
+    "src/connection/index.ts~connection#adddatachannel",
+    "class/src/connection/index.ts~Connection.html#instance-method-addDataChannel",
+    "src/connection/index.ts~Connection#addDataChannel",
     "method"
   ],
   [
-    "src/connection/index.js~connection#authnmetadata",
-    "class/src/connection/index.js~Connection.html#instance-member-authnMetadata",
-    "src/connection/index.js~Connection#authnMetadata",
+    "src/connection/index.ts~connection#authnmetadata",
+    "class/src/connection/index.ts~Connection.html#instance-member-authnMetadata",
+    "src/connection/index.ts~Connection#authnMetadata",
     "member"
   ],
   [
-    "src/connection/index.js~connection#connect",
-    "class/src/connection/index.js~Connection.html#instance-method-connect",
-    "src/connection/index.js~Connection#connect",
+    "src/connection/index.ts~connection#connect",
+    "class/src/connection/index.ts~Connection.html#instance-method-connect",
+    "src/connection/index.ts~Connection#connect",
     "method"
   ],
   [
-    "src/connection/index.js~connection#constructor",
-    "class/src/connection/index.js~Connection.html#instance-constructor-constructor",
-    "src/connection/index.js~Connection#constructor",
+    "src/connection/index.ts~connection#constructor",
+    "class/src/connection/index.ts~Connection.html#instance-constructor-constructor",
+    "src/connection/index.ts~Connection#constructor",
     "method"
   ],
   [
-    "src/connection/index.js~connection#disconnect",
-    "class/src/connection/index.js~Connection.html#instance-method-disconnect",
-    "src/connection/index.js~Connection#disconnect",
+    "src/connection/index.ts~connection#disconnect",
+    "class/src/connection/index.ts~Connection.html#instance-method-disconnect",
+    "src/connection/index.ts~Connection#disconnect",
     "method"
   ],
   [
-    "src/connection/index.js~connection#removedatachannel",
-    "class/src/connection/index.js~Connection.html#instance-method-removeDataChannel",
-    "src/connection/index.js~Connection#removeDataChannel",
+    "src/connection/index.ts~connection#removedatachannel",
+    "class/src/connection/index.ts~Connection.html#instance-method-removeDataChannel",
+    "src/connection/index.ts~Connection#removeDataChannel",
     "method"
   ],
   [
-    "src/connection/index.js~connection#senddata",
-    "class/src/connection/index.js~Connection.html#instance-method-sendData",
-    "src/connection/index.js~Connection#sendData",
+    "src/connection/index.ts~connection#senddata",
+    "class/src/connection/index.ts~Connection.html#instance-method-sendData",
+    "src/connection/index.ts~Connection#sendData",
     "method"
   ],
   [
-    "src/connection/index.js~connection#signalingkey",
-    "class/src/connection/index.js~Connection.html#instance-member-signalingKey",
-    "src/connection/index.js~Connection#signalingKey",
+    "src/connection/index.ts~connection#stream",
+    "class/src/connection/index.ts~Connection.html#instance-member-stream",
+    "src/connection/index.ts~Connection#stream",
     "member"
   ],
   [
-    "src/connection/index.js~connection#stream",
-    "class/src/connection/index.js~Connection.html#instance-member-stream",
-    "src/connection/index.js~Connection#stream",
-    "member"
-  ],
-  [
-    "src/connection/options.js",
-    "file/src/connection/options.js.html",
-    "src/connection/options.js",
+    "src/connection/options.ts",
+    "file/src/connection/options.ts.html",
+    "src/connection/options.ts",
     "file"
   ],
   [
-    "src/connection/options.js~connectionaudiooption",
-    "typedef/index.html#static-typedef-ConnectionAudioOption",
-    "src/connection/options.js~ConnectionAudioOption",
-    "typedef"
-  ],
-  [
-    "src/connection/options.js~connectiondirection",
-    "typedef/index.html#static-typedef-ConnectionDirection",
-    "src/connection/options.js~ConnectionDirection",
-    "typedef"
-  ],
-  [
-    "src/connection/options.js~connectionoptions",
-    "typedef/index.html#static-typedef-ConnectionOptions",
-    "src/connection/options.js~ConnectionOptions",
-    "typedef"
-  ],
-  [
-    "src/connection/options.js~connectionvideooption",
-    "typedef/index.html#static-typedef-ConnectionVideoOption",
-    "src/connection/options.js~ConnectionVideoOption",
-    "typedef"
-  ],
-  [
-    "src/connection/options.js~metadataoption",
-    "typedef/index.html#static-typedef-MetadataOption",
-    "src/connection/options.js~MetadataOption",
-    "typedef"
-  ],
-  [
-    "src/connection/options.js~videocodecoption",
-    "typedef/index.html#static-typedef-VideoCodecOption",
-    "src/connection/options.js~VideoCodecOption",
-    "typedef"
-  ],
-  [
-    "src/utils.js",
-    "file/src/utils.js.html",
-    "src/utils.js",
+    "src/utils.ts",
+    "file/src/utils.ts.html",
+    "src/utils.ts",
     "file"
   ]
 ]

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/utils.ts | @open-ayame/ayame-web-sdk</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="Web SDK for WebRTC Signaling Server Ayame"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="@open-ayame/ayame-web-sdk"><meta property="twitter:description" content="Web SDK for WebRTC Signaling Server Ayame"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/OpenAyame/ayame-web-sdk"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-connection">connection</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-version">version</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-defaultOptions">defaultOptions</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#connection">connection</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html">Connection</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/utils.ts</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import { VideoCodecOption } from &apos;./connection/options&apos;;
+
+/**
+ * @ignore
+ */
+interface Window {
+  performance: WindowPerformance;
+  navigator: any;
+}
+interface WindowPerformance {
+  now(): number;
+}
+declare let window: Window;
+
+/**
+ * @ignore
+ */
+export function randomString(strLength: number): string {
+  const result = [];
+  const charSet = &apos;0123456789&apos;;
+  while (strLength--) {
+    result.push(charSet.charAt(Math.floor(Math.random() * charSet.length)));
+  }
+  return result.join(&apos;&apos;);
+}
+
+/**
+ * @ignore
+ */
+export function browser(): string {
+  const ua = window.navigator.userAgent.toLocaleLowerCase();
+  if (ua.indexOf(&apos;edge&apos;) !== -1) {
+    return &apos;edge&apos;;
+  } else if (ua.indexOf(&apos;chrome&apos;) !== -1 &amp;&amp; ua.indexOf(&apos;edge&apos;) === -1) {
+    return &apos;chrome&apos;;
+  } else if (ua.indexOf(&apos;safari&apos;) !== -1 &amp;&amp; ua.indexOf(&apos;chrome&apos;) === -1) {
+    return &apos;safari&apos;;
+  } else if (ua.indexOf(&apos;opera&apos;) !== -1) {
+    return &apos;opera&apos;;
+  } else if (ua.indexOf(&apos;firefox&apos;) !== -1) {
+    return &apos;firefox&apos;;
+  }
+  return &apos;unknown&apos;;
+}
+
+/**
+ * @ignore
+ */
+export function traceLog(title: string, value?: string | Record&lt;string, any&gt;): void {
+  let prefix = &apos;&apos;;
+  if (window.performance) {
+    prefix = &apos;[Ayame &apos; + (window.performance.now() / 1000).toFixed(3) + &apos;]&apos;;
+  }
+  if (browser() === &apos;edge&apos;) {
+    console.log(prefix + &apos; &apos; + title + &apos;\n&apos;, value);
+  } else {
+    console.info(prefix + &apos; &apos; + title + &apos;\n&apos;, value);
+  }
+}
+
+// Stack Overflow &#x3088;&#x308A;&#x5F15;&#x7528;: https://stackoverflow.com/a/52760103
+// https://stackoverflow.com/questions/52738290/how-to-remove-video-codecs-in-webrtc-sdp
+/** @private */
+export function getVideoCodecsFromString(codec: VideoCodecOption, codecs: Array&lt;any&gt;): Array&lt;any&gt; {
+  let mimeType = &apos;&apos;;
+  if (codec === &apos;VP8&apos;) {
+    mimeType = &apos;video/VP8&apos;;
+  } else if (codec === &apos;VP9&apos;) {
+    mimeType = &apos;video/VP9&apos;;
+  } else if (codec === &apos;H264&apos;) {
+    mimeType = &apos;video/H264&apos;;
+  } else {
+    mimeType = `video/${codec}`;
+  }
+  const filteredCodecs: Array&lt;any&gt; = codecs.filter(c =&gt; c.mimeType == mimeType);
+  if (filteredCodecs.length &lt; 1) {
+    throw new Error(&apos;invalid video codec type&apos;);
+  }
+  return filteredCodecs;
+}
+
+/**
+ * @ignore
+ */
+export function removeCodec(sdp: string, codec: VideoCodecOption): string {
+  function internalFunc(tmpSdp: string): string {
+    // eslint-disable-next-line no-useless-escape
+    const codecre = new RegExp(&apos;(a=rtpmap:(\\d*) &apos; + codec + &apos;/90000\\r\\n)&apos;);
+    const rtpmaps = tmpSdp.match(codecre);
+    if (rtpmaps == null || rtpmaps.length &lt;= 2) {
+      return sdp;
+    }
+    const rtpmap = rtpmaps[2];
+    let modsdp = tmpSdp.replace(codecre, &apos;&apos;);
+
+    const rtcpre = new RegExp(&apos;(a=rtcp-fb:&apos; + rtpmap + &apos;.*\r\n)&apos;, &apos;g&apos;);
+    modsdp = modsdp.replace(rtcpre, &apos;&apos;);
+
+    const fmtpre = new RegExp(&apos;(a=fmtp:&apos; + rtpmap + &apos;.*\r\n)&apos;, &apos;g&apos;);
+    modsdp = modsdp.replace(fmtpre, &apos;&apos;);
+
+    const aptpre = new RegExp(&apos;(a=fmtp:(\\d*) apt=&apos; + rtpmap + &apos;\\r\\n)&apos;);
+    const aptmaps = modsdp.match(aptpre);
+    let fmtpmap = &apos;&apos;;
+    if (aptmaps != null &amp;&amp; aptmaps.length &gt;= 3) {
+      fmtpmap = aptmaps[2];
+      modsdp = modsdp.replace(aptpre, &apos;&apos;);
+
+      const rtppre = new RegExp(&apos;(a=rtpmap:&apos; + fmtpmap + &apos;.*\r\n)&apos;, &apos;g&apos;);
+      modsdp = modsdp.replace(rtppre, &apos;&apos;);
+    }
+
+    const videore = /(m=video.*\r\n)/;
+    const videolines = modsdp.match(videore);
+    if (videolines != null) {
+      //If many m=video are found in SDP, this program doesn&apos;t work.
+      const videoline = videolines[0].substring(0, videolines[0].length - 2);
+      const videoelems = videoline.split(&apos; &apos;);
+      let modvideoline = videoelems[0];
+      videoelems.forEach((videoelem, index) =&gt; {
+        if (index === 0) return;
+        if (videoelem == rtpmap || videoelem == fmtpmap) {
+          return;
+        }
+        modvideoline += &apos; &apos; + videoelem;
+      });
+      modvideoline += &apos;\r\n&apos;;
+      modsdp = modsdp.replace(videore, modvideoline);
+    }
+    return internalFunc(modsdp);
+  }
+  return internalFunc(sdp);
+}
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
