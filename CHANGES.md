@@ -10,6 +10,7 @@
     - バグ修正
 
 ## develop
+- [CHANGE] flow -> typescript に変更する
 - [ADD] isRelay オプションを追加する。iceTransportPolicy を強制的に 'relay' にできるようにした
 - [CHANGE] signaling key を ConnectionOptions に追加するよう変更する
 
