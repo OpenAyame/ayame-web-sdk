@@ -312,6 +312,36 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/ayame.ts~connectionaudiooption",
+    "typedef/index.html#static-typedef-ConnectionAudioOption",
+    "src/ayame.ts~ConnectionAudioOption",
+    "typedef"
+  ],
+  [
+    "src/ayame.ts~connectiondirection",
+    "typedef/index.html#static-typedef-ConnectionDirection",
+    "src/ayame.ts~ConnectionDirection",
+    "typedef"
+  ],
+  [
+    "src/ayame.ts~connectionoptions",
+    "typedef/index.html#static-typedef-ConnectionOptions",
+    "src/ayame.ts~ConnectionOptions",
+    "typedef"
+  ],
+  [
+    "src/ayame.ts~connectionvideooption",
+    "typedef/index.html#static-typedef-ConnectionVideoOption",
+    "src/ayame.ts~ConnectionVideoOption",
+    "typedef"
+  ],
+  [
+    "src/ayame.ts~videocodecoption",
+    "typedef/index.html#static-typedef-VideoCodecOption",
+    "src/ayame.ts~VideoCodecOption",
+    "typedef"
+  ],
+  [
     "src/connection/base.ts",
     "file/src/connection/base.ts.html",
     "src/connection/base.ts",
@@ -370,6 +400,12 @@ window.esdocSearchIndex = [
     "class/src/connection/index.ts~Connection.html#instance-member-stream",
     "src/connection/index.ts~Connection#stream",
     "member"
+  ],
+  [
+    "src/connection/index.ts~connection.metadataoption",
+    "typedef/index.html#static-typedef-MetadataOption",
+    "src/connection/index.ts~Connection.MetadataOption",
+    "typedef"
   ],
   [
     "src/connection/options.ts",

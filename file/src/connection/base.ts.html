@@ -32,7 +32,13 @@
   <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-connection">connection</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-version">version</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-defaultOptions">defaultOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionAudioOption">ConnectionAudioOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionDirection">ConnectionDirection</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionOptions">ConnectionOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionVideoOption">ConnectionVideoOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VideoCodecOption">VideoCodecOption</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#connection">connection</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html">Connection</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MetadataOption">MetadataOption</a></span></span></li>
 </ul>
 </div>
 </nav>
@@ -85,6 +91,20 @@ class ConnectionBase {
       this._callbacks[kind] = callback;
     }
   }
+
+  /**
+   * &#x30AA;&#x30D6;&#x30B8;&#x30A7;&#x30AF;&#x30C8;&#x3092;&#x751F;&#x6210;&#x3057;&#x3001;&#x30EA;&#x30E2;&#x30FC;&#x30C8;&#x306E;&#x30D4;&#x30A2;&#x307E;&#x305F;&#x306F;&#x30B5;&#x30FC;&#x30D0;&#x30FC;&#x306B;&#x63A5;&#x7D9A;&#x3057;&#x307E;&#x3059;&#x3002;
+   * @param signalingUrl &#x30B7;&#x30B0;&#x30CA;&#x30EA;&#x30F3;&#x30B0;&#x306B;&#x5229;&#x7528;&#x3059;&#x308B; URL
+   * @param roomId Ayame &#x306E;&#x30EB;&#x30FC;&#x30E0;ID
+   * @param options Ayame &#x306E;&#x63A5;&#x7D9A;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;
+   * @param [debug=false] &#x30C7;&#x30D0;&#x30C3;&#x30B0;&#x30ED;&#x30B0;&#x306E;&#x51FA;&#x529B;&#x53EF;&#x5426;
+   * @param [isRelay=false] iceTransportPolicy &#x3092;&#x5F37;&#x5236;&#x7684;&#x306B; relay &#x306B;&#x3059;&#x308B;&#x304B;
+   * @listens {open} Ayame Server &#x306B; accept &#x3055;&#x308C;&#x3001;PeerConnection &#x304C;&#x751F;&#x6210;&#x3055;&#x308C;&#x308B;&#x3068;&#x9001;&#x4FE1;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;
+   * @listens {connect} PeerConnection &#x304C;&#x63A5;&#x7D9A;&#x3055;&#x308C;&#x308B;&#x3068;&#x9001;&#x4FE1;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;
+   * @listens {disconnect} PeerConnection &#x304C;&#x5207;&#x65AD;&#x3055;&#x308C;&#x308B;&#x3068;&#x9001;&#x4FE1;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;
+   * @listens {addstream} &#x30EA;&#x30E2;&#x30FC;&#x30C8;&#x306E;&#x30B9;&#x30C8;&#x30EA;&#x30FC;&#x30E0;&#x304C;&#x8FFD;&#x52A0;&#x3055;&#x308C;&#x308B;&#x3068;&#x9001;&#x4FE1;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;
+   * @listens {removestream} &#x30EA;&#x30E2;&#x30FC;&#x30C8;&#x306E;&#x30B9;&#x30C8;&#x30EA;&#x30FC;&#x30E0;&#x304C;&#x524A;&#x9664;&#x3055;&#x308C;&#x308B;&#x3068;&#x9001;&#x4FE1;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;
+   */
   constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug = false, isRelay = false) {
     this.debug = debug;
     this.roomId = roomId;
@@ -130,7 +150,7 @@ class ConnectionBase {
   }
 
   async _signaling(): Promise&lt;void&gt; {
-    return new Promise((resolve, reject) =&gt; {
+    return new Promise&lt;void&gt;((resolve, reject) =&gt; {
       if (this._ws) {
         return reject(&apos;WS-ALREADY-EXISTS&apos;);
       }
@@ -296,7 +316,7 @@ class ConnectionBase {
   }
 
   async _addDataChannel(channelId: string, options: RTCDataChannelInit | undefined): Promise&lt;void&gt; {
-    return new Promise((resolve, reject) =&gt; {
+    return new Promise&lt;void&gt;((resolve, reject) =&gt; {
       if (!this._pc) return reject(&apos;PeerConnection Does Not Ready&apos;);
       if (this._isOffer) return reject(&apos;PeerConnection Has Local Offer&apos;);
       let dataChannel = this._findDataChannel(channelId);
@@ -493,7 +513,7 @@ class ConnectionBase {
   }
 
   async _closePeerConnection(): Promise&lt;void&gt; {
-    return new Promise((resolve, reject) =&gt; {
+    return new Promise&lt;void&gt;((resolve, reject) =&gt; {
       if (browser() === &apos;safari&apos; &amp;&amp; this._pc) {
         this._pc.oniceconnectionstatechange = () =&gt; {};
         this._pc.close();
@@ -520,7 +540,7 @@ class ConnectionBase {
   }
 
   async _closeWebSocketConnection(): Promise&lt;void&gt; {
-    return new Promise((resolve, reject) =&gt; {
+    return new Promise&lt;void&gt;((resolve, reject) =&gt; {
       if (!this._ws) return resolve();
       if (this._ws &amp;&amp; this._ws.readyState === 3) return resolve();
       this._ws.onclose = () =&gt; {};

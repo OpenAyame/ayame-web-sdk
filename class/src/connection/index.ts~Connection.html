@@ -32,19 +32,25 @@
   <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-connection">connection</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-version">version</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-defaultOptions">defaultOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionAudioOption">ConnectionAudioOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionDirection">ConnectionDirection</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionOptions">ConnectionOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionVideoOption">ConnectionVideoOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VideoCodecOption">VideoCodecOption</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#connection">connection</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html">Connection</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MetadataOption">MetadataOption</a></span></span></li>
 </ul>
 </div>
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import Connection from &apos;<span><a href="file/src/connection/index.ts.html#lineNumber7">@open-ayame/ayame-web-sdk/src/connection/index.ts</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import Connection from &apos;<span><a href="file/src/connection/index.ts.html#lineNumber8">@open-ayame/ayame-web-sdk/src/connection/index.ts</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/src/connection/index.ts.html#lineNumber7">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/connection/index.ts.html#lineNumber8">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -97,7 +103,7 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html#instance-constructor-constructor">constructor</a></span></span><span class="code" data-ice="signature">(signalingUrl: <span>*</span>, roomId: <span>*</span>, options: <span>*</span>, debug: <span>*</span>, isRelay: <span>*</span>)</span>
+          <span class="code" data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html#instance-constructor-constructor">constructor</a></span></span><span class="code" data-ice="signature">(signalingUrl: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, roomId: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, options: <span><a href="typedef/index.html#static-typedef-ConnectionOptions">ConnectionOptions</a></span>, debug: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>, isRelay: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>)</span>
         </p>
       </div>
       <div>
@@ -133,7 +139,7 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html#instance-member-authnMetadata">authnMetadata</a></span></span><span class="code" data-ice="signature">: <span>*</span></span>
+          <span class="code" data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html#instance-member-authnMetadata">authnMetadata</a></span></span><span class="code" data-ice="signature">: <span>Record</span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, <span>any</span>&gt; | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></span>
         </p>
       </div>
       <div>
@@ -161,7 +167,7 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html#instance-member-stream">stream</a></span></span><span class="code" data-ice="signature">: <span>*</span></span>
+          <span class="code" data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html#instance-member-stream">stream</a></span></span><span class="code" data-ice="signature">: <span>MediaStream</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></span>
         </p>
       </div>
       <div>
@@ -196,7 +202,7 @@
           
           <span data-ice="async">async</span>
           
-          <span class="code" data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html#instance-method-addDataChannel">addDataChannel</a></span></span><span class="code" data-ice="signature">(channelId: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, options: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></span>
+          <span class="code" data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html#instance-method-addDataChannel">addDataChannel</a></span></span><span class="code" data-ice="signature">(channelId: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, options: <span>RTCDataChannelInit</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span>)</span>
         </p>
       </div>
       <div>
@@ -225,7 +231,7 @@
           
           <span data-ice="async">async</span>
           
-          <span class="code" data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html#instance-method-connect">connect</a></span></span><span class="code" data-ice="signature">(stream: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span>, metadataOption: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></span>
+          <span class="code" data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html#instance-method-connect">connect</a></span></span><span class="code" data-ice="signature">(stream: <span>MediaStream</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span>, metadataOption: <span><a href="typedef/index.html#static-typedef-MetadataOption">MetadataOption</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span>)</span>
         </p>
       </div>
       <div>
@@ -254,7 +260,7 @@
           
           <span data-ice="async">async</span>
           
-          <span class="code" data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html#instance-method-disconnect">disconnect</a></span></span><span class="code" data-ice="signature">(): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></span>
+          <span class="code" data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html#instance-method-disconnect">disconnect</a></span></span><span class="code" data-ice="signature">()</span>
         </p>
       </div>
       <div>
@@ -283,7 +289,7 @@
           
           <span data-ice="async">async</span>
           
-          <span class="code" data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html#instance-method-removeDataChannel">removeDataChannel</a></span></span><span class="code" data-ice="signature">(channelId: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></span>
+          <span class="code" data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html#instance-method-removeDataChannel">removeDataChannel</a></span></span><span class="code" data-ice="signature">(channelId: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>)</span>
         </p>
       </div>
       <div>
@@ -312,7 +318,7 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html#instance-method-sendData">sendData</a></span></span><span class="code" data-ice="signature">(params: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span>, channelId: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span>)</span>
+          <span class="code" data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html#instance-method-sendData">sendData</a></span></span><span class="code" data-ice="signature">(params: <span>any</span>, channelId: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>)</span>
         </p>
       </div>
       <div>
@@ -345,7 +351,7 @@
     
     
     
-    <span class="code" data-ice="name">constructor</span><span class="code" data-ice="signature">(signalingUrl: <span>*</span>, roomId: <span>*</span>, options: <span>*</span>, debug: <span>*</span>, isRelay: <span>*</span>)</span>
+    <span class="code" data-ice="name">constructor</span><span class="code" data-ice="signature">(signalingUrl: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, roomId: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, options: <span><a href="typedef/index.html#static-typedef-ConnectionOptions">ConnectionOptions</a></span>, debug: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>, isRelay: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>)</span>
     <span class="right-info">
       
       
@@ -371,36 +377,38 @@
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" class="code" data-depth="0">signalingUrl</td>
-      <td data-ice="type" class="code"><span>*</span></td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"><p>&#x30B7;&#x30B0;&#x30CA;&#x30EA;&#x30F3;&#x30B0;&#x306B;&#x5229;&#x7528;&#x3059;&#x308B; URL</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" class="code" data-depth="0">roomId</td>
-      <td data-ice="type" class="code"><span>*</span></td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"><p>Ayame &#x306E;&#x30EB;&#x30FC;&#x30E0;ID</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" class="code" data-depth="0">options</td>
-      <td data-ice="type" class="code"><span>*</span></td>
+      <td data-ice="type" class="code"><span><a href="typedef/index.html#static-typedef-ConnectionOptions">ConnectionOptions</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"><p>Ayame &#x306E;&#x63A5;&#x7D9A;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" class="code" data-depth="0">debug</td>
-      <td data-ice="type" class="code"><span>*</span></td>
-      <td data-ice="appendix"></td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li>
+<li>default: false</li></ul></td>
       <td data-ice="description"><p>&#x30C7;&#x30D0;&#x30C3;&#x30B0;&#x30ED;&#x30B0;&#x306E;&#x51FA;&#x529B;&#x53EF;&#x5426;</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" class="code" data-depth="0">isRelay</td>
-      <td data-ice="type" class="code"><span>*</span></td>
-      <td data-ice="appendix"></td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li>
+<li>default: false</li></ul></td>
       <td data-ice="description"><p>iceTransportPolicy &#x3092;&#x5F37;&#x5236;&#x7684;&#x306B; relay &#x306B;&#x3059;&#x308B;&#x304B;</p>
 </td>
     </tr>
@@ -469,11 +477,11 @@
     
     
     
-    <span class="code" data-ice="name">authnMetadata</span><span class="code" data-ice="signature">: <span>*</span></span>
+    <span class="code" data-ice="name">authnMetadata</span><span class="code" data-ice="signature">: <span>Record</span>&lt;<span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, <span>any</span>&gt; | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/connection/index.ts.html#lineNumber44">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/connection/index.ts.html#lineNumber56">source</a></span></span>
     </span>
   </h3>
 
@@ -512,11 +520,11 @@
     
     
     
-    <span class="code" data-ice="name">stream</span><span class="code" data-ice="signature">: <span>*</span></span>
+    <span class="code" data-ice="name">stream</span><span class="code" data-ice="signature">: <span>MediaStream</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/connection/index.ts.html#lineNumber42">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/connection/index.ts.html#lineNumber53">source</a></span></span>
     </span>
   </h3>
 
@@ -558,11 +566,11 @@
     
     <span data-ice="async">async</span>
     
-    <span class="code" data-ice="name">addDataChannel</span><span class="code" data-ice="signature">(channelId: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, options: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></span>
+    <span class="code" data-ice="name">addDataChannel</span><span class="code" data-ice="signature">(channelId: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, options: <span>RTCDataChannelInit</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/connection/index.ts.html#lineNumber47">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/connection/index.ts.html#lineNumber77">source</a></span></span>
     </span>
   </h3>
 
@@ -586,32 +594,23 @@
       <td data-ice="name" class="code" data-depth="0">channelId</td>
       <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"></td>
+      <td data-ice="description"><p>dataChannel &#x306E; Id</p>
+</td>
     </tr>
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" class="code" data-depth="0">options</td>
-      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"></td>
+      <td data-ice="type" class="code"><span>RTCDataChannelInit</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li>
+<li>default: undefined</li></ul></td>
+      <td data-ice="description"><p>dataChannel &#x306E; init &#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;</p>
+</td>
     </tr>
 </tbody>
   </table>
 </div>
 </div>
 
-  <div class="return-params" data-ice="returnParams">
-    <h4>Return:</h4>
-    <table>
-      <tbody>
-        <tr>
-          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></td>
-          
-        </tr>
-      </tbody>
-    </table>
-    <div data-ice="returnProperties">
-</div>
-  </div>
+  
 
   
 
@@ -636,11 +635,11 @@
     
     <span data-ice="async">async</span>
     
-    <span class="code" data-ice="name">connect</span><span class="code" data-ice="signature">(stream: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span>, metadataOption: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></span>
+    <span class="code" data-ice="name">connect</span><span class="code" data-ice="signature">(stream: <span>MediaStream</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span>, metadataOption: <span><a href="typedef/index.html#static-typedef-MetadataOption">MetadataOption</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/connection/index.ts.html#lineNumber30">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/connection/index.ts.html#lineNumber47">source</a></span></span>
     </span>
   </h3>
 
@@ -662,34 +661,26 @@
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" class="code" data-depth="0">stream</td>
-      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"></td>
+      <td data-ice="type" class="code"><span>MediaStream</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li>
+<li>default: null</li></ul></td>
+      <td data-ice="description"><p>&#x30ED;&#x30FC;&#x30AB;&#x30EB;&#x306E;&#x30B9;&#x30C8;&#x30EA;&#x30FC;&#x30E0;</p>
+</td>
     </tr>
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" class="code" data-depth="0">metadataOption</td>
-      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"></td>
+      <td data-ice="type" class="code"><span><a href="typedef/index.html#static-typedef-MetadataOption">MetadataOption</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li>
+<li>default: null</li></ul></td>
+      <td data-ice="description"><p>&#x9001;&#x4FE1;&#x3059;&#x308B;&#x30E1;&#x30BF;&#x30C7;&#x30FC;&#x30BF;&#x3068;&#x30B7;&#x30B0;&#x30CA;&#x30EA;&#x30F3;&#x30B0;&#x30AD;&#x30FC;</p>
+</td>
     </tr>
 </tbody>
   </table>
 </div>
 </div>
 
-  <div class="return-params" data-ice="returnParams">
-    <h4>Return:</h4>
-    <table>
-      <tbody>
-        <tr>
-          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></td>
-          
-        </tr>
-      </tbody>
-    </table>
-    <div data-ice="returnProperties">
-</div>
-  </div>
+  
 
   
 
@@ -714,11 +705,11 @@
     
     <span data-ice="async">async</span>
     
-    <span class="code" data-ice="name">disconnect</span><span class="code" data-ice="signature">(): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></span>
+    <span class="code" data-ice="name">disconnect</span><span class="code" data-ice="signature">()</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/connection/index.ts.html#lineNumber83">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/connection/index.ts.html#lineNumber140">source</a></span></span>
     </span>
   </h3>
 
@@ -733,19 +724,7 @@
   <div data-ice="properties">
 </div>
 
-  <div class="return-params" data-ice="returnParams">
-    <h4>Return:</h4>
-    <table>
-      <tbody>
-        <tr>
-          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></td>
-          
-        </tr>
-      </tbody>
-    </table>
-    <div data-ice="returnProperties">
-</div>
-  </div>
+  
 
   
 
@@ -770,11 +749,11 @@
     
     <span data-ice="async">async</span>
     
-    <span class="code" data-ice="name">removeDataChannel</span><span class="code" data-ice="signature">(channelId: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></span>
+    <span class="code" data-ice="name">removeDataChannel</span><span class="code" data-ice="signature">(channelId: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/connection/index.ts.html#lineNumber55">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/connection/index.ts.html#lineNumber94">source</a></span></span>
     </span>
   </h3>
 
@@ -798,26 +777,15 @@
       <td data-ice="name" class="code" data-depth="0">channelId</td>
       <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"></td>
+      <td data-ice="description"><p>&#x524A;&#x9664;&#x3059;&#x308B; dataChannel &#x306E; Id</p>
+</td>
     </tr>
 </tbody>
   </table>
 </div>
 </div>
 
-  <div class="return-params" data-ice="returnParams">
-    <h4>Return:</h4>
-    <table>
-      <tbody>
-        <tr>
-          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></td>
-          
-        </tr>
-      </tbody>
-    </table>
-    <div data-ice="returnProperties">
-</div>
-  </div>
+  
 
   
 
@@ -842,11 +810,11 @@
     
     
     
-    <span class="code" data-ice="name">sendData</span><span class="code" data-ice="signature">(params: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span>, channelId: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span>)</span>
+    <span class="code" data-ice="name">sendData</span><span class="code" data-ice="signature">(params: <span>any</span>, channelId: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/connection/index.ts.html#lineNumber70">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/connection/index.ts.html#lineNumber119">source</a></span></span>
     </span>
   </h3>
 
@@ -868,15 +836,18 @@
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" class="code" data-depth="0">params</td>
-      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></td>
+      <td data-ice="type" class="code"><span>any</span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"></td>
+      <td data-ice="description"><p>&#x9001;&#x4FE1;&#x3059;&#x308B;&#x30C7;&#x30FC;&#x30BF;</p>
+</td>
     </tr>
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" class="code" data-depth="0">channelId</td>
-      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"></td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li>
+<li>default: &apos;dataChannel&apos;</li></ul></td>
+      <td data-ice="description"><p>&#x6307;&#x5B9A;&#x3059;&#x308B; dataChannel &#x306E; id</p>
+</td>
     </tr>
 </tbody>
   </table>

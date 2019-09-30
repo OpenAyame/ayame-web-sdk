@@ -32,7 +32,13 @@
   <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-connection">connection</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-version">version</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-defaultOptions">defaultOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionAudioOption">ConnectionAudioOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionDirection">ConnectionDirection</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionOptions">ConnectionOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionVideoOption">ConnectionVideoOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VideoCodecOption">VideoCodecOption</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#connection">connection</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html">Connection</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MetadataOption">MetadataOption</a></span></span></li>
 </ul>
 </div>
 </nav>
@@ -62,7 +68,7 @@
           <span data-ice="kind-icon" class="kind-function">F</span>
           
           
-          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-connection">connection</a></span></span><span class="code" data-ice="signature">(signalingUrl: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, roomId: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, options: <span>ConnectionOptions</span>, debug: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span>, isRelay: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span>): <span><a href="class/src/connection/index.ts~Connection.html">Connection</a></span></span>
+          <span class="code" data-ice="name"><span><a href="function/index.html#static-function-connection">connection</a></span></span><span class="code" data-ice="signature">(signalingUrl: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, roomId: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, options: <span><a href="typedef/index.html#static-typedef-ConnectionOptions">ConnectionOptions</a></span>, debug: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>, isRelay: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>): <span><a href="class/src/connection/index.ts~Connection.html">Connection</a></span></span>
         </p>
       </div>
       <div>
@@ -120,13 +126,166 @@
           <span data-ice="kind-icon" class="kind-variable">V</span>
           
           
-          <span class="code" data-ice="name"><span><a href="variable/index.html#static-variable-defaultOptions">defaultOptions</a></span></span><span class="code" data-ice="signature">: {&quot;audio&quot;: <span>*</span>, &quot;video&quot;: <span>*</span>, &quot;iceServers&quot;: <span>*</span>, &quot;clientId&quot;: <span>*</span>}</span>
+          <span class="code" data-ice="name"><span><a href="variable/index.html#static-variable-defaultOptions">defaultOptions</a></span></span><span class="code" data-ice="signature">: <span><a href="typedef/index.html#static-typedef-ConnectionOptions">ConnectionOptions</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Ayame Connection &#x306E;&#x30C7;&#x30D5;&#x30A9;&#x30EB;&#x30C8;&#x306E;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&#x3067;&#x3059;&#x3002;</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          <span data-ice="kind-icon" class="kind-typedef">T</span>
+          
+          
+          <span class="code" data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionAudioOption">ConnectionAudioOption</a></span></span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
         </p>
       </div>
       <div>
         
         
         
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          <span data-ice="kind-icon" class="kind-typedef">T</span>
+          
+          
+          <span class="code" data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionDirection">ConnectionDirection</a></span></span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>&#x30AA;&#x30FC;&#x30C7;&#x30A3;&#x30AA;&#x3001;&#x30D3;&#x30C7;&#x30AA;&#x306E;&#x9001;&#x53D7;&#x4FE1;&#x65B9;&#x5411;&#x306B;&#x95A2;&#x3059;&#x308B;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&#x3067;&#x3059;&#x3002;</p>
+<ul>
+<li>sendrecv</li>
+<li>recvonly</li>
+<li>sendonly</li>
+</ul>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          <span data-ice="kind-icon" class="kind-typedef">T</span>
+          
+          
+          <span class="code" data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionOptions">ConnectionOptions</a></span></span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          <span data-ice="kind-icon" class="kind-typedef">T</span>
+          
+          
+          <span class="code" data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionVideoOption">ConnectionVideoOption</a></span></span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          <span data-ice="kind-icon" class="kind-typedef">T</span>
+          
+          
+          <span class="code" data-ice="name"><span><a href="typedef/index.html#static-typedef-VideoCodecOption">VideoCodecOption</a></span></span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>&#x30D3;&#x30C7;&#x30AA;&#x63A5;&#x7D9A;&#x306E;&#x30B3;&#x30FC;&#x30C7;&#x30C3;&#x30AF;&#x306B;&#x95A2;&#x3059;&#x308B;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&#x3067;&#x3059;&#x3002;</p>
+<ul>
+<li>VP8</li>
+<li>VP9</li>
+<li>H264</li>
+</ul>
+</div>
       </div>
     </td>
     <td>
@@ -166,6 +325,34 @@
         
         <div data-ice="description"><p>Peer Connection &#x63A5;&#x7D9A;&#x3092;&#x7BA1;&#x7406;&#x3059;&#x308B;&#x30AF;&#x30E9;&#x30B9;&#x3067;&#x3059;&#x3002;</p>
 </div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          <span data-ice="kind-icon" class="kind-typedef">T</span>
+          
+          
+          <span class="code" data-ice="name"><span><a href="typedef/index.html#static-typedef-MetadataOption">MetadataOption</a></span></span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
       </div>
     </td>
     <td>

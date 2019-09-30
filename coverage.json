@@ -1,45 +1,39 @@
 {
-  "coverage": "64.28%",
+  "coverage": "71.42%",
   "expectCount": 56,
-  "actualCount": 36,
+  "actualCount": 40,
   "files": {
     "src/ayame.ts": {
       "expectCount": 3,
-      "actualCount": 2,
-      "undocumentLines": [
-        3
-      ]
+      "actualCount": 3,
+      "undocumentLines": []
     },
     "src/connection/base.ts": {
       "expectCount": 39,
-      "actualCount": 22,
+      "actualCount": 23,
       "undocumentLines": [
-        31,
-        32,
-        33,
-        34,
-        35,
-        36,
-        37,
-        38,
-        39,
-        40,
-        41,
-        42,
-        43,
-        44,
         45,
         46,
-        50
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        63
       ]
     },
     "src/connection/index.ts": {
       "expectCount": 9,
-      "actualCount": 7,
-      "undocumentLines": [
-        42,
-        44
-      ]
+      "actualCount": 9,
+      "undocumentLines": []
     },
     "src/utils.ts": {
       "expectCount": 5,

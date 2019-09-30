@@ -32,14 +32,21 @@
   <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-connection">connection</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-version">version</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-defaultOptions">defaultOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionAudioOption">ConnectionAudioOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionDirection">ConnectionDirection</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionOptions">ConnectionOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionVideoOption">ConnectionVideoOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VideoCodecOption">VideoCodecOption</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#connection">connection</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html">Connection</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MetadataOption">MetadataOption</a></span></span></li>
 </ul>
 </div>
 </nav>
 
 <div class="content" data-ice="content"><h1 data-ice="title">src/connection/options.ts</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
- * &#x30AA;&#x30FC;&#x30C7;&#x30A3;&#x30AA;&#x3001;&#x30D3;&#x30C7;&#x30AA;&#x306E;&#x9001;&#x53D7;&#x4FE1;&#x65B9;&#x5411;&#x306B;&#x95A2;&#x3059;&#x308B;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&#x3067;&#x3059;&#x3002;
+ * @typedef {string} ConnectionDirection - &#x30AA;&#x30FC;&#x30C7;&#x30A3;&#x30AA;&#x3001;&#x30D3;&#x30C7;&#x30AA;&#x306E;&#x9001;&#x53D7;&#x4FE1;&#x65B9;&#x5411;&#x306B;&#x95A2;&#x3059;&#x308B;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&#x3067;&#x3059;&#x3002;
+ *
  * - sendrecv
  * - recvonly
  * - sendonly
@@ -47,9 +54,9 @@
 export type ConnectionDirection = &apos;sendrecv&apos; | &apos;recvonly&apos; | &apos;sendonly&apos;;
 
 /**
- * &#x30AA;&#x30FC;&#x30C7;&#x30A3;&#x30AA;&#x63A5;&#x7D9A;&#x306B;&#x95A2;&#x3059;&#x308B;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&#x3067;&#x3059;&#x3002;
- * @member direction &#x9001;&#x53D7;&#x4FE1;&#x65B9;&#x5411;
- * @member enabled &#x6709;&#x52B9;&#x304B;&#x3069;&#x3046;&#x304B;&#x306E;&#x30D5;&#x30E9;&#x30B0;
+ * @typedef {Object} ConnectionAudioOption - &#x30AA;&#x30FC;&#x30C7;&#x30A3;&#x30AA;&#x63A5;&#x7D9A;&#x306B;&#x95A2;&#x3059;&#x308B;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&#x3067;&#x3059;&#x3002;
+ * @property {ConnectionDirection} direction &#x9001;&#x53D7;&#x4FE1;&#x65B9;&#x5411;
+ * @property {boolean} enabled &#x6709;&#x52B9;&#x304B;&#x3069;&#x3046;&#x304B;&#x306E;&#x30D5;&#x30E9;&#x30B0;
  */
 export interface ConnectionAudioOption {
   direction: ConnectionDirection;
@@ -57,7 +64,9 @@ export interface ConnectionAudioOption {
 }
 
 /**
- * &#x30D3;&#x30C7;&#x30AA;&#x63A5;&#x7D9A;&#x306E;&#x30B3;&#x30FC;&#x30C7;&#x30C3;&#x30AF;&#x306B;&#x95A2;&#x3059;&#x308B;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&#x3067;&#x3059;&#x3002;
+ * @public
+ * @typedef {string} VideoCodecOption - &#x30D3;&#x30C7;&#x30AA;&#x63A5;&#x7D9A;&#x306E;&#x30B3;&#x30FC;&#x30C7;&#x30C3;&#x30AF;&#x306B;&#x95A2;&#x3059;&#x308B;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&#x3067;&#x3059;&#x3002;
+ *
  * - VP8
  * - VP9
  * - H264
@@ -65,10 +74,10 @@ export interface ConnectionAudioOption {
 export type VideoCodecOption = &apos;VP8&apos; | &apos;VP9&apos; | &apos;H264&apos;;
 
 /**
- * &#x30D3;&#x30C7;&#x30AA;&#x63A5;&#x7D9A;&#x306B;&#x95A2;&#x3059;&#x308B;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&#x3067;&#x3059;&#x3002;
- * @member codec &#x30B3;&#x30FC;&#x30C7;&#x30C3;&#x30AF;&#x306E;&#x8A2D;&#x5B9A;
- * @member direction &#x9001;&#x53D7;&#x4FE1;&#x65B9;&#x5411;
- * @member enabled &#x6709;&#x52B9;&#x304B;&#x3069;&#x3046;&#x304B;&#x306E;&#x30D5;&#x30E9;&#x30B0;
+ * @typedef {Object} ConnectionVideoOption - &#x30D3;&#x30C7;&#x30AA;&#x63A5;&#x7D9A;&#x306B;&#x95A2;&#x3059;&#x308B;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&#x3067;&#x3059;&#x3002;
+ * @property {VideoCodecOption} codec &#x30B3;&#x30FC;&#x30C7;&#x30C3;&#x30AF;&#x306E;&#x8A2D;&#x5B9A;
+ * @property {ConnectionDirection} direction &#x9001;&#x53D7;&#x4FE1;&#x65B9;&#x5411;
+ * @property {boolean} enabled &#x6709;&#x52B9;&#x304B;&#x3069;&#x3046;&#x304B;&#x306E;&#x30D5;&#x30E9;&#x30B0;
  */
 export interface ConnectionVideoOption {
   codec?: VideoCodecOption;
@@ -77,12 +86,12 @@ export interface ConnectionVideoOption {
 }
 
 /**
- * &#x63A5;&#x7D9A;&#x6642;&#x306B;&#x6307;&#x5B9A;&#x3059;&#x308B;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&#x3067;&#x3059;&#x3002;
- * @member video &#x30AA;&#x30FC;&#x30C7;&#x30A3;&#x30AA;&#x306E;&#x8A2D;&#x5B9A;
- * @member audio &#x30D3;&#x30C7;&#x30AA;&#x306E;&#x8A2D;&#x5B9A;
- * @member clientId &#x30D3;&#x30C7;&#x30AA;&#x306E;&#x8A2D;&#x5B9A;
- * @member iceServers ayame server &#x304B;&#x3089; iceServers &#x304C;&#x8FD4;&#x3063;&#x3066;&#x6765;&#x306A;&#x304B;&#x3063;&#x305F;&#x5834;&#x5408;&#x306B;&#x4F7F;&#x308F;&#x308C;&#x308B; iceServer &#x306E;&#x60C5;&#x5831;
- * @member signalingKey &#x9001;&#x4FE1;&#x3059;&#x308B;&#x30B7;&#x30B0;&#x30CA;&#x30EA;&#x30F3;&#x30AD;&#x30FC;
+ * @typedef {Object} ConnectionOptions - &#x63A5;&#x7D9A;&#x6642;&#x306B;&#x6307;&#x5B9A;&#x3059;&#x308B;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&#x3067;&#x3059;&#x3002;
+ * @property {ConnectionAudioOption} audio &#x30AA;&#x30FC;&#x30C7;&#x30A3;&#x30AA;&#x306E;&#x8A2D;&#x5B9A;
+ * @property {ConnectionVideoOption} video &#x30D3;&#x30C7;&#x30AA;&#x306E;&#x8A2D;&#x5B9A;
+ * @property {string} clientId &#x30AF;&#x30E9;&#x30A4;&#x30A2;&#x30F3;&#x30C8;ID
+ * @property {Array.&lt;RTCIceServer&gt;} iceServers ayame server &#x304B;&#x3089; iceServers &#x304C;&#x8FD4;&#x3063;&#x3066;&#x6765;&#x306A;&#x304B;&#x3063;&#x305F;&#x5834;&#x5408;&#x306B;&#x4F7F;&#x308F;&#x308C;&#x308B; iceServer &#x306E;&#x60C5;&#x5831;
+ * @property {string} signalingKey &#x9001;&#x4FE1;&#x3059;&#x308B;&#x30B7;&#x30B0;&#x30CA;&#x30EA;&#x30F3;&#x30B0;&#x30AD;&#x30FC;
  */
 export interface ConnectionOptions {
   audio: ConnectionAudioOption;
@@ -93,9 +102,9 @@ export interface ConnectionOptions {
 }
 
 /**
- * &#x63A5;&#x7D9A;&#x6642;&#x306B;&#x6307;&#x5B9A;&#x3067;&#x304D;&#x308B;&#x30E1;&#x30BF;&#x30C7;&#x30FC;&#x30BF;&#x3067;&#x3059;&#x3002;
- * @member authnMetadata &#x9001;&#x4FE1;&#x3059;&#x308B;&#x30E1;&#x30BF;&#x30C7;&#x30FC;&#x30BF;
- * @member key &#x30B7;&#x30B0;&#x30CA;&#x30EA;&#x30F3;&#x30B0;&#x30AD;&#x30FC;
+ * @typedef {Object} MetadataOption - &#x63A5;&#x7D9A;&#x6642;&#x306B;&#x6307;&#x5B9A;&#x3067;&#x304D;&#x308B;&#x30E1;&#x30BF;&#x30C7;&#x30FC;&#x30BF;&#x3067;&#x3059;&#x3002;
+ * @property {string|null} authnMetadata &#x9001;&#x4FE1;&#x3059;&#x308B;&#x30E1;&#x30BF;&#x30C7;&#x30FC;&#x30BF;
+ * @property {string|null} key &#x30B7;&#x30B0;&#x30CA;&#x30EA;&#x30F3;&#x30B0;&#x30AD;&#x30FC;
  */
 export interface MetadataOption {
   authnMetadata?: any;

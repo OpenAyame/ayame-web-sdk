@@ -32,7 +32,13 @@
   <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-connection">connection</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-version">version</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-defaultOptions">defaultOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionAudioOption">ConnectionAudioOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionDirection">ConnectionDirection</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionOptions">ConnectionOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionVideoOption">ConnectionVideoOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VideoCodecOption">VideoCodecOption</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#connection">connection</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html">Connection</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MetadataOption">MetadataOption</a></span></span></li>
 </ul>
 </div>
 </nav>
@@ -42,6 +48,61 @@
 import { ConnectionOptions } from &apos;./connection/options&apos;;
 import { randomString } from &apos;./utils&apos;;
 
+
+/**
+ * &#x30AA;&#x30FC;&#x30C7;&#x30A3;&#x30AA;&#x3001;&#x30D3;&#x30C7;&#x30AA;&#x306E;&#x9001;&#x53D7;&#x4FE1;&#x65B9;&#x5411;&#x306B;&#x95A2;&#x3059;&#x308B;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&#x3067;&#x3059;&#x3002;
+ * - sendrecv
+ * - recvonly
+ * - sendonly
+ *
+ * @typedef {string} ConnectionDirection
+ */
+
+/**
+ * @typedef {Object} ConnectionAudioOption - &#x30AA;&#x30FC;&#x30C7;&#x30A3;&#x30AA;&#x63A5;&#x7D9A;&#x306B;&#x95A2;&#x3059;&#x308B;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&#x3067;&#x3059;&#x3002;
+ * @property {ConnectionDirection} direction &#x9001;&#x53D7;&#x4FE1;&#x65B9;&#x5411;
+ * @property {boolean} enabled &#x6709;&#x52B9;&#x304B;&#x3069;&#x3046;&#x304B;&#x306E;&#x30D5;&#x30E9;&#x30B0;
+ */
+
+/**
+ * &#x30D3;&#x30C7;&#x30AA;&#x63A5;&#x7D9A;&#x306E;&#x30B3;&#x30FC;&#x30C7;&#x30C3;&#x30AF;&#x306B;&#x95A2;&#x3059;&#x308B;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&#x3067;&#x3059;&#x3002;
+ * - VP8
+ * - VP9
+ * - H264
+ *
+ * @typedef {string} VideoCodecOption
+ */
+
+/**
+ * @typedef {Object} ConnectionVideoOption - &#x30D3;&#x30C7;&#x30AA;&#x63A5;&#x7D9A;&#x306B;&#x95A2;&#x3059;&#x308B;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&#x3067;&#x3059;&#x3002;
+ * @property {VideoCodecOption} codec &#x30B3;&#x30FC;&#x30C7;&#x30C3;&#x30AF;&#x306E;&#x8A2D;&#x5B9A;
+ * @property {ConnectionDirection} direction &#x9001;&#x53D7;&#x4FE1;&#x65B9;&#x5411;
+ * @property {boolean} enabled &#x6709;&#x52B9;&#x304B;&#x3069;&#x3046;&#x304B;&#x306E;&#x30D5;&#x30E9;&#x30B0;
+ */
+
+/**
+ * @typedef {Object} ConnectionOptions - &#x63A5;&#x7D9A;&#x6642;&#x306B;&#x6307;&#x5B9A;&#x3059;&#x308B;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&#x3067;&#x3059;&#x3002;
+ * @property {ConnectionAudioOption} audio &#x30AA;&#x30FC;&#x30C7;&#x30A3;&#x30AA;&#x306E;&#x8A2D;&#x5B9A;
+ * @property {ConnectionVideoOption} video &#x30D3;&#x30C7;&#x30AA;&#x306E;&#x8A2D;&#x5B9A;
+ * @property {string} clientId &#x30AF;&#x30E9;&#x30A4;&#x30A2;&#x30F3;&#x30C8;ID
+ * @property {Array.&lt;RTCIceServer&gt;} iceServers ayame server &#x304B;&#x3089; iceServers &#x304C;&#x8FD4;&#x3063;&#x3066;&#x6765;&#x306A;&#x304B;&#x3063;&#x305F;&#x5834;&#x5408;&#x306B;&#x4F7F;&#x308F;&#x308C;&#x308B; iceServer &#x306E;&#x60C5;&#x5831;
+ * @property {string} signalingKey &#x9001;&#x4FE1;&#x3059;&#x308B;&#x30B7;&#x30B0;&#x30CA;&#x30EA;&#x30F3;&#x30B0;&#x30AD;&#x30FC;
+ */
+
+
+/**
+ * Ayame Connection &#x306E;&#x30C7;&#x30D5;&#x30A9;&#x30EB;&#x30C8;&#x306E;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&#x3067;&#x3059;&#x3002;
+ *
+ * audio: { direction: &apos;sendrecv&apos;, enabled: true}
+ *
+ * video: { direction: &apos;sendrecv&apos;, enabled: true}
+ *
+ * iceServers: [{ urls: &apos;stun:stun.l.google.com:19302&apos; }]
+ *
+ * clientId: randomString(17)
+ *
+ * @type {ConnectionOptions} ConnectionOptions
+ */
 export const defaultOptions: ConnectionOptions = {
   audio: { direction: &apos;sendrecv&apos;, enabled: true },
   video: { direction: &apos;sendrecv&apos;, enabled: true },
@@ -50,14 +111,13 @@ export const defaultOptions: ConnectionOptions = {
 };
 
 /**
- * Ayame Connection &#x3092;&#x751F;&#x6210;&#x3057;&#x307E;&#x3059;&#x3002;
- *
- * @param signalingUrl &#x30B7;&#x30B0;&#x30CA;&#x30EA;&#x30F3;&#x30B0;&#x306B;&#x7528;&#x3044;&#x308B; websocket url
- * @param roomId &#x63A5;&#x7D9A;&#x3059;&#x308B; roomId
- * @param options &#x63A5;&#x7D9A;&#x6642;&#x306E;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;
- * @param debug &#x30C7;&#x30D0;&#x30C3;&#x30B0;&#x30ED;&#x30B0;&#x3092;&#x51FA;&#x529B;&#x3059;&#x308B;&#x304B;&#x3069;&#x3046;&#x304B;&#x306E;&#x30D5;&#x30E9;&#x30B0;
- * @param isRelay iceTranspolicy &#x3092;&#x5F37;&#x5236;&#x7684;&#x306B; relay &#x3059;&#x308B;&#x304B;&#x3069;&#x3046;&#x304B;&#x306E;&#x30D5;&#x30E9;&#x30B0;(&#x30C7;&#x30D0;&#x30C3;&#x30B0;&#x7528;)
- * @return Connection
+ * @desc Ayame Connection &#x3092;&#x751F;&#x6210;&#x3057;&#x307E;&#x3059;&#x3002;
+ * @param {string} signalingUrl &#x30B7;&#x30B0;&#x30CA;&#x30EA;&#x30F3;&#x30B0;&#x306B;&#x7528;&#x3044;&#x308B; websocket url
+ * @param {string} roomId &#x63A5;&#x7D9A;&#x3059;&#x308B; roomId
+ * @param {ConnectionOptions} [options=defaultOptions] &#x63A5;&#x7D9A;&#x6642;&#x306E;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;
+ * @param {boolean} [debug=false] &#x30C7;&#x30D0;&#x30C3;&#x30B0;&#x30ED;&#x30B0;&#x3092;&#x51FA;&#x529B;&#x3059;&#x308B;&#x304B;&#x3069;&#x3046;&#x304B;&#x306E;&#x30D5;&#x30E9;&#x30B0;
+ * @param {boolean} [isRelay=false] iceTranspolicy &#x3092;&#x5F37;&#x5236;&#x7684;&#x306B; relay &#x3059;&#x308B;&#x304B;&#x3069;&#x3046;&#x304B;&#x306E;&#x30D5;&#x30E9;&#x30B0;(&#x30C7;&#x30D0;&#x30C3;&#x30B0;&#x7528;)
+ * @return {Connection} &#x751F;&#x6210;&#x3055;&#x308C;&#x305F; Ayame Connection
  */
 export function connection(
   signalingUrl: string,
@@ -70,8 +130,8 @@ export function connection(
 }
 
 /**
- * Ayame Web SDK &#x306E;&#x30D0;&#x30FC;&#x30B8;&#x30E7;&#x30F3;&#x3092;&#x51FA;&#x529B;&#x3057;&#x307E;&#x3059;&#x3002;
- * @return string
+ * @desc Ayame Web SDK &#x306E;&#x30D0;&#x30FC;&#x30B8;&#x30E7;&#x30F3;&#x3092;&#x51FA;&#x529B;&#x3057;&#x307E;&#x3059;&#x3002;
+ * @return {string} Ayame Web SDK &#x306E;&#x30D0;&#x30FC;&#x30B8;&#x30E7;&#x30F3;
  */
 export function version(): string {
   return process.version;
