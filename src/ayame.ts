@@ -2,7 +2,6 @@ import Connection from './connection';
 import { ConnectionOptions } from './connection/options';
 import { randomString } from './utils';
 
-
 /**
  * オーディオ、ビデオの送受信方向に関するオプションです。
  * - sendrecv
@@ -42,7 +41,6 @@ import { randomString } from './utils';
  * @property {Array.<RTCIceServer>} iceServers ayame server から iceServers が返って来なかった場合に使われる iceServer の情報
  * @property {string} signalingKey 送信するシグナリングキー
  */
-
 
 /**
  * Ayame Connection のデフォルトのオプションです。

@@ -1,7 +1,6 @@
 import ConnectionBase from './base';
 import { ConnectionOptions, MetadataOption } from './options';
 
-
 /**
  * Peer Connection 接続を管理するクラスです。
  */
@@ -22,7 +21,6 @@ class Connection extends ConnectionBase {
   constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug = false, isRelay = false) {
     super(signalingUrl, roomId, options, debug, isRelay);
   }
-
 
   /**
    * @typedef {Object} MetadataOption - 接続時に指定できるメタデータです。
