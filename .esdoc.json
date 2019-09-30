@@ -9,8 +9,7 @@
           "access": [
             "public",
             "protected"
-          ],
-          "autoPrivate": true
+          ]
         }
       }
     },

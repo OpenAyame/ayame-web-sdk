@@ -45,6 +45,20 @@ class ConnectionBase {
       this._callbacks[kind] = callback;
     }
   }
+
+  /**
+   * オブジェクトを生成し、リモートのピアまたはサーバーに接続します。
+   * @param signalingUrl シグナリングに利用する URL
+   * @param roomId Ayame のルームID
+   * @param options Ayame の接続オプション
+   * @param [debug=false] デバッグログの出力可否
+   * @param [isRelay=false] iceTransportPolicy を強制的に relay にするか
+   * @listens {open} Ayame Server に accept され、PeerConnection が生成されると送信されます。
+   * @listens {connect} PeerConnection が接続されると送信されます。
+   * @listens {disconnect} PeerConnection が切断されると送信されます。
+   * @listens {addstream} リモートのストリームが追加されると送信されます。
+   * @listens {removestream} リモートのストリームが削除されると送信されます。
+   */
   constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug = false, isRelay = false) {
     this.debug = debug;
     this.roomId = roomId;
@@ -90,7 +104,7 @@ class ConnectionBase {
   }
 
   async _signaling(): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       if (this._ws) {
         return reject('WS-ALREADY-EXISTS');
       }
@@ -256,7 +270,7 @@ class ConnectionBase {
   }
 
   async _addDataChannel(channelId: string, options: RTCDataChannelInit | undefined): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       if (!this._pc) return reject('PeerConnection Does Not Ready');
       if (this._isOffer) return reject('PeerConnection Has Local Offer');
       let dataChannel = this._findDataChannel(channelId);
@@ -453,7 +467,7 @@ class ConnectionBase {
   }
 
   async _closePeerConnection(): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       if (browser() === 'safari' && this._pc) {
         this._pc.oniceconnectionstatechange = () => {};
         this._pc.close();
@@ -480,7 +494,7 @@ class ConnectionBase {
   }
 
   async _closeWebSocketConnection(): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       if (!this._ws) return resolve();
       if (this._ws && this._ws.readyState === 3) return resolve();
       this._ws.onclose = () => {};

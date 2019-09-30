@@ -1,4 +1,4 @@
-/* @OpenAyame/ayame-web-sdk@19.08.0 */
+/* @OpenAyame/ayame-web-sdk@19.09.0 */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -130,6 +130,19 @@
    * @ignore
    */
   class ConnectionBase {
+      /**
+       * オブジェクトを生成し、リモートのピアまたはサーバーに接続します。
+       * @param signalingUrl シグナリングに利用する URL
+       * @param roomId Ayame のルームID
+       * @param options Ayame の接続オプション
+       * @param [debug=false] デバッグログの出力可否
+       * @param [isRelay=false] iceTransportPolicy を強制的に relay にするか
+       * @listens {open} Ayame Server に accept され、PeerConnection が生成されると送信されます。
+       * @listens {connect} PeerConnection が接続されると送信されます。
+       * @listens {disconnect} PeerConnection が切断されると送信されます。
+       * @listens {addstream} リモートのストリームが追加されると送信されます。
+       * @listens {removestream} リモートのストリームが削除されると送信されます。
+       */
       constructor(signalingUrl, roomId, options, debug = false, isRelay = false) {
           this.debug = debug;
           this.roomId = roomId;
@@ -615,12 +628,12 @@
    */
   class Connection extends ConnectionBase {
       /**
-       * オブジェクトを生成し、リモートのピアまたはサーバーに接続します。
-       * @param signalingUrl シグナリングに利用する URL
-       * @param roomId Ayame のルームID
-       * @param options Ayame の接続オプション
-       * @param debug デバッグログの出力可否
-       * @param isRelay iceTransportPolicy を強制的に relay にするか
+       * @desc オブジェクトを生成し、リモートのピアまたはサーバーに接続します。
+       * @param {string} signalingUrl シグナリングに利用する URL
+       * @param {string} roomId Ayame のルームID
+       * @param {ConnectionOptions} options Ayame の接続オプション
+       * @param {boolean} [debug=false] デバッグログの出力可否
+       * @param {boolean} [isRelay=false] iceTransportPolicy を強制的に relay にするか
        * @listens {open} Ayame Server に accept され、PeerConnection が生成されると送信されます。
        * @listens {connect} PeerConnection が接続されると送信されます。
        * @listens {disconnect} PeerConnection が切断されると送信されます。
@@ -631,32 +644,39 @@
           super(signalingUrl, roomId, options, debug, isRelay);
       }
       /**
-       * PeerConnection  接続を開始します。
-       * @param stream ローカルのストリーム
-       * @param metadataOption 送信するメタデータとシグナリングキー
+       * @typedef {Object} MetadataOption - 接続時に指定できるメタデータです。
+       * @property {string|null} authnMetadata 送信するメタデータ
+       * @property {string|null} key シグナリングキー
+       */
+      /**
+       * @desc PeerConnection  接続を開始します。
+       * @param {MediaStream|null} [stream=null] - ローカルのストリーム
+       * @param {MetadataOption|null} [metadataOption=null] - 送信するメタデータとシグナリングキー
        */
       async connect(stream, metadataOption = null) {
           if (this._ws || this._pc) {
               this._traceLog('connection already exists');
               throw new Error('Connection Already Exists!');
           }
+          /** @type {MediaStream|null} */
           this.stream = stream;
           if (metadataOption) {
+              /** @type {Record<string, any>|null} */
               this.authnMetadata = metadataOption.authnMetadata;
           }
           await this._signaling();
       }
       /**
-       * Datachannel を追加します。
-       * @param channelId dataChannel の Id
-       * @param options dataChannel の init オプション
+       * @desc Datachannel を追加します。
+       * @param {string} channelId - dataChannel の Id
+       * @param {RTCDataChannelInit|undefined} [options=undefined] - dataChannel の init オプション
        */
       async addDataChannel(channelId, options = undefined) {
           await this._addDataChannel(channelId, options);
       }
       /**
-       * Datachannel を削除します。
-       * @param channelId 削除する dataChannel の Id
+       * @desc Datachannel を削除します。
+       * @param {string} channelId - 削除する dataChannel の Id
        */
       async removeDataChannel(channelId) {
           this._traceLog('datachannel remove=>', channelId);
@@ -669,9 +689,9 @@
           }
       }
       /**
-       * Datachannel でデータを送信します。
-       * @param params 送信するデータ
-       * @param channelId 指定する dataChannel の id
+       * @desc Datachannel でデータを送信します。
+       * @param {any} params - 送信するデータ
+       * @param {string} [channelId='dataChannel'] - 指定する dataChannel の id
        */
       sendData(params, channelId = 'dataChannel') {
           this._traceLog('datachannel sendData=>', params);
@@ -684,13 +704,61 @@
           }
       }
       /**
-       * PeerConnection  接続を切断します。
+       * @desc PeerConnection  接続を切断します。
        */
       async disconnect() {
           await this._disconnect();
       }
   }
 
+  /**
+   * オーディオ、ビデオの送受信方向に関するオプションです。
+   * - sendrecv
+   * - recvonly
+   * - sendonly
+   *
+   * @typedef {string} ConnectionDirection
+   */
+  /**
+   * @typedef {Object} ConnectionAudioOption - オーディオ接続に関するオプションです。
+   * @property {ConnectionDirection} direction 送受信方向
+   * @property {boolean} enabled 有効かどうかのフラグ
+   */
+  /**
+   * ビデオ接続のコーデックに関するオプションです。
+   * - VP8
+   * - VP9
+   * - H264
+   *
+   * @typedef {string} VideoCodecOption
+   */
+  /**
+   * @typedef {Object} ConnectionVideoOption - ビデオ接続に関するオプションです。
+   * @property {VideoCodecOption} codec コーデックの設定
+   * @property {ConnectionDirection} direction 送受信方向
+   * @property {boolean} enabled 有効かどうかのフラグ
+   */
+  /**
+   * @typedef {Object} ConnectionOptions - 接続時に指定するオプションです。
+   * @property {ConnectionAudioOption} audio オーディオの設定
+   * @property {ConnectionVideoOption} video ビデオの設定
+   * @property {string} clientId クライアントID
+   * @property {Array.<RTCIceServer>} iceServers ayame server から iceServers が返って来なかった場合に使われる iceServer の情報
+   * @property {string} signalingKey 送信するシグナリングキー
+   */
+  /**
+   * Ayame Connection のデフォルトのオプションです。
+   *
+   * audio: { direction: 'sendrecv', enabled: true}
+   *
+   * video: { direction: 'sendrecv', enabled: true}
+   *
+   * iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+   *
+   * clientId: randomString(17)
+   *
+   * @type {ConnectionOptions} ConnectionOptions
+   */
   const defaultOptions = {
       audio: { direction: 'sendrecv', enabled: true },
       video: { direction: 'sendrecv', enabled: true },
@@ -698,21 +766,20 @@
       clientId: randomString(17)
   };
   /**
-   * Ayame Connection を生成します。
-   *
-   * @param signalingUrl シグナリングに用いる websocket url
-   * @param roomId 接続する roomId
-   * @param options 接続時のオプション
-   * @param debug デバッグログを出力するかどうかのフラグ
-   * @param isRelay iceTranspolicy を強制的に relay するかどうかのフラグ(デバッグ用)
-   * @return Connection
+   * @desc Ayame Connection を生成します。
+   * @param {string} signalingUrl シグナリングに用いる websocket url
+   * @param {string} roomId 接続する roomId
+   * @param {ConnectionOptions} [options=defaultOptions] 接続時のオプション
+   * @param {boolean} [debug=false] デバッグログを出力するかどうかのフラグ
+   * @param {boolean} [isRelay=false] iceTranspolicy を強制的に relay するかどうかのフラグ(デバッグ用)
+   * @return {Connection} 生成された Ayame Connection
    */
   function connection(signalingUrl, roomId, options = defaultOptions, debug = false, isRelay = false) {
       return new Connection(signalingUrl, roomId, options, debug, isRelay);
   }
   /**
-   * Ayame Web SDK のバージョンを出力します。
-   * @return string
+   * @desc Ayame Web SDK のバージョンを出力します。
+   * @return {string} Ayame Web SDK のバージョン
    */
   function version() {
       return process.version;

@@ -1,17 +1,18 @@
 import ConnectionBase from './base';
 import { ConnectionOptions, MetadataOption } from './options';
 
+
 /**
  * Peer Connection 接続を管理するクラスです。
  */
 class Connection extends ConnectionBase {
   /**
-   * オブジェクトを生成し、リモートのピアまたはサーバーに接続します。
-   * @param signalingUrl シグナリングに利用する URL
-   * @param roomId Ayame のルームID
-   * @param options Ayame の接続オプション
-   * @param debug デバッグログの出力可否
-   * @param isRelay iceTransportPolicy を強制的に relay にするか
+   * @desc オブジェクトを生成し、リモートのピアまたはサーバーに接続します。
+   * @param {string} signalingUrl シグナリングに利用する URL
+   * @param {string} roomId Ayame のルームID
+   * @param {ConnectionOptions} options Ayame の接続オプション
+   * @param {boolean} [debug=false] デバッグログの出力可否
+   * @param {boolean} [isRelay=false] iceTransportPolicy を強制的に relay にするか
    * @listens {open} Ayame Server に accept され、PeerConnection が生成されると送信されます。
    * @listens {connect} PeerConnection が接続されると送信されます。
    * @listens {disconnect} PeerConnection が切断されると送信されます。
@@ -22,35 +23,44 @@ class Connection extends ConnectionBase {
     super(signalingUrl, roomId, options, debug, isRelay);
   }
 
+
   /**
-   * PeerConnection  接続を開始します。
-   * @param stream ローカルのストリーム
-   * @param metadataOption 送信するメタデータとシグナリングキー
+   * @typedef {Object} MetadataOption - 接続時に指定できるメタデータです。
+   * @property {string|null} authnMetadata 送信するメタデータ
+   * @property {string|null} key シグナリングキー
+   */
+
+  /**
+   * @desc PeerConnection  接続を開始します。
+   * @param {MediaStream|null} [stream=null] - ローカルのストリーム
+   * @param {MetadataOption|null} [metadataOption=null] - 送信するメタデータとシグナリングキー
    */
   public async connect(stream: MediaStream | null, metadataOption: MetadataOption | null = null): Promise<void> {
     if (this._ws || this._pc) {
       this._traceLog('connection already exists');
       throw new Error('Connection Already Exists!');
     }
+    /** @type {MediaStream|null} */
     this.stream = stream;
     if (metadataOption) {
+      /** @type {Record<string, any>|null} */
       this.authnMetadata = metadataOption.authnMetadata;
     }
     await this._signaling();
   }
 
   /**
-   * Datachannel を追加します。
-   * @param channelId dataChannel の Id
-   * @param options dataChannel の init オプション
+   * @desc Datachannel を追加します。
+   * @param {string} channelId - dataChannel の Id
+   * @param {RTCDataChannelInit|undefined} [options=undefined] - dataChannel の init オプション
    */
   public async addDataChannel(channelId: string, options: RTCDataChannelInit | undefined = undefined): Promise<void> {
     await this._addDataChannel(channelId, options);
   }
 
   /**
-   * Datachannel を削除します。
-   * @param channelId 削除する dataChannel の Id
+   * @desc Datachannel を削除します。
+   * @param {string} channelId - 削除する dataChannel の Id
    */
   public async removeDataChannel(channelId: string): Promise<void> {
     this._traceLog('datachannel remove=>', channelId);
@@ -63,9 +73,9 @@ class Connection extends ConnectionBase {
   }
 
   /**
-   * Datachannel でデータを送信します。
-   * @param params 送信するデータ
-   * @param channelId 指定する dataChannel の id
+   * @desc Datachannel でデータを送信します。
+   * @param {any} params - 送信するデータ
+   * @param {string} [channelId='dataChannel'] - 指定する dataChannel の id
    */
   public sendData(params: any, channelId = 'dataChannel'): void {
     this._traceLog('datachannel sendData=>', params);
@@ -78,7 +88,7 @@ class Connection extends ConnectionBase {
   }
 
   /**
-   * PeerConnection  接続を切断します。
+   * @desc PeerConnection  接続を切断します。
    */
   public async disconnect(): Promise<void> {
     await this._disconnect();
