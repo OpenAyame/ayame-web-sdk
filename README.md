@@ -8,10 +8,11 @@ Web SDK for WebRTC Signaling Server Ayame
 
 ## 動作確認環境
 
-- Chrome  76.0.3809.132
-- Chrome Canary 78.0.3869.0
-- Safari 12.1.2 (14607.3.9)
-- Firefox 68.0.2
+- Chrome 77.0.3865.90
+- Chrome Canary 79.0.3933.0
+- Safari 13.0.1 (14608.2.11.1.11)
+- Firefox 69.0.2
+- Microsoft Edge Beta 78.2.0.276.11
 
 ## サンプル
 
