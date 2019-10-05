@@ -38,14 +38,12 @@ https://openayame.github.io/ayame-web-sdk/index.html
 
 ```
 https://unpkg.com/@open-ayame/ayame-web-sdk@19.9.0/dist/ayame.min.js
-
 ```
 
 ### jsdelivr
 
 ```
 https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@19.9.0/dist/ayame.min.js
-
 ```
 
 ### 双方向送受信接続する
