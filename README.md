@@ -151,3 +151,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ```
+
+## 開発について
+
+Ayame Web SDK はオープンソースソフトウェアですが、開発についてはオープンではありません。
+そのためコメントやプルリクエストを頂いてもすぐには採用はしません。
+
+まずは Discord にてご連絡ください。
+
+## Discord
+
+ベストエフォートで運用しています。
+
+https://discord.gg/mDesh2E
+
