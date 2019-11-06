@@ -157,6 +157,7 @@
           this.authzMetadata = null;
           this._dataChannels = [];
           this._isOffer = false;
+          this._isExistUser = false;
           this.connectionState = 'new';
           this._pcConfig = {
               iceServers: this.options.iceServers,
@@ -190,6 +191,7 @@
           this._pc = null;
           this._removeCodec = false;
           this._isOffer = false;
+          this._isExistUser = false;
           this._dataChannels = [];
           this.connectionState = 'new';
       }
@@ -241,9 +243,12 @@
                                       this._traceLog('iceServers=>', message.iceServers);
                                       this._pcConfig.iceServers = message.iceServers;
                                   }
-                                  if (!this._pc)
-                                      this._createPeerConnection();
-                                  await this._sendOffer();
+                                  this._traceLog('isExistUser=>', message.isExistUser);
+                                  this._isExistUser = message.isExistUser;
+                                  this._createPeerConnection();
+                                  if (this._isExistUser === true) {
+                                      await this._sendOffer();
+                                  }
                                   return resolve();
                               }
                               else if (message.type === 'reject') {
@@ -499,7 +504,6 @@
           this._traceLog('set answer sdp=', sessionDescription.sdp);
       }
       async _setOffer(sessionDescription) {
-          this._createPeerConnection();
           try {
               if (!this._pc) {
                   return;

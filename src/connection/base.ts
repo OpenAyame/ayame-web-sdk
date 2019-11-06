@@ -31,6 +31,7 @@ class ConnectionBase {
   _callbacks: any;
   _removeCodec: boolean;
   _isOffer: boolean;
+  _isExistUser: boolean;
   _dataChannels: Array<RTCDataChannel>;
   _pcConfig: {
     iceServers: Array<RTCIceServer>;
@@ -73,6 +74,7 @@ class ConnectionBase {
     this.authzMetadata = null;
     this._dataChannels = [];
     this._isOffer = false;
+    this._isExistUser = false;
     this.connectionState = 'new';
     this._pcConfig = {
       iceServers: this.options.iceServers,
@@ -99,6 +101,7 @@ class ConnectionBase {
     this._pc = null;
     this._removeCodec = false;
     this._isOffer = false;
+    this._isExistUser = false;
     this._dataChannels = [];
     this.connectionState = 'new';
   }
@@ -149,8 +152,12 @@ class ConnectionBase {
                   this._traceLog('iceServers=>', message.iceServers);
                   this._pcConfig.iceServers = message.iceServers;
                 }
-                if (!this._pc) this._createPeerConnection();
-                await this._sendOffer();
+                this._traceLog('isExistUser=>', message.isExistUser);
+                this._isExistUser = message.isExistUser;
+                this._createPeerConnection();
+                if (this._isExistUser === true) {
+                  await this._sendOffer();
+                }
                 return resolve();
               } else if (message.type === 'reject') {
                 await this._disconnect();
@@ -393,7 +400,6 @@ class ConnectionBase {
   }
 
   async _setOffer(sessionDescription: RTCSessionDescription): Promise<void> {
-    this._createPeerConnection();
     try {
       if (!this._pc) {
         return;
