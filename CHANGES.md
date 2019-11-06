@@ -10,6 +10,7 @@
     - バグ修正
 
 ## develop
+- [CHANGE] isExistUser が true の場合のみ offer メッセージを送るようにする & peerconnection の生成を一回にする
 
 
 ## 19.09.0
