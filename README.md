@@ -49,6 +49,8 @@ https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@19.9.0/dist/ayame.min.js
 
 ### 双方向送受信接続する
 
+- [オンラインサンプル](https://openayame.github.io/ayame-web-sdk-samples/sendrecv.html)
+
 ```javascript
 const conn = Ayame.connection('wss://example.com/ws', 'test-room');
 const startConn = async () => {
@@ -65,6 +67,8 @@ startConn();
 
 
 ### 送信のみ(sendonly) で接続する
+
+- [オンラインサンプル](https://openayame.github.io/ayame-web-sdk-samples/sendonly.html)
 
 ```javascript
 const conn = Ayame.connection('wss://example.com/ws', 'test-room');
@@ -85,6 +89,8 @@ startConn();
 
 ### 受信のみ(recvonly) で接続する
 
+- [オンラインサンプル](https://openayame.github.io/ayame-web-sdk-samples/recvonly.html)
+
 ```javascript
 const conn = Ayame.connection('wss://example.com/ws', 'test-room');
 conn.options.video.direction = 'recvonly';
@@ -100,6 +106,9 @@ startConn();
 ```
 
 ### コーデックを H.264 指定で接続する
+
+
+- [オンラインサンプル](https://openayame.github.io/ayame-web-sdk-samples/codec.html)
 
 ```javascript
 const conn = Ayame.connection('wss://example.com/ws', 'test-room');
@@ -117,6 +126,9 @@ startConn();
 ```
 
 ### datachannel でデータを送受信する
+
+
+- [オンラインサンプル](https://openayame.github.io/ayame-web-sdk-samples/datachannel.html)
 
 ```javascript
 
