@@ -33,7 +33,9 @@
         const remoteVideo = document.querySelector('#remote-video');
         let conn = null;
         const options = Ayame.defaultOptions;
-        options.signalingKey = signalingKey ? signalingKey : options.signalingKey;
+        if (signalingKey) {
+          options.signalingKey = signalingKey;
+        }
         options.clientId = clientId ? clientId : options.clientId;
         const startConn = async () => {
           options.video.codec = videoCodec;
