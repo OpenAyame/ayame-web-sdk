@@ -1,7 +1,7 @@
 <html lang="ja">
     <head>
         <meta charset="utf-8">
-        <title>Ayame Send/Recv Test</title>
+        <title>Ayame Query String Test</title>
     </head>
     <body>
       <div>
@@ -33,6 +33,10 @@
         const remoteVideo = document.querySelector('#remote-video');
         let conn = null;
         const options = Ayame.defaultOptions;
+        if (signalingKey) {
+          options.signalingKey = signalingKey;
+        }
+        options.clientId = clientId ? clientId : options.clientId;
         const startConn = async () => {
           options.video.codec = videoCodec;
           conn = Ayame.connection(signalingUrl, roomId, options, true);
