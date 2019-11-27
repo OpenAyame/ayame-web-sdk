@@ -36,7 +36,7 @@
         if (signalingKey) {
           options.signalingKey = signalingKey;
         }
-        options.clientId = clientId ? clientId : options.clientId;
+        options.clientId = clientId ? clientId : "";
         const startConn = async () => {
           options.video.codec = videoCodec;
           conn = Ayame.connection(signalingUrl, roomId, options, true);
