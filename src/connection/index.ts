@@ -24,7 +24,7 @@ class Connection extends ConnectionBase {
 
   /**
    * @typedef {Object} MetadataOption - 接続時に指定できるメタデータです。
-   * @property {string|null} authnMetadata 送信するメタデータ
+   * @property {any} authnMetadata 送信するメタデータ
    */
 
   /**
@@ -40,7 +40,7 @@ class Connection extends ConnectionBase {
     /** @type {MediaStream|null} */
     this.stream = stream;
     if (metadataOption) {
-      /** @type {Record<string, any>|null} */
+      /** @type {any} */
       this.authnMetadata = metadataOption.authnMetadata;
     }
     await this._signaling();

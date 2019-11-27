@@ -10,7 +10,7 @@ interface AyameRegisterMessage {
   roomId: string;
   clientId: string;
   key?: string;
-  authnMetadata?: Record<string, any>;
+  authnMetadata?: any;
 }
 
 /**
@@ -24,8 +24,8 @@ class ConnectionBase {
   connectionState: string;
   stream: MediaStream | null;
   remoteStream: MediaStream | null;
-  authnMetadata: Record<string, any> | null;
-  authzMetadata: Record<string, any> | null;
+  authnMetadata: any;
+  authzMetadata: any;
   _ws: WebSocket | null;
   _pc: RTCPeerConnection | null;
   _callbacks: any;
