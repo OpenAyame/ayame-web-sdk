@@ -13,6 +13,7 @@
 - [CHANGE] isExistUser が true の場合のみ offer メッセージを送るようにする & peerconnection の生成を一回にする
 - [CHANGE] 使用されていない MetadataOption の key を削除する
 - [UPDATE] authnMetadata, authzMetadata を any にする
+- [CHANGE] video コーデックを指定しなかった場合のコーデックを VP9 からブラウザデフォルトに変更する
 
 
 ## 19.09.0
