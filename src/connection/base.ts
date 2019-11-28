@@ -201,7 +201,10 @@ class ConnectionBase {
         if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
           const videoCapabilities = RTCRtpSender.getCapabilities('video');
           if (videoCapabilities) {
-            const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+            let videoCodecs = [];
+            if (this.options.video.codec) {
+              videoCodecs = getVideoCodecsFromString(this.options.video.codec, videoCapabilities.codecs);
+            }
             this._traceLog('video codecs=', videoCodecs);
             videoTransceiver.setCodecPreferences(videoCodecs);
           }
@@ -215,7 +218,10 @@ class ConnectionBase {
         if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
           const videoCapabilities = RTCRtpSender.getCapabilities('video');
           if (videoCapabilities) {
-            const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+            let videoCodecs = [];
+            if (this.options.video.codec) {
+              videoCodecs = getVideoCodecsFromString(this.options.video.codec, videoCapabilities.codecs);
+            }
             this._traceLog('video codecs=', videoCodecs);
             videoTransceiver.setCodecPreferences(videoCodecs);
           }
