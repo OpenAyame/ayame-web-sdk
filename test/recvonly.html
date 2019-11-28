@@ -27,7 +27,6 @@
         const options = Ayame.defaultOptions;
         options.clientId = clientId ? clientId : options.clientId;
         options.video.direction = 'recvonly';
-        options.video.codec = 'H264';
         options.audio.direction = 'recvonly';
         const conn = Ayame.connection(signalingUrl, roomId, options, true);
         const startConn = async () => {
