@@ -11,6 +11,8 @@
 
 ## develop
 - [CHANGE] isExistUser が true の場合のみ offer メッセージを送るようにする & peerconnection の生成を一回にする
+- [UPDATE] 不要な依存パッケージを削除
+   - `@babel/core`
 
 
 ## 19.09.0
