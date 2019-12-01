@@ -13,7 +13,16 @@
 - [CHANGE] isExistUser が true の場合のみ offer メッセージを送るようにする & peerconnection の生成を一回にする
 - [UPDATE] 不要な依存パッケージを削除
    - `@babel/core`
-
+- [UPDATE] 依存パッケージのバージョンを更新する
+  - @types/node                       ^12.7.8  →  ^12.12.14
+  - @typescript-eslint/eslint-plugin   ^2.3.1  →     ^2.9.0
+  - @typescript-eslint/parser          ^2.3.1  →     ^2.9.0
+  - eslint                             ^6.5.0  →     ^6.7.2
+  - eslint-config-prettier             ^6.3.0  →     ^6.7.0
+  - prettier                          ^1.18.2  →    ^1.19.1
+  - rollup                            ^1.22.0  →    ^1.27.6
+  - rollup-plugin-typescript2         ^0.24.3  →    ^0.25.2
+  - typescript                         ^3.6.3  →     ^3.7.2
 
 ## 19.09.0
 - [CHANGE] flow -> typescript に変更する
