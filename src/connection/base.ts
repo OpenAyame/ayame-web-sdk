@@ -171,7 +171,7 @@ class ConnectionBase {
                 this._callbacks.disconnect({ reason: message.reason || 'REJECTED' });
                 return reject('REJECTED');
               } else if (message.type === 'offer') {
-                if (this._pc && (this._pc.signalingState === 'have-local-offer')) {
+                if (this._pc && this._pc.signalingState === 'have-local-offer') {
                   this._createPeerConnection();
                 }
                 this._setOffer(new RTCSessionDescription(message));
