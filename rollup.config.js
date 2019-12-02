@@ -1,5 +1,4 @@
 import typescript from 'rollup-plugin-typescript2';
-import babel from 'rollup-plugin-babel';
 import resolve from 'rollup-plugin-node-resolve';
 import { terser } from 'rollup-plugin-terser';
 const pkg = require('./package.json');
@@ -7,10 +6,7 @@ let version = pkg.version;
 const banner = `/* @OpenAyame/ayame-web-sdk@${version} */`;
 const plugins = [
  	typescript(),
-  resolve({ browser: true }),
-  babel({
-    exclude: 'node_modules/**'
-  })
+  resolve({ browser: true })
 ];
 module.exports = [
   {
