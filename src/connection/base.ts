@@ -152,11 +152,18 @@ class ConnectionBase {
                   this._traceLog('iceServers=>', message.iceServers);
                   this._pcConfig.iceServers = message.iceServers;
                 }
-                this._traceLog('isExistUser=>', message.isExistUser);
-                this._isExistUser = message.isExistUser;
-                this._createPeerConnection();
-                if (this._isExistUser === true) {
+                if (message.isExistUser === undefined) {
+                  if (!this._pc) {
+                    this._createPeerConnection();
+                  }
                   await this._sendOffer();
+                } else {
+                  this._traceLog('isExistUser=>', message.isExistUser);
+                  this._isExistUser = message.isExistUser;
+                  this._createPeerConnection();
+                  if (this._isExistUser === true) {
+                    await this._sendOffer();
+                  }
                 }
                 return resolve();
               } else if (message.type === 'reject') {
@@ -164,6 +171,9 @@ class ConnectionBase {
                 this._callbacks.disconnect({ reason: message.reason || 'REJECTED' });
                 return reject('REJECTED');
               } else if (message.type === 'offer') {
+                if (this._pc && (this._pc.signalingState === 'have-local-offer')) {
+                  this._createPeerConnection();
+                }
                 this._setOffer(new RTCSessionDescription(message));
               } else if (message.type === 'answer') {
                 await this._setAnswer(new RTCSessionDescription(message));
