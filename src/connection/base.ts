@@ -10,7 +10,7 @@ interface AyameRegisterMessage {
   roomId: string;
   clientId: string;
   key?: string;
-  authnMetadata?: Record<string, any>;
+  authnMetadata?: any;
 }
 
 /**
@@ -24,8 +24,8 @@ class ConnectionBase {
   connectionState: string;
   stream: MediaStream | null;
   remoteStream: MediaStream | null;
-  authnMetadata: Record<string, any> | null;
-  authzMetadata: Record<string, any> | null;
+  authnMetadata: any;
+  authzMetadata: any;
   _ws: WebSocket | null;
   _pc: RTCPeerConnection | null;
   _callbacks: any;
@@ -152,11 +152,18 @@ class ConnectionBase {
                   this._traceLog('iceServers=>', message.iceServers);
                   this._pcConfig.iceServers = message.iceServers;
                 }
-                this._traceLog('isExistUser=>', message.isExistUser);
-                this._isExistUser = message.isExistUser;
-                this._createPeerConnection();
-                if (this._isExistUser === true) {
+                if (message.isExistUser === undefined) {
+                  if (!this._pc) {
+                    this._createPeerConnection();
+                  }
                   await this._sendOffer();
+                } else {
+                  this._traceLog('isExistUser=>', message.isExistUser);
+                  this._isExistUser = message.isExistUser;
+                  this._createPeerConnection();
+                  if (this._isExistUser === true) {
+                    await this._sendOffer();
+                  }
                 }
                 return resolve();
               } else if (message.type === 'reject') {
@@ -164,6 +171,9 @@ class ConnectionBase {
                 this._callbacks.disconnect({ reason: message.reason || 'REJECTED' });
                 return reject('REJECTED');
               } else if (message.type === 'offer') {
+                if (this._pc && this._pc.signalingState === 'have-local-offer') {
+                  this._createPeerConnection();
+                }
                 this._setOffer(new RTCSessionDescription(message));
               } else if (message.type === 'answer') {
                 await this._setAnswer(new RTCSessionDescription(message));
@@ -201,7 +211,10 @@ class ConnectionBase {
         if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
           const videoCapabilities = RTCRtpSender.getCapabilities('video');
           if (videoCapabilities) {
-            const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+            let videoCodecs = [];
+            if (this.options.video.codec) {
+              videoCodecs = getVideoCodecsFromString(this.options.video.codec, videoCapabilities.codecs);
+            }
             this._traceLog('video codecs=', videoCodecs);
             videoTransceiver.setCodecPreferences(videoCodecs);
           }
@@ -215,7 +228,10 @@ class ConnectionBase {
         if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
           const videoCapabilities = RTCRtpSender.getCapabilities('video');
           if (videoCapabilities) {
-            const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+            let videoCodecs = [];
+            if (this.options.video.codec) {
+              videoCodecs = getVideoCodecsFromString(this.options.video.codec, videoCapabilities.codecs);
+            }
             this._traceLog('video codecs=', videoCodecs);
             videoTransceiver.setCodecPreferences(videoCodecs);
           }

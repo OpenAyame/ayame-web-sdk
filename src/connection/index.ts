@@ -24,14 +24,13 @@ class Connection extends ConnectionBase {
 
   /**
    * @typedef {Object} MetadataOption - 接続時に指定できるメタデータです。
-   * @property {string|null} authnMetadata 送信するメタデータ
-   * @property {string|null} key シグナリングキー
+   * @property {any} authnMetadata 送信するメタデータ
    */
 
   /**
    * @desc PeerConnection  接続を開始します。
    * @param {MediaStream|null} [stream=null] - ローカルのストリーム
-   * @param {MetadataOption|null} [metadataOption=null] - 送信するメタデータとシグナリングキー
+   * @param {MetadataOption|null} [metadataOption=null] - 送信するメタデータ
    */
   public async connect(stream: MediaStream | null, metadataOption: MetadataOption | null = null): Promise<void> {
     if (this._ws || this._pc) {
@@ -41,7 +40,7 @@ class Connection extends ConnectionBase {
     /** @type {MediaStream|null} */
     this.stream = stream;
     if (metadataOption) {
-      /** @type {Record<string, any>|null} */
+      /** @type {any} */
       this.authnMetadata = metadataOption.authnMetadata;
     }
     await this._signaling();

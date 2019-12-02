@@ -57,10 +57,8 @@ export interface ConnectionOptions {
 
 /**
  * @typedef {Object} MetadataOption - 接続時に指定できるメタデータです。
- * @property {string|null} authnMetadata 送信するメタデータ
- * @property {string|null} key シグナリングキー
+ * @property {any} authnMetadata 送信するメタデータ
  */
 export interface MetadataOption {
   authnMetadata?: any;
-  key?: string;
 }
