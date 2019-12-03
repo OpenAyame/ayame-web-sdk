@@ -31,5 +31,5 @@ test/ 以下の HTML ファイルごとに動作を確認します。
   - DataChannel による接続と送受信
     - 2 つの datachannel.html 間でメッセージの送受信ができること
 - multi_datachannel.html
-  - DataChannel による接続と、複数 channelId による送受信
+  - DataChannel による接続と、複数 label による送受信
     - 2 つの multi_datachannel.html 間でメッセージ A,  メッセージ B のそれぞれのメッセージが送受信できること

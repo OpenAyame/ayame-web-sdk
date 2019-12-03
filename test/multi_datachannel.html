@@ -48,7 +48,7 @@
             conn.addDataChannel(anotherChannel);
           });
           conn.on('data', (e) => {
-            if (e.channelId == anotherChannel) {
+            if (e.label == anotherChannel) {
               messagesB = messagesB ? (messagesB + '\n' + e.data) : e.data;
               document.querySelector("#messagesB").value = messagesB;
             } else {
