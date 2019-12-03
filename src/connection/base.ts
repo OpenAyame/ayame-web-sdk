@@ -285,7 +285,6 @@ class ConnectionBase {
     pc.ondatachannel = this._onDataChannel.bind(this);
     if (!this._pc) {
       this._pc = pc;
-      this._addDataChannel('dataChannel', undefined);
       this._callbacks.open({ authzMetadata: this.authzMetadata });
     } else {
       this._pc = pc;

@@ -28,9 +28,13 @@
         let conn = null;
         const options = Ayame.defaultOptions;
         options.clientId = clientId ? clientId : options.clientId;
+        const channel = 'dataChannel';
         const startConn = async () => {
           options.video.codec = videoCodec;
           conn = Ayame.connection(signalingUrl, roomId, options, true);
+          conn.on('open', (e) => {
+            conn.addDataChannel(channel);
+          });
           conn.on('data', (e) => {
             messages = messages ? (messages + '\n' + e.data) : e.data;
             document.querySelector("#messages").value = messages;
