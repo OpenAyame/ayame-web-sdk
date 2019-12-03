@@ -292,26 +292,26 @@ class ConnectionBase {
     }
   }
 
-  async _addDataChannel(channelId: string, options: RTCDataChannelInit | undefined): Promise<void> {
+  async _addDataChannel(label: string, options: RTCDataChannelInit | undefined): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       if (!this._pc) return reject('PeerConnection Does Not Ready');
       if (this._isOffer) return reject('PeerConnection Has Local Offer');
-      let dataChannel = this._findDataChannel(channelId);
+      let dataChannel = this._findDataChannel(label);
       if (dataChannel) {
         return reject('DataChannel Already Exists!');
       }
-      dataChannel = this._pc.createDataChannel(channelId, options);
+      dataChannel = this._pc.createDataChannel(label, options);
       dataChannel.onclose = (event: Record<string, any>) => {
         this._traceLog('datachannel onclosed=>', event);
-        this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != channelId);
+        this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != label);
       };
       dataChannel.onerror = (event: Record<string, any>) => {
         this._traceLog('datachannel onerror=>', event);
-        this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != channelId);
+        this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != label);
       };
       dataChannel.onmessage = (event: any) => {
         this._traceLog('datachannel onmessage=>', event.data);
-        event.channelId = channelId;
+        event.label = label;
         this._callbacks.data(event);
       };
       dataChannel.onopen = (event: Record<string, any>) => {
@@ -326,9 +326,9 @@ class ConnectionBase {
     this._traceLog('on data channel', event);
     if (!this._pc) return;
     const dataChannel = event.channel;
-    const channelId = event.channel.label;
+    const label = event.channel.label;
     if (!event.channel) return;
-    if (!channelId || channelId.length < 1) return;
+    if (!label || label.length < 1) return;
     dataChannel.onopen = async (event: Record<string, any>) => {
       this._traceLog('datachannel onopen=>', event);
     };
@@ -340,14 +340,14 @@ class ConnectionBase {
     };
     dataChannel.onmessage = (event: any) => {
       this._traceLog('datachannel onmessage=>', event.data);
-      event.channelId = channelId;
+      event.label = label;
       this._callbacks.data(event);
     };
-    if (!this._findDataChannel(channelId)) {
+    if (!this._findDataChannel(label)) {
       this._dataChannels.push(event.channel);
     } else {
       this._dataChannels = this._dataChannels.map(channel => {
-        if (channel.label == channelId) {
+        if (channel.label == label) {
           return dataChannel;
         } else {
           return channel;
@@ -465,8 +465,8 @@ class ConnectionBase {
     return transceiver;
   }
 
-  _findDataChannel(channelId: string): RTCDataChannel | undefined {
-    return this._dataChannels.find(channel => channel.label == channelId);
+  _findDataChannel(label: string): RTCDataChannel | undefined {
+    return this._dataChannels.find(channel => channel.label == label);
   }
 
   async _closeDataChannel(dataChannel: RTCDataChannel): Promise<void> {

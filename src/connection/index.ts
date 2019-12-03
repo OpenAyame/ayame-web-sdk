@@ -48,20 +48,20 @@ class Connection extends ConnectionBase {
 
   /**
    * @desc Datachannel を追加します。
-   * @param {string} channelId - dataChannel の Id
+   * @param {string} label - dataChannel の label
    * @param {RTCDataChannelInit|undefined} [options=undefined] - dataChannel の init オプション
    */
-  public async addDataChannel(channelId: string, options: RTCDataChannelInit | undefined = undefined): Promise<void> {
-    await this._addDataChannel(channelId, options);
+  public async addDataChannel(label: string, options: RTCDataChannelInit | undefined = undefined): Promise<void> {
+    await this._addDataChannel(label, options);
   }
 
   /**
    * @desc Datachannel を削除します。
-   * @param {string} channelId - 削除する dataChannel の Id
+   * @param {string} label - 削除する dataChannel の label
    */
-  public async removeDataChannel(channelId: string): Promise<void> {
-    this._traceLog('datachannel remove=>', channelId);
-    const dataChannel = this._findDataChannel(channelId);
+  public async removeDataChannel(label: string): Promise<void> {
+    this._traceLog('datachannel remove=>', label);
+    const dataChannel = this._findDataChannel(label);
     if (dataChannel && dataChannel.readyState === 'open') {
       await this._closeDataChannel(dataChannel);
     } else {
@@ -72,11 +72,11 @@ class Connection extends ConnectionBase {
   /**
    * @desc Datachannel でデータを送信します。
    * @param {any} params - 送信するデータ
-   * @param {string} [channelId='dataChannel'] - 指定する dataChannel の id
+   * @param {string} [label='dataChannel'] - 指定する dataChannel の label
    */
-  public sendData(params: any, channelId = 'dataChannel'): void {
+  public sendData(params: any, label = 'dataChannel'): void {
     this._traceLog('datachannel sendData=>', params);
-    const dataChannel = this._findDataChannel(channelId);
+    const dataChannel = this._findDataChannel(label);
     if (dataChannel && dataChannel.readyState === 'open') {
       dataChannel.send(params);
     } else {
