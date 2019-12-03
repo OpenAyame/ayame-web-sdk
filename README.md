@@ -134,6 +134,9 @@ startConn();
 
 const startConn = async () => {
   const conn = Ayame.connection('wss://example.com/ws', 'test-room');
+  conn.on('open', (e) => {
+      conn.addDataChannel('dataChannel');
+  });
   conn.on('data', (e) => {
       console.log('data received: ',e.data);
       });
