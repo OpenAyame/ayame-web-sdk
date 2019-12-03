@@ -27,6 +27,7 @@
   - rollup-plugin-typescript2         ^0.24.3  →    ^0.25.2
   - typescript                         ^3.6.3  →     ^3.7.2
 - [CHANGE] datachannel の label を channelId から label に変更する
+- [CHANGE] 接続時の label 固定の datachannel の追加処理を削除する
 
 ## 19.09.0
 - [CHANGE] flow -> typescript に変更する
