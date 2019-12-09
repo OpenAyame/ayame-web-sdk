@@ -59,6 +59,7 @@ class ConnectionBase {
    * @listens {disconnect} PeerConnection が切断されると送信されます。
    * @listens {addstream} リモートのストリームが追加されると送信されます。
    * @listens {removestream} リモートのストリームが削除されると送信されます。
+   * @listens {bye} Ayame Server から bye を受信すると送信されます。
    */
   constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug = false, isRelay = false) {
     this.debug = debug;
@@ -86,6 +87,7 @@ class ConnectionBase {
       disconnect: () => {},
       addstream: () => {},
       removestream: () => {},
+      bye: () => {},
       data: () => {}
     };
   }
@@ -144,8 +146,10 @@ class ConnectionBase {
               const message = JSON.parse(event.data);
               if (message.type === 'ping') {
                 this._sendWs({ type: 'pong' });
-              } else if (message.type === 'close') {
-                this._callbacks.close(event);
+              } else if (message.type === 'bye') {
+                this._callbacks.bye(event);
+                await this._disconnect();
+                return resolve();
               } else if (message.type === 'accept') {
                 this.authzMetadata = message.authzMetadata;
                 if (Array.isArray(message.iceServers) && message.iceServers.length > 0) {
