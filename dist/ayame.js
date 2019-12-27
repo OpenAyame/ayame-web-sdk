@@ -1,9 +1,9 @@
-/* @OpenAyame/ayame-web-sdk@19.09.0 */
+/* @OpenAyame/ayame-web-sdk@19.12.0 */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
   (global = global || self, factory(global.Ayame = {}));
-}(this, (function (exports) { 'use strict';
+}(this, function (exports) { 'use strict';
 
   /**
    * @ignore
@@ -243,11 +243,19 @@
                                       this._traceLog('iceServers=>', message.iceServers);
                                       this._pcConfig.iceServers = message.iceServers;
                                   }
-                                  this._traceLog('isExistUser=>', message.isExistUser);
-                                  this._isExistUser = message.isExistUser;
-                                  this._createPeerConnection();
-                                  if (this._isExistUser === true) {
+                                  if (message.isExistUser === undefined) {
+                                      if (!this._pc) {
+                                          this._createPeerConnection();
+                                      }
                                       await this._sendOffer();
+                                  }
+                                  else {
+                                      this._traceLog('isExistUser=>', message.isExistUser);
+                                      this._isExistUser = message.isExistUser;
+                                      this._createPeerConnection();
+                                      if (this._isExistUser === true) {
+                                          await this._sendOffer();
+                                      }
                                   }
                                   return resolve();
                               }
@@ -257,6 +265,9 @@
                                   return reject('REJECTED');
                               }
                               else if (message.type === 'offer') {
+                                  if (this._pc && this._pc.signalingState === 'have-local-offer') {
+                                      this._createPeerConnection();
+                                  }
                                   this._setOffer(new RTCSessionDescription(message));
                               }
                               else if (message.type === 'answer') {
@@ -297,7 +308,10 @@
                   if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
                       const videoCapabilities = RTCRtpSender.getCapabilities('video');
                       if (videoCapabilities) {
-                          const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+                          let videoCodecs = [];
+                          if (this.options.video.codec) {
+                              videoCodecs = getVideoCodecsFromString(this.options.video.codec, videoCapabilities.codecs);
+                          }
                           this._traceLog('video codecs=', videoCodecs);
                           videoTransceiver.setCodecPreferences(videoCodecs);
                       }
@@ -313,7 +327,10 @@
                   if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
                       const videoCapabilities = RTCRtpSender.getCapabilities('video');
                       if (videoCapabilities) {
-                          const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+                          let videoCodecs = [];
+                          if (this.options.video.codec) {
+                              videoCodecs = getVideoCodecsFromString(this.options.video.codec, videoCapabilities.codecs);
+                          }
                           this._traceLog('video codecs=', videoCodecs);
                           videoTransceiver.setCodecPreferences(videoCodecs);
                       }
@@ -370,35 +387,34 @@
           pc.ondatachannel = this._onDataChannel.bind(this);
           if (!this._pc) {
               this._pc = pc;
-              this._addDataChannel('dataChannel', undefined);
               this._callbacks.open({ authzMetadata: this.authzMetadata });
           }
           else {
               this._pc = pc;
           }
       }
-      async _addDataChannel(channelId, options) {
+      async _addDataChannel(label, options) {
           return new Promise((resolve, reject) => {
               if (!this._pc)
                   return reject('PeerConnection Does Not Ready');
               if (this._isOffer)
                   return reject('PeerConnection Has Local Offer');
-              let dataChannel = this._findDataChannel(channelId);
+              let dataChannel = this._findDataChannel(label);
               if (dataChannel) {
                   return reject('DataChannel Already Exists!');
               }
-              dataChannel = this._pc.createDataChannel(channelId, options);
+              dataChannel = this._pc.createDataChannel(label, options);
               dataChannel.onclose = (event) => {
                   this._traceLog('datachannel onclosed=>', event);
-                  this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != channelId);
+                  this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != label);
               };
               dataChannel.onerror = (event) => {
                   this._traceLog('datachannel onerror=>', event);
-                  this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != channelId);
+                  this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != label);
               };
               dataChannel.onmessage = (event) => {
                   this._traceLog('datachannel onmessage=>', event.data);
-                  event.channelId = channelId;
+                  event.label = label;
                   this._callbacks.data(event);
               };
               dataChannel.onopen = (event) => {
@@ -413,10 +429,10 @@
           if (!this._pc)
               return;
           const dataChannel = event.channel;
-          const channelId = event.channel.label;
+          const label = event.channel.label;
           if (!event.channel)
               return;
-          if (!channelId || channelId.length < 1)
+          if (!label || label.length < 1)
               return;
           dataChannel.onopen = async (event) => {
               this._traceLog('datachannel onopen=>', event);
@@ -429,15 +445,15 @@
           };
           dataChannel.onmessage = (event) => {
               this._traceLog('datachannel onmessage=>', event.data);
-              event.channelId = channelId;
+              event.label = label;
               this._callbacks.data(event);
           };
-          if (!this._findDataChannel(channelId)) {
+          if (!this._findDataChannel(label)) {
               this._dataChannels.push(event.channel);
           }
           else {
               this._dataChannels = this._dataChannels.map(channel => {
-                  if (channel.label == channelId) {
+                  if (channel.label == label) {
                       return dataChannel;
                   }
                   else {
@@ -550,8 +566,8 @@
           }
           return transceiver;
       }
-      _findDataChannel(channelId) {
-          return this._dataChannels.find(channel => channel.label == channelId);
+      _findDataChannel(label) {
+          return this._dataChannels.find(channel => channel.label == label);
       }
       async _closeDataChannel(dataChannel) {
           return new Promise((resolve, reject) => {
@@ -649,13 +665,12 @@
       }
       /**
        * @typedef {Object} MetadataOption - 接続時に指定できるメタデータです。
-       * @property {string|null} authnMetadata 送信するメタデータ
-       * @property {string|null} key シグナリングキー
+       * @property {any} authnMetadata 送信するメタデータ
        */
       /**
        * @desc PeerConnection  接続を開始します。
        * @param {MediaStream|null} [stream=null] - ローカルのストリーム
-       * @param {MetadataOption|null} [metadataOption=null] - 送信するメタデータとシグナリングキー
+       * @param {MetadataOption|null} [metadataOption=null] - 送信するメタデータ
        */
       async connect(stream, metadataOption = null) {
           if (this._ws || this._pc) {
@@ -665,26 +680,26 @@
           /** @type {MediaStream|null} */
           this.stream = stream;
           if (metadataOption) {
-              /** @type {Record<string, any>|null} */
+              /** @type {any} */
               this.authnMetadata = metadataOption.authnMetadata;
           }
           await this._signaling();
       }
       /**
        * @desc Datachannel を追加します。
-       * @param {string} channelId - dataChannel の Id
+       * @param {string} label - dataChannel の label
        * @param {RTCDataChannelInit|undefined} [options=undefined] - dataChannel の init オプション
        */
-      async addDataChannel(channelId, options = undefined) {
-          await this._addDataChannel(channelId, options);
+      async addDataChannel(label, options = undefined) {
+          await this._addDataChannel(label, options);
       }
       /**
        * @desc Datachannel を削除します。
-       * @param {string} channelId - 削除する dataChannel の Id
+       * @param {string} label - 削除する dataChannel の label
        */
-      async removeDataChannel(channelId) {
-          this._traceLog('datachannel remove=>', channelId);
-          const dataChannel = this._findDataChannel(channelId);
+      async removeDataChannel(label) {
+          this._traceLog('datachannel remove=>', label);
+          const dataChannel = this._findDataChannel(label);
           if (dataChannel && dataChannel.readyState === 'open') {
               await this._closeDataChannel(dataChannel);
           }
@@ -695,11 +710,11 @@
       /**
        * @desc Datachannel でデータを送信します。
        * @param {any} params - 送信するデータ
-       * @param {string} [channelId='dataChannel'] - 指定する dataChannel の id
+       * @param {string} [label='dataChannel'] - 指定する dataChannel の label
        */
-      sendData(params, channelId = 'dataChannel') {
+      sendData(params, label = 'dataChannel') {
           this._traceLog('datachannel sendData=>', params);
-          const dataChannel = this._findDataChannel(channelId);
+          const dataChannel = this._findDataChannel(label);
           if (dataChannel && dataChannel.readyState === 'open') {
               dataChannel.send(params);
           }
@@ -795,4 +810,4 @@
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
-})));
+}));
