@@ -10,31 +10,51 @@
     - バグ修正
 
 ## develop
-- [ADD] isExistUser が true の場合のみ offer メッセージを送るようにする & peerconnection の生成を一回にする
-- [CHANGE] 使用されていない MetadataOption の key を削除する
+
+## 19.12.0
+
 - [UPDATE] authnMetadata, authzMetadata を any にする
-- [CHANGE] video コーデックを指定しなかった場合のコーデックを VP9 からブラウザデフォルトに変更する
+    - @Hexa
 - [UPDATE] 不要な依存パッケージを削除
-   - `@babel/core`
+    - `@babel/core`
+    - @kdxu
 - [UPDATE] 依存パッケージのバージョンを更新する
-  - @types/node                       ^12.7.8  →  ^12.12.14
-  - @typescript-eslint/eslint-plugin   ^2.3.1  →     ^2.9.0
-  - @typescript-eslint/parser          ^2.3.1  →     ^2.9.0
-  - eslint                             ^6.5.0  →     ^6.7.2
-  - eslint-config-prettier             ^6.3.0  →     ^6.7.0
-  - prettier                          ^1.18.2  →    ^1.19.1
-  - rollup                            ^1.22.0  →    ^1.27.6
-  - rollup-plugin-typescript2         ^0.24.3  →    ^0.25.2
-  - typescript                         ^3.6.3  →     ^3.7.2
-- [CHANGE] datachannel の label を channelId から label に変更する
-- [CHANGE] 接続時の label 固定の datachannel の追加処理を削除する
+    - @types/node                       ^12.7.8  →  ^12.12.14
+    - @typescript-eslint/eslint-plugin   ^2.3.1  →     ^2.9.0
+    - @typescript-eslint/parser          ^2.3.1  →     ^2.9.0
+    - eslint                             ^6.5.0  →     ^6.7.2
+    - eslint-config-prettier             ^6.3.0  →     ^6.7.0
+    - prettier                          ^1.18.2  →    ^1.19.1
+    - rollup                            ^1.22.0  →    ^1.27.6
+    - rollup-plugin-typescript2         ^0.24.3  →    ^0.25.2
+    - typescript                         ^3.6.3  →     ^3.7.2
+    - @kdxu
+- [UPDATE] query string の signalingKey を設定できるようにする
+    - @Hexa
+- [FIX] video コーデックを指定しなかった場合のコーデックを VP9 からブラウザデフォルトに変更する
+    - @Hexa
+- [FIX] datachannel の label を channelId から label に変更する
+    - @Hexa
+- [FIX] 接続時の label 固定の datachannel の追加処理を削除する
+    - @Hexa
+- [FIX] isExistUser が true の場合のみ offer メッセージを送るようにする & peerconnection の生成を一回にする
+    - @kdxu
+- [FIX] 使用されていない MetadataOption の key を削除する
+    - @Hexa
+- [FIX] query string に client_id がない場合は接続に失敗させる
+    - @Hexa
+- [FIX] type: bye に対応する
+    - 現時点で Ayame が bye を送ってこないため利用はされない
+    - @Hexa
 
 ## 19.09.0
+
 - [CHANGE] flow -> typescript に変更する
 - [ADD] isRelay オプションを追加する。iceTransportPolicy を強制的に 'relay' にできるようにした
 - [CHANGE] signaling key を ConnectionOptions に追加するよう変更する
 
 ## 19.08.0
+
 - [UPDATE] register 時に iceServers の値を server 経由で設定できるようにする
 - [CHANGE] signaling key を指定できるようにする
 - [ADD] datachannel に対応する
