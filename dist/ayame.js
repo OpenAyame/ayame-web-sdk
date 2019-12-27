@@ -3,7 +3,7 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
   (global = global || self, factory(global.Ayame = {}));
-}(this, function (exports) { 'use strict';
+}(this, (function (exports) { 'use strict';
 
   /**
    * @ignore
@@ -142,6 +142,7 @@
        * @listens {disconnect} PeerConnection が切断されると送信されます。
        * @listens {addstream} リモートのストリームが追加されると送信されます。
        * @listens {removestream} リモートのストリームが削除されると送信されます。
+       * @listens {bye} Ayame Server から bye を受信すると送信されます。
        */
       constructor(signalingUrl, roomId, options, debug = false, isRelay = false) {
           this.debug = debug;
@@ -169,6 +170,7 @@
               disconnect: () => { },
               addstream: () => { },
               removestream: () => { },
+              bye: () => { },
               data: () => { }
           };
       }
@@ -234,8 +236,10 @@
                               if (message.type === 'ping') {
                                   this._sendWs({ type: 'pong' });
                               }
-                              else if (message.type === 'close') {
-                                  this._callbacks.close(event);
+                              else if (message.type === 'bye') {
+                                  this._callbacks.bye(event);
+                                  await this._disconnect();
+                                  return resolve();
                               }
                               else if (message.type === 'accept') {
                                   this.authzMetadata = message.authzMetadata;
@@ -810,4 +814,4 @@
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+})));
