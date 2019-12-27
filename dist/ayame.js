@@ -1,9 +1,9 @@
-/* @OpenAyame/ayame-web-sdk@19.08.0 */
+/* @OpenAyame/ayame-web-sdk@19.12.0 */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
   (global = global || self, factory(global.Ayame = {}));
-}(this, function (exports) { 'use strict';
+}(this, (function (exports) { 'use strict';
 
   /**
    * @ignore
@@ -130,6 +130,20 @@
    * @ignore
    */
   class ConnectionBase {
+      /**
+       * オブジェクトを生成し、リモートのピアまたはサーバーに接続します。
+       * @param signalingUrl シグナリングに利用する URL
+       * @param roomId Ayame のルームID
+       * @param options Ayame の接続オプション
+       * @param [debug=false] デバッグログの出力可否
+       * @param [isRelay=false] iceTransportPolicy を強制的に relay にするか
+       * @listens {open} Ayame Server に accept され、PeerConnection が生成されると送信されます。
+       * @listens {connect} PeerConnection が接続されると送信されます。
+       * @listens {disconnect} PeerConnection が切断されると送信されます。
+       * @listens {addstream} リモートのストリームが追加されると送信されます。
+       * @listens {removestream} リモートのストリームが削除されると送信されます。
+       * @listens {bye} Ayame Server から bye を受信すると送信されます。
+       */
       constructor(signalingUrl, roomId, options, debug = false, isRelay = false) {
           this.debug = debug;
           this.roomId = roomId;
@@ -144,6 +158,7 @@
           this.authzMetadata = null;
           this._dataChannels = [];
           this._isOffer = false;
+          this._isExistUser = false;
           this.connectionState = 'new';
           this._pcConfig = {
               iceServers: this.options.iceServers,
@@ -155,6 +170,7 @@
               disconnect: () => { },
               addstream: () => { },
               removestream: () => { },
+              bye: () => { },
               data: () => { }
           };
       }
@@ -177,6 +193,7 @@
           this._pc = null;
           this._removeCodec = false;
           this._isOffer = false;
+          this._isExistUser = false;
           this._dataChannels = [];
           this.connectionState = 'new';
       }
@@ -219,8 +236,10 @@
                               if (message.type === 'ping') {
                                   this._sendWs({ type: 'pong' });
                               }
-                              else if (message.type === 'close') {
-                                  this._callbacks.close(event);
+                              else if (message.type === 'bye') {
+                                  this._callbacks.bye(event);
+                                  await this._disconnect();
+                                  return resolve();
                               }
                               else if (message.type === 'accept') {
                                   this.authzMetadata = message.authzMetadata;
@@ -228,9 +247,20 @@
                                       this._traceLog('iceServers=>', message.iceServers);
                                       this._pcConfig.iceServers = message.iceServers;
                                   }
-                                  if (!this._pc)
+                                  if (message.isExistUser === undefined) {
+                                      if (!this._pc) {
+                                          this._createPeerConnection();
+                                      }
+                                      await this._sendOffer();
+                                  }
+                                  else {
+                                      this._traceLog('isExistUser=>', message.isExistUser);
+                                      this._isExistUser = message.isExistUser;
                                       this._createPeerConnection();
-                                  await this._sendOffer();
+                                      if (this._isExistUser === true) {
+                                          await this._sendOffer();
+                                      }
+                                  }
                                   return resolve();
                               }
                               else if (message.type === 'reject') {
@@ -239,6 +269,9 @@
                                   return reject('REJECTED');
                               }
                               else if (message.type === 'offer') {
+                                  if (this._pc && this._pc.signalingState === 'have-local-offer') {
+                                      this._createPeerConnection();
+                                  }
                                   this._setOffer(new RTCSessionDescription(message));
                               }
                               else if (message.type === 'answer') {
@@ -279,7 +312,10 @@
                   if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
                       const videoCapabilities = RTCRtpSender.getCapabilities('video');
                       if (videoCapabilities) {
-                          const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+                          let videoCodecs = [];
+                          if (this.options.video.codec) {
+                              videoCodecs = getVideoCodecsFromString(this.options.video.codec, videoCapabilities.codecs);
+                          }
                           this._traceLog('video codecs=', videoCodecs);
                           videoTransceiver.setCodecPreferences(videoCodecs);
                       }
@@ -295,7 +331,10 @@
                   if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
                       const videoCapabilities = RTCRtpSender.getCapabilities('video');
                       if (videoCapabilities) {
-                          const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+                          let videoCodecs = [];
+                          if (this.options.video.codec) {
+                              videoCodecs = getVideoCodecsFromString(this.options.video.codec, videoCapabilities.codecs);
+                          }
                           this._traceLog('video codecs=', videoCodecs);
                           videoTransceiver.setCodecPreferences(videoCodecs);
                       }
@@ -352,35 +391,34 @@
           pc.ondatachannel = this._onDataChannel.bind(this);
           if (!this._pc) {
               this._pc = pc;
-              this._addDataChannel('dataChannel', undefined);
               this._callbacks.open({ authzMetadata: this.authzMetadata });
           }
           else {
               this._pc = pc;
           }
       }
-      async _addDataChannel(channelId, options) {
+      async _addDataChannel(label, options) {
           return new Promise((resolve, reject) => {
               if (!this._pc)
                   return reject('PeerConnection Does Not Ready');
               if (this._isOffer)
                   return reject('PeerConnection Has Local Offer');
-              let dataChannel = this._findDataChannel(channelId);
+              let dataChannel = this._findDataChannel(label);
               if (dataChannel) {
                   return reject('DataChannel Already Exists!');
               }
-              dataChannel = this._pc.createDataChannel(channelId, options);
+              dataChannel = this._pc.createDataChannel(label, options);
               dataChannel.onclose = (event) => {
                   this._traceLog('datachannel onclosed=>', event);
-                  this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != channelId);
+                  this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != label);
               };
               dataChannel.onerror = (event) => {
                   this._traceLog('datachannel onerror=>', event);
-                  this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != channelId);
+                  this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != label);
               };
               dataChannel.onmessage = (event) => {
                   this._traceLog('datachannel onmessage=>', event.data);
-                  event.channelId = channelId;
+                  event.label = label;
                   this._callbacks.data(event);
               };
               dataChannel.onopen = (event) => {
@@ -395,10 +433,10 @@
           if (!this._pc)
               return;
           const dataChannel = event.channel;
-          const channelId = event.channel.label;
+          const label = event.channel.label;
           if (!event.channel)
               return;
-          if (!channelId || channelId.length < 1)
+          if (!label || label.length < 1)
               return;
           dataChannel.onopen = async (event) => {
               this._traceLog('datachannel onopen=>', event);
@@ -411,15 +449,15 @@
           };
           dataChannel.onmessage = (event) => {
               this._traceLog('datachannel onmessage=>', event.data);
-              event.channelId = channelId;
+              event.label = label;
               this._callbacks.data(event);
           };
-          if (!this._findDataChannel(channelId)) {
+          if (!this._findDataChannel(label)) {
               this._dataChannels.push(event.channel);
           }
           else {
               this._dataChannels = this._dataChannels.map(channel => {
-                  if (channel.label == channelId) {
+                  if (channel.label == label) {
                       return dataChannel;
                   }
                   else {
@@ -486,7 +524,6 @@
           this._traceLog('set answer sdp=', sessionDescription.sdp);
       }
       async _setOffer(sessionDescription) {
-          this._createPeerConnection();
           try {
               if (!this._pc) {
                   return;
@@ -533,8 +570,8 @@
           }
           return transceiver;
       }
-      _findDataChannel(channelId) {
-          return this._dataChannels.find(channel => channel.label == channelId);
+      _findDataChannel(label) {
+          return this._dataChannels.find(channel => channel.label == label);
       }
       async _closeDataChannel(dataChannel) {
           return new Promise((resolve, reject) => {
@@ -615,12 +652,12 @@
    */
   class Connection extends ConnectionBase {
       /**
-       * オブジェクトを生成し、リモートのピアまたはサーバーに接続します。
-       * @param signalingUrl シグナリングに利用する URL
-       * @param roomId Ayame のルームID
-       * @param options Ayame の接続オプション
-       * @param debug デバッグログの出力可否
-       * @param isRelay iceTransportPolicy を強制的に relay にするか
+       * @desc オブジェクトを生成し、リモートのピアまたはサーバーに接続します。
+       * @param {string} signalingUrl シグナリングに利用する URL
+       * @param {string} roomId Ayame のルームID
+       * @param {ConnectionOptions} options Ayame の接続オプション
+       * @param {boolean} [debug=false] デバッグログの出力可否
+       * @param {boolean} [isRelay=false] iceTransportPolicy を強制的に relay にするか
        * @listens {open} Ayame Server に accept され、PeerConnection が生成されると送信されます。
        * @listens {connect} PeerConnection が接続されると送信されます。
        * @listens {disconnect} PeerConnection が切断されると送信されます。
@@ -631,36 +668,42 @@
           super(signalingUrl, roomId, options, debug, isRelay);
       }
       /**
-       * PeerConnection  接続を開始します。
-       * @param stream ローカルのストリーム
-       * @param metadataOption 送信するメタデータとシグナリングキー
+       * @typedef {Object} MetadataOption - 接続時に指定できるメタデータです。
+       * @property {any} authnMetadata 送信するメタデータ
+       */
+      /**
+       * @desc PeerConnection  接続を開始します。
+       * @param {MediaStream|null} [stream=null] - ローカルのストリーム
+       * @param {MetadataOption|null} [metadataOption=null] - 送信するメタデータ
        */
       async connect(stream, metadataOption = null) {
           if (this._ws || this._pc) {
               this._traceLog('connection already exists');
               throw new Error('Connection Already Exists!');
           }
+          /** @type {MediaStream|null} */
           this.stream = stream;
           if (metadataOption) {
+              /** @type {any} */
               this.authnMetadata = metadataOption.authnMetadata;
           }
           await this._signaling();
       }
       /**
-       * Datachannel を追加します。
-       * @param channelId dataChannel の Id
-       * @param options dataChannel の init オプション
+       * @desc Datachannel を追加します。
+       * @param {string} label - dataChannel の label
+       * @param {RTCDataChannelInit|undefined} [options=undefined] - dataChannel の init オプション
        */
-      async addDataChannel(channelId, options = undefined) {
-          await this._addDataChannel(channelId, options);
+      async addDataChannel(label, options = undefined) {
+          await this._addDataChannel(label, options);
       }
       /**
-       * Datachannel を削除します。
-       * @param channelId 削除する dataChannel の Id
+       * @desc Datachannel を削除します。
+       * @param {string} label - 削除する dataChannel の label
        */
-      async removeDataChannel(channelId) {
-          this._traceLog('datachannel remove=>', channelId);
-          const dataChannel = this._findDataChannel(channelId);
+      async removeDataChannel(label) {
+          this._traceLog('datachannel remove=>', label);
+          const dataChannel = this._findDataChannel(label);
           if (dataChannel && dataChannel.readyState === 'open') {
               await this._closeDataChannel(dataChannel);
           }
@@ -669,13 +712,13 @@
           }
       }
       /**
-       * Datachannel でデータを送信します。
-       * @param params 送信するデータ
-       * @param channelId 指定する dataChannel の id
+       * @desc Datachannel でデータを送信します。
+       * @param {any} params - 送信するデータ
+       * @param {string} [label='dataChannel'] - 指定する dataChannel の label
        */
-      sendData(params, channelId = 'dataChannel') {
+      sendData(params, label = 'dataChannel') {
           this._traceLog('datachannel sendData=>', params);
-          const dataChannel = this._findDataChannel(channelId);
+          const dataChannel = this._findDataChannel(label);
           if (dataChannel && dataChannel.readyState === 'open') {
               dataChannel.send(params);
           }
@@ -684,13 +727,61 @@
           }
       }
       /**
-       * PeerConnection  接続を切断します。
+       * @desc PeerConnection  接続を切断します。
        */
       async disconnect() {
           await this._disconnect();
       }
   }
 
+  /**
+   * オーディオ、ビデオの送受信方向に関するオプションです。
+   * - sendrecv
+   * - recvonly
+   * - sendonly
+   *
+   * @typedef {string} ConnectionDirection
+   */
+  /**
+   * @typedef {Object} ConnectionAudioOption - オーディオ接続に関するオプションです。
+   * @property {ConnectionDirection} direction 送受信方向
+   * @property {boolean} enabled 有効かどうかのフラグ
+   */
+  /**
+   * ビデオ接続のコーデックに関するオプションです。
+   * - VP8
+   * - VP9
+   * - H264
+   *
+   * @typedef {string} VideoCodecOption
+   */
+  /**
+   * @typedef {Object} ConnectionVideoOption - ビデオ接続に関するオプションです。
+   * @property {VideoCodecOption} codec コーデックの設定
+   * @property {ConnectionDirection} direction 送受信方向
+   * @property {boolean} enabled 有効かどうかのフラグ
+   */
+  /**
+   * @typedef {Object} ConnectionOptions - 接続時に指定するオプションです。
+   * @property {ConnectionAudioOption} audio オーディオの設定
+   * @property {ConnectionVideoOption} video ビデオの設定
+   * @property {string} clientId クライアントID
+   * @property {Array.<RTCIceServer>} iceServers ayame server から iceServers が返って来なかった場合に使われる iceServer の情報
+   * @property {string} signalingKey 送信するシグナリングキー
+   */
+  /**
+   * Ayame Connection のデフォルトのオプションです。
+   *
+   * audio: { direction: 'sendrecv', enabled: true}
+   *
+   * video: { direction: 'sendrecv', enabled: true}
+   *
+   * iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+   *
+   * clientId: randomString(17)
+   *
+   * @type {ConnectionOptions} ConnectionOptions
+   */
   const defaultOptions = {
       audio: { direction: 'sendrecv', enabled: true },
       video: { direction: 'sendrecv', enabled: true },
@@ -698,21 +789,20 @@
       clientId: randomString(17)
   };
   /**
-   * Ayame Connection を生成します。
-   *
-   * @param signalingUrl シグナリングに用いる websocket url
-   * @param roomId 接続する roomId
-   * @param options 接続時のオプション
-   * @param debug デバッグログを出力するかどうかのフラグ
-   * @param isRelay iceTranspolicy を強制的に relay するかどうかのフラグ(デバッグ用)
-   * @return Connection
+   * @desc Ayame Connection を生成します。
+   * @param {string} signalingUrl シグナリングに用いる websocket url
+   * @param {string} roomId 接続する roomId
+   * @param {ConnectionOptions} [options=defaultOptions] 接続時のオプション
+   * @param {boolean} [debug=false] デバッグログを出力するかどうかのフラグ
+   * @param {boolean} [isRelay=false] iceTranspolicy を強制的に relay するかどうかのフラグ(デバッグ用)
+   * @return {Connection} 生成された Ayame Connection
    */
   function connection(signalingUrl, roomId, options = defaultOptions, debug = false, isRelay = false) {
       return new Connection(signalingUrl, roomId, options, debug, isRelay);
   }
   /**
-   * Ayame Web SDK のバージョンを出力します。
-   * @return string
+   * @desc Ayame Web SDK のバージョンを出力します。
+   * @return {string} Ayame Web SDK のバージョン
    */
   function version() {
       return process.version;
@@ -724,4 +814,4 @@
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+})));

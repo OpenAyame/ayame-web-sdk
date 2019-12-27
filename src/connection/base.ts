@@ -10,7 +10,7 @@ interface AyameRegisterMessage {
   roomId: string;
   clientId: string;
   key?: string;
-  authnMetadata?: Record<string, any>;
+  authnMetadata?: any;
 }
 
 /**
@@ -24,13 +24,14 @@ class ConnectionBase {
   connectionState: string;
   stream: MediaStream | null;
   remoteStream: MediaStream | null;
-  authnMetadata: Record<string, any> | null;
-  authzMetadata: Record<string, any> | null;
+  authnMetadata: any;
+  authzMetadata: any;
   _ws: WebSocket | null;
   _pc: RTCPeerConnection | null;
   _callbacks: any;
   _removeCodec: boolean;
   _isOffer: boolean;
+  _isExistUser: boolean;
   _dataChannels: Array<RTCDataChannel>;
   _pcConfig: {
     iceServers: Array<RTCIceServer>;
@@ -45,6 +46,21 @@ class ConnectionBase {
       this._callbacks[kind] = callback;
     }
   }
+
+  /**
+   * オブジェクトを生成し、リモートのピアまたはサーバーに接続します。
+   * @param signalingUrl シグナリングに利用する URL
+   * @param roomId Ayame のルームID
+   * @param options Ayame の接続オプション
+   * @param [debug=false] デバッグログの出力可否
+   * @param [isRelay=false] iceTransportPolicy を強制的に relay にするか
+   * @listens {open} Ayame Server に accept され、PeerConnection が生成されると送信されます。
+   * @listens {connect} PeerConnection が接続されると送信されます。
+   * @listens {disconnect} PeerConnection が切断されると送信されます。
+   * @listens {addstream} リモートのストリームが追加されると送信されます。
+   * @listens {removestream} リモートのストリームが削除されると送信されます。
+   * @listens {bye} Ayame Server から bye を受信すると送信されます。
+   */
   constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug = false, isRelay = false) {
     this.debug = debug;
     this.roomId = roomId;
@@ -59,6 +75,7 @@ class ConnectionBase {
     this.authzMetadata = null;
     this._dataChannels = [];
     this._isOffer = false;
+    this._isExistUser = false;
     this.connectionState = 'new';
     this._pcConfig = {
       iceServers: this.options.iceServers,
@@ -70,6 +87,7 @@ class ConnectionBase {
       disconnect: () => {},
       addstream: () => {},
       removestream: () => {},
+      bye: () => {},
       data: () => {}
     };
   }
@@ -85,12 +103,13 @@ class ConnectionBase {
     this._pc = null;
     this._removeCodec = false;
     this._isOffer = false;
+    this._isExistUser = false;
     this._dataChannels = [];
     this.connectionState = 'new';
   }
 
   async _signaling(): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       if (this._ws) {
         return reject('WS-ALREADY-EXISTS');
       }
@@ -127,22 +146,38 @@ class ConnectionBase {
               const message = JSON.parse(event.data);
               if (message.type === 'ping') {
                 this._sendWs({ type: 'pong' });
-              } else if (message.type === 'close') {
-                this._callbacks.close(event);
+              } else if (message.type === 'bye') {
+                this._callbacks.bye(event);
+                await this._disconnect();
+                return resolve();
               } else if (message.type === 'accept') {
                 this.authzMetadata = message.authzMetadata;
                 if (Array.isArray(message.iceServers) && message.iceServers.length > 0) {
                   this._traceLog('iceServers=>', message.iceServers);
                   this._pcConfig.iceServers = message.iceServers;
                 }
-                if (!this._pc) this._createPeerConnection();
-                await this._sendOffer();
+                if (message.isExistUser === undefined) {
+                  if (!this._pc) {
+                    this._createPeerConnection();
+                  }
+                  await this._sendOffer();
+                } else {
+                  this._traceLog('isExistUser=>', message.isExistUser);
+                  this._isExistUser = message.isExistUser;
+                  this._createPeerConnection();
+                  if (this._isExistUser === true) {
+                    await this._sendOffer();
+                  }
+                }
                 return resolve();
               } else if (message.type === 'reject') {
                 await this._disconnect();
                 this._callbacks.disconnect({ reason: message.reason || 'REJECTED' });
                 return reject('REJECTED');
               } else if (message.type === 'offer') {
+                if (this._pc && this._pc.signalingState === 'have-local-offer') {
+                  this._createPeerConnection();
+                }
                 this._setOffer(new RTCSessionDescription(message));
               } else if (message.type === 'answer') {
                 await this._setAnswer(new RTCSessionDescription(message));
@@ -180,7 +215,10 @@ class ConnectionBase {
         if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
           const videoCapabilities = RTCRtpSender.getCapabilities('video');
           if (videoCapabilities) {
-            const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+            let videoCodecs = [];
+            if (this.options.video.codec) {
+              videoCodecs = getVideoCodecsFromString(this.options.video.codec, videoCapabilities.codecs);
+            }
             this._traceLog('video codecs=', videoCodecs);
             videoTransceiver.setCodecPreferences(videoCodecs);
           }
@@ -194,7 +232,10 @@ class ConnectionBase {
         if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
           const videoCapabilities = RTCRtpSender.getCapabilities('video');
           if (videoCapabilities) {
-            const videoCodecs = getVideoCodecsFromString(this.options.video.codec || 'VP9', videoCapabilities.codecs);
+            let videoCodecs = [];
+            if (this.options.video.codec) {
+              videoCodecs = getVideoCodecsFromString(this.options.video.codec, videoCapabilities.codecs);
+            }
             this._traceLog('video codecs=', videoCodecs);
             videoTransceiver.setCodecPreferences(videoCodecs);
           }
@@ -248,33 +289,32 @@ class ConnectionBase {
     pc.ondatachannel = this._onDataChannel.bind(this);
     if (!this._pc) {
       this._pc = pc;
-      this._addDataChannel('dataChannel', undefined);
       this._callbacks.open({ authzMetadata: this.authzMetadata });
     } else {
       this._pc = pc;
     }
   }
 
-  async _addDataChannel(channelId: string, options: RTCDataChannelInit | undefined): Promise<void> {
-    return new Promise((resolve, reject) => {
+  async _addDataChannel(label: string, options: RTCDataChannelInit | undefined): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
       if (!this._pc) return reject('PeerConnection Does Not Ready');
       if (this._isOffer) return reject('PeerConnection Has Local Offer');
-      let dataChannel = this._findDataChannel(channelId);
+      let dataChannel = this._findDataChannel(label);
       if (dataChannel) {
         return reject('DataChannel Already Exists!');
       }
-      dataChannel = this._pc.createDataChannel(channelId, options);
+      dataChannel = this._pc.createDataChannel(label, options);
       dataChannel.onclose = (event: Record<string, any>) => {
         this._traceLog('datachannel onclosed=>', event);
-        this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != channelId);
+        this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != label);
       };
       dataChannel.onerror = (event: Record<string, any>) => {
         this._traceLog('datachannel onerror=>', event);
-        this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != channelId);
+        this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != label);
       };
       dataChannel.onmessage = (event: any) => {
         this._traceLog('datachannel onmessage=>', event.data);
-        event.channelId = channelId;
+        event.label = label;
         this._callbacks.data(event);
       };
       dataChannel.onopen = (event: Record<string, any>) => {
@@ -289,9 +329,9 @@ class ConnectionBase {
     this._traceLog('on data channel', event);
     if (!this._pc) return;
     const dataChannel = event.channel;
-    const channelId = event.channel.label;
+    const label = event.channel.label;
     if (!event.channel) return;
-    if (!channelId || channelId.length < 1) return;
+    if (!label || label.length < 1) return;
     dataChannel.onopen = async (event: Record<string, any>) => {
       this._traceLog('datachannel onopen=>', event);
     };
@@ -303,14 +343,14 @@ class ConnectionBase {
     };
     dataChannel.onmessage = (event: any) => {
       this._traceLog('datachannel onmessage=>', event.data);
-      event.channelId = channelId;
+      event.label = label;
       this._callbacks.data(event);
     };
-    if (!this._findDataChannel(channelId)) {
+    if (!this._findDataChannel(label)) {
       this._dataChannels.push(event.channel);
     } else {
       this._dataChannels = this._dataChannels.map(channel => {
-        if (channel.label == channelId) {
+        if (channel.label == label) {
           return dataChannel;
         } else {
           return channel;
@@ -379,7 +419,6 @@ class ConnectionBase {
   }
 
   async _setOffer(sessionDescription: RTCSessionDescription): Promise<void> {
-    this._createPeerConnection();
     try {
       if (!this._pc) {
         return;
@@ -429,8 +468,8 @@ class ConnectionBase {
     return transceiver;
   }
 
-  _findDataChannel(channelId: string): RTCDataChannel | undefined {
-    return this._dataChannels.find(channel => channel.label == channelId);
+  _findDataChannel(label: string): RTCDataChannel | undefined {
+    return this._dataChannels.find(channel => channel.label == label);
   }
 
   async _closeDataChannel(dataChannel: RTCDataChannel): Promise<void> {
@@ -453,7 +492,7 @@ class ConnectionBase {
   }
 
   async _closePeerConnection(): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       if (browser() === 'safari' && this._pc) {
         this._pc.oniceconnectionstatechange = () => {};
         this._pc.close();
@@ -480,7 +519,7 @@ class ConnectionBase {
   }
 
   async _closeWebSocketConnection(): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       if (!this._ws) return resolve();
       if (this._ws && this._ws.readyState === 3) return resolve();
       this._ws.onclose = () => {};

@@ -1,6 +1,7 @@
 # ayame-web-sdk
 
 [![npm version](https://badge.fury.io/js/%40open-ayame%2Fayame-web-sdk.svg)](https://badge.fury.io/js/%40open-ayame%2Fayame-web-sdk)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Actions Status](https://github.com/OpenAyame/ayame-web-sdk/workflows/Lint%20And%20Flow%20Test/badge.svg)](https://github.com/OpenAyame/ayame-web-sdk/actions)
 
 Web SDK for WebRTC Signaling Server Ayame
@@ -8,10 +9,11 @@ Web SDK for WebRTC Signaling Server Ayame
 
 ## 動作確認環境
 
-- Chrome  76.0.3809.132
-- Chrome Canary 78.0.3869.0
-- Safari 12.1.2 (14607.3.9)
-- Firefox 68.0.2
+- Chrome 77.0.3865.90
+- Chrome Canary 79.0.3933.0
+- Safari 13.0.1 (14608.2.11.1.11)
+- Firefox 69.0.2
+- Microsoft Edge Beta 78.2.0.276.11
 
 ## サンプル
 
@@ -37,17 +39,17 @@ https://openayame.github.io/ayame-web-sdk/index.html
 
 ```
 https://unpkg.com/@open-ayame/ayame-web-sdk@19.9.0/dist/ayame.min.js
-
 ```
 
 ### jsdelivr
 
 ```
 https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@19.9.0/dist/ayame.min.js
-
 ```
 
 ### 双方向送受信接続する
+
+- [オンラインサンプル](https://openayame.github.io/ayame-web-sdk-samples/sendrecv.html)
 
 ```javascript
 const conn = Ayame.connection('wss://example.com/ws', 'test-room');
@@ -65,6 +67,8 @@ startConn();
 
 
 ### 送信のみ(sendonly) で接続する
+
+- [オンラインサンプル](https://openayame.github.io/ayame-web-sdk-samples/sendonly.html)
 
 ```javascript
 const conn = Ayame.connection('wss://example.com/ws', 'test-room');
@@ -85,6 +89,8 @@ startConn();
 
 ### 受信のみ(recvonly) で接続する
 
+- [オンラインサンプル](https://openayame.github.io/ayame-web-sdk-samples/recvonly.html)
+
 ```javascript
 const conn = Ayame.connection('wss://example.com/ws', 'test-room');
 conn.options.video.direction = 'recvonly';
@@ -100,6 +106,9 @@ startConn();
 ```
 
 ### コーデックを H.264 指定で接続する
+
+
+- [オンラインサンプル](https://openayame.github.io/ayame-web-sdk-samples/codec.html)
 
 ```javascript
 const conn = Ayame.connection('wss://example.com/ws', 'test-room');
@@ -118,10 +127,16 @@ startConn();
 
 ### datachannel でデータを送受信する
 
+
+- [オンラインサンプル](https://openayame.github.io/ayame-web-sdk-samples/datachannel.html)
+
 ```javascript
 
 const startConn = async () => {
   const conn = Ayame.connection('wss://example.com/ws', 'test-room');
+  conn.on('open', (e) => {
+      conn.addDataChannel('dataChannel');
+  });
   conn.on('data', (e) => {
       console.log('data received: ',e.data);
       });
@@ -131,3 +146,37 @@ const sendData = (data) => {
   conn.sendData(data);
 };
 ```
+
+## ライセンス
+
+Apache License 2.0
+
+```
+Copyright 2019, Shiguredo Inc, Kyoko Kadowaki (kdxu)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
+
+## 開発について
+
+Ayame Web SDK はオープンソースソフトウェアですが、開発についてはオープンではありません。
+そのためコメントやプルリクエストを頂いてもすぐには採用はしません。
+
+まずは Discord にてご連絡ください。
+
+## Discord
+
+ベストエフォートで運用しています。
+
+https://discord.gg/mDesh2E
+

@@ -1,5 +1,6 @@
 /**
- * オーディオ、ビデオの送受信方向に関するオプションです。
+ * @typedef {string} ConnectionDirection - オーディオ、ビデオの送受信方向に関するオプションです。
+ *
  * - sendrecv
  * - recvonly
  * - sendonly
@@ -7,9 +8,9 @@
 export type ConnectionDirection = 'sendrecv' | 'recvonly' | 'sendonly';
 
 /**
- * オーディオ接続に関するオプションです。
- * @member direction 送受信方向
- * @member enabled 有効かどうかのフラグ
+ * @typedef {Object} ConnectionAudioOption - オーディオ接続に関するオプションです。
+ * @property {ConnectionDirection} direction 送受信方向
+ * @property {boolean} enabled 有効かどうかのフラグ
  */
 export interface ConnectionAudioOption {
   direction: ConnectionDirection;
@@ -17,7 +18,9 @@ export interface ConnectionAudioOption {
 }
 
 /**
- * ビデオ接続のコーデックに関するオプションです。
+ * @public
+ * @typedef {string} VideoCodecOption - ビデオ接続のコーデックに関するオプションです。
+ *
  * - VP8
  * - VP9
  * - H264
@@ -25,10 +28,10 @@ export interface ConnectionAudioOption {
 export type VideoCodecOption = 'VP8' | 'VP9' | 'H264';
 
 /**
- * ビデオ接続に関するオプションです。
- * @member codec コーデックの設定
- * @member direction 送受信方向
- * @member enabled 有効かどうかのフラグ
+ * @typedef {Object} ConnectionVideoOption - ビデオ接続に関するオプションです。
+ * @property {VideoCodecOption} codec コーデックの設定
+ * @property {ConnectionDirection} direction 送受信方向
+ * @property {boolean} enabled 有効かどうかのフラグ
  */
 export interface ConnectionVideoOption {
   codec?: VideoCodecOption;
@@ -37,12 +40,12 @@ export interface ConnectionVideoOption {
 }
 
 /**
- * 接続時に指定するオプションです。
- * @member video オーディオの設定
- * @member audio ビデオの設定
- * @member clientId ビデオの設定
- * @member iceServers ayame server から iceServers が返って来なかった場合に使われる iceServer の情報
- * @member signalingKey 送信するシグナリンキー
+ * @typedef {Object} ConnectionOptions - 接続時に指定するオプションです。
+ * @property {ConnectionAudioOption} audio オーディオの設定
+ * @property {ConnectionVideoOption} video ビデオの設定
+ * @property {string} clientId クライアントID
+ * @property {Array.<RTCIceServer>} iceServers ayame server から iceServers が返って来なかった場合に使われる iceServer の情報
+ * @property {string} signalingKey 送信するシグナリングキー
  */
 export interface ConnectionOptions {
   audio: ConnectionAudioOption;
@@ -53,11 +56,9 @@ export interface ConnectionOptions {
 }
 
 /**
- * 接続時に指定できるメタデータです。
- * @member authnMetadata 送信するメタデータ
- * @member key シグナリングキー
+ * @typedef {Object} MetadataOption - 接続時に指定できるメタデータです。
+ * @property {any} authnMetadata 送信するメタデータ
  */
 export interface MetadataOption {
   authnMetadata?: any;
-  key?: string;
 }

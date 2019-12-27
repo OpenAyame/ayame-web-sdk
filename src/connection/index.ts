@@ -6,12 +6,12 @@ import { ConnectionOptions, MetadataOption } from './options';
  */
 class Connection extends ConnectionBase {
   /**
-   * オブジェクトを生成し、リモートのピアまたはサーバーに接続します。
-   * @param signalingUrl シグナリングに利用する URL
-   * @param roomId Ayame のルームID
-   * @param options Ayame の接続オプション
-   * @param debug デバッグログの出力可否
-   * @param isRelay iceTransportPolicy を強制的に relay にするか
+   * @desc オブジェクトを生成し、リモートのピアまたはサーバーに接続します。
+   * @param {string} signalingUrl シグナリングに利用する URL
+   * @param {string} roomId Ayame のルームID
+   * @param {ConnectionOptions} options Ayame の接続オプション
+   * @param {boolean} [debug=false] デバッグログの出力可否
+   * @param {boolean} [isRelay=false] iceTransportPolicy を強制的に relay にするか
    * @listens {open} Ayame Server に accept され、PeerConnection が生成されると送信されます。
    * @listens {connect} PeerConnection が接続されると送信されます。
    * @listens {disconnect} PeerConnection が切断されると送信されます。
@@ -23,38 +23,45 @@ class Connection extends ConnectionBase {
   }
 
   /**
-   * PeerConnection  接続を開始します。
-   * @param stream ローカルのストリーム
-   * @param metadataOption 送信するメタデータとシグナリングキー
+   * @typedef {Object} MetadataOption - 接続時に指定できるメタデータです。
+   * @property {any} authnMetadata 送信するメタデータ
+   */
+
+  /**
+   * @desc PeerConnection  接続を開始します。
+   * @param {MediaStream|null} [stream=null] - ローカルのストリーム
+   * @param {MetadataOption|null} [metadataOption=null] - 送信するメタデータ
    */
   public async connect(stream: MediaStream | null, metadataOption: MetadataOption | null = null): Promise<void> {
     if (this._ws || this._pc) {
       this._traceLog('connection already exists');
       throw new Error('Connection Already Exists!');
     }
+    /** @type {MediaStream|null} */
     this.stream = stream;
     if (metadataOption) {
+      /** @type {any} */
       this.authnMetadata = metadataOption.authnMetadata;
     }
     await this._signaling();
   }
 
   /**
-   * Datachannel を追加します。
-   * @param channelId dataChannel の Id
-   * @param options dataChannel の init オプション
+   * @desc Datachannel を追加します。
+   * @param {string} label - dataChannel の label
+   * @param {RTCDataChannelInit|undefined} [options=undefined] - dataChannel の init オプション
    */
-  public async addDataChannel(channelId: string, options: RTCDataChannelInit | undefined = undefined): Promise<void> {
-    await this._addDataChannel(channelId, options);
+  public async addDataChannel(label: string, options: RTCDataChannelInit | undefined = undefined): Promise<void> {
+    await this._addDataChannel(label, options);
   }
 
   /**
-   * Datachannel を削除します。
-   * @param channelId 削除する dataChannel の Id
+   * @desc Datachannel を削除します。
+   * @param {string} label - 削除する dataChannel の label
    */
-  public async removeDataChannel(channelId: string): Promise<void> {
-    this._traceLog('datachannel remove=>', channelId);
-    const dataChannel = this._findDataChannel(channelId);
+  public async removeDataChannel(label: string): Promise<void> {
+    this._traceLog('datachannel remove=>', label);
+    const dataChannel = this._findDataChannel(label);
     if (dataChannel && dataChannel.readyState === 'open') {
       await this._closeDataChannel(dataChannel);
     } else {
@@ -63,13 +70,13 @@ class Connection extends ConnectionBase {
   }
 
   /**
-   * Datachannel でデータを送信します。
-   * @param params 送信するデータ
-   * @param channelId 指定する dataChannel の id
+   * @desc Datachannel でデータを送信します。
+   * @param {any} params - 送信するデータ
+   * @param {string} [label='dataChannel'] - 指定する dataChannel の label
    */
-  public sendData(params: any, channelId = 'dataChannel'): void {
+  public sendData(params: any, label = 'dataChannel'): void {
     this._traceLog('datachannel sendData=>', params);
-    const dataChannel = this._findDataChannel(channelId);
+    const dataChannel = this._findDataChannel(label);
     if (dataChannel && dataChannel.readyState === 'open') {
       dataChannel.send(params);
     } else {
@@ -78,7 +85,7 @@ class Connection extends ConnectionBase {
   }
 
   /**
-   * PeerConnection  接続を切断します。
+   * @desc PeerConnection  接続を切断します。
    */
   public async disconnect(): Promise<void> {
     await this._disconnect();

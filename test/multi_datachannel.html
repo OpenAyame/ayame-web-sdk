@@ -39,16 +39,17 @@
         const options = Ayame.defaultOptions;
         let messagesA = null;
         let messagesB = null;
+        const channel = 'dataChannel';
         const anotherChannel = 'anotherChannel';
         options.clientId = clientId ? clientId : options.clientId;
         const startConn = async () => {
-          options.video.codec = videoCodec;
           conn = Ayame.connection(signalingUrl, roomId, options, true);
           conn.on('open', (e) => {
+            conn.addDataChannel(channel);
             conn.addDataChannel(anotherChannel);
           });
           conn.on('data', (e) => {
-            if (e.channelId == anotherChannel) {
+            if (e.label == anotherChannel) {
               messagesB = messagesB ? (messagesB + '\n' + e.data) : e.data;
               document.querySelector("#messagesB").value = messagesB;
             } else {
