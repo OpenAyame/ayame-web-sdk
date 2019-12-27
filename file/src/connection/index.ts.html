@@ -47,7 +47,6 @@
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import ConnectionBase from &apos;./base&apos;;
 import { ConnectionOptions, MetadataOption } from &apos;./options&apos;;
 
-
 /**
  * Peer Connection &#x63A5;&#x7D9A;&#x3092;&#x7BA1;&#x7406;&#x3059;&#x308B;&#x30AF;&#x30E9;&#x30B9;&#x3067;&#x3059;&#x3002;
  */
@@ -69,17 +68,15 @@ class Connection extends ConnectionBase {
     super(signalingUrl, roomId, options, debug, isRelay);
   }
 
-
   /**
    * @typedef {Object} MetadataOption - &#x63A5;&#x7D9A;&#x6642;&#x306B;&#x6307;&#x5B9A;&#x3067;&#x304D;&#x308B;&#x30E1;&#x30BF;&#x30C7;&#x30FC;&#x30BF;&#x3067;&#x3059;&#x3002;
-   * @property {string|null} authnMetadata &#x9001;&#x4FE1;&#x3059;&#x308B;&#x30E1;&#x30BF;&#x30C7;&#x30FC;&#x30BF;
-   * @property {string|null} key &#x30B7;&#x30B0;&#x30CA;&#x30EA;&#x30F3;&#x30B0;&#x30AD;&#x30FC;
+   * @property {any} authnMetadata &#x9001;&#x4FE1;&#x3059;&#x308B;&#x30E1;&#x30BF;&#x30C7;&#x30FC;&#x30BF;
    */
 
   /**
    * @desc PeerConnection  &#x63A5;&#x7D9A;&#x3092;&#x958B;&#x59CB;&#x3057;&#x307E;&#x3059;&#x3002;
    * @param {MediaStream|null} [stream=null] - &#x30ED;&#x30FC;&#x30AB;&#x30EB;&#x306E;&#x30B9;&#x30C8;&#x30EA;&#x30FC;&#x30E0;
-   * @param {MetadataOption|null} [metadataOption=null] - &#x9001;&#x4FE1;&#x3059;&#x308B;&#x30E1;&#x30BF;&#x30C7;&#x30FC;&#x30BF;&#x3068;&#x30B7;&#x30B0;&#x30CA;&#x30EA;&#x30F3;&#x30B0;&#x30AD;&#x30FC;
+   * @param {MetadataOption|null} [metadataOption=null] - &#x9001;&#x4FE1;&#x3059;&#x308B;&#x30E1;&#x30BF;&#x30C7;&#x30FC;&#x30BF;
    */
   public async connect(stream: MediaStream | null, metadataOption: MetadataOption | null = null): Promise&lt;void&gt; {
     if (this._ws || this._pc) {
@@ -89,7 +86,7 @@ class Connection extends ConnectionBase {
     /** @type {MediaStream|null} */
     this.stream = stream;
     if (metadataOption) {
-      /** @type {Record&lt;string, any&gt;|null} */
+      /** @type {any} */
       this.authnMetadata = metadataOption.authnMetadata;
     }
     await this._signaling();

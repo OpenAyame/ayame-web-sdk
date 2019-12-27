@@ -995,7 +995,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * @desc\n * undefined\n * @lineNumber\n * 76\n * @param\n * {string} signalingUrl\n * @param\n * {string} roomId\n * @param\n * {ConnectionOptions} options\n * @param\n * {undefined} debug\n * @param\n * {undefined} isRelay\n * @return\n * {Connection}\n ",
+              "value": "*\n * @desc\n * undefined\n * @lineNumber\n * 74\n * @param\n * {string} signalingUrl\n * @param\n * {string} roomId\n * @param\n * {ConnectionOptions} options\n * @param\n * {undefined} debug\n * @param\n * {undefined} isRelay\n * @return\n * {Connection}\n ",
               "start": 1572,
               "end": 1818,
               "loc": {
@@ -1128,7 +1128,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * @desc\n * undefined\n * @lineNumber\n * 76\n * @param\n * {string} signalingUrl\n * @param\n * {string} roomId\n * @param\n * {ConnectionOptions} options\n * @param\n * {undefined} debug\n * @param\n * {undefined} isRelay\n * @return\n * {Connection}\n ",
+            "value": "*\n * @desc\n * undefined\n * @lineNumber\n * 74\n * @param\n * {string} signalingUrl\n * @param\n * {string} roomId\n * @param\n * {ConnectionOptions} options\n * @param\n * {undefined} debug\n * @param\n * {undefined} isRelay\n * @return\n * {Connection}\n ",
             "start": 1572,
             "end": 1818,
             "loc": {
@@ -1548,7 +1548,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * @desc\n * undefined\n * @lineNumber\n * 76\n * @param\n * {string} signalingUrl\n * @param\n * {string} roomId\n * @param\n * {ConnectionOptions} options\n * @param\n * {undefined} debug\n * @param\n * {undefined} isRelay\n * @return\n * {Connection}\n ",
+              "value": "*\n * @desc\n * undefined\n * @lineNumber\n * 74\n * @param\n * {string} signalingUrl\n * @param\n * {string} roomId\n * @param\n * {ConnectionOptions} options\n * @param\n * {undefined} debug\n * @param\n * {undefined} isRelay\n * @return\n * {Connection}\n ",
               "start": 1572,
               "end": 1818,
               "loc": {
@@ -1582,7 +1582,7 @@
           "trailingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * @desc\n * undefined\n * @lineNumber\n * 90\n * @return\n * {string}\n ",
+              "value": "*\n * @desc\n * undefined\n * @lineNumber\n * 88\n * @return\n * {string}\n ",
               "start": 2388,
               "end": 2461,
               "loc": {
@@ -1617,7 +1617,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * @desc\n * undefined\n * @lineNumber\n * 76\n * @param\n * {string} signalingUrl\n * @param\n * {string} roomId\n * @param\n * {ConnectionOptions} options\n * @param\n * {undefined} debug\n * @param\n * {undefined} isRelay\n * @return\n * {Connection}\n ",
+            "value": "*\n * @desc\n * undefined\n * @lineNumber\n * 74\n * @param\n * {string} signalingUrl\n * @param\n * {string} roomId\n * @param\n * {ConnectionOptions} options\n * @param\n * {undefined} debug\n * @param\n * {undefined} isRelay\n * @return\n * {Connection}\n ",
             "start": 1572,
             "end": 1818,
             "loc": {
@@ -1651,7 +1651,7 @@
         "trailingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * @desc\n * undefined\n * @lineNumber\n * 90\n * @return\n * {string}\n ",
+            "value": "*\n * @desc\n * undefined\n * @lineNumber\n * 88\n * @return\n * {string}\n ",
             "start": 2388,
             "end": 2461,
             "loc": {
@@ -1821,7 +1821,7 @@
           "leadingComments": [
             {
               "type": "CommentBlock",
-              "value": "*\n * @desc\n * undefined\n * @lineNumber\n * 90\n * @return\n * {string}\n ",
+              "value": "*\n * @desc\n * undefined\n * @lineNumber\n * 88\n * @return\n * {string}\n ",
               "start": 2388,
               "end": 2461,
               "loc": {
@@ -1857,7 +1857,7 @@
         "leadingComments": [
           {
             "type": "CommentBlock",
-            "value": "*\n * @desc\n * undefined\n * @lineNumber\n * 90\n * @return\n * {string}\n ",
+            "value": "*\n * @desc\n * undefined\n * @lineNumber\n * 88\n * @return\n * {string}\n ",
             "start": 2388,
             "end": 2461,
             "loc": {
@@ -1991,7 +1991,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * @desc\n * undefined\n * @lineNumber\n * 76\n * @param\n * {string} signalingUrl\n * @param\n * {string} roomId\n * @param\n * {ConnectionOptions} options\n * @param\n * {undefined} debug\n * @param\n * {undefined} isRelay\n * @return\n * {Connection}\n ",
+      "value": "*\n * @desc\n * undefined\n * @lineNumber\n * 74\n * @param\n * {string} signalingUrl\n * @param\n * {string} roomId\n * @param\n * {ConnectionOptions} options\n * @param\n * {undefined} debug\n * @param\n * {undefined} isRelay\n * @return\n * {Connection}\n ",
       "start": 1572,
       "end": 1818,
       "loc": {
@@ -2023,7 +2023,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * @desc\n * undefined\n * @lineNumber\n * 90\n * @return\n * {string}\n ",
+      "value": "*\n * @desc\n * undefined\n * @lineNumber\n * 88\n * @return\n * {string}\n ",
       "start": 2388,
       "end": 2461,
       "loc": {
@@ -3694,7 +3694,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * @desc\n * undefined\n * @lineNumber\n * 76\n * @param\n * {string} signalingUrl\n * @param\n * {string} roomId\n * @param\n * {ConnectionOptions} options\n * @param\n * {undefined} debug\n * @param\n * {undefined} isRelay\n * @return\n * {Connection}\n ",
+      "value": "*\n * @desc\n * undefined\n * @lineNumber\n * 74\n * @param\n * {string} signalingUrl\n * @param\n * {string} roomId\n * @param\n * {ConnectionOptions} options\n * @param\n * {undefined} debug\n * @param\n * {undefined} isRelay\n * @return\n * {Connection}\n ",
       "start": 1572,
       "end": 1818,
       "loc": {
@@ -4696,7 +4696,7 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * @desc\n * undefined\n * @lineNumber\n * 90\n * @return\n * {string}\n ",
+      "value": "*\n * @desc\n * undefined\n * @lineNumber\n * 88\n * @return\n * {string}\n ",
       "start": 2388,
       "end": 2461,
       "loc": {

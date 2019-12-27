@@ -56,7 +56,7 @@ interface AyameRegisterMessage {
   roomId: string;
   clientId: string;
   key?: string;
-  authnMetadata?: Record&lt;string, any&gt;;
+  authnMetadata?: any;
 }
 
 /**
@@ -70,13 +70,14 @@ class ConnectionBase {
   connectionState: string;
   stream: MediaStream | null;
   remoteStream: MediaStream | null;
-  authnMetadata: Record&lt;string, any&gt; | null;
-  authzMetadata: Record&lt;string, any&gt; | null;
+  authnMetadata: any;
+  authzMetadata: any;
   _ws: WebSocket | null;
   _pc: RTCPeerConnection | null;
   _callbacks: any;
   _removeCodec: boolean;
   _isOffer: boolean;
+  _isExistUser: boolean;
   _dataChannels: Array&lt;RTCDataChannel&gt;;
   _pcConfig: {
     iceServers: Array&lt;RTCIceServer&gt;;
@@ -119,6 +120,7 @@ class ConnectionBase {
     this.authzMetadata = null;
     this._dataChannels = [];
     this._isOffer = false;
+    this._isExistUser = false;
     this.connectionState = &apos;new&apos;;
     this._pcConfig = {
       iceServers: this.options.iceServers,
@@ -145,6 +147,7 @@ class ConnectionBase {
     this._pc = null;
     this._removeCodec = false;
     this._isOffer = false;
+    this._isExistUser = false;
     this._dataChannels = [];
     this.connectionState = &apos;new&apos;;
   }
@@ -195,14 +198,28 @@ class ConnectionBase {
                   this._traceLog(&apos;iceServers=&gt;&apos;, message.iceServers);
                   this._pcConfig.iceServers = message.iceServers;
                 }
-                if (!this._pc) this._createPeerConnection();
-                await this._sendOffer();
+                if (message.isExistUser === undefined) {
+                  if (!this._pc) {
+                    this._createPeerConnection();
+                  }
+                  await this._sendOffer();
+                } else {
+                  this._traceLog(&apos;isExistUser=&gt;&apos;, message.isExistUser);
+                  this._isExistUser = message.isExistUser;
+                  this._createPeerConnection();
+                  if (this._isExistUser === true) {
+                    await this._sendOffer();
+                  }
+                }
                 return resolve();
               } else if (message.type === &apos;reject&apos;) {
                 await this._disconnect();
                 this._callbacks.disconnect({ reason: message.reason || &apos;REJECTED&apos; });
                 return reject(&apos;REJECTED&apos;);
               } else if (message.type === &apos;offer&apos;) {
+                if (this._pc &amp;&amp; this._pc.signalingState === &apos;have-local-offer&apos;) {
+                  this._createPeerConnection();
+                }
                 this._setOffer(new RTCSessionDescription(message));
               } else if (message.type === &apos;answer&apos;) {
                 await this._setAnswer(new RTCSessionDescription(message));
@@ -240,7 +257,10 @@ class ConnectionBase {
         if (typeof videoTransceiver.setCodecPreferences !== &apos;undefined&apos;) {
           const videoCapabilities = RTCRtpSender.getCapabilities(&apos;video&apos;);
           if (videoCapabilities) {
-            const videoCodecs = getVideoCodecsFromString(this.options.video.codec || &apos;VP9&apos;, videoCapabilities.codecs);
+            let videoCodecs = [];
+            if (this.options.video.codec) {
+              videoCodecs = getVideoCodecsFromString(this.options.video.codec, videoCapabilities.codecs);
+            }
             this._traceLog(&apos;video codecs=&apos;, videoCodecs);
             videoTransceiver.setCodecPreferences(videoCodecs);
           }
@@ -254,7 +274,10 @@ class ConnectionBase {
         if (typeof videoTransceiver.setCodecPreferences !== &apos;undefined&apos;) {
           const videoCapabilities = RTCRtpSender.getCapabilities(&apos;video&apos;);
           if (videoCapabilities) {
-            const videoCodecs = getVideoCodecsFromString(this.options.video.codec || &apos;VP9&apos;, videoCapabilities.codecs);
+            let videoCodecs = [];
+            if (this.options.video.codec) {
+              videoCodecs = getVideoCodecsFromString(this.options.video.codec, videoCapabilities.codecs);
+            }
             this._traceLog(&apos;video codecs=&apos;, videoCodecs);
             videoTransceiver.setCodecPreferences(videoCodecs);
           }
@@ -439,7 +462,6 @@ class ConnectionBase {
   }
 
   async _setOffer(sessionDescription: RTCSessionDescription): Promise&lt;void&gt; {
-    this._createPeerConnection();
     try {
       if (!this._pc) {
         return;
