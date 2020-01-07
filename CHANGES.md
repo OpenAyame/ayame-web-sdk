@@ -11,6 +11,8 @@
 
 ## develop
 
+- [FIX] 切断時の他方の切断処理をエラーにならないように修正する
+
 ## 19.12.0
 
 - [UPDATE] authnMetadata, authzMetadata を any にする
