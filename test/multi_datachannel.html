@@ -42,21 +42,21 @@
         const channel = 'dataChannel';
         const anotherChannel = 'anotherChannel';
         options.clientId = clientId ? clientId : options.clientId;
+        conn = Ayame.connection(signalingUrl, roomId, options, true);
+        conn.on('open', (e) => {
+          conn.addDataChannel(channel);
+          conn.addDataChannel(anotherChannel);
+        });
+        conn.on('data', (e) => {
+          if (e.label == anotherChannel) {
+            messagesB = messagesB ? (messagesB + '\n' + e.data) : e.data;
+            document.querySelector("#messagesB").value = messagesB;
+          } else {
+            messagesA = messagesA ? (messagesA + '\n' + e.data) : e.data;
+            document.querySelector("#messagesA").value = messagesA;
+          }
+        });
         const startConn = async () => {
-          conn = Ayame.connection(signalingUrl, roomId, options, true);
-          conn.on('open', (e) => {
-            conn.addDataChannel(channel);
-            conn.addDataChannel(anotherChannel);
-          });
-          conn.on('data', (e) => {
-            if (e.label == anotherChannel) {
-              messagesB = messagesB ? (messagesB + '\n' + e.data) : e.data;
-              document.querySelector("#messagesB").value = messagesB;
-            } else {
-              messagesA = messagesA ? (messagesA + '\n' + e.data) : e.data;
-              document.querySelector("#messagesA").value = messagesA;
-            }
-          });
           await conn.connect(null);
         };
         const sendDataA = () => {

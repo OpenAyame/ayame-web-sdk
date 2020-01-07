@@ -29,9 +29,9 @@
         options.video.direction = 'sendonly';
         options.audio.direction = 'sendonly';
         const conn = Ayame.connection(signalingUrl, roomId, options, true);
+        conn.on('disconnect', (e) => console.log(e));
         const startConn = async () => {
           const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
-          conn.on('disconnect', (e) => console.log(e));
           await conn.connect(mediaStream);
           document.querySelector('#local-video').srcObject = mediaStream;
         };
