@@ -99,8 +99,6 @@ class ConnectionBase {
     await this._closePeerConnection();
     await this._closeWebSocketConnection();
     this.authzMetadata = null;
-    this._ws = null;
-    this._pc = null;
     this._removeCodec = false;
     this._isOffer = false;
     this._isExistUser = false;
@@ -501,16 +499,18 @@ class ConnectionBase {
       }
       if (!this._pc) return resolve();
       if (this._pc && this._pc.signalingState == 'closed') {
+        this._pc = null;
         return resolve();
       }
       this._pc.oniceconnectionstatechange = () => {};
       const timerId = setInterval(() => {
         if (!this._pc) {
           clearInterval(timerId);
-          return reject('PeerConnection Closing Error');
+          return resolve();
         }
         if (this._pc && this._pc.signalingState == 'closed') {
           clearInterval(timerId);
+          this._pc = null;
           return resolve();
         }
       }, 800);
@@ -521,14 +521,18 @@ class ConnectionBase {
   async _closeWebSocketConnection(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       if (!this._ws) return resolve();
-      if (this._ws && this._ws.readyState === 3) return resolve();
+      if (this._ws && this._ws.readyState === 3) {
+        this._ws = null;
+        return resolve();
+      }
       this._ws.onclose = () => {};
       const timerId = setInterval(() => {
         if (!this._ws) {
           clearInterval(timerId);
-          return reject('WebSocket Closing Error');
+          return resolve();
         }
         if (this._ws.readyState === 3) {
+          this._ws = null;
           clearInterval(timerId);
           return resolve();
         }
