@@ -509,8 +509,8 @@ class ConnectionBase {
           return resolve();
         }
         if (this._pc && this._pc.signalingState == 'closed') {
-          clearInterval(timerId);
           this._pc = null;
+          clearInterval(timerId);
           return resolve();
         }
       }, 400);
