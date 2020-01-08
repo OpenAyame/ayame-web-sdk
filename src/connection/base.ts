@@ -513,7 +513,7 @@ class ConnectionBase {
           this._pc = null;
           return resolve();
         }
-      }, 800);
+      }, 400);
       this._pc.close();
     });
   }
@@ -536,7 +536,7 @@ class ConnectionBase {
           clearInterval(timerId);
           return resolve();
         }
-      }, 800);
+      }, 400);
       this._ws && this._ws.close();
     });
   }
