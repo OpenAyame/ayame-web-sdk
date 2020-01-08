@@ -490,7 +490,7 @@ class ConnectionBase {
   }
 
   async _closePeerConnection(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<void>(resolve => {
       if (browser() === 'safari' && this._pc) {
         this._pc.oniceconnectionstatechange = () => {};
         this._pc.close();
@@ -519,7 +519,7 @@ class ConnectionBase {
   }
 
   async _closeWebSocketConnection(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<void>(resolve => {
       if (!this._ws) return resolve();
       if (this._ws && this._ws.readyState === 3) {
         this._ws = null;
