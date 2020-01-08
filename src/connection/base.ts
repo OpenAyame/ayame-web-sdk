@@ -471,20 +471,15 @@ class ConnectionBase {
   }
 
   async _closeDataChannel(dataChannel: RTCDataChannel): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (!dataChannel) return resolve();
+    return new Promise(resolve => {
       if (dataChannel.readyState === 'closed') return resolve();
       dataChannel.onclose = null;
       const timerId = setInterval(() => {
-        if (!dataChannel) {
-          clearInterval(timerId);
-          return reject('DataChannel Closing Error');
-        }
         if (dataChannel.readyState === 'closed') {
           clearInterval(timerId);
           return resolve();
         }
-      }, 800);
+      }, 400);
       dataChannel && dataChannel.close();
     });
   }
