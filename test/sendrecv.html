@@ -40,11 +40,6 @@
         conn.on('addstream', async (e) => {
           console.log(e.stream);
           remoteVideo.srcObject = e.stream;
-          try {
-            await remoteVideo.play();
-          } catch(error) {
-            console.log('error auto play:' + error);
-          }
         });
         const startConn = async () => {
           const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true})
