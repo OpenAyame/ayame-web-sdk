@@ -1,4 +1,4 @@
-/* @OpenAyame/ayame-web-sdk@19.12.0 */
+/* @OpenAyame/ayame-web-sdk@2020.1 */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -189,8 +189,6 @@
           await this._closePeerConnection();
           await this._closeWebSocketConnection();
           this.authzMetadata = null;
-          this._ws = null;
-          this._pc = null;
           this._removeCodec = false;
           this._isOffer = false;
           this._isExistUser = false;
@@ -574,27 +572,21 @@
           return this._dataChannels.find(channel => channel.label == label);
       }
       async _closeDataChannel(dataChannel) {
-          return new Promise((resolve, reject) => {
-              if (!dataChannel)
-                  return resolve();
+          return new Promise(resolve => {
               if (dataChannel.readyState === 'closed')
                   return resolve();
               dataChannel.onclose = null;
               const timerId = setInterval(() => {
-                  if (!dataChannel) {
-                      clearInterval(timerId);
-                      return reject('DataChannel Closing Error');
-                  }
                   if (dataChannel.readyState === 'closed') {
                       clearInterval(timerId);
                       return resolve();
                   }
-              }, 800);
+              }, 400);
               dataChannel && dataChannel.close();
           });
       }
       async _closePeerConnection() {
-          return new Promise((resolve, reject) => {
+          return new Promise(resolve => {
               if (browser() === 'safari' && this._pc) {
                   this._pc.oniceconnectionstatechange = () => { };
                   this._pc.close();
@@ -604,39 +596,44 @@
               if (!this._pc)
                   return resolve();
               if (this._pc && this._pc.signalingState == 'closed') {
+                  this._pc = null;
                   return resolve();
               }
               this._pc.oniceconnectionstatechange = () => { };
               const timerId = setInterval(() => {
                   if (!this._pc) {
                       clearInterval(timerId);
-                      return reject('PeerConnection Closing Error');
+                      return resolve();
                   }
                   if (this._pc && this._pc.signalingState == 'closed') {
+                      this._pc = null;
                       clearInterval(timerId);
                       return resolve();
                   }
-              }, 800);
+              }, 400);
               this._pc.close();
           });
       }
       async _closeWebSocketConnection() {
-          return new Promise((resolve, reject) => {
+          return new Promise(resolve => {
               if (!this._ws)
                   return resolve();
-              if (this._ws && this._ws.readyState === 3)
+              if (this._ws && this._ws.readyState === 3) {
+                  this._ws = null;
                   return resolve();
+              }
               this._ws.onclose = () => { };
               const timerId = setInterval(() => {
                   if (!this._ws) {
                       clearInterval(timerId);
-                      return reject('WebSocket Closing Error');
+                      return resolve();
                   }
                   if (this._ws.readyState === 3) {
+                      this._ws = null;
                       clearInterval(timerId);
                       return resolve();
                   }
-              }, 800);
+              }, 400);
               this._ws && this._ws.close();
           });
       }
