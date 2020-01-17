@@ -23,7 +23,7 @@
       <div style="float:left;">
         <video id="local-video" muted autoplay="" style="width: 400px; height: 300px; border: 1px solid black;"></video>
       </div>
-      <div style="float:right;">
+      <div style="float:left; margin-left: 20px;">
         <video id="remote-video" autoplay style="width: 400px; height: 300px; border: 1px solid black;"></video>
       </div>
       <script src="../dist/ayame.js"></script>
@@ -37,22 +37,17 @@
           options.signalingKey = signalingKey;
         }
         options.clientId = clientId ? clientId : "";
+        options.video.codec = videoCodec;
+        conn = Ayame.connection(signalingUrl, roomId, options, true);
+        conn.on('open', ({authzMetadata}) => console.log(authzMetadata));
+        conn.on('disconnect', (e) => console.log(e));
+        conn.on('addstream', async (e) => {
+          console.log(e.stream);
+          remoteVideo.srcObject = e.stream;
+        });
         const startConn = async () => {
-          options.video.codec = videoCodec;
-          conn = Ayame.connection(signalingUrl, roomId, options, true);
           const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true})
           const authnMetadata = {hoge: "fuga"};
-          conn.on('open', ({authzMetadata}) => console.log(authzMetadata));
-          conn.on('disconnect', (e) => console.log(e));
-          conn.on('addstream', async (e) => {
-            console.log(e.stream);
-            remoteVideo.srcObject = e.stream;
-            try {
-              await remoteVideo.play();
-            } catch(error) {
-              console.log('error auto play:' + error);
-            }
-          });
           await conn.connect(mediaStream, {authnMetadata});
           document.querySelector('#local-video').srcObject = mediaStream;
         };

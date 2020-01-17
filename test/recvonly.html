@@ -18,7 +18,7 @@
         <button onclick="conn.disconnect();">切断</button>
       </div>
       <div style="float:right;">
-        <video id="remote-video" autoplay="" style="width: 400px; height: 300px; border: 1px solid black;"></video>
+        <video id="remote-video" autoplay controls style="width: 400px; height: 300px; border: 1px solid black;"></video>
       </div>
       <script src="../dist/ayame.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.7.0/qs.min.js"></script>
@@ -29,13 +29,13 @@
         options.video.direction = 'recvonly';
         options.audio.direction = 'recvonly';
         const conn = Ayame.connection(signalingUrl, roomId, options, true);
+        conn.on('open', ({authzMetadata}) => console.log(authzMetadata));
+        conn.on('disconnect', (e) => console.log(e));
+        conn.on('addstream', (e) => {
+          document.querySelector('#remote-video').srcObject = e.stream;
+        });
         const startConn = async () => {
           await conn.connect(null);
-          conn.on('open', ({authzMetadata}) => console.log(authzMetadata));
-          conn.on('disconnect', (e) => console.log(e));
-          conn.on('addstream', (e) => {
-            document.querySelector('#remote-video').srcObject = e.stream;
-          });
         };
         document.querySelector("#roomIdInput").value = roomId;
         document.querySelector("#clientIdInput").value = options.clientId;

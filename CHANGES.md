@@ -11,6 +11,19 @@
 
 ## develop
 
+## 2020.1.0
+
+**リリース番号フォーマットを変更しました**
+
+- [FIX] 再度の接続時にオブジェクトを作成しないようにする
+    - @Hexa
+- [FIX] 切断時の他方の切断処理をエラーにならないように修正する
+    - @Hexa
+- [UPDATE] close 待ち間隔を 400ms に変更する
+    - @Hexa
+- [UPDATE] テストの整理
+    - @Hexa
+
 ## 19.12.0
 
 - [UPDATE] authnMetadata, authzMetadata を any にする
