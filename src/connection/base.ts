@@ -114,6 +114,7 @@ class ConnectionBase {
       this._ws = new WebSocket(this.signalingUrl);
       this._ws.onclose = async () => {
         await this._disconnect();
+        this._callbacks.disconnect({ reason: 'WS-CLOSED' });
         return reject('WS-CLOSED');
       };
       this._ws.onerror = async () => {

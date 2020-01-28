@@ -88,7 +88,12 @@ class Connection extends ConnectionBase {
    * @desc PeerConnection  接続を切断します。
    */
   public async disconnect(): Promise<void> {
-    await this._disconnect();
+    return new Promise(resolve => {
+      if (this._ws) {
+        this._ws.close();
+      }
+      return resolve();
+    });
   }
 }
 
