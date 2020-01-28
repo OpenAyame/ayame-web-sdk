@@ -1,4 +1,4 @@
-/* @OpenAyame/ayame-web-sdk@2020.1 */
+/* @OpenAyame/ayame-web-sdk@2020.1.1 */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -203,6 +203,7 @@
               this._ws = new WebSocket(this.signalingUrl);
               this._ws.onclose = async () => {
                   await this._disconnect();
+                  this._callbacks.disconnect({ reason: 'WS-CLOSED' });
                   return reject('WS-CLOSED');
               };
               this._ws.onerror = async () => {
@@ -727,7 +728,12 @@
        * @desc PeerConnection  接続を切断します。
        */
       async disconnect() {
-          await this._disconnect();
+          return new Promise(resolve => {
+              if (this._ws) {
+                  this._ws.close();
+              }
+              return resolve();
+          });
       }
   }
 
