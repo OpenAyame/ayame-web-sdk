@@ -6,14 +6,12 @@
 
 Web SDK for WebRTC Signaling Server Ayame
 
-
 ## 動作確認環境
 
-- Chrome 77.0.3865.90
-- Chrome Canary 79.0.3933.0
-- Safari 13.0.1 (14608.2.11.1.11)
-- Firefox 69.0.2
-- Microsoft Edge Beta 78.2.0.276.11
+- Chrome 79.0.3945.130
+- Safari 13.0.4 (14608.4.9.1.4)
+- Firefox 72.0.2
+- Microsoft Edge 79.0.309.71
 
 ## サンプル
 
@@ -30,7 +28,7 @@ https://openayame.github.io/ayame-web-sdk/index.html
 以下のURL を
 
 ```
-<script src="https://unpkg.com/@open-ayame/ayame-web-sdk@19.9.0/dist/ayame.min.js"></script>
+<script src="https://unpkg.com/@open-ayame/ayame-web-sdk@2020.1.1/dist/ayame.min.js"></script>
 ```
 
 のように指定すると、npm などを経由せず簡単に Ayame を利用することができます。
@@ -38,13 +36,13 @@ https://openayame.github.io/ayame-web-sdk/index.html
 ### unpkg
 
 ```
-https://unpkg.com/@open-ayame/ayame-web-sdk@19.9.0/dist/ayame.min.js
+https://unpkg.com/@open-ayame/ayame-web-sdk@2020.1.1/dist/ayame.min.js
 ```
 
 ### jsdelivr
 
 ```
-https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@19.9.0/dist/ayame.min.js
+https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2020.1.1/dist/ayame.min.js
 ```
 
 ### 双方向送受信接続する
@@ -179,4 +177,3 @@ Ayame Web SDK はオープンソースソフトウェアですが、開発につ
 ベストエフォートで運用しています。
 
 https://discord.gg/mDesh2E
-
