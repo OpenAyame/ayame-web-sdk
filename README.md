@@ -6,12 +6,14 @@
 
 Web SDK for WebRTC Signaling Server Ayame
 
-## 動作確認環境
+## 動作環境
 
-- Chrome 79.0.3945.130
-- Safari 13.0.4 (14608.4.9.1.4)
-- Firefox 72.0.2
-- Microsoft Edge 79.0.309.71
+**最新版を利用してください**
+
+- Google Chrome
+- Apple Safari
+- Mozilla Firefox
+- Microsoft Edge
 
 ## サンプル
 
@@ -103,26 +105,6 @@ const startConn = async () => {
 startConn();
 ```
 
-### コーデックを H.264 指定で接続する
-
-
-- [オンラインサンプル](https://openayame.github.io/ayame-web-sdk-samples/codec.html)
-
-```javascript
-const conn = Ayame.connection('wss://example.com/ws', 'test-room');
-conn.options.video.codec = 'H264';
-const startConn = async () => {
-    const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
-    await conn.connect(mediaStream);
-    conn.on('disconnect', (e) => console.log(e));
-    conn.on('addstream', (e) => {
-        document.querySelector('#remote-video').srcObject = e.stream;
-    });
-    document.querySelector('#local-video').srcObject = mediaStream;
-};
-startConn();
-```
-
 ### datachannel でデータを送受信する
 
 
@@ -150,7 +132,8 @@ const sendData = (data) => {
 Apache License 2.0
 
 ```
-Copyright 2019, Shiguredo Inc, Kyoko Kadowaki (kdxu)
+Copyright 2019, Kyoko Kadowaki aka kdxu (Original Author)
+Copyright 2019-2020, Shiguredo Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
