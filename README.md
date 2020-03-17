@@ -6,14 +6,14 @@
 
 Web SDK for WebRTC Signaling Server Ayame
 
+## 動作環境
 
-## 動作確認環境
+**最新版を利用してください**
 
-- Chrome 77.0.3865.90
-- Chrome Canary 79.0.3933.0
-- Safari 13.0.1 (14608.2.11.1.11)
-- Firefox 69.0.2
-- Microsoft Edge Beta 78.2.0.276.11
+- Google Chrome
+- Apple Safari
+- Mozilla Firefox
+- Microsoft Edge
 
 ## サンプル
 
@@ -30,7 +30,7 @@ https://openayame.github.io/ayame-web-sdk/index.html
 以下のURL を
 
 ```
-<script src="https://unpkg.com/@open-ayame/ayame-web-sdk@19.9.0/dist/ayame.min.js"></script>
+<script src="https://unpkg.com/@open-ayame/ayame-web-sdk@2020.1.1/dist/ayame.min.js"></script>
 ```
 
 のように指定すると、npm などを経由せず簡単に Ayame を利用することができます。
@@ -38,13 +38,13 @@ https://openayame.github.io/ayame-web-sdk/index.html
 ### unpkg
 
 ```
-https://unpkg.com/@open-ayame/ayame-web-sdk@19.9.0/dist/ayame.min.js
+https://unpkg.com/@open-ayame/ayame-web-sdk@2020.1.1/dist/ayame.min.js
 ```
 
 ### jsdelivr
 
 ```
-https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@19.9.0/dist/ayame.min.js
+https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2020.1.1/dist/ayame.min.js
 ```
 
 ### 双方向送受信接続する
@@ -105,26 +105,6 @@ const startConn = async () => {
 startConn();
 ```
 
-### コーデックを H.264 指定で接続する
-
-
-- [オンラインサンプル](https://openayame.github.io/ayame-web-sdk-samples/codec.html)
-
-```javascript
-const conn = Ayame.connection('wss://example.com/ws', 'test-room');
-conn.options.video.codec = 'H264';
-const startConn = async () => {
-    const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
-    await conn.connect(mediaStream);
-    conn.on('disconnect', (e) => console.log(e));
-    conn.on('addstream', (e) => {
-        document.querySelector('#remote-video').srcObject = e.stream;
-    });
-    document.querySelector('#local-video').srcObject = mediaStream;
-};
-startConn();
-```
-
 ### datachannel でデータを送受信する
 
 
@@ -152,7 +132,8 @@ const sendData = (data) => {
 Apache License 2.0
 
 ```
-Copyright 2019, Shiguredo Inc, Kyoko Kadowaki (kdxu)
+Copyright 2019, Kyoko Kadowaki aka kdxu (Original Author)
+Copyright 2019-2020, Shiguredo Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -179,4 +160,3 @@ Ayame Web SDK はオープンソースソフトウェアですが、開発につ
 ベストエフォートで運用しています。
 
 https://discord.gg/mDesh2E
-
