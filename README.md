@@ -157,6 +157,6 @@ Ayame Web SDK はオープンソースソフトウェアですが、開発につ
 
 ## Discord
 
-ベストエフォートで運用しています。
+アドバイスはしますが、サポートはしません。
 
 https://discord.gg/mDesh2E
