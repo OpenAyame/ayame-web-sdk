@@ -30,7 +30,7 @@ https://openayame.github.io/ayame-web-sdk/index.html
 以下のURL を
 
 ```
-<script src="https://unpkg.com/@open-ayame/ayame-web-sdk@2020.1.1/dist/ayame.min.js"></script>
+<script src="https://unpkg.com/@open-ayame/ayame-web-sdk@2020.1.2/dist/ayame.min.js"></script>
 ```
 
 のように指定すると、npm などを経由せず簡単に Ayame を利用することができます。
@@ -38,13 +38,13 @@ https://openayame.github.io/ayame-web-sdk/index.html
 ### unpkg
 
 ```
-https://unpkg.com/@open-ayame/ayame-web-sdk@2020.1.1/dist/ayame.min.js
+https://unpkg.com/@open-ayame/ayame-web-sdk@2020.1.2/dist/ayame.min.js
 ```
 
 ### jsdelivr
 
 ```
-https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2020.1.1/dist/ayame.min.js
+https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2020.1.2/dist/ayame.min.js
 ```
 
 ### 双方向送受信接続する
