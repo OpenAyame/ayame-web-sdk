@@ -144,7 +144,20 @@ class ConnectionBase {
               }
               const message = JSON.parse(event.data);
               if (message.type === 'ping') {
-                this._sendWs({ type: 'pong' });
+                if (message.stats) {
+                  if (!this._pc) {
+                    this._sendWs({ type: 'pong' });
+                  } else {
+                    const reports: Record<string, any> = [];
+                    const stats = await this._pc.getStats();
+                    stats.forEach(report => {
+                      reports.push(report);
+                    });
+                    this._sendWs({ type: 'pong', stats: reports });
+                  }
+                } else {
+                  this._sendWs({ type: 'pong' });
+                }
               } else if (message.type === 'bye') {
                 this._callbacks.bye(event);
                 await this._disconnect();
