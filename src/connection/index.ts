@@ -52,7 +52,10 @@ class Connection extends ConnectionBase {
    * @param {RTCDataChannelInit|undefined} [options=undefined] - dataChannel の init オプション
    * @return {RTCDataChannel} dataChannel
    */
-  public async createDataChannel(label: string, options: RTCDataChannelInit | undefined = undefined): Promise<RTCDataChannel> {
+  public async createDataChannel(
+    label: string,
+    options: RTCDataChannelInit | undefined = undefined
+  ): Promise<RTCDataChannel> {
     return await this._createDataChannel(label, options);
   }
 
