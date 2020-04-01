@@ -39,21 +39,34 @@
         const options = Ayame.defaultOptions;
         let messagesA = null;
         let messagesB = null;
-        const channel = 'dataChannel';
-        const anotherChannel = 'anotherChannel';
+        const label = 'dataChannel';
+        const anotherLabel = 'anotherChannel';
         options.clientId = clientId ? clientId : options.clientId;
         conn = Ayame.connection(signalingUrl, roomId, options, true);
-        conn.on('open', (e) => {
-          conn.addDataChannel(channel);
-          conn.addDataChannel(anotherChannel);
+        let dataChannel = null;
+        let anotherDataChannel = null;
+        conn.on('open', async (e) => {
+          dataChannel = await conn.createDataChannel(label);
+          if (dataChannel) {
+            dataChannel.onmessage = onMessageA;
+          }
+          anotherDataChannel = await conn.createDataChannel(anotherLabel);
+          if (anotherDataChannel) {
+            anotherDataChannel.onmessage = onMessageB;
+          }
         });
-        conn.on('data', (e) => {
-          if (e.label == anotherChannel) {
-            messagesB = messagesB ? (messagesB + '\n' + e.data) : e.data;
-            document.querySelector("#messagesB").value = messagesB;
-          } else {
-            messagesA = messagesA ? (messagesA + '\n' + e.data) : e.data;
-            document.querySelector("#messagesA").value = messagesA;
+        conn.on('datachannel', (channel) => {
+          console.log('=== datachannel ===');
+          if (channel.label === label) {
+            if (!dataChannel) {
+              dataChannel = channel;
+              dataChannel.onmessage = onMessageA;
+            }
+          } else if (channel.label === anotherLabel) {
+            if (!anotherDataChannel) {
+              anotherDataChannel = channel;
+              anotherDataChannel.onmessage = onMessageB;
+            }
           }
         });
         const startConn = async () => {
@@ -61,14 +74,27 @@
         };
         const sendDataA = () => {
           const data = document.querySelector("#sendDataInputA").value;
-          conn.sendData(data);
+          if (dataChannel && dataChannel.readyState === 'open') {
+            dataChannel.send(data);
+          }
         };
         const sendDataB = () => {
           const data = document.querySelector("#sendDataInputB").value;
-          conn.sendData(data, anotherChannel);
+          if (anotherDataChannel && anotherDataChannel.readyState === 'open') {
+            anotherDataChannel.send(data);
+          }
         };
         document.querySelector("#roomIdInput").value = roomId;
         document.querySelector("#clientIdInput").value = options.clientId;
+
+        function onMessageA(e) {
+          messagesA = messagesA ? (messagesA + '\n' + e.data) : e.data;
+          document.querySelector("#messagesA").value = messagesA;
+        }
+        function onMessageB(e) {
+          messagesB = messagesB ? (messagesB + '\n' + e.data) : e.data;
+          document.querySelector("#messagesB").value = messagesB;
+        }
       </script>
   </body>
 </html>

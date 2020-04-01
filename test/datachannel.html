@@ -27,24 +27,37 @@
         let conn = null;
         const options = Ayame.defaultOptions;
         options.clientId = clientId ? clientId : options.clientId;
-        const channel = 'dataChannel';
+        const label = 'dataChannel';
+        let dataChannel = null;
         const startConn = async () => {
           conn = Ayame.connection(signalingUrl, roomId, options, true);
-          conn.on('open', (e) => {
-            conn.addDataChannel(channel);
+          conn.on('open', async (e) => {
+            dataChannel = await conn.createDataChannel(label);
+            if (dataChannel) {
+              dataChannel.onmessage = onMessage;
+            }
           });
-          conn.on('data', (e) => {
-            messages = messages ? (messages + '\n' + e.data) : e.data;
-            document.querySelector("#messages").value = messages;
+          conn.on('datachannel', (channel) => {
+            if (!dataChannel) {
+              dataChannel = channel;
+              dataChannel.onmessage = onMessage;
+            }
           });
           await conn.connect(null);
         };
         const sendData = () => {
           const data = document.querySelector("#sendDataInput").value;
-          conn.sendData(data);
+          if (dataChannel && dataChannel.readyState === 'open') {
+            dataChannel.send(data);
+          }
         };
         document.querySelector("#roomIdInput").value = roomId;
         document.querySelector("#clientIdInput").value = options.clientId;
+
+        function onMessage(e) {
+          messages = messages ? (messages + '\n' + e.data) : e.data;
+          document.querySelector("#messages").value = messages;
+        }
       </script>
   </body>
 </html>
