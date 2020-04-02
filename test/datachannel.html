@@ -43,6 +43,9 @@
               dataChannel.onmessage = onMessage;
             }
           });
+          conn.on('disconnect', () => {
+            dataChannel = null;
+          });
           await conn.connect(null);
         };
         const sendData = () => {

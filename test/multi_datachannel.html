@@ -56,7 +56,6 @@
           }
         });
         conn.on('datachannel', (channel) => {
-          console.log('=== datachannel ===');
           if (channel.label === label) {
             if (!dataChannel) {
               dataChannel = channel;
@@ -68,6 +67,10 @@
               anotherDataChannel.onmessage = onMessageB;
             }
           }
+        });
+        conn.on('disconnect', () => {
+          dataChannel = null;
+          anotherDataChannel = null;
         });
         const startConn = async () => {
           await conn.connect(null);
