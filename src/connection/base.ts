@@ -287,8 +287,8 @@ class ConnectionBase {
     }
   }
 
-  async _createDataChannel(label: string, options: RTCDataChannelInit | undefined): Promise<RTCDataChannel> {
-    return new Promise<RTCDataChannel>((resolve, reject) => {
+  async _createDataChannel(label: string, options: RTCDataChannelInit | undefined): Promise<RTCDataChannel | null> {
+    return new Promise<RTCDataChannel | null>((resolve, reject) => {
       if (!this._pc) return reject('PeerConnection Does Not Ready');
       if (this._isOffer) return reject('PeerConnection Has Local Offer');
       let dataChannel = this._findDataChannel(label);
@@ -315,6 +315,7 @@ class ConnectionBase {
         this._dataChannels.push(dataChannel);
         return resolve(dataChannel);
       }
+      return resolve(null);
     });
   }
 
