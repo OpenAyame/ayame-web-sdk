@@ -155,18 +155,11 @@ class ConnectionBase {
                   this._traceLog('iceServers=>', message.iceServers);
                   this._pcConfig.iceServers = message.iceServers;
                 }
-                if (message.isExistUser === undefined) {
-                  if (!this._pc) {
-                    this._createPeerConnection();
-                  }
+                this._traceLog('isExistUser=>', message.isExistUser);
+                this._isExistUser = message.isExistUser;
+                this._createPeerConnection();
+                if (this._isExistUser === true) {
                   await this._sendOffer();
-                } else {
-                  this._traceLog('isExistUser=>', message.isExistUser);
-                  this._isExistUser = message.isExistUser;
-                  this._createPeerConnection();
-                  if (this._isExistUser === true) {
-                    await this._sendOffer();
-                  }
                 }
                 return resolve();
               } else if (message.type === 'reject') {
