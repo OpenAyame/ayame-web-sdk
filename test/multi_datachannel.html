@@ -72,16 +72,10 @@
           await conn.connect(null);
         };
         const sendDataA = () => {
-          const data = document.querySelector("#sendDataInputA").value;
-          if (dataChannel && dataChannel.readyState === 'open') {
-            dataChannel.send(data);
-          }
+          sendData("#sendDataInputA", dataChannel)
         };
         const sendDataB = () => {
-          const data = document.querySelector("#sendDataInputB").value;
-          if (anotherDataChannel && anotherDataChannel.readyState === 'open') {
-            anotherDataChannel.send(data);
-          }
+          sendData("#sendDataInputB", anotherDataChannel)
         };
         document.querySelector("#roomIdInput").value = roomId;
         document.querySelector("#clientIdInput").value = options.clientId;
@@ -93,6 +87,12 @@
         function onMessageB(e) {
           messagesB = messagesB ? (messagesB + '\n' + e.data) : e.data;
           document.querySelector("#messagesB").value = messagesB;
+        }
+        function sendData(id, channel) {
+          const data = document.querySelector(id).value;
+          if (channel && channel.readyState === 'open') {
+            channel.send(data);
+          }
         }
       </script>
   </body>
