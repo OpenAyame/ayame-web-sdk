@@ -23,7 +23,7 @@
     - @Hexa
 - [CHANGE] Ayame が isExistUser を送ってくる場合のみ接続できるようにする
     - @Hexa
-- [FIX] bye 受信時に on('disconnect') コールバックが発火するように修正する
+- [FIX] bye を受信した場合にも on('disconnect') コールバックが発火するように修正する
     - @Hexa
 
 ## 2020.1.2
