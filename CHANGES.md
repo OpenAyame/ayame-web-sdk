@@ -11,9 +11,29 @@
 
 ## develop
 
+## 2020.2
+
+**DataChannel 関連で下位互換性がなくなっていますので注意してください**
+
+- [CHANGE] addDataChannel, sendData を削除する
+    - @Hexa
+- [CHANGE] on('data') コールバックを削除する
+    - @Hexa
+- [ADD] createDataChannel を追加する
+    - @Hexa
+- [ADD] on('datachannel') コールバックを追加する
+    - @Hexa
+- [FIX] offer 側の場合のみ RTCDataChannel オブジェクトを作成するように修正する
+    - @Hexa
+- [CHANGE] Ayame が isExistUser を送ってくる場合のみ接続できるようにする
+    - @Hexa
+- [FIX] bye を受信した場合にも on('disconnect') コールバックが発火するように修正する
+    - @Hexa
+
 ## 2020.1.2
 
 - [FIX] 依存ライブラリを最新にする
+    - @voluntas
 
 ## 2020.1.1
 

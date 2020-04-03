@@ -88,7 +88,7 @@ class ConnectionBase {
       addstream: () => {},
       removestream: () => {},
       bye: () => {},
-      data: () => {}
+      datachannel: () => {}
     };
   }
 
@@ -147,7 +147,6 @@ class ConnectionBase {
                 this._sendWs({ type: 'pong' });
               } else if (message.type === 'bye') {
                 this._callbacks.bye(event);
-                await this._disconnect();
                 return resolve();
               } else if (message.type === 'accept') {
                 this.authzMetadata = message.authzMetadata;
@@ -155,18 +154,11 @@ class ConnectionBase {
                   this._traceLog('iceServers=>', message.iceServers);
                   this._pcConfig.iceServers = message.iceServers;
                 }
-                if (message.isExistUser === undefined) {
-                  if (!this._pc) {
-                    this._createPeerConnection();
-                  }
+                this._traceLog('isExistUser=>', message.isExistUser);
+                this._isExistUser = message.isExistUser;
+                this._createPeerConnection();
+                if (this._isExistUser === true) {
                   await this._sendOffer();
-                } else {
-                  this._traceLog('isExistUser=>', message.isExistUser);
-                  this._isExistUser = message.isExistUser;
-                  this._createPeerConnection();
-                  if (this._isExistUser === true) {
-                    await this._sendOffer();
-                  }
                 }
                 return resolve();
               } else if (message.type === 'reject') {
@@ -294,33 +286,35 @@ class ConnectionBase {
     }
   }
 
-  async _addDataChannel(label: string, options: RTCDataChannelInit | undefined): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
+  async _createDataChannel(label: string, options: RTCDataChannelInit | undefined): Promise<RTCDataChannel | null> {
+    return new Promise<RTCDataChannel | null>((resolve, reject) => {
       if (!this._pc) return reject('PeerConnection Does Not Ready');
       if (this._isOffer) return reject('PeerConnection Has Local Offer');
       let dataChannel = this._findDataChannel(label);
       if (dataChannel) {
         return reject('DataChannel Already Exists!');
       }
-      dataChannel = this._pc.createDataChannel(label, options);
-      dataChannel.onclose = (event: Record<string, any>) => {
-        this._traceLog('datachannel onclosed=>', event);
-        this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != label);
-      };
-      dataChannel.onerror = (event: Record<string, any>) => {
-        this._traceLog('datachannel onerror=>', event);
-        this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != label);
-      };
-      dataChannel.onmessage = (event: any) => {
-        this._traceLog('datachannel onmessage=>', event.data);
-        event.label = label;
-        this._callbacks.data(event);
-      };
-      dataChannel.onopen = (event: Record<string, any>) => {
-        this._traceLog('datachannel onopen=>', event);
-      };
-      this._dataChannels.push(dataChannel);
-      return resolve();
+      if (this._isExistUser) {
+        dataChannel = this._pc.createDataChannel(label, options);
+        dataChannel.onclose = (event: Record<string, any>) => {
+          this._traceLog('datachannel onclosed=>', event);
+          this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != label);
+        };
+        dataChannel.onerror = (event: Record<string, any>) => {
+          this._traceLog('datachannel onerror=>', event);
+          this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != label);
+        };
+        dataChannel.onmessage = (event: any) => {
+          this._traceLog('datachannel onmessage=>', event.data);
+          event.label = label;
+        };
+        dataChannel.onopen = (event: Record<string, any>) => {
+          this._traceLog('datachannel onopen=>', event);
+        };
+        this._dataChannels.push(dataChannel);
+        return resolve(dataChannel);
+      }
+      return resolve(null);
     });
   }
 
@@ -343,7 +337,6 @@ class ConnectionBase {
     dataChannel.onmessage = (event: any) => {
       this._traceLog('datachannel onmessage=>', event.data);
       event.label = label;
-      this._callbacks.data(event);
     };
     if (!this._findDataChannel(label)) {
       this._dataChannels.push(event.channel);
@@ -356,6 +349,7 @@ class ConnectionBase {
         }
       });
     }
+    this._callbacks.datachannel(dataChannel);
   }
 
   async _sendOffer() {
