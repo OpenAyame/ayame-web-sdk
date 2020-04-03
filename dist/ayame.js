@@ -1,4 +1,4 @@
-/* @OpenAyame/ayame-web-sdk@2020.1.1 */
+/* @OpenAyame/ayame-web-sdk@2020.2.1 */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -171,7 +171,7 @@
               addstream: () => { },
               removestream: () => { },
               bye: () => { },
-              data: () => { }
+              datachannel: () => { }
           };
       }
       /**
@@ -237,7 +237,6 @@
                               }
                               else if (message.type === 'bye') {
                                   this._callbacks.bye(event);
-                                  await this._disconnect();
                                   return resolve();
                               }
                               else if (message.type === 'accept') {
@@ -246,19 +245,11 @@
                                       this._traceLog('iceServers=>', message.iceServers);
                                       this._pcConfig.iceServers = message.iceServers;
                                   }
-                                  if (message.isExistUser === undefined) {
-                                      if (!this._pc) {
-                                          this._createPeerConnection();
-                                      }
+                                  this._traceLog('isExistUser=>', message.isExistUser);
+                                  this._isExistUser = message.isExistUser;
+                                  this._createPeerConnection();
+                                  if (this._isExistUser === true) {
                                       await this._sendOffer();
-                                  }
-                                  else {
-                                      this._traceLog('isExistUser=>', message.isExistUser);
-                                      this._isExistUser = message.isExistUser;
-                                      this._createPeerConnection();
-                                      if (this._isExistUser === true) {
-                                          await this._sendOffer();
-                                      }
                                   }
                                   return resolve();
                               }
@@ -396,7 +387,7 @@
               this._pc = pc;
           }
       }
-      async _addDataChannel(label, options) {
+      async _createDataChannel(label, options) {
           return new Promise((resolve, reject) => {
               if (!this._pc)
                   return reject('PeerConnection Does Not Ready');
@@ -406,25 +397,27 @@
               if (dataChannel) {
                   return reject('DataChannel Already Exists!');
               }
-              dataChannel = this._pc.createDataChannel(label, options);
-              dataChannel.onclose = (event) => {
-                  this._traceLog('datachannel onclosed=>', event);
-                  this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != label);
-              };
-              dataChannel.onerror = (event) => {
-                  this._traceLog('datachannel onerror=>', event);
-                  this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != label);
-              };
-              dataChannel.onmessage = (event) => {
-                  this._traceLog('datachannel onmessage=>', event.data);
-                  event.label = label;
-                  this._callbacks.data(event);
-              };
-              dataChannel.onopen = (event) => {
-                  this._traceLog('datachannel onopen=>', event);
-              };
-              this._dataChannels.push(dataChannel);
-              return resolve();
+              if (this._isExistUser) {
+                  dataChannel = this._pc.createDataChannel(label, options);
+                  dataChannel.onclose = (event) => {
+                      this._traceLog('datachannel onclosed=>', event);
+                      this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != label);
+                  };
+                  dataChannel.onerror = (event) => {
+                      this._traceLog('datachannel onerror=>', event);
+                      this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != label);
+                  };
+                  dataChannel.onmessage = (event) => {
+                      this._traceLog('datachannel onmessage=>', event.data);
+                      event.label = label;
+                  };
+                  dataChannel.onopen = (event) => {
+                      this._traceLog('datachannel onopen=>', event);
+                  };
+                  this._dataChannels.push(dataChannel);
+                  return resolve(dataChannel);
+              }
+              return resolve(null);
           });
       }
       _onDataChannel(event) {
@@ -449,7 +442,6 @@
           dataChannel.onmessage = (event) => {
               this._traceLog('datachannel onmessage=>', event.data);
               event.label = label;
-              this._callbacks.data(event);
           };
           if (!this._findDataChannel(label)) {
               this._dataChannels.push(event.channel);
@@ -464,6 +456,7 @@
                   }
               });
           }
+          this._callbacks.datachannel(dataChannel);
       }
       async _sendOffer() {
           if (!this._pc) {
@@ -688,12 +681,13 @@
           await this._signaling();
       }
       /**
-       * @desc Datachannel を追加します。
+       * @desc Datachannel を作成します。
        * @param {string} label - dataChannel の label
        * @param {RTCDataChannelInit|undefined} [options=undefined] - dataChannel の init オプション
+       * @return {RTCDataChannel|null} 生成されたデータチャネル
        */
-      async addDataChannel(label, options = undefined) {
-          await this._addDataChannel(label, options);
+      async createDataChannel(label, options = undefined) {
+          return await this._createDataChannel(label, options);
       }
       /**
        * @desc Datachannel を削除します。
@@ -707,21 +701,6 @@
           }
           else {
               throw new Error('data channel is not exist or open');
-          }
-      }
-      /**
-       * @desc Datachannel でデータを送信します。
-       * @param {any} params - 送信するデータ
-       * @param {string} [label='dataChannel'] - 指定する dataChannel の label
-       */
-      sendData(params, label = 'dataChannel') {
-          this._traceLog('datachannel sendData=>', params);
-          const dataChannel = this._findDataChannel(label);
-          if (dataChannel && dataChannel.readyState === 'open') {
-              dataChannel.send(params);
-          }
-          else {
-              throw new Error('datachannel is not open');
           }
       }
       /**
