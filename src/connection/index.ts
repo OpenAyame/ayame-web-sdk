@@ -47,12 +47,16 @@ class Connection extends ConnectionBase {
   }
 
   /**
-   * @desc Datachannel を追加します。
+   * @desc Datachannel を作成します。
    * @param {string} label - dataChannel の label
    * @param {RTCDataChannelInit|undefined} [options=undefined] - dataChannel の init オプション
+   * @return {RTCDataChannel|null} 生成されたデータチャネル
    */
-  public async addDataChannel(label: string, options: RTCDataChannelInit | undefined = undefined): Promise<void> {
-    await this._addDataChannel(label, options);
+  public async createDataChannel(
+    label: string,
+    options: RTCDataChannelInit | undefined = undefined
+  ): Promise<RTCDataChannel | null> {
+    return await this._createDataChannel(label, options);
   }
 
   /**
@@ -66,21 +70,6 @@ class Connection extends ConnectionBase {
       await this._closeDataChannel(dataChannel);
     } else {
       throw new Error('data channel is not exist or open');
-    }
-  }
-
-  /**
-   * @desc Datachannel でデータを送信します。
-   * @param {any} params - 送信するデータ
-   * @param {string} [label='dataChannel'] - 指定する dataChannel の label
-   */
-  public sendData(params: any, label = 'dataChannel'): void {
-    this._traceLog('datachannel sendData=>', params);
-    const dataChannel = this._findDataChannel(label);
-    if (dataChannel && dataChannel.readyState === 'open') {
-      dataChannel.send(params);
-    } else {
-      throw new Error('datachannel is not open');
     }
   }
 
