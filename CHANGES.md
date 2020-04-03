@@ -11,6 +11,8 @@
 
 ## develop
 
+## 2020.2
+
 - [CHANGE] addDataChannel, sendData を削除する
     - @Hexa
 - [CHANGE] on('data') コールバックを削除する
