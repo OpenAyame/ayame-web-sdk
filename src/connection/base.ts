@@ -147,7 +147,6 @@ class ConnectionBase {
                 this._sendWs({ type: 'pong' });
               } else if (message.type === 'bye') {
                 this._callbacks.bye(event);
-                await this._disconnect();
                 return resolve();
               } else if (message.type === 'accept') {
                 this.authzMetadata = message.authzMetadata;
