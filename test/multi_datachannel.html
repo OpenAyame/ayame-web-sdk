@@ -68,6 +68,10 @@
             }
           }
         });
+        conn.on('disconnect', () => {
+          dataChannel = null;
+          anotherDataChannel = null;
+        });
         const startConn = async () => {
           await conn.connect(null);
         };
