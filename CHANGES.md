@@ -13,6 +13,8 @@
 
 ## 2020.2
 
+**DataChannel 関連で下位互換性がなくなっていますので注意してください**
+
 - [CHANGE] addDataChannel, sendData を削除する
     - @Hexa
 - [CHANGE] on('data') コールバックを削除する
