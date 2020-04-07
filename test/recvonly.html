@@ -28,6 +28,9 @@
         options.clientId = clientId ? clientId : options.clientId;
         options.video.direction = 'recvonly';
         options.audio.direction = 'recvonly';
+        if (signalingKey) {
+          options.signalingKey = signalingKey;
+        }
         const conn = Ayame.connection(signalingUrl, roomId, options, true);
         conn.on('open', ({authzMetadata}) => console.log(authzMetadata));
         conn.on('disconnect', (e) => console.log(e));

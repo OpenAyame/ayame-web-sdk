@@ -34,6 +34,9 @@
         let conn = null;
         const options = Ayame.defaultOptions;
         options.video.codec = videoCodec;
+        if (signalingKey) {
+          options.signalingKey = signalingKey;
+        }
         conn = Ayame.connection(signalingUrl, roomId, options, true);
         conn.on('open', ({authzMetadata}) => console.log(authzMetadata));
         conn.on('disconnect', (e) => console.log(e));
