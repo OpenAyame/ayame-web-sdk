@@ -47,21 +47,21 @@
 <a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License"></a>
 <a href="https://github.com/OpenAyame/ayame-web-sdk/actions"><img src="https://github.com/OpenAyame/ayame-web-sdk/workflows/Lint%20And%20Flow%20Test/badge.svg" alt="Actions Status"></a></p>
 <p>Web SDK for WebRTC Signaling Server Ayame</p>
-<h2 id="&#x52D5;&#x4F5C;&#x78BA;&#x8A8D;&#x74B0;&#x5883;">&#x52D5;&#x4F5C;&#x78BA;&#x8A8D;&#x74B0;&#x5883;</h2><ul>
-<li>Chrome 77.0.3865.90</li>
-<li>Chrome Canary 79.0.3933.0</li>
-<li>Safari 13.0.1 (14608.2.11.1.11)</li>
-<li>Firefox 69.0.2</li>
-<li>Microsoft Edge Beta 78.2.0.276.11</li>
+<h2 id="&#x52D5;&#x4F5C;&#x74B0;&#x5883;">&#x52D5;&#x4F5C;&#x74B0;&#x5883;</h2><p><strong>&#x6700;&#x65B0;&#x7248;&#x3092;&#x5229;&#x7528;&#x3057;&#x3066;&#x304F;&#x3060;&#x3055;&#x3044;</strong></p>
+<ul>
+<li>Google Chrome</li>
+<li>Apple Safari</li>
+<li>Mozilla Firefox</li>
+<li>Microsoft Edge</li>
 </ul>
 <h2 id="&#x30B5;&#x30F3;&#x30D7;&#x30EB;">&#x30B5;&#x30F3;&#x30D7;&#x30EB;</h2><p><a href="https://github.com/OpenAyame/ayame-web-sdk-samples">OpenAyame/ayame-web-sdk-samples</a> &#x306B;&#x30B5;&#x30F3;&#x30D7;&#x30EB;&#x30B3;&#x30FC;&#x30C9;&#x3092;&#x7528;&#x610F;&#x3057;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;</p>
 <h2 id="api-&#x30C9;&#x30AD;&#x30E5;&#x30E1;&#x30F3;&#x30C8;">API &#x30C9;&#x30AD;&#x30E5;&#x30E1;&#x30F3;&#x30C8;</h2><p>API &#x30C9;&#x30AD;&#x30E5;&#x30E1;&#x30F3;&#x30C8;&#x306F;&#x4EE5;&#x4E0B;&#x306E; URL &#x3092;&#x53C2;&#x7167;&#x3057;&#x3066;&#x304F;&#x3060;&#x3055;&#x3044;&#x3002;</p>
 <p><a href="https://openayame.github.io/ayame-web-sdk/index.html">https://openayame.github.io/ayame-web-sdk/index.html</a></p>
 <h2 id="cdn-&#x3067;&#x5229;&#x7528;&#x3059;&#x308B;">CDN &#x3067;&#x5229;&#x7528;&#x3059;&#x308B;</h2><p>&#x4EE5;&#x4E0B;&#x306E;URL &#x3092;</p>
-<pre><code><code class="source-code prettyprint">&lt;script src=&quot;https://unpkg.com/@open-ayame/ayame-web-sdk@19.9.0/dist/ayame.min.js&quot;&gt;&lt;/script&gt;</code>
+<pre><code><code class="source-code prettyprint">&lt;script src=&quot;https://unpkg.com/@open-ayame/ayame-web-sdk@2020.2.1/dist/ayame.min.js&quot;&gt;&lt;/script&gt;</code>
 </code></pre><p>&#x306E;&#x3088;&#x3046;&#x306B;&#x6307;&#x5B9A;&#x3059;&#x308B;&#x3068;&#x3001;npm &#x306A;&#x3069;&#x3092;&#x7D4C;&#x7531;&#x305B;&#x305A;&#x7C21;&#x5358;&#x306B; Ayame &#x3092;&#x5229;&#x7528;&#x3059;&#x308B;&#x3053;&#x3068;&#x304C;&#x3067;&#x304D;&#x307E;&#x3059;&#x3002;</p>
-<h3 id="unpkg">unpkg</h3><pre><code><code class="source-code prettyprint">https://unpkg.com/@open-ayame/ayame-web-sdk@19.9.0/dist/ayame.min.js</code>
-</code></pre><h3 id="jsdelivr">jsdelivr</h3><pre><code><code class="source-code prettyprint">https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@19.9.0/dist/ayame.min.js</code>
+<h3 id="unpkg">unpkg</h3><pre><code><code class="source-code prettyprint">https://unpkg.com/@open-ayame/ayame-web-sdk@2020.1.2/dist/ayame.min.js</code>
+</code></pre><h3 id="jsdelivr">jsdelivr</h3><pre><code><code class="source-code prettyprint">https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2020.1.2/dist/ayame.min.js</code>
 </code></pre><h3 id="&#x53CC;&#x65B9;&#x5411;&#x9001;&#x53D7;&#x4FE1;&#x63A5;&#x7D9A;&#x3059;&#x308B;">&#x53CC;&#x65B9;&#x5411;&#x9001;&#x53D7;&#x4FE1;&#x63A5;&#x7D9A;&#x3059;&#x308B;</h3><ul>
 <li><a href="https://openayame.github.io/ayame-web-sdk-samples/sendrecv.html">&#x30AA;&#x30F3;&#x30E9;&#x30A4;&#x30F3;&#x30B5;&#x30F3;&#x30D7;&#x30EB;</a></li>
 </ul>
@@ -73,7 +73,7 @@ const startConn = async () =&gt; {
     conn.on(&apos;addstream&apos;, (e) =&gt; {
         document.querySelector(&apos;#remote-video&apos;).srcObject = e.stream;
     });
-    document.querySelector(&apos;#local-video&apos;).srcObject = stream;
+    document.querySelector(&apos;#local-video&apos;).srcObject = mediaStream;
 };
 startConn();</code>
 </code></pre>
@@ -109,28 +109,15 @@ const startConn = async () =&gt; {
 };
 startConn();</code>
 </code></pre>
-<h3 id="&#x30B3;&#x30FC;&#x30C7;&#x30C3;&#x30AF;&#x3092;-h-264-&#x6307;&#x5B9A;&#x3067;&#x63A5;&#x7D9A;&#x3059;&#x308B;">&#x30B3;&#x30FC;&#x30C7;&#x30C3;&#x30AF;&#x3092; H.264 &#x6307;&#x5B9A;&#x3067;&#x63A5;&#x7D9A;&#x3059;&#x308B;</h3><ul>
-<li><a href="https://openayame.github.io/ayame-web-sdk-samples/codec.html">&#x30AA;&#x30F3;&#x30E9;&#x30A4;&#x30F3;&#x30B5;&#x30F3;&#x30D7;&#x30EB;</a></li>
-</ul>
-<pre><code class="lang-javascript"><code class="source-code prettyprint">const conn = Ayame.connection(&apos;wss://example.com/ws&apos;, &apos;test-room&apos;);
-conn.options.video.codec = &apos;H264&apos;;
-const startConn = async () =&gt; {
-    const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
-    await conn.connect(mediaStream);
-    conn.on(&apos;disconnect&apos;, (e) =&gt; console.log(e));
-    conn.on(&apos;addstream&apos;, (e) =&gt; {
-        document.querySelector(&apos;#remote-video&apos;).srcObject = e.stream;
-    });
-    document.querySelector(&apos;#local-video&apos;).srcObject = mediaStream;
-};
-startConn();</code>
-</code></pre>
 <h3 id="datachannel-&#x3067;&#x30C7;&#x30FC;&#x30BF;&#x3092;&#x9001;&#x53D7;&#x4FE1;&#x3059;&#x308B;">datachannel &#x3067;&#x30C7;&#x30FC;&#x30BF;&#x3092;&#x9001;&#x53D7;&#x4FE1;&#x3059;&#x308B;</h3><ul>
 <li><a href="https://openayame.github.io/ayame-web-sdk-samples/datachannel.html">&#x30AA;&#x30F3;&#x30E9;&#x30A4;&#x30F3;&#x30B5;&#x30F3;&#x30D7;&#x30EB;</a></li>
 </ul>
 <pre><code class="lang-javascript"><code class="source-code prettyprint">
 const startConn = async () =&gt; {
   const conn = Ayame.connection(&apos;wss://example.com/ws&apos;, &apos;test-room&apos;);
+  conn.on(&apos;open&apos;, (e) =&gt; {
+      conn.addDataChannel(&apos;dataChannel&apos;);
+  });
   conn.on(&apos;data&apos;, (e) =&gt; {
       console.log(&apos;data received: &apos;,e.data);
       });
@@ -141,7 +128,8 @@ const sendData = (data) =&gt; {
 };</code>
 </code></pre>
 <h2 id="&#x30E9;&#x30A4;&#x30BB;&#x30F3;&#x30B9;">&#x30E9;&#x30A4;&#x30BB;&#x30F3;&#x30B9;</h2><p>Apache License 2.0</p>
-<pre><code><code class="source-code prettyprint">Copyright 2019, Shiguredo Inc, Kyoko Kadowaki (kdxu)
+<pre><code><code class="source-code prettyprint">Copyright 2019, Kyoko Kadowaki aka kdxu (Original Author)
+Copyright 2019-2020, Shiguredo Inc.
 
 Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
 you may not use this file except in compliance with the License.
@@ -157,7 +145,7 @@ limitations under the License.</code>
 </code></pre><h2 id="&#x958B;&#x767A;&#x306B;&#x3064;&#x3044;&#x3066;">&#x958B;&#x767A;&#x306B;&#x3064;&#x3044;&#x3066;</h2><p>Ayame Web SDK &#x306F;&#x30AA;&#x30FC;&#x30D7;&#x30F3;&#x30BD;&#x30FC;&#x30B9;&#x30BD;&#x30D5;&#x30C8;&#x30A6;&#x30A7;&#x30A2;&#x3067;&#x3059;&#x304C;&#x3001;&#x958B;&#x767A;&#x306B;&#x3064;&#x3044;&#x3066;&#x306F;&#x30AA;&#x30FC;&#x30D7;&#x30F3;&#x3067;&#x306F;&#x3042;&#x308A;&#x307E;&#x305B;&#x3093;&#x3002;
 &#x305D;&#x306E;&#x305F;&#x3081;&#x30B3;&#x30E1;&#x30F3;&#x30C8;&#x3084;&#x30D7;&#x30EB;&#x30EA;&#x30AF;&#x30A8;&#x30B9;&#x30C8;&#x3092;&#x9802;&#x3044;&#x3066;&#x3082;&#x3059;&#x3050;&#x306B;&#x306F;&#x63A1;&#x7528;&#x306F;&#x3057;&#x307E;&#x305B;&#x3093;&#x3002;</p>
 <p>&#x307E;&#x305A;&#x306F; Discord &#x306B;&#x3066;&#x3054;&#x9023;&#x7D61;&#x304F;&#x3060;&#x3055;&#x3044;&#x3002;</p>
-<h2 id="discord">Discord</h2><p>&#x30D9;&#x30B9;&#x30C8;&#x30A8;&#x30D5;&#x30A9;&#x30FC;&#x30C8;&#x3067;&#x904B;&#x7528;&#x3057;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;</p>
+<h2 id="discord">Discord</h2><p>&#x30A2;&#x30C9;&#x30D0;&#x30A4;&#x30B9;&#x306F;&#x3057;&#x307E;&#x3059;&#x304C;&#x3001;&#x30B5;&#x30DD;&#x30FC;&#x30C8;&#x306F;&#x3057;&#x307E;&#x305B;&#x3093;&#x3002;</p>
 <p><a href="https://discord.gg/mDesh2E">https://discord.gg/mDesh2E</a></p>
 </div>
 </div>

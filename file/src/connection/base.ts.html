@@ -105,6 +105,7 @@ class ConnectionBase {
    * @listens {disconnect} PeerConnection &#x304C;&#x5207;&#x65AD;&#x3055;&#x308C;&#x308B;&#x3068;&#x9001;&#x4FE1;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;
    * @listens {addstream} &#x30EA;&#x30E2;&#x30FC;&#x30C8;&#x306E;&#x30B9;&#x30C8;&#x30EA;&#x30FC;&#x30E0;&#x304C;&#x8FFD;&#x52A0;&#x3055;&#x308C;&#x308B;&#x3068;&#x9001;&#x4FE1;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;
    * @listens {removestream} &#x30EA;&#x30E2;&#x30FC;&#x30C8;&#x306E;&#x30B9;&#x30C8;&#x30EA;&#x30FC;&#x30E0;&#x304C;&#x524A;&#x9664;&#x3055;&#x308C;&#x308B;&#x3068;&#x9001;&#x4FE1;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;
+   * @listens {bye} Ayame Server &#x304B;&#x3089; bye &#x3092;&#x53D7;&#x4FE1;&#x3059;&#x308B;&#x3068;&#x9001;&#x4FE1;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;
    */
   constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug = false, isRelay = false) {
     this.debug = debug;
@@ -132,7 +133,8 @@ class ConnectionBase {
       disconnect: () =&gt; {},
       addstream: () =&gt; {},
       removestream: () =&gt; {},
-      data: () =&gt; {}
+      bye: () =&gt; {},
+      datachannel: () =&gt; {}
     };
   }
 
@@ -143,8 +145,6 @@ class ConnectionBase {
     await this._closePeerConnection();
     await this._closeWebSocketConnection();
     this.authzMetadata = null;
-    this._ws = null;
-    this._pc = null;
     this._removeCodec = false;
     this._isOffer = false;
     this._isExistUser = false;
@@ -160,6 +160,7 @@ class ConnectionBase {
       this._ws = new WebSocket(this.signalingUrl);
       this._ws.onclose = async () =&gt; {
         await this._disconnect();
+        this._callbacks.disconnect({ reason: &apos;WS-CLOSED&apos; });
         return reject(&apos;WS-CLOSED&apos;);
       };
       this._ws.onerror = async () =&gt; {
@@ -190,26 +191,20 @@ class ConnectionBase {
               const message = JSON.parse(event.data);
               if (message.type === &apos;ping&apos;) {
                 this._sendWs({ type: &apos;pong&apos; });
-              } else if (message.type === &apos;close&apos;) {
-                this._callbacks.close(event);
+              } else if (message.type === &apos;bye&apos;) {
+                this._callbacks.bye(event);
+                return resolve();
               } else if (message.type === &apos;accept&apos;) {
                 this.authzMetadata = message.authzMetadata;
                 if (Array.isArray(message.iceServers) &amp;&amp; message.iceServers.length &gt; 0) {
                   this._traceLog(&apos;iceServers=&gt;&apos;, message.iceServers);
                   this._pcConfig.iceServers = message.iceServers;
                 }
-                if (message.isExistUser === undefined) {
-                  if (!this._pc) {
-                    this._createPeerConnection();
-                  }
+                this._traceLog(&apos;isExistUser=&gt;&apos;, message.isExistUser);
+                this._isExistUser = message.isExistUser;
+                this._createPeerConnection();
+                if (this._isExistUser === true) {
                   await this._sendOffer();
-                } else {
-                  this._traceLog(&apos;isExistUser=&gt;&apos;, message.isExistUser);
-                  this._isExistUser = message.isExistUser;
-                  this._createPeerConnection();
-                  if (this._isExistUser === true) {
-                    await this._sendOffer();
-                  }
                 }
                 return resolve();
               } else if (message.type === &apos;reject&apos;) {
@@ -331,40 +326,41 @@ class ConnectionBase {
     pc.ondatachannel = this._onDataChannel.bind(this);
     if (!this._pc) {
       this._pc = pc;
-      this._addDataChannel(&apos;dataChannel&apos;, undefined);
       this._callbacks.open({ authzMetadata: this.authzMetadata });
     } else {
       this._pc = pc;
     }
   }
 
-  async _addDataChannel(channelId: string, options: RTCDataChannelInit | undefined): Promise&lt;void&gt; {
-    return new Promise&lt;void&gt;((resolve, reject) =&gt; {
+  async _createDataChannel(label: string, options: RTCDataChannelInit | undefined): Promise&lt;RTCDataChannel | null&gt; {
+    return new Promise&lt;RTCDataChannel | null&gt;((resolve, reject) =&gt; {
       if (!this._pc) return reject(&apos;PeerConnection Does Not Ready&apos;);
       if (this._isOffer) return reject(&apos;PeerConnection Has Local Offer&apos;);
-      let dataChannel = this._findDataChannel(channelId);
+      let dataChannel = this._findDataChannel(label);
       if (dataChannel) {
         return reject(&apos;DataChannel Already Exists!&apos;);
       }
-      dataChannel = this._pc.createDataChannel(channelId, options);
-      dataChannel.onclose = (event: Record&lt;string, any&gt;) =&gt; {
-        this._traceLog(&apos;datachannel onclosed=&gt;&apos;, event);
-        this._dataChannels = this._dataChannels.filter(dataChannel =&gt; dataChannel.label != channelId);
-      };
-      dataChannel.onerror = (event: Record&lt;string, any&gt;) =&gt; {
-        this._traceLog(&apos;datachannel onerror=&gt;&apos;, event);
-        this._dataChannels = this._dataChannels.filter(dataChannel =&gt; dataChannel.label != channelId);
-      };
-      dataChannel.onmessage = (event: any) =&gt; {
-        this._traceLog(&apos;datachannel onmessage=&gt;&apos;, event.data);
-        event.channelId = channelId;
-        this._callbacks.data(event);
-      };
-      dataChannel.onopen = (event: Record&lt;string, any&gt;) =&gt; {
-        this._traceLog(&apos;datachannel onopen=&gt;&apos;, event);
-      };
-      this._dataChannels.push(dataChannel);
-      return resolve();
+      if (this._isExistUser) {
+        dataChannel = this._pc.createDataChannel(label, options);
+        dataChannel.onclose = (event: Record&lt;string, any&gt;) =&gt; {
+          this._traceLog(&apos;datachannel onclosed=&gt;&apos;, event);
+          this._dataChannels = this._dataChannels.filter(dataChannel =&gt; dataChannel.label != label);
+        };
+        dataChannel.onerror = (event: Record&lt;string, any&gt;) =&gt; {
+          this._traceLog(&apos;datachannel onerror=&gt;&apos;, event);
+          this._dataChannels = this._dataChannels.filter(dataChannel =&gt; dataChannel.label != label);
+        };
+        dataChannel.onmessage = (event: any) =&gt; {
+          this._traceLog(&apos;datachannel onmessage=&gt;&apos;, event.data);
+          event.label = label;
+        };
+        dataChannel.onopen = (event: Record&lt;string, any&gt;) =&gt; {
+          this._traceLog(&apos;datachannel onopen=&gt;&apos;, event);
+        };
+        this._dataChannels.push(dataChannel);
+        return resolve(dataChannel);
+      }
+      return resolve(null);
     });
   }
 
@@ -372,9 +368,9 @@ class ConnectionBase {
     this._traceLog(&apos;on data channel&apos;, event);
     if (!this._pc) return;
     const dataChannel = event.channel;
-    const channelId = event.channel.label;
+    const label = event.channel.label;
     if (!event.channel) return;
-    if (!channelId || channelId.length &lt; 1) return;
+    if (!label || label.length &lt; 1) return;
     dataChannel.onopen = async (event: Record&lt;string, any&gt;) =&gt; {
       this._traceLog(&apos;datachannel onopen=&gt;&apos;, event);
     };
@@ -386,20 +382,20 @@ class ConnectionBase {
     };
     dataChannel.onmessage = (event: any) =&gt; {
       this._traceLog(&apos;datachannel onmessage=&gt;&apos;, event.data);
-      event.channelId = channelId;
-      this._callbacks.data(event);
+      event.label = label;
     };
-    if (!this._findDataChannel(channelId)) {
+    if (!this._findDataChannel(label)) {
       this._dataChannels.push(event.channel);
     } else {
       this._dataChannels = this._dataChannels.map(channel =&gt; {
-        if (channel.label == channelId) {
+        if (channel.label == label) {
           return dataChannel;
         } else {
           return channel;
         }
       });
     }
+    this._callbacks.datachannel(dataChannel);
   }
 
   async _sendOffer() {
@@ -511,31 +507,26 @@ class ConnectionBase {
     return transceiver;
   }
 
-  _findDataChannel(channelId: string): RTCDataChannel | undefined {
-    return this._dataChannels.find(channel =&gt; channel.label == channelId);
+  _findDataChannel(label: string): RTCDataChannel | undefined {
+    return this._dataChannels.find(channel =&gt; channel.label == label);
   }
 
   async _closeDataChannel(dataChannel: RTCDataChannel): Promise&lt;void&gt; {
-    return new Promise((resolve, reject) =&gt; {
-      if (!dataChannel) return resolve();
+    return new Promise(resolve =&gt; {
       if (dataChannel.readyState === &apos;closed&apos;) return resolve();
       dataChannel.onclose = null;
       const timerId = setInterval(() =&gt; {
-        if (!dataChannel) {
-          clearInterval(timerId);
-          return reject(&apos;DataChannel Closing Error&apos;);
-        }
         if (dataChannel.readyState === &apos;closed&apos;) {
           clearInterval(timerId);
           return resolve();
         }
-      }, 800);
+      }, 400);
       dataChannel &amp;&amp; dataChannel.close();
     });
   }
 
   async _closePeerConnection(): Promise&lt;void&gt; {
-    return new Promise&lt;void&gt;((resolve, reject) =&gt; {
+    return new Promise&lt;void&gt;(resolve =&gt; {
       if (browser() === &apos;safari&apos; &amp;&amp; this._pc) {
         this._pc.oniceconnectionstatechange = () =&gt; {};
         this._pc.close();
@@ -544,38 +535,44 @@ class ConnectionBase {
       }
       if (!this._pc) return resolve();
       if (this._pc &amp;&amp; this._pc.signalingState == &apos;closed&apos;) {
+        this._pc = null;
         return resolve();
       }
       this._pc.oniceconnectionstatechange = () =&gt; {};
       const timerId = setInterval(() =&gt; {
         if (!this._pc) {
           clearInterval(timerId);
-          return reject(&apos;PeerConnection Closing Error&apos;);
+          return resolve();
         }
         if (this._pc &amp;&amp; this._pc.signalingState == &apos;closed&apos;) {
+          this._pc = null;
           clearInterval(timerId);
           return resolve();
         }
-      }, 800);
+      }, 400);
       this._pc.close();
     });
   }
 
   async _closeWebSocketConnection(): Promise&lt;void&gt; {
-    return new Promise&lt;void&gt;((resolve, reject) =&gt; {
+    return new Promise&lt;void&gt;(resolve =&gt; {
       if (!this._ws) return resolve();
-      if (this._ws &amp;&amp; this._ws.readyState === 3) return resolve();
+      if (this._ws &amp;&amp; this._ws.readyState === 3) {
+        this._ws = null;
+        return resolve();
+      }
       this._ws.onclose = () =&gt; {};
       const timerId = setInterval(() =&gt; {
         if (!this._ws) {
           clearInterval(timerId);
-          return reject(&apos;WebSocket Closing Error&apos;);
+          return resolve();
         }
         if (this._ws.readyState === 3) {
+          this._ws = null;
           clearInterval(timerId);
           return resolve();
         }
-      }, 800);
+      }, 400);
       this._ws &amp;&amp; this._ws.close();
     });
   }

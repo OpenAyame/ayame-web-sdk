@@ -354,12 +354,6 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
-    "src/connection/index.ts~connection#adddatachannel",
-    "class/src/connection/index.ts~Connection.html#instance-method-addDataChannel",
-    "src/connection/index.ts~Connection#addDataChannel",
-    "method"
-  ],
-  [
     "src/connection/index.ts~connection#authnmetadata",
     "class/src/connection/index.ts~Connection.html#instance-member-authnMetadata",
     "src/connection/index.ts~Connection#authnMetadata",
@@ -378,6 +372,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/connection/index.ts~connection#createdatachannel",
+    "class/src/connection/index.ts~Connection.html#instance-method-createDataChannel",
+    "src/connection/index.ts~Connection#createDataChannel",
+    "method"
+  ],
+  [
     "src/connection/index.ts~connection#disconnect",
     "class/src/connection/index.ts~Connection.html#instance-method-disconnect",
     "src/connection/index.ts~Connection#disconnect",
@@ -387,12 +387,6 @@ window.esdocSearchIndex = [
     "src/connection/index.ts~connection#removedatachannel",
     "class/src/connection/index.ts~Connection.html#instance-method-removeDataChannel",
     "src/connection/index.ts~Connection#removeDataChannel",
-    "method"
-  ],
-  [
-    "src/connection/index.ts~connection#senddata",
-    "class/src/connection/index.ts~Connection.html#instance-method-sendData",
-    "src/connection/index.ts~Connection#sendData",
     "method"
   ],
   [

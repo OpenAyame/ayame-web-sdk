@@ -93,21 +93,25 @@ class Connection extends ConnectionBase {
   }
 
   /**
-   * @desc Datachannel &#x3092;&#x8FFD;&#x52A0;&#x3057;&#x307E;&#x3059;&#x3002;
-   * @param {string} channelId - dataChannel &#x306E; Id
+   * @desc Datachannel &#x3092;&#x4F5C;&#x6210;&#x3057;&#x307E;&#x3059;&#x3002;
+   * @param {string} label - dataChannel &#x306E; label
    * @param {RTCDataChannelInit|undefined} [options=undefined] - dataChannel &#x306E; init &#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;
+   * @return {RTCDataChannel|null} &#x751F;&#x6210;&#x3055;&#x308C;&#x305F;&#x30C7;&#x30FC;&#x30BF;&#x30C1;&#x30E3;&#x30CD;&#x30EB;
    */
-  public async addDataChannel(channelId: string, options: RTCDataChannelInit | undefined = undefined): Promise&lt;void&gt; {
-    await this._addDataChannel(channelId, options);
+  public async createDataChannel(
+    label: string,
+    options: RTCDataChannelInit | undefined = undefined
+  ): Promise&lt;RTCDataChannel | null&gt; {
+    return await this._createDataChannel(label, options);
   }
 
   /**
    * @desc Datachannel &#x3092;&#x524A;&#x9664;&#x3057;&#x307E;&#x3059;&#x3002;
-   * @param {string} channelId - &#x524A;&#x9664;&#x3059;&#x308B; dataChannel &#x306E; Id
+   * @param {string} label - &#x524A;&#x9664;&#x3059;&#x308B; dataChannel &#x306E; label
    */
-  public async removeDataChannel(channelId: string): Promise&lt;void&gt; {
-    this._traceLog(&apos;datachannel remove=&gt;&apos;, channelId);
-    const dataChannel = this._findDataChannel(channelId);
+  public async removeDataChannel(label: string): Promise&lt;void&gt; {
+    this._traceLog(&apos;datachannel remove=&gt;&apos;, label);
+    const dataChannel = this._findDataChannel(label);
     if (dataChannel &amp;&amp; dataChannel.readyState === &apos;open&apos;) {
       await this._closeDataChannel(dataChannel);
     } else {
@@ -116,25 +120,15 @@ class Connection extends ConnectionBase {
   }
 
   /**
-   * @desc Datachannel &#x3067;&#x30C7;&#x30FC;&#x30BF;&#x3092;&#x9001;&#x4FE1;&#x3057;&#x307E;&#x3059;&#x3002;
-   * @param {any} params - &#x9001;&#x4FE1;&#x3059;&#x308B;&#x30C7;&#x30FC;&#x30BF;
-   * @param {string} [channelId=&apos;dataChannel&apos;] - &#x6307;&#x5B9A;&#x3059;&#x308B; dataChannel &#x306E; id
-   */
-  public sendData(params: any, channelId = &apos;dataChannel&apos;): void {
-    this._traceLog(&apos;datachannel sendData=&gt;&apos;, params);
-    const dataChannel = this._findDataChannel(channelId);
-    if (dataChannel &amp;&amp; dataChannel.readyState === &apos;open&apos;) {
-      dataChannel.send(params);
-    } else {
-      throw new Error(&apos;datachannel is not open&apos;);
-    }
-  }
-
-  /**
    * @desc PeerConnection  &#x63A5;&#x7D9A;&#x3092;&#x5207;&#x65AD;&#x3057;&#x307E;&#x3059;&#x3002;
    */
   public async disconnect(): Promise&lt;void&gt; {
-    await this._disconnect();
+    return new Promise(resolve =&gt; {
+      if (this._ws) {
+        this._ws.close();
+      }
+      return resolve();
+    });
   }
 }
 

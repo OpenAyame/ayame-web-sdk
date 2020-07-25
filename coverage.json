@@ -1,7 +1,7 @@
 {
-  "coverage": "70.17%",
-  "expectCount": 57,
-  "actualCount": 40,
+  "coverage": "69.64%",
+  "expectCount": 56,
+  "actualCount": 39,
   "files": {
     "src/ayame.ts": {
       "expectCount": 3,
@@ -12,7 +12,6 @@
       "expectCount": 40,
       "actualCount": 23,
       "undocumentLines": [
-        45,
         46,
         47,
         48,
@@ -28,12 +27,13 @@
         58,
         59,
         60,
-        64
+        61,
+        65
       ]
     },
     "src/connection/index.ts": {
-      "expectCount": 9,
-      "actualCount": 9,
+      "expectCount": 8,
+      "actualCount": 8,
       "undocumentLines": []
     },
     "src/utils.ts": {
