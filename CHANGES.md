@@ -11,6 +11,11 @@
 
 ## develop
 
+## 2020.3
+
+- [ADD] TypeScriptの型定義ファイルを出力するようにする
+    - @horiuchi
+
 ## 2020.2.1
 
 - [ADD] ayame.min.js / ayame.js を 2020.2.1 にアップデート
