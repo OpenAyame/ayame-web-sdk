@@ -42,6 +42,9 @@
         const label = 'dataChannel';
         const anotherLabel = 'anotherChannel';
         options.clientId = clientId ? clientId : options.clientId;
+        if (signalingKey) {
+          options.signalingKey = signalingKey;
+        }
         conn = Ayame.connection(signalingUrl, roomId, options, true);
         let dataChannel = null;
         let anotherDataChannel = null;

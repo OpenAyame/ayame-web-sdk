@@ -27,6 +27,9 @@
         let conn = null;
         const options = Ayame.defaultOptions;
         options.clientId = clientId ? clientId : options.clientId;
+        if (signalingKey) {
+          options.signalingKey = signalingKey;
+        }
         const label = 'dataChannel';
         let dataChannel = null;
         const startConn = async () => {

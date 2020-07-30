@@ -28,6 +28,9 @@
         options.clientId = clientId ? clientId : options.clientId;
         options.video.direction = 'sendonly';
         options.audio.direction = 'sendonly';
+        if (signalingKey) {
+          options.signalingKey = signalingKey;
+        }
         const conn = Ayame.connection(signalingUrl, roomId, options, true);
         conn.on('disconnect', (e) => console.log(e));
         const startConn = async () => {
