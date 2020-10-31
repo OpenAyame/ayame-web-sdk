@@ -25,7 +25,7 @@ test/ 以下の HTML ファイルごとに動作を確認します。
     - recvonly.html で送信動画を受信できること
 - qs.html
   - Query String で roomId, clientId, signalingKey を指定した映像の送受信
-    - Ayame Lite に接続した場合は、roomId, clientId, signalingKey を指定して 2 つの qs.html 間で動画が送受信できること
+    - Ayame Labo に接続した場合は、roomId, clientId, signalingKey を指定して 2 つの qs.html 間で動画が送受信できること
     - 別途用意した Ayame に直接接続させる場合は、roomId, clientId を指定して 2 つの qs.html 間で動画が送受信できること
 - datachannel.html
   - DataChannel による接続と送受信
