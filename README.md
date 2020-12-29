@@ -115,19 +115,21 @@ startConn();
 - [オンラインサンプル](https://openayame.github.io/ayame-web-sdk-samples/datachannel.html)
 
 ```javascript
-
+let dataChannel = null;
 const startConn = async () => {
   const conn = Ayame.connection('wss://example.com/ws', 'test-room');
   conn.on('open', (e) => {
-      conn.addDataChannel('dataChannel');
+    dataChannel = await conn.createDataChannel('dataChannel');
+    dataChannel.onmessage = (e) => {
+      console.log('data received: ', e.data);
+    };
   });
-  conn.on('data', (e) => {
-      console.log('data received: ',e.data);
-      });
   await conn.connect(null);
 };
+startConn();
+
 const sendData = (data) => {
-  conn.sendData(data);
+  dataChannel.send(data);
 };
 ```
 
