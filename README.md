@@ -6,6 +6,12 @@
 
 Web SDK for WebRTC Signaling Server Ayame
 
+## About Shiguredo's open source software
+
+We will not respond to PRs or issues that have not been discussed on Discord. Also, Discord is only available in Japanese.
+
+Please read https://github.com/shiguredo/oss before use.
+
 ## 時雨堂のオープンソースソフトウェアについて
 
 利用前に https://github.com/shiguredo/oss をお読みください。
