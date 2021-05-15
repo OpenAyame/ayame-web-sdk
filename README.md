@@ -48,13 +48,13 @@ https://openayame.github.io/ayame-web-sdk/index.html
 ### unpkg
 
 ```
-https://unpkg.com/@open-ayame/ayame-web-sdk@2020.1.2/dist/ayame.min.js
+https://unpkg.com/@open-ayame/ayame-web-sdk@2020.3/dist/ayame.min.js
 ```
 
 ### jsdelivr
 
 ```
-https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2020.1.2/dist/ayame.min.js
+https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2020.3/dist/ayame.min.js
 ```
 
 ### 双方向送受信接続する
