@@ -70,7 +70,7 @@
         else {
             mimeType = `video/${codec}`;
         }
-        const filteredCodecs = codecs.filter(c => c.mimeType == mimeType);
+        const filteredCodecs = codecs.filter((c) => c.mimeType == mimeType);
         if (filteredCodecs.length < 1) {
             throw new Error('invalid video codec type');
         }
@@ -610,7 +610,7 @@
             });
         }
         async _closeWebSocketConnection() {
-            return new Promise(resolve => {
+            return new Promise((resolve) => {
                 if (!this._ws)
                     return resolve();
                 if (this._ws && this._ws.readyState === 3) {
@@ -708,7 +708,7 @@
          * @desc PeerConnection  接続を切断します。
          */
         async disconnect() {
-            return new Promise(resolve => {
+            return new Promise((resolve) => {
                 if (this._ws) {
                     this._ws.close();
                 }
@@ -734,7 +734,9 @@
      * ビデオ接続のコーデックに関するオプションです。
      * - VP8
      * - VP9
+     * - AV1
      * - H264
+     * - H265
      *
      * @typedef {string} VideoCodecOption
      */
@@ -759,7 +761,7 @@
      *
      * video: { direction: 'sendrecv', enabled: true}
      *
-     * iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+     * iceServers: []
      *
      * clientId: randomString(17)
      *
@@ -768,7 +770,7 @@
     const defaultOptions = {
         audio: { direction: 'sendrecv', enabled: true },
         video: { direction: 'sendrecv', enabled: true },
-        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+        iceServers: [],
         clientId: randomString(17)
     };
     /**

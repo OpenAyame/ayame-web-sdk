@@ -17,7 +17,9 @@ import { ConnectionOptions } from './connection/options';
  * ビデオ接続のコーデックに関するオプションです。
  * - VP8
  * - VP9
+ * - AV1
  * - H264
+ * - H265
  *
  * @typedef {string} VideoCodecOption
  */
@@ -42,7 +44,7 @@ import { ConnectionOptions } from './connection/options';
  *
  * video: { direction: 'sendrecv', enabled: true}
  *
- * iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+ * iceServers: []
  *
  * clientId: randomString(17)
  *
