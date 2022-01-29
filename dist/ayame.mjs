@@ -1,4 +1,4 @@
-/* @OpenAyame/ayame-web-sdk@2021.1.0 */
+/* @OpenAyame/ayame-web-sdk@2022.1.0 */
 /**
  * @ignore
  */
@@ -788,3 +788,4 @@ function version() {
 }
 
 export { connection, defaultOptions, version };
+//# sourceMappingURL=ayame.mjs.map
