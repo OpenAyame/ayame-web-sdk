@@ -41,6 +41,6 @@ module.exports = [
       file: 'dist/ayame.mjs',
       format: 'module',
     },
-    plugins: plugins,
+    plugins: plugins
   }
 ];

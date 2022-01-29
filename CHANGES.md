@@ -1,24 +1,59 @@
 # リリースノート
 
+- CHANGE
+    - 下位互換のない変更
 - UPDATE
     - 下位互換がある変更
 - ADD
     - 下位互換がある追加
-- CHANGE
-    - 下位互換のない変更
 - FIX
     - バグ修正
 
 ## develop
 
+- [CHANGE] esdoc を削除
+    - 今後は TypeDoc へ移行予定
+    - @voluntas
 - [CHANGE] yarn の利用をやめ npm に切り替える
+    - @voluntas
+- [CHANGE] `.eslintrc.js` から `prettier/@typescript-eslint` を削除
+    - @voluntas
+- [CHANGE] GitHub Actions の node-version を 16 固定にする
+    - @voluntas
+- [CHANGE] Google STUN サーバを削除
+    - @voluntas
+- [CHANGE] tsconfig.json の設定を変更
+    - target / module を es2020 へ変更
+    - newLine を追加
+    - declarationDir を追加
+    - @voluntas
+- [UPDATE] rollup.config.js の設定を変更
+    - sourceMap を sourcemap へ変更
+    - entry を削除
+    - rollup-plugin-node-resolve を @rollup/plugin-node-resolve へ変更
+    - rollup-plugin-typescript2 を @rollup/plugin-typescript へ変更
+    - format: 'module' で mjs を出力する
+    - @voluntas
+- [UPDATE] GitHub Actions の actions/checkout を v2 に上げる
+    - @voluntas
 - [UPDATE] `@types/node` を `^16.11.7` へ上げる
+    - @voluntas
 - [UPDATE] `@types/webrtc` を `^0.0.31` へ上げる
+    - @voluntas
 - [UPDATE] `rollup` を `^2.66.1` へ上げる
+    - @voluntas
 - [UPDATE] `rollup-plugin-node-resolve` を `^13.1.3` へ上げる
+    - @voluntas
 - [UPDATE] `rollup-plugin-terser` を `^7.0.2` へ上げる
+    - @voluntas
 - [UPDATE] `rollup-plugin-typescript2` を `^0.31.1` へ上げる
+    - @voluntas
 - [UPDATE] `typescript` を `^4.5.5` に上げる
+    - @voluntas
+- [ADD] `.prettierrc.json` を追加
+    - @voluntas
+- [ADD] VideoCodecOption に `AV1` と `H.265` を追加
+    - @voluntas
 
 ## 2020.3
 
