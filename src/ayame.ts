@@ -21,7 +21,9 @@ import { randomString } from './utils';
  * ビデオ接続のコーデックに関するオプションです。
  * - VP8
  * - VP9
+ * - AV1
  * - H264
+ * - H265
  *
  * @typedef {string} VideoCodecOption
  */
@@ -49,7 +51,7 @@ import { randomString } from './utils';
  *
  * video: { direction: 'sendrecv', enabled: true}
  *
- * iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+ * iceServers: []
  *
  * clientId: randomString(17)
  *
@@ -58,7 +60,7 @@ import { randomString } from './utils';
 export const defaultOptions: ConnectionOptions = {
   audio: { direction: 'sendrecv', enabled: true },
   video: { direction: 'sendrecv', enabled: true },
-  iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+  iceServers: [],
   clientId: randomString(17)
 };
 
