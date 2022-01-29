@@ -38,15 +38,21 @@
     "@typescript-eslint/camelcase": 0,
     "@typescript-eslint/explicit-function-return-type": 0,
     "@typescript-eslint/no-non-null-assertion": 0,
-    "quotes" : [2, "single"],
-    "@typescript-eslint/no-unused-vars": [2, {
-      "args": "all",
-      "argsIgnorePattern": "^_"
-    }],
+    "quotes": [
+      2,
+      "single"
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      2,
+      {
+        "args": "all",
+        "argsIgnorePattern": "^_"
+      }
+    ],
     "import/newline-after-import": 2,
     "import/imports-first": 2,
     "import/no-dynamic-require": 2,
     "import/no-extraneous-dependencies": 2,
-    "import/no-mutable-exports": 2,
+    "import/no-mutable-exports": 2
   }
 }
