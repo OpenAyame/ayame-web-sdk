@@ -6,9 +6,10 @@
   "scripts": {
     "watch": "rollup -w -c ./rollup.config.js",
     "build": "rollup -c ./rollup.config.js",
-    "lint": "$(npm bin)/eslint --ext .tsx,.ts src/",
+    "lint": "npx eslint --ext .tsx,.ts src/",
     "fmt": "npm run lint --fix",
-    "deploy:docs": "$(npm bin)/gh-pages -d docs"
+    "doc": "npx typedoc",
+    "deploy:docs": "npx gh-pages -d apidoc"
   },
   "repository": {
     "type": "git",
