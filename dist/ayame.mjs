@@ -788,3 +788,4 @@ function version() {
 }
 
 export { connection, defaultOptions, version };
+//# sourceMappingURL=ayame.mjs.map

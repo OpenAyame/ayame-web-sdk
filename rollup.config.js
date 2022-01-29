@@ -41,6 +41,7 @@ export default [
       name: 'Ayame',
       file: 'dist/ayame.mjs',
       format: 'module',
+      sourcemap: true
     },
     plugins: plugins
   }
