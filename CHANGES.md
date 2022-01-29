@@ -11,8 +11,21 @@
 
 ## develop
 
+- [CHANGE] packege.json の devDependencies を最新へ追従する
+    - `rollup` を `^2.66.1` へ上げる
+    - `rollup-plugin-terser` を `^7.0.2` へ上げる
+    - `@rollup/plugin-node-resolve` を `^13.1.3` に変更する
+    - `@rollup/plugin-typescript` を `^8.3.0` に変更する
+    - `typescript` を `^4.5.5` に上げる
+    - `@typescript-eslint/eslint-plugin` を `^5.10.` に上げる
+    - `@typescript-eslint/parse` を `^5.10.` に上げる
+    - `@types/node` を `^16.11.7` へ上げる
+    - `@types/webrtc` を `^0.0.31` へ上げる
+    - `eslint` を `^8.8.0` に上げる
+    - `eslint-config-prettier` を `^8.3.0` に上げる
+    - `eslint-plugin-import` を `^2.25.4` に上げる
+    - @voluntas
 - [CHANGE] esdoc を削除
-    - 今後は TypeDoc へ移行予定
     - @voluntas
 - [CHANGE] yarn の利用をやめ npm に切り替える
     - @voluntas
@@ -36,23 +49,12 @@
     - @voluntas
 - [UPDATE] GitHub Actions の actions/checkout を v2 に上げる
     - @voluntas
-- [UPDATE] `@types/node` を `^16.11.7` へ上げる
-    - @voluntas
-- [UPDATE] `@types/webrtc` を `^0.0.31` へ上げる
-    - @voluntas
-- [UPDATE] `rollup` を `^2.66.1` へ上げる
-    - @voluntas
-- [UPDATE] `rollup-plugin-node-resolve` を `^13.1.3` へ上げる
-    - @voluntas
-- [UPDATE] `rollup-plugin-terser` を `^7.0.2` へ上げる
-    - @voluntas
-- [UPDATE] `rollup-plugin-typescript2` を `^0.31.1` へ上げる
-    - @voluntas
-- [UPDATE] `typescript` を `^4.5.5` に上げる
-    - @voluntas
 - [ADD] `.prettierrc.json` を追加
     - @voluntas
 - [ADD] VideoCodecOption に `AV1` と `H.265` を追加
+    - @voluntas
+- [ADD] npm run doc コマンド追加
+    - TypeDoc により apidoc/ に出力
     - @voluntas
 
 ## 2020.3
