@@ -25,7 +25,7 @@ export interface ConnectionAudioOption {
  * - VP9
  * - H264
  */
-export type VideoCodecOption = 'VP8' | 'VP9' | 'H264';
+export type VideoCodecOption = 'VP8' | 'VP9' | 'AV1' | 'H264' | 'H265';
 
 /**
  * @typedef {Object} ConnectionVideoOption - ビデオ接続に関するオプションです。

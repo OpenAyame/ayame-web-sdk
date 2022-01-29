@@ -6,6 +6,16 @@
 
 Web SDK for WebRTC Signaling Server Ayame
 
+## About Shiguredo's open source software
+
+We will not respond to PRs or issues that have not been discussed on Discord. Also, Discord is only available in Japanese.
+
+Please read https://github.com/shiguredo/oss before use.
+
+## 時雨堂のオープンソースソフトウェアについて
+
+利用前に https://github.com/shiguredo/oss をお読みください。
+
 ## 動作環境
 
 **最新版を利用してください**
@@ -38,13 +48,13 @@ https://openayame.github.io/ayame-web-sdk/index.html
 ### unpkg
 
 ```
-https://unpkg.com/@open-ayame/ayame-web-sdk@2020.1.2/dist/ayame.min.js
+https://unpkg.com/@open-ayame/ayame-web-sdk@2020.3/dist/ayame.min.js
 ```
 
 ### jsdelivr
 
 ```
-https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2020.1.2/dist/ayame.min.js
+https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2020.3/dist/ayame.min.js
 ```
 
 ### 双方向送受信接続する
@@ -111,19 +121,21 @@ startConn();
 - [オンラインサンプル](https://openayame.github.io/ayame-web-sdk-samples/datachannel.html)
 
 ```javascript
-
+let dataChannel = null;
 const startConn = async () => {
   const conn = Ayame.connection('wss://example.com/ws', 'test-room');
-  conn.on('open', (e) => {
-      conn.addDataChannel('dataChannel');
+  conn.on('open', async (e) => {
+    dataChannel = await conn.createDataChannel('dataChannel');
+    dataChannel.onmessage = (e) => {
+      console.log('data received: ', e.data);
+    };
   });
-  conn.on('data', (e) => {
-      console.log('data received: ',e.data);
-      });
   await conn.connect(null);
 };
+startConn();
+
 const sendData = (data) => {
-  conn.sendData(data);
+  dataChannel.send(data);
 };
 ```
 
@@ -132,8 +144,8 @@ const sendData = (data) => {
 Apache License 2.0
 
 ```
+Copyright 2019-2021, Shiguredo Inc.
 Copyright 2019, Kyoko Kadowaki aka kdxu (Original Author)
-Copyright 2019-2020, Shiguredo Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -147,16 +159,3 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ```
-
-## 開発について
-
-Ayame Web SDK はオープンソースソフトウェアですが、開発についてはオープンではありません。
-そのためコメントやプルリクエストを頂いてもすぐには採用はしません。
-
-まずは Discord にてご連絡ください。
-
-## Discord
-
-アドバイスはしますが、サポートはしません。
-
-https://discord.gg/mDesh2E
