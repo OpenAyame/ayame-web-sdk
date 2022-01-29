@@ -1,161 +1,105 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <base data-ice="baseUrl">
-  <title data-ice="title">Home | @open-ayame/ayame-web-sdk</title>
-  <link type="text/css" rel="stylesheet" href="css/style.css">
-  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
-  <script src="script/prettify/prettify.js"></script>
-  <script src="script/manual.js"></script>
-<meta name="description" content="Web SDK for WebRTC Signaling Server Ayame"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="@open-ayame/ayame-web-sdk"><meta property="twitter:description" content="Web SDK for WebRTC Signaling Server Ayame"></head>
-<body class="layout-container" data-ice="rootContainer">
-
-<header>
-  <a href="./">Home</a>
-  
-  <a href="identifiers.html">Reference</a>
-  <a href="source.html">Source</a>
-  
-  <div class="search-box">
-  <span>
-    <img src="./image/search.png">
-    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
-  </span>
-    <ul class="search-result"></ul>
-  </div>
-<a style="position:relative; top:3px;" href="https://github.com/OpenAyame/ayame-web-sdk"><img width="20px" src="./image/github.png"></a></header>
-
-<nav class="navigation" data-ice="nav"><div>
-  <ul>
-    
-  <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-connection">connection</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-version">version</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-defaultOptions">defaultOptions</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionAudioOption">ConnectionAudioOption</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionDirection">ConnectionDirection</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionOptions">ConnectionOptions</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ConnectionVideoOption">ConnectionVideoOption</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VideoCodecOption">VideoCodecOption</a></span></span></li>
-<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#connection">connection</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/connection/index.ts~Connection.html">Connection</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MetadataOption">MetadataOption</a></span></span></li>
-</ul>
-</div>
-</nav>
-
-<div class="content" data-ice="content"><div data-ice="index" class="github-markdown"><h1 id="ayame-web-sdk">ayame-web-sdk</h1><p><a href="https://badge.fury.io/js/%40open-ayame%2Fayame-web-sdk"><img src="https://badge.fury.io/js/%40open-ayame%2Fayame-web-sdk.svg" alt="npm version"></a>
+<!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>@open-ayame/ayame-web-sdk</title><meta name="description" content="Documentation for @open-ayame/ayame-web-sdk"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">@open-ayame/ayame-web-sdk</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label><input type="checkbox" id="tsd-filter-externals" checked/><label class="tsd-widget" for="tsd-filter-externals">Externals</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><h1>@open-ayame/ayame-web-sdk</h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><div class="tsd-panel tsd-typography">
+<a href="#ayame-web-sdk" id="ayame-web-sdk" style="color: inherit; text-decoration: none;">
+  <h1>ayame-web-sdk</h1>
+</a>
+<p><a href="https://badge.fury.io/js/%40open-ayame%2Fayame-web-sdk"><img src="https://badge.fury.io/js/%40open-ayame%2Fayame-web-sdk.svg" alt="npm version"></a>
 <a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License"></a>
 <a href="https://github.com/OpenAyame/ayame-web-sdk/actions"><img src="https://github.com/OpenAyame/ayame-web-sdk/workflows/Lint%20And%20Flow%20Test/badge.svg" alt="Actions Status"></a></p>
 <p>Web SDK for WebRTC Signaling Server Ayame</p>
-<h2 id="&#x6642;&#x96E8;&#x5802;&#x306E;&#x30AA;&#x30FC;&#x30D7;&#x30F3;&#x30BD;&#x30FC;&#x30B9;&#x30BD;&#x30D5;&#x30C8;&#x30A6;&#x30A7;&#x30A2;&#x306B;&#x3064;&#x3044;&#x3066;">&#x6642;&#x96E8;&#x5802;&#x306E;&#x30AA;&#x30FC;&#x30D7;&#x30F3;&#x30BD;&#x30FC;&#x30B9;&#x30BD;&#x30D5;&#x30C8;&#x30A6;&#x30A7;&#x30A2;&#x306B;&#x3064;&#x3044;&#x3066;</h2><p>&#x5229;&#x7528;&#x524D;&#x306B; <a href="https://github.com/shiguredo/oss">https://github.com/shiguredo/oss</a> &#x3092;&#x304A;&#x8AAD;&#x307F;&#x304F;&#x3060;&#x3055;&#x3044;&#x3002;</p>
-<h2 id="&#x52D5;&#x4F5C;&#x74B0;&#x5883;">&#x52D5;&#x4F5C;&#x74B0;&#x5883;</h2><p><strong>&#x6700;&#x65B0;&#x7248;&#x3092;&#x5229;&#x7528;&#x3057;&#x3066;&#x304F;&#x3060;&#x3055;&#x3044;</strong></p>
+
+<a href="#about-shiguredo39s-open-source-software" id="about-shiguredo39s-open-source-software" style="color: inherit; text-decoration: none;">
+  <h2>About Shiguredo&#39;s open source software</h2>
+</a>
+<p>We will not respond to PRs or issues that have not been discussed on Discord. Also, Discord is only available in Japanese.</p>
+<p>Please read <a href="https://github.com/shiguredo/oss">https://github.com/shiguredo/oss</a> before use.</p>
+
+<a href="#時雨堂のオープンソースソフトウェアについて" id="時雨堂のオープンソースソフトウェアについて" style="color: inherit; text-decoration: none;">
+  <h2>時雨堂のオープンソースソフトウェアについて</h2>
+</a>
+<p>利用前に <a href="https://github.com/shiguredo/oss">https://github.com/shiguredo/oss</a> をお読みください。</p>
+
+<a href="#動作環境" id="動作環境" style="color: inherit; text-decoration: none;">
+  <h2>動作環境</h2>
+</a>
+<p><strong>最新版を利用してください</strong></p>
 <ul>
 <li>Google Chrome</li>
 <li>Apple Safari</li>
 <li>Mozilla Firefox</li>
 <li>Microsoft Edge</li>
 </ul>
-<h2 id="&#x30B5;&#x30F3;&#x30D7;&#x30EB;">&#x30B5;&#x30F3;&#x30D7;&#x30EB;</h2><p><a href="https://github.com/OpenAyame/ayame-web-sdk-samples">OpenAyame/ayame-web-sdk-samples</a> &#x306B;&#x30B5;&#x30F3;&#x30D7;&#x30EB;&#x30B3;&#x30FC;&#x30C9;&#x3092;&#x7528;&#x610F;&#x3057;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;</p>
-<h2 id="api-&#x30C9;&#x30AD;&#x30E5;&#x30E1;&#x30F3;&#x30C8;">API &#x30C9;&#x30AD;&#x30E5;&#x30E1;&#x30F3;&#x30C8;</h2><p>API &#x30C9;&#x30AD;&#x30E5;&#x30E1;&#x30F3;&#x30C8;&#x306F;&#x4EE5;&#x4E0B;&#x306E; URL &#x3092;&#x53C2;&#x7167;&#x3057;&#x3066;&#x304F;&#x3060;&#x3055;&#x3044;&#x3002;</p>
+
+<a href="#サンプル" id="サンプル" style="color: inherit; text-decoration: none;">
+  <h2>サンプル</h2>
+</a>
+<p><a href="https://github.com/OpenAyame/ayame-web-sdk-samples">OpenAyame/ayame-web-sdk-samples</a> にサンプルコードを用意しています。</p>
+
+<a href="#api-ドキュメント" id="api-ドキュメント" style="color: inherit; text-decoration: none;">
+  <h2>API ドキュメント</h2>
+</a>
+<p>API ドキュメントは以下の URL を参照してください。</p>
 <p><a href="https://openayame.github.io/ayame-web-sdk/index.html">https://openayame.github.io/ayame-web-sdk/index.html</a></p>
-<h2 id="cdn-&#x3067;&#x5229;&#x7528;&#x3059;&#x308B;">CDN &#x3067;&#x5229;&#x7528;&#x3059;&#x308B;</h2><p>&#x4EE5;&#x4E0B;&#x306E;URL &#x3092;</p>
-<pre><code><code class="source-code prettyprint">&lt;script src=&quot;https://unpkg.com/@open-ayame/ayame-web-sdk@2020.2.1/dist/ayame.min.js&quot;&gt;&lt;/script&gt;</code>
-</code></pre><p>&#x306E;&#x3088;&#x3046;&#x306B;&#x6307;&#x5B9A;&#x3059;&#x308B;&#x3068;&#x3001;npm &#x306A;&#x3069;&#x3092;&#x7D4C;&#x7531;&#x305B;&#x305A;&#x7C21;&#x5358;&#x306B; Ayame &#x3092;&#x5229;&#x7528;&#x3059;&#x308B;&#x3053;&#x3068;&#x304C;&#x3067;&#x304D;&#x307E;&#x3059;&#x3002;</p>
-<h3 id="unpkg">unpkg</h3><pre><code><code class="source-code prettyprint">https://unpkg.com/@open-ayame/ayame-web-sdk@2020.1.2/dist/ayame.min.js</code>
-</code></pre><h3 id="jsdelivr">jsdelivr</h3><pre><code><code class="source-code prettyprint">https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2020.1.2/dist/ayame.min.js</code>
-</code></pre><h3 id="&#x53CC;&#x65B9;&#x5411;&#x9001;&#x53D7;&#x4FE1;&#x63A5;&#x7D9A;&#x3059;&#x308B;">&#x53CC;&#x65B9;&#x5411;&#x9001;&#x53D7;&#x4FE1;&#x63A5;&#x7D9A;&#x3059;&#x308B;</h3><ul>
-<li><a href="https://openayame.github.io/ayame-web-sdk-samples/sendrecv.html">&#x30AA;&#x30F3;&#x30E9;&#x30A4;&#x30F3;&#x30B5;&#x30F3;&#x30D7;&#x30EB;</a></li>
-</ul>
-<pre><code class="lang-javascript"><code class="source-code prettyprint">const conn = Ayame.connection(&apos;wss://example.com/ws&apos;, &apos;test-room&apos;);
-const startConn = async () =&gt; {
-    const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
-    await conn.connect(mediaStream);
-    conn.on(&apos;disconnect&apos;, (e) =&gt; console.log(e));
-    conn.on(&apos;addstream&apos;, (e) =&gt; {
-        document.querySelector(&apos;#remote-video&apos;).srcObject = e.stream;
-    });
-    document.querySelector(&apos;#local-video&apos;).srcObject = mediaStream;
-};
-startConn();</code>
+
+<a href="#cdn-で利用する" id="cdn-で利用する" style="color: inherit; text-decoration: none;">
+  <h2>CDN で利用する</h2>
+</a>
+<p>以下のURL を</p>
+<pre><code><span class="hl-0">&lt;</span><span class="hl-1">script</span><span class="hl-0"> </span><span class="hl-1">src</span><span class="hl-0">=</span><span class="hl-2">&quot;https://unpkg.com/@open-ayame/ayame-web-sdk@2020.2.1/dist/ayame.min.js&quot;</span><span class="hl-0">&gt;&lt;/</span><span class="hl-3">script</span><span class="hl-0">&gt;</span>
 </code></pre>
-<h3 id="&#x9001;&#x4FE1;&#x306E;&#x307F;-sendonly--&#x3067;&#x63A5;&#x7D9A;&#x3059;&#x308B;">&#x9001;&#x4FE1;&#x306E;&#x307F;(sendonly) &#x3067;&#x63A5;&#x7D9A;&#x3059;&#x308B;</h3><ul>
-<li><a href="https://openayame.github.io/ayame-web-sdk-samples/sendonly.html">&#x30AA;&#x30F3;&#x30E9;&#x30A4;&#x30F3;&#x30B5;&#x30F3;&#x30D7;&#x30EB;</a></li>
-</ul>
-<pre><code class="lang-javascript"><code class="source-code prettyprint">const conn = Ayame.connection(&apos;wss://example.com/ws&apos;, &apos;test-room&apos;);
-conn.options.video.direction = &apos;sendonly&apos;;
-conn.options.audio.direction = &apos;sendonly&apos;;
-const startConn = async () =&gt; {
-    const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
-    await conn.connect(mediaStream);
-    conn.on(&apos;disconnect&apos;, (e) =&gt; console.log(e));
-    conn.on(&apos;addstream&apos;, (e) =&gt; {
-        document.querySelector(&apos;#remote-video&apos;).srcObject = e.stream;
-    });
-    document.querySelector(&apos;#local-video&apos;).srcObject = mediaStream;
-};
-startConn();</code>
+<p>のように指定すると、npm などを経由せず簡単に Ayame を利用することができます。</p>
+
+<a href="#unpkg" id="unpkg" style="color: inherit; text-decoration: none;">
+  <h3>unpkg</h3>
+</a>
+<pre><code><span class="hl-4">https</span><span class="hl-0">:</span><span class="hl-5">//unpkg.com/@open-ayame/ayame-web-sdk@2020.3/dist/ayame.min.js</span>
 </code></pre>
-<h3 id="&#x53D7;&#x4FE1;&#x306E;&#x307F;-recvonly--&#x3067;&#x63A5;&#x7D9A;&#x3059;&#x308B;">&#x53D7;&#x4FE1;&#x306E;&#x307F;(recvonly) &#x3067;&#x63A5;&#x7D9A;&#x3059;&#x308B;</h3><ul>
-<li><a href="https://openayame.github.io/ayame-web-sdk-samples/recvonly.html">&#x30AA;&#x30F3;&#x30E9;&#x30A4;&#x30F3;&#x30B5;&#x30F3;&#x30D7;&#x30EB;</a></li>
-</ul>
-<pre><code class="lang-javascript"><code class="source-code prettyprint">const conn = Ayame.connection(&apos;wss://example.com/ws&apos;, &apos;test-room&apos;);
-conn.options.video.direction = &apos;recvonly&apos;;
-conn.options.audio.direction = &apos;recvonly&apos;;
-const startConn = async () =&gt; {
-    await conn.connect(null);
-    conn.on(&apos;disconnect&apos;, (e) =&gt; console.log(e));
-    conn.on(&apos;addstream&apos;, (e) =&gt; {
-        document.querySelector(&apos;#remote-video&apos;).srcObject = e.stream;
-    });
-};
-startConn();</code>
+
+<a href="#jsdelivr" id="jsdelivr" style="color: inherit; text-decoration: none;">
+  <h3>jsdelivr</h3>
+</a>
+<pre><code><span class="hl-4">https</span><span class="hl-0">:</span><span class="hl-5">//cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2020.3/dist/ayame.min.js</span>
 </code></pre>
-<h3 id="datachannel-&#x3067;&#x30C7;&#x30FC;&#x30BF;&#x3092;&#x9001;&#x53D7;&#x4FE1;&#x3059;&#x308B;">datachannel &#x3067;&#x30C7;&#x30FC;&#x30BF;&#x3092;&#x9001;&#x53D7;&#x4FE1;&#x3059;&#x308B;</h3><ul>
-<li><a href="https://openayame.github.io/ayame-web-sdk-samples/datachannel.html">&#x30AA;&#x30F3;&#x30E9;&#x30A4;&#x30F3;&#x30B5;&#x30F3;&#x30D7;&#x30EB;</a></li>
+
+<a href="#双方向送受信接続する" id="双方向送受信接続する" style="color: inherit; text-decoration: none;">
+  <h3>双方向送受信接続する</h3>
+</a>
+<ul>
+<li><a href="https://openayame.github.io/ayame-web-sdk-samples/sendrecv.html">オンラインサンプル</a></li>
 </ul>
-<pre><code class="lang-javascript"><code class="source-code prettyprint">
-const startConn = async () =&gt; {
-  const conn = Ayame.connection(&apos;wss://example.com/ws&apos;, &apos;test-room&apos;);
-  conn.on(&apos;open&apos;, (e) =&gt; {
-      conn.addDataChannel(&apos;dataChannel&apos;);
-  });
-  conn.on(&apos;data&apos;, (e) =&gt; {
-      console.log(&apos;data received: &apos;,e.data);
-      });
-  await conn.connect(null);
-};
-const sendData = (data) =&gt; {
-  conn.sendData(data);
-};</code>
+<pre><code class="language-javascript"><span class="hl-6">const</span><span class="hl-0"> </span><span class="hl-7">conn</span><span class="hl-0"> = </span><span class="hl-1">Ayame</span><span class="hl-0">.</span><span class="hl-8">connection</span><span class="hl-0">(</span><span class="hl-2">&#39;wss://example.com/ws&#39;</span><span class="hl-0">, </span><span class="hl-2">&#39;test-room&#39;</span><span class="hl-0">);</span><br/><span class="hl-6">const</span><span class="hl-0"> </span><span class="hl-8">startConn</span><span class="hl-0"> = </span><span class="hl-6">async</span><span class="hl-0"> () </span><span class="hl-6">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">    </span><span class="hl-6">const</span><span class="hl-0"> </span><span class="hl-7">mediaStream</span><span class="hl-0"> = </span><span class="hl-9">await</span><span class="hl-0"> </span><span class="hl-1">navigator</span><span class="hl-0">.</span><span class="hl-1">mediaDevices</span><span class="hl-0">.</span><span class="hl-8">getUserMedia</span><span class="hl-0">({</span><span class="hl-1">audio:</span><span class="hl-0"> </span><span class="hl-6">true</span><span class="hl-0">, </span><span class="hl-1">video:</span><span class="hl-0"> </span><span class="hl-6">true</span><span class="hl-0">});</span><br/><span class="hl-0">    </span><span class="hl-9">await</span><span class="hl-0"> </span><span class="hl-1">conn</span><span class="hl-0">.</span><span class="hl-8">connect</span><span class="hl-0">(</span><span class="hl-1">mediaStream</span><span class="hl-0">);</span><br/><span class="hl-0">    </span><span class="hl-1">conn</span><span class="hl-0">.</span><span class="hl-8">on</span><span class="hl-0">(</span><span class="hl-2">&#39;disconnect&#39;</span><span class="hl-0">, (</span><span class="hl-1">e</span><span class="hl-0">) </span><span class="hl-6">=&gt;</span><span class="hl-0"> </span><span class="hl-1">console</span><span class="hl-0">.</span><span class="hl-8">log</span><span class="hl-0">(</span><span class="hl-1">e</span><span class="hl-0">));</span><br/><span class="hl-0">    </span><span class="hl-1">conn</span><span class="hl-0">.</span><span class="hl-8">on</span><span class="hl-0">(</span><span class="hl-2">&#39;addstream&#39;</span><span class="hl-0">, (</span><span class="hl-1">e</span><span class="hl-0">) </span><span class="hl-6">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">        </span><span class="hl-1">document</span><span class="hl-0">.</span><span class="hl-8">querySelector</span><span class="hl-0">(</span><span class="hl-2">&#39;#remote-video&#39;</span><span class="hl-0">).</span><span class="hl-1">srcObject</span><span class="hl-0"> = </span><span class="hl-1">e</span><span class="hl-0">.</span><span class="hl-1">stream</span><span class="hl-0">;</span><br/><span class="hl-0">    });</span><br/><span class="hl-0">    </span><span class="hl-1">document</span><span class="hl-0">.</span><span class="hl-8">querySelector</span><span class="hl-0">(</span><span class="hl-2">&#39;#local-video&#39;</span><span class="hl-0">).</span><span class="hl-1">srcObject</span><span class="hl-0"> = </span><span class="hl-1">mediaStream</span><span class="hl-0">;</span><br/><span class="hl-0">};</span><br/><span class="hl-8">startConn</span><span class="hl-0">();</span>
 </code></pre>
-<h2 id="&#x30E9;&#x30A4;&#x30BB;&#x30F3;&#x30B9;">&#x30E9;&#x30A4;&#x30BB;&#x30F3;&#x30B9;</h2><p>Apache License 2.0</p>
-<pre><code><code class="source-code prettyprint">Copyright 2019, Kyoko Kadowaki aka kdxu (Original Author)
-Copyright 2019-2020, Shiguredo Inc.
 
-Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+<a href="#送信のみsendonly-で接続する" id="送信のみsendonly-で接続する" style="color: inherit; text-decoration: none;">
+  <h3>送信のみ(sendonly) で接続する</h3>
+</a>
+<ul>
+<li><a href="https://openayame.github.io/ayame-web-sdk-samples/sendonly.html">オンラインサンプル</a></li>
+</ul>
+<pre><code class="language-javascript"><span class="hl-6">const</span><span class="hl-0"> </span><span class="hl-7">conn</span><span class="hl-0"> = </span><span class="hl-1">Ayame</span><span class="hl-0">.</span><span class="hl-8">connection</span><span class="hl-0">(</span><span class="hl-2">&#39;wss://example.com/ws&#39;</span><span class="hl-0">, </span><span class="hl-2">&#39;test-room&#39;</span><span class="hl-0">);</span><br/><span class="hl-1">conn</span><span class="hl-0">.</span><span class="hl-1">options</span><span class="hl-0">.</span><span class="hl-1">video</span><span class="hl-0">.</span><span class="hl-1">direction</span><span class="hl-0"> = </span><span class="hl-2">&#39;sendonly&#39;</span><span class="hl-0">;</span><br/><span class="hl-1">conn</span><span class="hl-0">.</span><span class="hl-1">options</span><span class="hl-0">.</span><span class="hl-1">audio</span><span class="hl-0">.</span><span class="hl-1">direction</span><span class="hl-0"> = </span><span class="hl-2">&#39;sendonly&#39;</span><span class="hl-0">;</span><br/><span class="hl-6">const</span><span class="hl-0"> </span><span class="hl-8">startConn</span><span class="hl-0"> = </span><span class="hl-6">async</span><span class="hl-0"> () </span><span class="hl-6">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">    </span><span class="hl-6">const</span><span class="hl-0"> </span><span class="hl-7">mediaStream</span><span class="hl-0"> = </span><span class="hl-9">await</span><span class="hl-0"> </span><span class="hl-1">navigator</span><span class="hl-0">.</span><span class="hl-1">mediaDevices</span><span class="hl-0">.</span><span class="hl-8">getUserMedia</span><span class="hl-0">({</span><span class="hl-1">audio:</span><span class="hl-0"> </span><span class="hl-6">true</span><span class="hl-0">, </span><span class="hl-1">video:</span><span class="hl-0"> </span><span class="hl-6">true</span><span class="hl-0">});</span><br/><span class="hl-0">    </span><span class="hl-9">await</span><span class="hl-0"> </span><span class="hl-1">conn</span><span class="hl-0">.</span><span class="hl-8">connect</span><span class="hl-0">(</span><span class="hl-1">mediaStream</span><span class="hl-0">);</span><br/><span class="hl-0">    </span><span class="hl-1">conn</span><span class="hl-0">.</span><span class="hl-8">on</span><span class="hl-0">(</span><span class="hl-2">&#39;disconnect&#39;</span><span class="hl-0">, (</span><span class="hl-1">e</span><span class="hl-0">) </span><span class="hl-6">=&gt;</span><span class="hl-0"> </span><span class="hl-1">console</span><span class="hl-0">.</span><span class="hl-8">log</span><span class="hl-0">(</span><span class="hl-1">e</span><span class="hl-0">));</span><br/><span class="hl-0">    </span><span class="hl-1">conn</span><span class="hl-0">.</span><span class="hl-8">on</span><span class="hl-0">(</span><span class="hl-2">&#39;addstream&#39;</span><span class="hl-0">, (</span><span class="hl-1">e</span><span class="hl-0">) </span><span class="hl-6">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">        </span><span class="hl-1">document</span><span class="hl-0">.</span><span class="hl-8">querySelector</span><span class="hl-0">(</span><span class="hl-2">&#39;#remote-video&#39;</span><span class="hl-0">).</span><span class="hl-1">srcObject</span><span class="hl-0"> = </span><span class="hl-1">e</span><span class="hl-0">.</span><span class="hl-1">stream</span><span class="hl-0">;</span><br/><span class="hl-0">    });</span><br/><span class="hl-0">    </span><span class="hl-1">document</span><span class="hl-0">.</span><span class="hl-8">querySelector</span><span class="hl-0">(</span><span class="hl-2">&#39;#local-video&#39;</span><span class="hl-0">).</span><span class="hl-1">srcObject</span><span class="hl-0"> = </span><span class="hl-1">mediaStream</span><span class="hl-0">;</span><br/><span class="hl-0">};</span><br/><span class="hl-8">startConn</span><span class="hl-0">();</span>
+</code></pre>
 
-    http://www.apache.org/licenses/LICENSE-2.0
+<a href="#受信のみrecvonly-で接続する" id="受信のみrecvonly-で接続する" style="color: inherit; text-decoration: none;">
+  <h3>受信のみ(recvonly) で接続する</h3>
+</a>
+<ul>
+<li><a href="https://openayame.github.io/ayame-web-sdk-samples/recvonly.html">オンラインサンプル</a></li>
+</ul>
+<pre><code class="language-javascript"><span class="hl-6">const</span><span class="hl-0"> </span><span class="hl-7">conn</span><span class="hl-0"> = </span><span class="hl-1">Ayame</span><span class="hl-0">.</span><span class="hl-8">connection</span><span class="hl-0">(</span><span class="hl-2">&#39;wss://example.com/ws&#39;</span><span class="hl-0">, </span><span class="hl-2">&#39;test-room&#39;</span><span class="hl-0">);</span><br/><span class="hl-1">conn</span><span class="hl-0">.</span><span class="hl-1">options</span><span class="hl-0">.</span><span class="hl-1">video</span><span class="hl-0">.</span><span class="hl-1">direction</span><span class="hl-0"> = </span><span class="hl-2">&#39;recvonly&#39;</span><span class="hl-0">;</span><br/><span class="hl-1">conn</span><span class="hl-0">.</span><span class="hl-1">options</span><span class="hl-0">.</span><span class="hl-1">audio</span><span class="hl-0">.</span><span class="hl-1">direction</span><span class="hl-0"> = </span><span class="hl-2">&#39;recvonly&#39;</span><span class="hl-0">;</span><br/><span class="hl-6">const</span><span class="hl-0"> </span><span class="hl-8">startConn</span><span class="hl-0"> = </span><span class="hl-6">async</span><span class="hl-0"> () </span><span class="hl-6">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">    </span><span class="hl-9">await</span><span class="hl-0"> </span><span class="hl-1">conn</span><span class="hl-0">.</span><span class="hl-8">connect</span><span class="hl-0">(</span><span class="hl-6">null</span><span class="hl-0">);</span><br/><span class="hl-0">    </span><span class="hl-1">conn</span><span class="hl-0">.</span><span class="hl-8">on</span><span class="hl-0">(</span><span class="hl-2">&#39;disconnect&#39;</span><span class="hl-0">, (</span><span class="hl-1">e</span><span class="hl-0">) </span><span class="hl-6">=&gt;</span><span class="hl-0"> </span><span class="hl-1">console</span><span class="hl-0">.</span><span class="hl-8">log</span><span class="hl-0">(</span><span class="hl-1">e</span><span class="hl-0">));</span><br/><span class="hl-0">    </span><span class="hl-1">conn</span><span class="hl-0">.</span><span class="hl-8">on</span><span class="hl-0">(</span><span class="hl-2">&#39;addstream&#39;</span><span class="hl-0">, (</span><span class="hl-1">e</span><span class="hl-0">) </span><span class="hl-6">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">        </span><span class="hl-1">document</span><span class="hl-0">.</span><span class="hl-8">querySelector</span><span class="hl-0">(</span><span class="hl-2">&#39;#remote-video&#39;</span><span class="hl-0">).</span><span class="hl-1">srcObject</span><span class="hl-0"> = </span><span class="hl-1">e</span><span class="hl-0">.</span><span class="hl-1">stream</span><span class="hl-0">;</span><br/><span class="hl-0">    });</span><br/><span class="hl-0">};</span><br/><span class="hl-8">startConn</span><span class="hl-0">();</span>
+</code></pre>
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.</code>
-</code></pre></div>
-</div>
+<a href="#datachannel-でデータを送受信する" id="datachannel-でデータを送受信する" style="color: inherit; text-decoration: none;">
+  <h3>datachannel でデータを送受信する</h3>
+</a>
+<ul>
+<li><a href="https://openayame.github.io/ayame-web-sdk-samples/datachannel.html">オンラインサンプル</a></li>
+</ul>
+<pre><code class="language-javascript"><span class="hl-6">let</span><span class="hl-0"> </span><span class="hl-1">dataChannel</span><span class="hl-0"> = </span><span class="hl-6">null</span><span class="hl-0">;</span><br/><span class="hl-6">const</span><span class="hl-0"> </span><span class="hl-8">startConn</span><span class="hl-0"> = </span><span class="hl-6">async</span><span class="hl-0"> () </span><span class="hl-6">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">  </span><span class="hl-6">const</span><span class="hl-0"> </span><span class="hl-7">conn</span><span class="hl-0"> = </span><span class="hl-1">Ayame</span><span class="hl-0">.</span><span class="hl-8">connection</span><span class="hl-0">(</span><span class="hl-2">&#39;wss://example.com/ws&#39;</span><span class="hl-0">, </span><span class="hl-2">&#39;test-room&#39;</span><span class="hl-0">);</span><br/><span class="hl-0">  </span><span class="hl-1">conn</span><span class="hl-0">.</span><span class="hl-8">on</span><span class="hl-0">(</span><span class="hl-2">&#39;open&#39;</span><span class="hl-0">, </span><span class="hl-6">async</span><span class="hl-0"> (</span><span class="hl-1">e</span><span class="hl-0">) </span><span class="hl-6">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">    </span><span class="hl-1">dataChannel</span><span class="hl-0"> = </span><span class="hl-9">await</span><span class="hl-0"> </span><span class="hl-1">conn</span><span class="hl-0">.</span><span class="hl-8">createDataChannel</span><span class="hl-0">(</span><span class="hl-2">&#39;dataChannel&#39;</span><span class="hl-0">);</span><br/><span class="hl-0">    </span><span class="hl-1">dataChannel</span><span class="hl-0">.</span><span class="hl-8">onmessage</span><span class="hl-0"> = (</span><span class="hl-1">e</span><span class="hl-0">) </span><span class="hl-6">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">      </span><span class="hl-1">console</span><span class="hl-0">.</span><span class="hl-8">log</span><span class="hl-0">(</span><span class="hl-2">&#39;data received: &#39;</span><span class="hl-0">, </span><span class="hl-1">e</span><span class="hl-0">.</span><span class="hl-1">data</span><span class="hl-0">);</span><br/><span class="hl-0">    };</span><br/><span class="hl-0">  });</span><br/><span class="hl-0">  </span><span class="hl-9">await</span><span class="hl-0"> </span><span class="hl-1">conn</span><span class="hl-0">.</span><span class="hl-8">connect</span><span class="hl-0">(</span><span class="hl-6">null</span><span class="hl-0">);</span><br/><span class="hl-0">};</span><br/><span class="hl-8">startConn</span><span class="hl-0">();</span><br/><br/><span class="hl-6">const</span><span class="hl-0"> </span><span class="hl-8">sendData</span><span class="hl-0"> = (</span><span class="hl-1">data</span><span class="hl-0">) </span><span class="hl-6">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">  </span><span class="hl-1">dataChannel</span><span class="hl-0">.</span><span class="hl-8">send</span><span class="hl-0">(</span><span class="hl-1">data</span><span class="hl-0">);</span><br/><span class="hl-0">};</span>
+</code></pre>
 
-<footer class="footer">
-  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
-</footer>
-
-<script src="script/search_index.js"></script>
-<script src="script/search.js"></script>
-<script src="script/pretty-print.js"></script>
-<script src="script/inherited-summary.js"></script>
-<script src="script/test-summary.js"></script>
-<script src="script/inner-link.js"></script>
-<script src="script/patch-for-local.js"></script>
-</body>
-</html>
+<a href="#ライセンス" id="ライセンス" style="color: inherit; text-decoration: none;">
+  <h2>ライセンス</h2>
+</a>
+<p>Apache License 2.0</p>
+<pre><code><span class="hl-1">Copyright</span><span class="hl-0"> </span><span class="hl-10">2019</span><span class="hl-0">, </span><span class="hl-1">Kyoko</span><span class="hl-0"> </span><span class="hl-1">Kadowaki</span><span class="hl-0"> </span><span class="hl-1">aka</span><span class="hl-0"> </span><span class="hl-8">kdxu</span><span class="hl-0"> (</span><span class="hl-1">Original</span><span class="hl-0"> </span><span class="hl-1">Author</span><span class="hl-0">)</span><br/><span class="hl-1">Copyright</span><span class="hl-0"> </span><span class="hl-10">2019</span><span class="hl-0">-</span><span class="hl-10">2020</span><span class="hl-0">, </span><span class="hl-1">Shiguredo</span><span class="hl-0"> </span><span class="hl-1">Inc</span><span class="hl-0">.</span><br/><br/><span class="hl-1">Licensed</span><span class="hl-0"> </span><span class="hl-1">under</span><span class="hl-0"> </span><span class="hl-1">the</span><span class="hl-0"> </span><span class="hl-1">Apache</span><span class="hl-0"> </span><span class="hl-1">License</span><span class="hl-0">, </span><span class="hl-1">Version</span><span class="hl-0"> </span><span class="hl-10">2.0</span><span class="hl-0"> (</span><span class="hl-1">the</span><span class="hl-0"> </span><span class="hl-2">&quot;License&quot;</span><span class="hl-0">);</span><br/><span class="hl-1">you</span><span class="hl-0"> </span><span class="hl-1">may</span><span class="hl-0"> </span><span class="hl-1">not</span><span class="hl-0"> </span><span class="hl-1">use</span><span class="hl-0"> </span><span class="hl-6">this</span><span class="hl-0"> </span><span class="hl-1">file</span><span class="hl-0"> </span><span class="hl-1">except</span><span class="hl-0"> </span><span class="hl-6">in</span><span class="hl-0"> </span><span class="hl-1">compliance</span><span class="hl-0"> </span><span class="hl-9">with</span><span class="hl-0"> </span><span class="hl-1">the</span><span class="hl-0"> </span><span class="hl-1">License</span><span class="hl-0">.</span><br/><span class="hl-1">You</span><span class="hl-0"> </span><span class="hl-1">may</span><span class="hl-0"> </span><span class="hl-1">obtain</span><span class="hl-0"> </span><span class="hl-1">a</span><span class="hl-0"> </span><span class="hl-1">copy</span><span class="hl-0"> </span><span class="hl-6">of</span><span class="hl-0"> </span><span class="hl-1">the</span><span class="hl-0"> </span><span class="hl-1">License</span><span class="hl-0"> </span><span class="hl-1">at</span><br/><br/><span class="hl-0">    </span><span class="hl-4">http</span><span class="hl-0">:</span><span class="hl-5">//www.apache.org/licenses/LICENSE-2.0</span><br/><br/><span class="hl-1">Unless</span><span class="hl-0"> </span><span class="hl-1">required</span><span class="hl-0"> </span><span class="hl-1">by</span><span class="hl-0"> </span><span class="hl-1">applicable</span><span class="hl-0"> </span><span class="hl-1">law</span><span class="hl-0"> </span><span class="hl-1">or</span><span class="hl-0"> </span><span class="hl-1">agreed</span><span class="hl-0"> </span><span class="hl-1">to</span><span class="hl-0"> </span><span class="hl-6">in</span><span class="hl-0"> </span><span class="hl-1">writing</span><span class="hl-0">, </span><span class="hl-1">software</span><br/><span class="hl-1">distributed</span><span class="hl-0"> </span><span class="hl-1">under</span><span class="hl-0"> </span><span class="hl-1">the</span><span class="hl-0"> </span><span class="hl-1">License</span><span class="hl-0"> </span><span class="hl-1">is</span><span class="hl-0"> </span><span class="hl-1">distributed</span><span class="hl-0"> </span><span class="hl-1">on</span><span class="hl-0"> </span><span class="hl-1">an</span><span class="hl-0"> </span><span class="hl-2">&quot;AS IS&quot;</span><span class="hl-0"> </span><span class="hl-7">BASIS</span><span class="hl-0">,</span><br/><span class="hl-7">WITHOUT</span><span class="hl-0"> </span><span class="hl-7">WARRANTIES</span><span class="hl-0"> </span><span class="hl-7">OR</span><span class="hl-0"> </span><span class="hl-7">CONDITIONS</span><span class="hl-0"> </span><span class="hl-7">OF</span><span class="hl-0"> </span><span class="hl-7">ANY</span><span class="hl-0"> </span><span class="hl-7">KIND</span><span class="hl-0">, </span><span class="hl-1">either</span><span class="hl-0"> </span><span class="hl-1">express</span><span class="hl-0"> </span><span class="hl-1">or</span><span class="hl-0"> </span><span class="hl-1">implied</span><span class="hl-0">.</span><br/><span class="hl-1">See</span><span class="hl-0"> </span><span class="hl-1">the</span><span class="hl-0"> </span><span class="hl-1">License</span><span class="hl-0"> </span><span class="hl-1">for</span><span class="hl-0"> </span><span class="hl-1">the</span><span class="hl-0"> </span><span class="hl-1">specific</span><span class="hl-0"> </span><span class="hl-1">language</span><span class="hl-0"> </span><span class="hl-1">governing</span><span class="hl-0"> </span><span class="hl-1">permissions</span><span class="hl-0"> </span><span class="hl-1">and</span><br/><span class="hl-1">limitations</span><span class="hl-0"> </span><span class="hl-1">under</span><span class="hl-0"> </span><span class="hl-1">the</span><span class="hl-0"> </span><span class="hl-1">License</span><span class="hl-0">.</span>
+</code></pre>
+</div></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class="current"><a href="modules.html">Exports</a></li></ul></nav><nav class="tsd-navigation secondary menu-sticky"><ul><li class="tsd-kind-variable"><a href="modules.html#defaultOptions" class="tsd-kind-icon">default<wbr/>Options</a></li><li class="tsd-kind-function"><a href="modules.html#connection" class="tsd-kind-icon">connection</a></li><li class="tsd-kind-function"><a href="modules.html#version" class="tsd-kind-icon">version</a></li></ul></nav></div></div></div><footer class="with-border-bottom"><div class="container"><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="container tsd-generator"><p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div><div class="overlay"></div><script src="assets/main.js"></script></body></html>
