@@ -14,8 +14,8 @@
 - [CHANGE] packege.json の devDependencies を最新へ追従する
     - `rollup` を `^2.66.1` へ上げる
     - `rollup-plugin-terser` を `^7.0.2` へ上げる
-    - `@rollup/plugin-node-resolve` を `^13.1.3` に変更する
-    - `@rollup/plugin-typescript` を `^8.3.0` に変更する
+    - `rollup-plugin-node-resolve` を `@rollup/plugin-node-resolve` `^13.1.3` に切り替える
+    - `rollup-plugin-typescript2` を `@rollup/plugin-typescript` `^8.3.0` に切り替える
     - `typescript` を `^4.5.5` に上げる
     - `@typescript-eslint/eslint-plugin` を `^5.10.` に上げる
     - `@typescript-eslint/parse` を `^5.10.` に上げる
