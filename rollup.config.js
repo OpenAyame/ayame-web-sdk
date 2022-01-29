@@ -1,7 +1,7 @@
 import typescript from '@rollup/plugin-typescript';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { terser } from 'rollup-plugin-terser';
-import pkg from './package.json'
+import pkg from './package.json';
 
 const version = pkg.version;
 const banner = `/* @OpenAyame/ayame-web-sdk@${version} */`;
@@ -9,7 +9,8 @@ const plugins = [
  	typescript({ tsconfig: './tsconfig.json' }),
   nodeResolve({ browser: true })
 ];
-module.exports = [
+
+export default [
   {
     input: 'src/ayame.ts',
     output: {
