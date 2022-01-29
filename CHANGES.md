@@ -11,6 +11,15 @@
 
 ## develop
 
+- [CHANGE] yarn の利用をやめ npm に切り替える
+- [UPDATE] `@types/node` を `^16.11.7` へ上げる
+- [UPDATE] `@types/webrtc` を `^0.0.31` へ上げる
+- [UPDATE] `rollup` を `^2.66.1` へ上げる
+- [UPDATE] `rollup-plugin-node-resolve` を `^13.1.3` へ上げる
+- [UPDATE] `rollup-plugin-terser` を `^7.0.2` へ上げる
+- [UPDATE] `rollup-plugin-typescript2` を `^0.31.1` へ上げる
+- [UPDATE] `typescript` を `^4.5.5` に上げる
+
 ## 2020.3
 
 - [ADD] TypeScriptの型定義ファイルを出力するようにする

@@ -41,6 +41,7 @@ class ConnectionBase {
   /**
    * @ignore
    */
+  // eslint-disable-next-line @typescript-eslint/ban-types
   on(kind: string, callback: Function): void {
     if (kind in this._callbacks) {
       this._callbacks[kind] = callback;
