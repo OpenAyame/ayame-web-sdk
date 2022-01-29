@@ -370,7 +370,7 @@ class ConnectionBase {
                 }
             }
         };
-        pc.onsignalingstatechange = _ => {
+        pc.onsignalingstatechange = (_) => {
             this._traceLog('signaling state changes:', pc.signalingState);
         };
         pc.ondatachannel = this._onDataChannel.bind(this);
@@ -396,11 +396,11 @@ class ConnectionBase {
                 dataChannel = this._pc.createDataChannel(label, options);
                 dataChannel.onclose = (event) => {
                     this._traceLog('datachannel onclosed=>', event);
-                    this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != label);
+                    this._dataChannels = this._dataChannels.filter((dataChannel) => dataChannel.label != label);
                 };
                 dataChannel.onerror = (event) => {
                     this._traceLog('datachannel onerror=>', event);
-                    this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != label);
+                    this._dataChannels = this._dataChannels.filter((dataChannel) => dataChannel.label != label);
                 };
                 dataChannel.onmessage = (event) => {
                     this._traceLog('datachannel onmessage=>', event.data);
@@ -442,7 +442,7 @@ class ConnectionBase {
             this._dataChannels.push(event.channel);
         }
         else {
-            this._dataChannels = this._dataChannels.map(channel => {
+            this._dataChannels = this._dataChannels.map((channel) => {
                 if (channel.label == label) {
                     return dataChannel;
                 }
@@ -558,10 +558,10 @@ class ConnectionBase {
         return transceiver;
     }
     _findDataChannel(label) {
-        return this._dataChannels.find(channel => channel.label == label);
+        return this._dataChannels.find((channel) => channel.label == label);
     }
     async _closeDataChannel(dataChannel) {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             if (dataChannel.readyState === 'closed')
                 return resolve();
             dataChannel.onclose = null;
@@ -575,7 +575,7 @@ class ConnectionBase {
         });
     }
     async _closePeerConnection() {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             if (browser() === 'safari' && this._pc) {
                 this._pc.oniceconnectionstatechange = () => { };
                 this._pc.close();

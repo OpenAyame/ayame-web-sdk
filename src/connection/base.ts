@@ -275,7 +275,7 @@ class ConnectionBase {
         }
       }
     };
-    pc.onsignalingstatechange = _ => {
+    pc.onsignalingstatechange = (_) => {
       this._traceLog('signaling state changes:', pc.signalingState);
     };
     pc.ondatachannel = this._onDataChannel.bind(this);
@@ -299,11 +299,11 @@ class ConnectionBase {
         dataChannel = this._pc.createDataChannel(label, options);
         dataChannel.onclose = (event: Record<string, any>) => {
           this._traceLog('datachannel onclosed=>', event);
-          this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != label);
+          this._dataChannels = this._dataChannels.filter((dataChannel) => dataChannel.label != label);
         };
         dataChannel.onerror = (event: Record<string, any>) => {
           this._traceLog('datachannel onerror=>', event);
-          this._dataChannels = this._dataChannels.filter(dataChannel => dataChannel.label != label);
+          this._dataChannels = this._dataChannels.filter((dataChannel) => dataChannel.label != label);
         };
         dataChannel.onmessage = (event: any) => {
           this._traceLog('datachannel onmessage=>', event.data);
@@ -342,7 +342,7 @@ class ConnectionBase {
     if (!this._findDataChannel(label)) {
       this._dataChannels.push(event.channel);
     } else {
-      this._dataChannels = this._dataChannels.map(channel => {
+      this._dataChannels = this._dataChannels.map((channel) => {
         if (channel.label == label) {
           return dataChannel;
         } else {
@@ -463,11 +463,11 @@ class ConnectionBase {
   }
 
   _findDataChannel(label: string): RTCDataChannel | undefined {
-    return this._dataChannels.find(channel => channel.label == label);
+    return this._dataChannels.find((channel) => channel.label == label);
   }
 
   async _closeDataChannel(dataChannel: RTCDataChannel): Promise<void> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       if (dataChannel.readyState === 'closed') return resolve();
       dataChannel.onclose = null;
       const timerId = setInterval(() => {
@@ -481,7 +481,7 @@ class ConnectionBase {
   }
 
   async _closePeerConnection(): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       if (browser() === 'safari' && this._pc) {
         this._pc.oniceconnectionstatechange = () => {};
         this._pc.close();
@@ -510,7 +510,7 @@ class ConnectionBase {
   }
 
   async _closeWebSocketConnection(): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       if (!this._ws) return resolve();
       if (this._ws && this._ws.readyState === 3) {
         this._ws = null;

@@ -72,7 +72,7 @@ export function getVideoCodecsFromString(codec: VideoCodecOption, codecs: Array<
   } else {
     mimeType = `video/${codec}`;
   }
-  const filteredCodecs: Array<any> = codecs.filter(c => c.mimeType == mimeType);
+  const filteredCodecs: Array<any> = codecs.filter((c) => c.mimeType == mimeType);
   if (filteredCodecs.length < 1) {
     throw new Error('invalid video codec type');
   }
