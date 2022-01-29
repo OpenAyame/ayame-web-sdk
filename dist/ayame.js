@@ -1,4 +1,4 @@
-/* @OpenAyame/ayame-web-sdk@2021.1.0 */
+/* @OpenAyame/ayame-web-sdk@2022.1.0 */
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
     typeof define === 'function' && define.amd ? define(['exports'], factory) :
