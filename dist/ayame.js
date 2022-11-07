@@ -117,10 +117,11 @@
                     }
                     modvideoline += ' ' + videoelem;
                 });
-                modvideoline += '\r\n';
-                modsdp = modsdp.replace(videore, modvideoline);
+                // modvideoline += '\r\n'; 
+                modsdp = modsdp.replace(videoline, modvideoline);
+
             }
-            return internalFunc(modsdp);
+            return modsdp;
         }
         return internalFunc(sdp);
     }
