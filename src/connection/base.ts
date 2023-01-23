@@ -11,6 +11,7 @@ interface AyameRegisterMessage {
   clientId: string;
   key?: string;
   authnMetadata?: any;
+  standalone?: boolean;
 }
 
 /**
@@ -114,9 +115,11 @@ class ConnectionBase {
       }
       this._ws = new WebSocket(this.signalingUrl);
       this._ws.onclose = async () => {
-        await this._disconnect();
-        this._callbacks.disconnect({ reason: 'WS-CLOSED' });
-        return reject('WS-CLOSED');
+        if (!this.options.standalone) {
+          await this._disconnect();
+          this._callbacks.disconnect({ reason: 'WS-CLOSED' });
+          return reject('WS-CLOSED');
+        }
       };
       this._ws.onerror = async () => {
         await this._disconnect();
@@ -128,7 +131,8 @@ class ConnectionBase {
           roomId: this.roomId,
           clientId: this.options.clientId,
           authnMetadata: undefined,
-          key: undefined
+          key: undefined,
+          standalone: this.options.standalone
         };
         if (this.authnMetadata !== null) {
           registerMessage.authnMetadata = this.authnMetadata;
@@ -266,6 +270,9 @@ class ConnectionBase {
           case 'connected':
             this._isOffer = false;
             this._callbacks.connect();
+            if (this.options.standalone) {
+              this._sendWs({ type: 'connected' });
+            }
             break;
           case 'disconnected':
           case 'failed':

@@ -53,6 +53,7 @@ export interface ConnectionOptions {
   clientId: string;
   iceServers: Array<RTCIceServer>;
   signalingKey?: string;
+  standalone?: boolean;
 }
 
 /**
