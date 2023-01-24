@@ -4,12 +4,17 @@ let clientId = null;
 let videoCodec = null;
 let messages = "";
 let signalingKey = null;
+let standalone = false;
 
 function onChangeVideoCodec() {
   videoCodec = document.getElementById("video-codec").value;
   if (videoCodec == 'none') {
     videoCodec = null;
   }
+}
+
+function onChangeStandaloneMode() {
+  standalone = document.getElementById("standaloneInput").checked;
 }
 
 // query string から roomId, clientId を取得するヘルパー
