@@ -77,18 +77,15 @@ class Connection extends ConnectionBase {
    * @desc PeerConnection  接続を切断します。
    */
   public async disconnect(): Promise<void> {
-    return new Promise(async (resolve, reject) => {
-      if (this._ws) {
-        this._ws.close();
-      }
+    if (this._ws) {
+      this._ws.close();
+    }
 
-      // standalone モードの場合はここで切断する
-      if (this.options.standalone) {
-        await this._disconnect();
-        this._callbacks.disconnect({ reason: 'DISCONNECTED' });
-      }
-      return resolve();
-    });
+    // standalone モードの場合はここで切断する
+    if (this.options.standalone) {
+      await this._disconnect();
+      this._callbacks.disconnect({ reason: 'DISCONNECTED' });
+    }
   }
 }
 
