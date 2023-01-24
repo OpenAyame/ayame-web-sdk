@@ -131,6 +131,15 @@
      */
     class ConnectionBase {
         /**
+         * @ignore
+         */
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        on(kind, callback) {
+            if (kind in this._callbacks) {
+                this._callbacks[kind] = callback;
+            }
+        }
+        /**
          * オブジェクトを生成し、リモートのピアまたはサーバーに接続します。
          * @param signalingUrl シグナリングに利用する URL
          * @param roomId Ayame のルームID
@@ -173,15 +182,6 @@
                 bye: () => { },
                 datachannel: () => { }
             };
-        }
-        /**
-         * @ignore
-         */
-        // eslint-disable-next-line @typescript-eslint/ban-types
-        on(kind, callback) {
-            if (kind in this._callbacks) {
-                this._callbacks[kind] = callback;
-            }
         }
         async _disconnect() {
             await this._dataChannels.forEach(async (dataChannel) => {
@@ -804,8 +804,6 @@
     exports.connection = connection;
     exports.defaultOptions = defaultOptions;
     exports.version = version;
-
-    Object.defineProperty(exports, '__esModule', { value: true });
 
 }));
 //# sourceMappingURL=ayame.js.map

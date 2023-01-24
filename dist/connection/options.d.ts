@@ -5,7 +5,7 @@
  * - recvonly
  * - sendonly
  */
-export declare type ConnectionDirection = 'sendrecv' | 'recvonly' | 'sendonly';
+export type ConnectionDirection = 'sendrecv' | 'recvonly' | 'sendonly';
 /**
  * @typedef {Object} ConnectionAudioOption - オーディオ接続に関するオプションです。
  * @property {ConnectionDirection} direction 送受信方向
@@ -23,7 +23,7 @@ export interface ConnectionAudioOption {
  * - VP9
  * - H264
  */
-export declare type VideoCodecOption = 'VP8' | 'VP9' | 'AV1' | 'H264' | 'H265';
+export type VideoCodecOption = 'VP8' | 'VP9' | 'AV1' | 'H264' | 'H265';
 /**
  * @typedef {Object} ConnectionVideoOption - ビデオ接続に関するオプションです。
  * @property {VideoCodecOption} codec コーデックの設定
