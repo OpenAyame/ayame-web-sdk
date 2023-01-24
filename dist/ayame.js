@@ -117,11 +117,10 @@
                     }
                     modvideoline += ' ' + videoelem;
                 });
-                // modvideoline += '\r\n'; 
-                modsdp = modsdp.replace(videoline, modvideoline);
-
+                modvideoline += '\r\n';
+                modsdp = modsdp.replace(videore, modvideoline);
             }
-            return modsdp;
+            return internalFunc(modsdp);
         }
         return internalFunc(sdp);
     }
@@ -204,9 +203,11 @@
                 }
                 this._ws = new WebSocket(this.signalingUrl);
                 this._ws.onclose = async () => {
-                    await this._disconnect();
-                    this._callbacks.disconnect({ reason: 'WS-CLOSED' });
-                    return reject('WS-CLOSED');
+                    if (!this.options.standalone) {
+                        await this._disconnect();
+                        this._callbacks.disconnect({ reason: 'WS-CLOSED' });
+                        return reject('WS-CLOSED');
+                    }
                 };
                 this._ws.onerror = async () => {
                     await this._disconnect();
@@ -218,7 +219,8 @@
                         roomId: this.roomId,
                         clientId: this.options.clientId,
                         authnMetadata: undefined,
-                        key: undefined
+                        key: undefined,
+                        standalone: this.options.standalone
                     };
                     if (this.authnMetadata !== null) {
                         registerMessage.authnMetadata = this.authnMetadata;
@@ -368,6 +370,9 @@
                         case 'connected':
                             this._isOffer = false;
                             this._callbacks.connect();
+                            if (this.options.standalone) {
+                                this._sendWs({ type: 'connected' });
+                            }
                             break;
                         case 'disconnected':
                         case 'failed':
@@ -709,12 +714,14 @@
          * @desc PeerConnection  接続を切断します。
          */
         async disconnect() {
-            return new Promise((resolve) => {
-                if (this._ws) {
-                    this._ws.close();
-                }
-                return resolve();
-            });
+            if (this._ws) {
+                this._ws.close();
+            }
+            // standalone モードの場合はここで切断する
+            if (this.options.standalone) {
+                await this._disconnect();
+                this._callbacks.disconnect({ reason: 'DISCONNECTED' });
+            }
         }
     }
 

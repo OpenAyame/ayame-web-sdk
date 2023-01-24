@@ -49,6 +49,7 @@ export interface ConnectionOptions {
     clientId: string;
     iceServers: Array<RTCIceServer>;
     signalingKey?: string;
+    standalone?: boolean;
 }
 /**
  * @typedef {Object} MetadataOption - 接続時に指定できるメタデータです。
