@@ -5,7 +5,7 @@
   "main": "dist/ayame.min.js",
   "scripts": {
     "watch": "rollup -w -c ./rollup.config.js",
-    "build": "rollup -c ./rollup.config.js",
+    "build": "rollup -c ./rollup.config.js --bundleConfigAsCjs",
     "lint": "npx eslint --ext .tsx,.ts src/",
     "fmt": "npm run lint --fix",
     "doc": "npx typedoc",
@@ -24,20 +24,20 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@rollup/plugin-node-resolve": "15.0.1",
-    "@rollup/plugin-typescript": "10.0.1",
+    "@rollup/plugin-typescript": "11.0.0",
     "@types/node": "18.0.0",
     "@types/webrtc": "0.0.33",
     "@typescript-eslint/eslint-plugin": "5.10.1",
     "@typescript-eslint/parser": "5.10.1",
-    "eslint": "8.8.0",
-    "eslint-config-prettier": "8.3.0",
-    "eslint-plugin-import": "2.25.4",
-    "eslint-plugin-prettier": "4.0.0",
-    "gh-pages": "4.0.0",
-    "prettier": "2.5.1",
-    "rollup": "2.66.1",
-    "rollup-plugin-terser": "7.0.2",
-    "typedoc": "0.23.20",
-    "typescript": "4.5.5"
+    "eslint": "8.32.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-plugin-import": "2.27.5",
+    "eslint-plugin-prettier": "4.2.1",
+    "gh-pages": "5.0.0",
+    "prettier": "2.8.3",
+    "rollup": "3.10.1",
+    "@rollup/plugin-terser": "0.4.0",
+    "typedoc": "0.23.24",
+    "typescript": "4.9.4"
   }
 }
