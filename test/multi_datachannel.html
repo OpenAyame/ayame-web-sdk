@@ -11,6 +11,9 @@
         <p>クライアントID
         <input id="clientIdInput" disabled type="text" value=""></input>
         </p>
+        <p>Standalone モード
+          <input id="standaloneInput" type="checkbox" onChange="onChangeStandaloneMode();"></input>
+        </p>
         <button onclick="startConn();">接続</button>
         <button onclick="conn && conn.disconnect();">切断</button>
         <div>
@@ -45,37 +48,38 @@
         if (signalingKey) {
           options.signalingKey = signalingKey;
         }
-        conn = Ayame.connection(signalingUrl, roomId, options, true);
         let dataChannel = null;
         let anotherDataChannel = null;
-        conn.on('open', async (e) => {
-          dataChannel = await conn.createDataChannel(label);
-          if (dataChannel) {
-            dataChannel.onmessage = onMessageA;
-          }
-          anotherDataChannel = await conn.createDataChannel(anotherLabel);
-          if (anotherDataChannel) {
-            anotherDataChannel.onmessage = onMessageB;
-          }
-        });
-        conn.on('datachannel', (channel) => {
-          if (channel.label === label) {
-            if (!dataChannel) {
-              dataChannel = channel;
+        const startConn = async () => {
+          options.standalone = standalone;
+          conn = Ayame.connection(signalingUrl, roomId, options, true);
+          conn.on('open', async (e) => {
+            dataChannel = await conn.createDataChannel(label);
+            if (dataChannel) {
               dataChannel.onmessage = onMessageA;
             }
-          } else if (channel.label === anotherLabel) {
-            if (!anotherDataChannel) {
-              anotherDataChannel = channel;
+            anotherDataChannel = await conn.createDataChannel(anotherLabel);
+            if (anotherDataChannel) {
               anotherDataChannel.onmessage = onMessageB;
             }
-          }
-        });
-        conn.on('disconnect', () => {
-          dataChannel = null;
-          anotherDataChannel = null;
-        });
-        const startConn = async () => {
+          });
+          conn.on('datachannel', (channel) => {
+            if (channel.label === label) {
+              if (!dataChannel) {
+                dataChannel = channel;
+                dataChannel.onmessage = onMessageA;
+              }
+            } else if (channel.label === anotherLabel) {
+              if (!anotherDataChannel) {
+                anotherDataChannel = channel;
+                anotherDataChannel.onmessage = onMessageB;
+              }
+            }
+          });
+          conn.on('disconnect', () => {
+            dataChannel = null;
+            anotherDataChannel = null;
+          });
           await conn.connect(null);
         };
         const sendDataA = () => {

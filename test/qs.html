@@ -11,6 +11,9 @@
         <p>クライアントID
         <input id="clientIdInput" disabled type="text" value=""></input>
         </p>
+        <p>Standalone モード
+          <input id="standaloneInput" type="checkbox" onChange="onChangeStandaloneMode();"></input>
+        </p>
         <button onclick="startConn();">接続</button>
         <button onclick="conn && conn.disconnect();">切断</button>
         <select id="video-codec" onChange="onChangeVideoCodec();">
@@ -37,15 +40,16 @@
           options.signalingKey = signalingKey;
         }
         options.clientId = clientId ? clientId : "";
-        options.video.codec = videoCodec;
-        conn = Ayame.connection(signalingUrl, roomId, options, true);
-        conn.on('open', ({authzMetadata}) => console.log(authzMetadata));
-        conn.on('disconnect', (e) => console.log(e));
-        conn.on('addstream', async (e) => {
-          console.log(e.stream);
-          remoteVideo.srcObject = e.stream;
-        });
         const startConn = async () => {
+          options.video.codec = videoCodec;
+          options.standalone = standalone;
+          conn = Ayame.connection(signalingUrl, roomId, options, true);
+          conn.on('open', ({authzMetadata}) => console.log(authzMetadata));
+          conn.on('disconnect', (e) => console.log(e));
+          conn.on('addstream', async (e) => {
+            console.log(e.stream);
+            remoteVideo.srcObject = e.stream;
+          });
           const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true})
           const authnMetadata = {hoge: "fuga"};
           await conn.connect(mediaStream, {authnMetadata});
