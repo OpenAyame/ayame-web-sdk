@@ -370,15 +370,19 @@
                         case 'connected':
                             this._isOffer = false;
                             this._callbacks.connect();
-                            if (this.options.standalone) {
-                                this._sendWs({ type: 'connected' });
-                            }
                             break;
                         case 'disconnected':
                         case 'failed':
                             await this._disconnect();
                             this._callbacks.disconnect({ reason: 'ICE-CONNECTION-STATE-FAILED' });
                             break;
+                    }
+                }
+            };
+            pc.onconnectionstatechange = (_) => {
+                if (pc.connectionState === 'connected') {
+                    if (this.options.standalone) {
+                        this._sendWs({ type: 'connected' });
                     }
                 }
             };
