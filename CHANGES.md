@@ -56,6 +56,11 @@
 - [ADD] npm run doc コマンド追加
     - TypeDoc により apidoc/ に出力
     - @voluntas
+- [ADD] standalone モードに対応する
+    - options に standalone を追加する
+    - standalone モード時は、接続完了時に ayame に type: connected を送信する
+    - standalone モード時は、ayame から WebSocket 接続が切断されても、ブラウザ間の接続は維持する
+    - @Hexa
 
 ## 2020.3
 
