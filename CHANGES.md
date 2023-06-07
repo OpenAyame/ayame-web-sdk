@@ -11,19 +11,9 @@
 
 ## develop
 
+- [CHANGE] npm を pnpm に変更する
 - [CHANGE] packege.json の devDependencies を最新へ追従する
-    - `rollup` を `^2.66.1` へ上げる
-    - `rollup-plugin-terser` を `^7.0.2` へ上げる
-    - `rollup-plugin-node-resolve` を `@rollup/plugin-node-resolve` `^13.1.3` に切り替える
-    - `rollup-plugin-typescript2` を `@rollup/plugin-typescript` `^8.3.0` に切り替える
-    - `typescript` を `^4.5.5` に上げる
-    - `@typescript-eslint/eslint-plugin` を `^5.10.` に上げる
-    - `@typescript-eslint/parse` を `^5.10.` に上げる
-    - `@types/node` を `^16.11.7` へ上げる
-    - `@types/webrtc` を `^0.0.31` へ上げる
-    - `eslint` を `^8.8.0` に上げる
-    - `eslint-config-prettier` を `^8.3.0` に上げる
-    - `eslint-plugin-import` を `^2.25.4` に上げる
+    - @voluntas
     - @voluntas
 - [CHANGE] esdoc を削除
     - @voluntas
