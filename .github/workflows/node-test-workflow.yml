@@ -12,16 +12,24 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16]
+        node-version: [16, 18, 20]
     steps:
     - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-    - name: npm install, lint
-      run: |
-        npm install
-        $(npm bin)/eslint --ext .tsx,.ts src/
+    - name: Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+    - uses: pnpm/action-setup@v2
+      with:
+        version: 8
+    - run: pnpm install
+    - run: pnpm run lint
+      env:
+        CI: true
+    - run: pnpm run build
       env:
         CI: true
