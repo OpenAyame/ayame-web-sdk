@@ -1,14 +1,15 @@
 {
+  "type": "module",
   "name": "@open-ayame/ayame-web-sdk",
   "version": "2022.1.0",
   "description": "Web SDK for WebRTC Signaling Server Ayame",
   "main": "dist/ayame.min.js",
   "scripts": {
-    "watch": "rollup -w -c ./rollup.config.js",
+    "watch": "rollup -w -c ./rollup.config.js --bundleConfigAsCjs",
     "build": "rollup -c ./rollup.config.js --bundleConfigAsCjs",
-    "lint": "npx eslint --ext .tsx,.ts src/",
+    "lint": "eslint --ext .tsx,.ts src/",
     "fmt": "npm run lint --fix",
-    "doc": "npx typedoc",
+    "doc": "typedoc",
     "deploy:docs": "npx gh-pages -d apidoc"
   },
   "repository": {
