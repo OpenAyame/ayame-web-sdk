@@ -26,7 +26,7 @@
   "devDependencies": {
     "@rollup/plugin-node-resolve": "15.1.0",
     "@rollup/plugin-typescript": "11.1.2",
-    "@types/node": "18.16.20",
+    "@types/node": "18.17.0",
     "@types/webrtc": "0.0.35",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
