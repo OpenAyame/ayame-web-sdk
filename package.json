@@ -27,7 +27,7 @@
     "@rollup/plugin-node-resolve": "15.1.0",
     "@rollup/plugin-typescript": "11.1.2",
     "@types/node": "18.17.1",
-    "@types/webrtc": "0.0.35",
+    "@types/webrtc": "0.0.36",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
     "eslint": "8.45.0",

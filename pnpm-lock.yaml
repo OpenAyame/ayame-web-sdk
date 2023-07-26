@@ -18,8 +18,8 @@ devDependencies:
     specifier: 18.17.1
     version: 18.17.1
   '@types/webrtc':
-    specifier: 0.0.35
-    version: 0.0.35
+    specifier: 0.0.36
+    version: 0.0.36
   '@typescript-eslint/eslint-plugin':
     specifier: 5.62.0
     version: 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.45.0)(typescript@5.1.6)
@@ -271,8 +271,8 @@ packages:
     resolution: {integrity: sha512-G8hZ6XJiHnuhQKR7ZmysCeJWE08o8T0AXtk5darsCaTVsYZhhgUrq53jizaR2FvsoeCwJhlmwTjkXBY5Pn/ZHw==}
     dev: true
 
-  /@types/webrtc@0.0.35:
-    resolution: {integrity: sha512-TUY+7ZYUBSYKNyFJ6hKS6UpZuejDHCGdJ5lBGzFMYSAq+Tqdqu3v3Rjtg+RyFl24Ko7OK8AYFGfsjMJzmB+dVQ==}
+  /@types/webrtc@0.0.36:
+    resolution: {integrity: sha512-tYFarc92EluXU7XyRmWbkQXSbZIOHTdDOudFPal9u/TNTQuouWpIHV/2o9bNAdqvTJFjLJh/zflCOLWbL30tEQ==}
     dev: true
 
   /@typescript-eslint/eslint-plugin@5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.45.0)(typescript@5.1.6):
