@@ -15,8 +15,8 @@ devDependencies:
     specifier: 11.1.2
     version: 11.1.2(rollup@3.27.1)(typescript@5.1.6)
   '@types/node':
-    specifier: 18.17.1
-    version: 18.17.1
+    specifier: 18.17.2
+    version: 18.17.2
   '@types/webrtc':
     specifier: 0.0.36
     version: 0.0.36
@@ -264,8 +264,8 @@ packages:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
     dev: true
 
-  /@types/node@18.17.1:
-    resolution: {integrity: sha512-xlR1jahfizdplZYRU59JlUx9uzF1ARa8jbhM11ccpCJya8kvos5jwdm2ZAgxSCwOl0fq21svP18EVwPBXMQudw==}
+  /@types/node@18.17.2:
+    resolution: {integrity: sha512-wBo3KqP/PBqje5TI9UTiuL3yWfP6sdPtjtygSOqcYZWT232dfDeDOnkDps5wqZBP9NgGgYrNejinl0faAuE+HQ==}
     dev: true
 
   /@types/resolve@1.20.2:
