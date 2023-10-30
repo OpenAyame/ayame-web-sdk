@@ -38,7 +38,7 @@
     "gh-pages": "5.0.0",
     "prettier": "3.0.3",
     "rollup": "3.29.4",
-    "typedoc": "0.25.2",
+    "typedoc": "0.25.3",
     "typescript": "5.2.2"
   }
 }
