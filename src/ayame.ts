@@ -1,6 +1,6 @@
-import Connection from './connection';
-import { ConnectionOptions } from './connection/options';
-import { randomString } from './utils';
+import Connection from './connection'
+import { ConnectionOptions } from './connection/options'
+import { randomString } from './utils'
 
 /**
  * オーディオ、ビデオの送受信方向に関するオプションです。
@@ -61,8 +61,8 @@ export const defaultOptions: ConnectionOptions = {
   audio: { direction: 'sendrecv', enabled: true },
   video: { direction: 'sendrecv', enabled: true },
   iceServers: [],
-  clientId: randomString(17)
-};
+  clientId: randomString(17),
+}
 
 /**
  * @desc Ayame Connection を生成します。
@@ -78,9 +78,9 @@ export function connection(
   roomId: string,
   options: ConnectionOptions = defaultOptions,
   debug = false,
-  isRelay = false
+  isRelay = false,
 ): Connection {
-  return new Connection(signalingUrl, roomId, options, debug, isRelay);
+  return new Connection(signalingUrl, roomId, options, debug, isRelay)
 }
 
 /**
@@ -88,5 +88,5 @@ export function connection(
  * @return {string} Ayame Web SDK のバージョン
  */
 export function version(): string {
-  return process.version;
+  return process.version
 }
