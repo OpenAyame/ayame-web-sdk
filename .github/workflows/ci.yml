@@ -1,4 +1,4 @@
-name: Lint And Flow Test
+name: CI
 
 on:
   push:
@@ -14,18 +14,13 @@ jobs:
       matrix:
         node-version: [18, 20]
     steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
       - uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: latest
       - run: pnpm install
       - run: pnpm run lint
         env:
