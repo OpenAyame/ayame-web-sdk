@@ -5,7 +5,7 @@
  * - recvonly
  * - sendonly
  */
-export type ConnectionDirection = 'sendrecv' | 'recvonly' | 'sendonly';
+export type ConnectionDirection = 'sendrecv' | 'recvonly' | 'sendonly'
 
 /**
  * @typedef {Object} ConnectionAudioOption - オーディオ接続に関するオプションです。
@@ -13,8 +13,8 @@ export type ConnectionDirection = 'sendrecv' | 'recvonly' | 'sendonly';
  * @property {boolean} enabled 有効かどうかのフラグ
  */
 export interface ConnectionAudioOption {
-  direction: ConnectionDirection;
-  enabled: boolean;
+  direction: ConnectionDirection
+  enabled: boolean
 }
 
 /**
@@ -25,7 +25,7 @@ export interface ConnectionAudioOption {
  * - VP9
  * - H264
  */
-export type VideoCodecOption = 'VP8' | 'VP9' | 'AV1' | 'H264' | 'H265';
+export type VideoCodecOption = 'VP8' | 'VP9' | 'AV1' | 'H264' | 'H265'
 
 /**
  * @typedef {Object} ConnectionVideoOption - ビデオ接続に関するオプションです。
@@ -34,9 +34,9 @@ export type VideoCodecOption = 'VP8' | 'VP9' | 'AV1' | 'H264' | 'H265';
  * @property {boolean} enabled 有効かどうかのフラグ
  */
 export interface ConnectionVideoOption {
-  codec?: VideoCodecOption;
-  direction: ConnectionDirection;
-  enabled: boolean;
+  codec?: VideoCodecOption
+  direction: ConnectionDirection
+  enabled: boolean
 }
 
 /**
@@ -48,12 +48,12 @@ export interface ConnectionVideoOption {
  * @property {string} signalingKey 送信するシグナリングキー
  */
 export interface ConnectionOptions {
-  audio: ConnectionAudioOption;
-  video: ConnectionVideoOption;
-  clientId: string;
-  iceServers: Array<RTCIceServer>;
-  signalingKey?: string;
-  standalone?: boolean;
+  audio: ConnectionAudioOption
+  video: ConnectionVideoOption
+  clientId: string
+  iceServers: Array<RTCIceServer>
+  signalingKey?: string
+  standalone?: boolean
 }
 
 /**
@@ -61,5 +61,5 @@ export interface ConnectionOptions {
  * @property {any} authnMetadata 送信するメタデータ
  */
 export interface MetadataOption {
-  authnMetadata?: any;
+  authnMetadata?: any
 }

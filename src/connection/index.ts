@@ -1,5 +1,5 @@
-import ConnectionBase from './base';
-import { ConnectionOptions, MetadataOption } from './options';
+import ConnectionBase from './base'
+import { ConnectionOptions, MetadataOption } from './options'
 
 /**
  * Peer Connection 接続を管理するクラスです。
@@ -18,8 +18,16 @@ class Connection extends ConnectionBase {
    * @listens {addstream} リモートのストリームが追加されると送信されます。
    * @listens {removestream} リモートのストリームが削除されると送信されます。
    */
-  constructor(signalingUrl: string, roomId: string, options: ConnectionOptions, debug = false, isRelay = false) {
-    super(signalingUrl, roomId, options, debug, isRelay);
+
+  // biome-ignore lint/complexity/noUselessConstructor: <explanation>
+  constructor(
+    signalingUrl: string,
+    roomId: string,
+    options: ConnectionOptions,
+    debug = false,
+    isRelay = false,
+  ) {
+    super(signalingUrl, roomId, options, debug, isRelay)
   }
 
   /**
@@ -32,18 +40,21 @@ class Connection extends ConnectionBase {
    * @param {MediaStream|null} [stream=null] - ローカルのストリーム
    * @param {MetadataOption|null} [metadataOption=null] - 送信するメタデータ
    */
-  public async connect(stream: MediaStream | null, metadataOption: MetadataOption | null = null): Promise<void> {
+  public async connect(
+    stream: MediaStream | null,
+    metadataOption: MetadataOption | null = null,
+  ): Promise<void> {
     if (this._ws || this._pc) {
-      this._traceLog('connection already exists');
-      throw new Error('Connection Already Exists!');
+      this._traceLog('connection already exists')
+      throw new Error('Connection Already Exists!')
     }
     /** @type {MediaStream|null} */
-    this.stream = stream;
+    this.stream = stream
     if (metadataOption) {
       /** @type {any} */
-      this.authnMetadata = metadataOption.authnMetadata;
+      this.authnMetadata = metadataOption.authnMetadata
     }
-    await this._signaling();
+    await this._signaling()
   }
 
   /**
@@ -54,9 +65,9 @@ class Connection extends ConnectionBase {
    */
   public async createDataChannel(
     label: string,
-    options: RTCDataChannelInit | undefined = undefined
+    options: RTCDataChannelInit | undefined = undefined,
   ): Promise<RTCDataChannel | null> {
-    return await this._createDataChannel(label, options);
+    return await this._createDataChannel(label, options)
   }
 
   /**
@@ -64,12 +75,12 @@ class Connection extends ConnectionBase {
    * @param {string} label - 削除する dataChannel の label
    */
   public async removeDataChannel(label: string): Promise<void> {
-    this._traceLog('datachannel remove=>', label);
-    const dataChannel = this._findDataChannel(label);
+    this._traceLog('datachannel remove=>', label)
+    const dataChannel = this._findDataChannel(label)
     if (dataChannel && dataChannel.readyState === 'open') {
-      await this._closeDataChannel(dataChannel);
+      await this._closeDataChannel(dataChannel)
     } else {
-      throw new Error('data channel is not exist or open');
+      throw new Error('data channel is not exist or open')
     }
   }
 
@@ -78,15 +89,15 @@ class Connection extends ConnectionBase {
    */
   public async disconnect(): Promise<void> {
     if (this._ws) {
-      this._ws.close();
+      this._ws.close()
     }
 
     // standalone モードの場合はここで切断する
     if (this.options.standalone) {
-      await this._disconnect();
-      this._callbacks.disconnect({ reason: 'DISCONNECTED' });
+      await this._disconnect()
+      this._callbacks.disconnect({ reason: 'DISCONNECTED' })
     }
   }
 }
 
-export default Connection;
+export default Connection

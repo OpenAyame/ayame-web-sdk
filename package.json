@@ -7,8 +7,8 @@
   "scripts": {
     "watch": "rollup -w -c ./rollup.config.js --bundleConfigAsCjs",
     "build": "rollup -c ./rollup.config.js --bundleConfigAsCjs",
-    "lint": "eslint --ext .tsx,.ts src/",
-    "fmt": "npm run lint --fix",
+    "lint": "biome lint ./src",
+    "fmt": "biome format --write ./src",
     "doc": "typedoc",
     "deploy:docs": "npx gh-pages -d apidoc"
   },
@@ -24,21 +24,15 @@
   "author": "Shiguredo Inc.",
   "license": "Apache-2.0",
   "devDependencies": {
+    "@biomejs/biome": "1.5.2",
     "@rollup/plugin-node-resolve": "15.2.3",
     "@rollup/plugin-terser": "0.4.4",
-    "@rollup/plugin-typescript": "11.1.5",
-    "@types/node": "20.9.2",
-    "@types/webrtc": "0.0.40",
-    "@typescript-eslint/eslint-plugin": "6.11.0",
-    "@typescript-eslint/parser": "6.11.0",
-    "eslint": "8.54.0",
-    "eslint-config-prettier": "9.0.0",
-    "eslint-plugin-import": "2.29.0",
-    "eslint-plugin-prettier": "5.0.1",
-    "gh-pages": "6.1.0",
-    "prettier": "3.1.0",
-    "rollup": "4.5.0",
-    "typedoc": "0.25.3",
-    "typescript": "5.2.2"
+    "@rollup/plugin-typescript": "11.1.6",
+    "@types/node": "20.11.5",
+    "@types/webrtc": "0.0.41",
+    "gh-pages": "6.1.1",
+    "rollup": "4.9.5",
+    "typedoc": "0.25.7",
+    "typescript": "5.3.3"
   }
 }
