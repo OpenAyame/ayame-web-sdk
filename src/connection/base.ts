@@ -1,5 +1,5 @@
 /* @private */
-import { traceLog, getVideoCodecsFromString, removeCodec, browser } from '../utils'
+import { browser, getVideoCodecsFromString, removeCodec, traceLog } from '../utils'
 import { ConnectionOptions, VideoCodecOption } from './options'
 
 /**
@@ -42,7 +42,8 @@ class ConnectionBase {
   /**
    * @ignore
    */
-  // eslint-disable-next-line @typescript-eslint/ban-types
+
+  // biome-ignore lint/complexity/noBannedTypes: <explanation>
   on(kind: string, callback: Function): void {
     if (kind in this._callbacks) {
       this._callbacks[kind] = callback
@@ -101,7 +102,8 @@ class ConnectionBase {
   }
 
   async _disconnect(): Promise<void> {
-    await this._dataChannels.forEach(async (dataChannel: RTCDataChannel) => {
+    // biome-ignore lint/complexity/noForEach: <explanation>
+    this._dataChannels.forEach(async (dataChannel: RTCDataChannel) => {
       await this._closeDataChannel(dataChannel)
     })
     await this._closePeerConnection()
@@ -203,14 +205,16 @@ class ConnectionBase {
   _createPeerConnection(): void {
     this._traceLog('RTCConfiguration=>', this._pcConfig)
     const pc = new RTCPeerConnection(this._pcConfig)
-    const audioTrack = this.stream && this.stream.getAudioTracks()[0]
+    const audioTrack = this.stream?.getAudioTracks()[0]
     if (audioTrack && this.options.audio.direction !== 'recvonly') {
+      // biome-ignore lint/style/noNonNullAssertion: <explanation>
       pc.addTrack(audioTrack, this.stream!)
     } else if (this.options.audio.enabled) {
       pc.addTransceiver('audio', { direction: 'recvonly' })
     }
-    const videoTrack = this.stream && this.stream.getVideoTracks()[0]
+    const videoTrack = this.stream?.getVideoTracks()[0]
     if (videoTrack && this.options.video.direction !== 'recvonly') {
+      // biome-ignore lint/style/noNonNullAssertion: <explanation>
       const videoSender = pc.addTrack(videoTrack, this.stream!)
       const videoTransceiver = this._getTransceiver(pc, videoSender)
       if (this._isVideoCodecSpecified() && videoTransceiver !== null) {
@@ -326,13 +330,13 @@ class ConnectionBase {
         dataChannel.onclose = (event: Record<string, any>) => {
           this._traceLog('datachannel onclosed=>', event)
           this._dataChannels = this._dataChannels.filter(
-            (dataChannel) => dataChannel.label != label,
+            (dataChannel) => dataChannel.label !== label,
           )
         }
         dataChannel.onerror = (event: Record<string, any>) => {
           this._traceLog('datachannel onerror=>', event)
           this._dataChannels = this._dataChannels.filter(
-            (dataChannel) => dataChannel.label != label,
+            (dataChannel) => dataChannel.label !== label,
           )
         }
         dataChannel.onmessage = (event: any) => {
@@ -373,11 +377,10 @@ class ConnectionBase {
       this._dataChannels.push(event.channel)
     } else {
       this._dataChannels = this._dataChannels.map((channel) => {
-        if (channel.label == label) {
+        if (channel.label === label) {
           return dataChannel
-        } else {
-          return channel
         }
+        return channel
       })
     }
     this._callbacks.datachannel(dataChannel)
@@ -403,6 +406,7 @@ class ConnectionBase {
     })
     if (this._removeCodec && this.options.video.codec) {
       const codecs: Array<VideoCodecOption> = ['VP8', 'VP9', 'H264']
+      // biome-ignore lint/complexity/noForEach: <explanation>
       codecs.forEach((codec: VideoCodecOption) => {
         if (this.options.video.codec !== codec) {
           offer.sdp = removeCodec(offer.sdp, codec)
@@ -485,8 +489,9 @@ class ConnectionBase {
 
   _getTransceiver(pc: RTCPeerConnection, track: any): RTCRtpTransceiver | null {
     let transceiver = null
+    // biome-ignore lint/complexity/noForEach: <explanation>
     pc.getTransceivers().forEach((t: RTCRtpTransceiver) => {
-      if (t.sender == track || t.receiver == track) transceiver = t
+      if (t.sender === track || t.receiver === track) transceiver = t
     })
     if (!transceiver) {
       throw new Error('invalid transceiver')
@@ -495,7 +500,7 @@ class ConnectionBase {
   }
 
   _findDataChannel(label: string): RTCDataChannel | undefined {
-    return this._dataChannels.find((channel) => channel.label == label)
+    return this._dataChannels.find((channel) => channel.label === label)
   }
 
   async _closeDataChannel(dataChannel: RTCDataChannel): Promise<void> {
@@ -508,7 +513,7 @@ class ConnectionBase {
           return resolve()
         }
       }, 400)
-      dataChannel && dataChannel.close()
+      dataChannel?.close()
     })
   }
 
@@ -521,7 +526,7 @@ class ConnectionBase {
         return resolve()
       }
       if (!this._pc) return resolve()
-      if (this._pc && this._pc.signalingState == 'closed') {
+      if (this._pc && this._pc.signalingState === 'closed') {
         this._pc = null
         return resolve()
       }
@@ -531,7 +536,7 @@ class ConnectionBase {
           clearInterval(timerId)
           return resolve()
         }
-        if (this._pc && this._pc.signalingState == 'closed') {
+        if (this._pc && this._pc.signalingState === 'closed') {
           this._pc = null
           clearInterval(timerId)
           return resolve()
@@ -560,7 +565,7 @@ class ConnectionBase {
           return resolve()
         }
       }, 400)
-      this._ws && this._ws.close()
+      this._ws?.close()
     })
   }
 

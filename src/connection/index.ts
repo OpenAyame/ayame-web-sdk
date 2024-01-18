@@ -18,6 +18,8 @@ class Connection extends ConnectionBase {
    * @listens {addstream} リモートのストリームが追加されると送信されます。
    * @listens {removestream} リモートのストリームが削除されると送信されます。
    */
+
+  // biome-ignore lint/complexity/noUselessConstructor: <explanation>
   constructor(
     signalingUrl: string,
     roomId: string,

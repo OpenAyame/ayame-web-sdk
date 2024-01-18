@@ -18,7 +18,8 @@ declare let window: Window
 export function randomString(strLength: number): string {
   const result = []
   const charSet = '0123456789'
-  while (strLength--) {
+  let length = strLength;
+  while (length--) {
     result.push(charSet.charAt(Math.floor(Math.random() * charSet.length)))
   }
   return result.join('')
@@ -31,13 +32,17 @@ export function browser(): string {
   const ua = window.navigator.userAgent.toLocaleLowerCase()
   if (ua.indexOf('edge') !== -1) {
     return 'edge'
-  } else if (ua.indexOf('chrome') !== -1 && ua.indexOf('edge') === -1) {
+  }
+  if (ua.indexOf('chrome') !== -1 && ua.indexOf('edge') === -1) {
     return 'chrome'
-  } else if (ua.indexOf('safari') !== -1 && ua.indexOf('chrome') === -1) {
+  }
+  if (ua.indexOf('safari') !== -1 && ua.indexOf('chrome') === -1) {
     return 'safari'
-  } else if (ua.indexOf('opera') !== -1) {
+  }
+  if (ua.indexOf('opera') !== -1) {
     return 'opera'
-  } else if (ua.indexOf('firefox') !== -1) {
+  }
+  if (ua.indexOf('firefox') !== -1) {
     return 'firefox'
   }
   return 'unknown'
@@ -49,12 +54,12 @@ export function browser(): string {
 export function traceLog(title: string, value?: string | Record<string, any>): void {
   let prefix = ''
   if (window.performance) {
-    prefix = '[Ayame ' + (window.performance.now() / 1000).toFixed(3) + ']'
+    prefix = `[Ayame ${(window.performance.now() / 1000).toFixed(3)}]`
   }
   if (browser() === 'edge') {
-    console.log(prefix + ' ' + title + '\n', value)
+    console.log(`${prefix} ${title}\n`, value)
   } else {
-    console.info(prefix + ' ' + title + '\n', value)
+    console.info(`${prefix} ${title}\n`, value)
   }
 }
 
@@ -72,7 +77,7 @@ export function getVideoCodecsFromString(codec: VideoCodecOption, codecs: Array<
   } else {
     mimeType = `video/${codec}`
   }
-  const filteredCodecs: Array<any> = codecs.filter((c) => c.mimeType == mimeType)
+  const filteredCodecs: Array<any> = codecs.filter((c) => c.mimeType === mimeType)
   if (filteredCodecs.length < 1) {
     throw new Error('invalid video codec type')
   }
@@ -85,7 +90,7 @@ export function getVideoCodecsFromString(codec: VideoCodecOption, codecs: Array<
 export function removeCodec(sdp: string, codec: VideoCodecOption): string {
   function internalFunc(tmpSdp: string): string {
     // eslint-disable-next-line no-useless-escape
-    const codecre = new RegExp('(a=rtpmap:(\\d*) ' + codec + '/90000\\r\\n)')
+    const codecre = new RegExp(`(a=rtpmap:(\\d*) ${codec}/90000\\r\\n)`)
     const rtpmaps = tmpSdp.match(codecre)
     if (rtpmaps == null || rtpmaps.length <= 2) {
       return sdp
@@ -93,20 +98,20 @@ export function removeCodec(sdp: string, codec: VideoCodecOption): string {
     const rtpmap = rtpmaps[2]
     let modsdp = tmpSdp.replace(codecre, '')
 
-    const rtcpre = new RegExp('(a=rtcp-fb:' + rtpmap + '.*\r\n)', 'g')
+    const rtcpre = new RegExp(`(a=rtcp-fb:${rtpmap}.*\r\n)`, 'g')
     modsdp = modsdp.replace(rtcpre, '')
 
-    const fmtpre = new RegExp('(a=fmtp:' + rtpmap + '.*\r\n)', 'g')
+    const fmtpre = new RegExp(`(a=fmtp:${rtpmap}.*\r\n)`, 'g')
     modsdp = modsdp.replace(fmtpre, '')
 
-    const aptpre = new RegExp('(a=fmtp:(\\d*) apt=' + rtpmap + '\\r\\n)')
+    const aptpre = new RegExp(`(a=fmtp:(\\d*) apt=${rtpmap}\\r\\n)`)
     const aptmaps = modsdp.match(aptpre)
     let fmtpmap = ''
     if (aptmaps != null && aptmaps.length >= 3) {
       fmtpmap = aptmaps[2]
       modsdp = modsdp.replace(aptpre, '')
 
-      const rtppre = new RegExp('(a=rtpmap:' + fmtpmap + '.*\r\n)', 'g')
+      const rtppre = new RegExp(`(a=rtpmap:${fmtpmap}.*\r\n)`, 'g')
       modsdp = modsdp.replace(rtppre, '')
     }
 
@@ -119,10 +124,10 @@ export function removeCodec(sdp: string, codec: VideoCodecOption): string {
       let modvideoline = videoelems[0]
       videoelems.forEach((videoelem, index) => {
         if (index === 0) return
-        if (videoelem == rtpmap || videoelem == fmtpmap) {
+        if (videoelem === rtpmap || videoelem === fmtpmap) {
           return
         }
-        modvideoline += ' ' + videoelem
+        modvideoline += ` ${videoelem}`
       })
       modvideoline += '\r\n'
       modsdp = modsdp.replace(videore, modvideoline)
