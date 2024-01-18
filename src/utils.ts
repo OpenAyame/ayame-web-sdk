@@ -18,7 +18,7 @@ declare let window: Window
 export function randomString(strLength: number): string {
   const result = []
   const charSet = '0123456789'
-  let length = strLength;
+  let length = strLength
   while (length--) {
     result.push(charSet.charAt(Math.floor(Math.random() * charSet.length)))
   }
