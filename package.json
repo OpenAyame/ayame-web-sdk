@@ -33,7 +33,7 @@
     "gh-pages": "6.1.1",
     "rollup": "4.9.6",
     "tslib": "2.6.2",
-    "typedoc": "0.25.7",
+    "typedoc": "0.25.8",
     "typescript": "5.3.3"
   }
 }
