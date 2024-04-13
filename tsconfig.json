@@ -13,27 +13,13 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "newLine": "LF",
-    "types": [
-      "webrtc",
-      "node"
-    ],
+    "types": ["webrtc", "node"],
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "@/*": ["src/*"]
     },
-    "lib": [
-      "dom",
-      "esnext",
-      "scripthost"
-    ],
-    "declarationDir": ".",
+    "lib": ["dom", "esnext", "scripthost"],
+    "declarationDir": "."
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules"]
 }
