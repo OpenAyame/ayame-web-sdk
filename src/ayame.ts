@@ -1,5 +1,5 @@
 import Connection from './connection'
-import { ConnectionOptions } from './connection/options'
+import type { ConnectionOptions } from './connection/options'
 import { randomString } from './utils'
 
 /**

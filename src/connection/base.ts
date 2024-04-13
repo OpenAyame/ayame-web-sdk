@@ -1,6 +1,6 @@
 /* @private */
 import { browser, getVideoCodecsFromString, removeCodec, traceLog } from '../utils'
-import { ConnectionOptions, VideoCodecOption } from './options'
+import type { ConnectionOptions, VideoCodecOption } from './options'
 
 /**
  * @ignore

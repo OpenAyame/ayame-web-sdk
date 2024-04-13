@@ -1,5 +1,5 @@
 import ConnectionBase from './base'
-import { ConnectionOptions, MetadataOption } from './options'
+import type { ConnectionOptions, MetadataOption } from './options'
 
 /**
  * Peer Connection 接続を管理するクラスです。
@@ -19,7 +19,6 @@ class Connection extends ConnectionBase {
    * @listens {removestream} リモートのストリームが削除されると送信されます。
    */
 
-  // biome-ignore lint/complexity/noUselessConstructor: <explanation>
   constructor(
     signalingUrl: string,
     roomId: string,

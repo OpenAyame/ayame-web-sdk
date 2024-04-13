@@ -1,4 +1,4 @@
-import { VideoCodecOption } from './connection/options'
+import type { VideoCodecOption } from './connection/options'
 
 /**
  * @ignore
