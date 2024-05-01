@@ -24,8 +24,8 @@ importers:
         specifier: 20.12.8
         version: 20.12.8
       '@types/webrtc':
-        specifier: 0.0.42
-        version: 0.0.42
+        specifier: 0.0.43
+        version: 0.0.43
       gh-pages:
         specifier: 6.1.1
         version: 6.1.1
@@ -247,8 +247,8 @@ packages:
   '@types/resolve@1.20.2':
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
 
-  '@types/webrtc@0.0.42':
-    resolution: {integrity: sha512-YyrG3yzw/JvZs0q3f9SY+AiJr0FJw1qhBjvoQJEUy07udiyakAax2A87BHpB3qnaxsm2ExCvhyUvjTxdsn+qSw==}
+  '@types/webrtc@0.0.43':
+    resolution: {integrity: sha512-W5FyScaZ+nLb0CXP/4UaRiNr042RwW/RnLUZYt0uwveZN8w+X1gtt0bYIg9oMzt5ODiU/aQV/kyCFv24wfNrXA==}
 
   acorn@8.11.3:
     resolution: {integrity: sha512-Y9rRfJG5jcKOE0CLisYbojUjIrIEE7AGMzA/Sm4BslANhbS+cDMpgBdcPT91oJ7OuJ9hYJBx59RjbhxVnrF8Xg==}
@@ -691,7 +691,7 @@ snapshots:
 
   '@types/resolve@1.20.2': {}
 
-  '@types/webrtc@0.0.42': {}
+  '@types/webrtc@0.0.43': {}
 
   acorn@8.11.3: {}
 
