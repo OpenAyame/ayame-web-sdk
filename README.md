@@ -16,6 +16,13 @@ Please read https://github.com/shiguredo/oss before use.
 
 利用前に https://github.com/shiguredo/oss をお読みください。
 
+## 既知の問題
+
+- Chrome と Edge 124 以降ではコーデック指定が正常に動作しません
+  - 将来的にコーデック指定を削除予定です
+  - https://groups.google.com/g/discuss-webrtc/c/QS7y-7zR5ok/m/2htOnnHRAQAJ
+  - https://github.com/webrtc/samples/pull/1640
+
 ## 動作環境
 
 **最新版を利用してください**
@@ -62,72 +69,75 @@ https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2022.1.0/dist/ayame.min.j
 - [オンラインサンプル](https://openayame.github.io/ayame-web-sdk-samples/sendrecv.html)
 
 ```javascript
-const conn = Ayame.connection('wss://example.com/ws', 'test-room');
+const conn = Ayame.connection("wss://example.com/ws", "test-room");
 const startConn = async () => {
-    const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
-    await conn.connect(mediaStream);
-    conn.on('disconnect', (e) => console.log(e));
-    conn.on('addstream', (e) => {
-        document.querySelector('#remote-video').srcObject = e.stream;
-    });
-    document.querySelector('#local-video').srcObject = mediaStream;
+  const mediaStream = await navigator.mediaDevices.getUserMedia({
+    audio: true,
+    video: true,
+  });
+  await conn.connect(mediaStream);
+  conn.on("disconnect", (e) => console.log(e));
+  conn.on("addstream", (e) => {
+    document.querySelector("#remote-video").srcObject = e.stream;
+  });
+  document.querySelector("#local-video").srcObject = mediaStream;
 };
 startConn();
 ```
-
 
 ### 送信のみ(sendonly) で接続する
 
 - [オンラインサンプル](https://openayame.github.io/ayame-web-sdk-samples/sendonly.html)
 
 ```javascript
-const conn = Ayame.connection('wss://example.com/ws', 'test-room');
-conn.options.video.direction = 'sendonly';
-conn.options.audio.direction = 'sendonly';
+const conn = Ayame.connection("wss://example.com/ws", "test-room");
+conn.options.video.direction = "sendonly";
+conn.options.audio.direction = "sendonly";
 const startConn = async () => {
-    const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
-    await conn.connect(mediaStream);
-    conn.on('disconnect', (e) => console.log(e));
-    conn.on('addstream', (e) => {
-        document.querySelector('#remote-video').srcObject = e.stream;
-    });
-    document.querySelector('#local-video').srcObject = mediaStream;
+  const mediaStream = await navigator.mediaDevices.getUserMedia({
+    audio: true,
+    video: true,
+  });
+  await conn.connect(mediaStream);
+  conn.on("disconnect", (e) => console.log(e));
+  conn.on("addstream", (e) => {
+    document.querySelector("#remote-video").srcObject = e.stream;
+  });
+  document.querySelector("#local-video").srcObject = mediaStream;
 };
 startConn();
 ```
-
 
 ### 受信のみ(recvonly) で接続する
 
 - [オンラインサンプル](https://openayame.github.io/ayame-web-sdk-samples/recvonly.html)
 
 ```javascript
-const conn = Ayame.connection('wss://example.com/ws', 'test-room');
-conn.options.video.direction = 'recvonly';
-conn.options.audio.direction = 'recvonly';
+const conn = Ayame.connection("wss://example.com/ws", "test-room");
+conn.options.video.direction = "recvonly";
+conn.options.audio.direction = "recvonly";
 const startConn = async () => {
-    await conn.connect(null);
-    conn.on('disconnect', (e) => console.log(e));
-    conn.on('addstream', (e) => {
-        document.querySelector('#remote-video').srcObject = e.stream;
-    });
+  await conn.connect(null);
+  conn.on("disconnect", (e) => console.log(e));
+  conn.on("addstream", (e) => {
+    document.querySelector("#remote-video").srcObject = e.stream;
+  });
 };
 startConn();
 ```
 
 ### datachannel でデータを送受信する
 
-
 - [オンラインサンプル](https://openayame.github.io/ayame-web-sdk-samples/datachannel.html)
 
 ```javascript
 let dataChannel = null;
 const startConn = async () => {
-  const conn = Ayame.connection('wss://example.com/ws', 'test-room');
-  conn.on('open', async (e) => {
-    dataChannel = await conn.createDataChannel('dataChannel');
+  const conn = Ayame.connection("wss://example.com/ws", "test-room");
+  conn.on("open", async (e) => {
+    dataChannel = await conn.createDataChannel("dataChannel");
     dataChannel.onmessage = (e) => {
-      console.log('data received: ', e.data);
+      console.log("data received: ", e.data);
     };
   });
   await conn.connect(null);
