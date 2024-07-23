@@ -34,6 +34,6 @@
     "rollup": "4.19.0",
     "tslib": "2.6.3",
     "typedoc": "0.26.5",
-    "typescript": "5.5.3"
+    "typescript": "5.5.4"
   }
 }
