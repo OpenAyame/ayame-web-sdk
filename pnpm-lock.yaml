@@ -18,8 +18,8 @@ devDependencies:
     specifier: 11.1.6
     version: 11.1.6(rollup@4.21.0)(tslib@2.6.3)(typescript@5.5.4)
   '@types/node':
-    specifier: 20.16.0
-    version: 20.16.0
+    specifier: 20.16.1
+    version: 20.16.1
   '@types/webrtc':
     specifier: 0.0.43
     version: 0.0.43
@@ -370,8 +370,8 @@ packages:
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
     dev: true
 
-  /@types/node@20.16.0:
-    resolution: {integrity: sha512-vDxceJcoZhIVh67S568bm1UGZO0DX0hpplJZxzeXMKwIPLn190ec5RRxQ69BKhX44SUGIxxgMdDY557lGLKprQ==}
+  /@types/node@20.16.1:
+    resolution: {integrity: sha512-zJDo7wEadFtSyNz5QITDfRcrhqDvQI1xQNQ0VoizPjM/dVAODqqIUWbJPkvsxmTI0MYRGRikcdjMPhOssnPejQ==}
     dependencies:
       undici-types: 6.19.6
     dev: true
