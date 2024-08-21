@@ -13,13 +13,39 @@
 
 - [CHANGE] eslint から biome へ変更
   - @voluntas
+- [CHANGE] GitHub Actions の node-version を 18 と 20 にする
+  - @voluntas
+- [ADD] biome.json を追加
+  - @voluntas
+- [ADD] standalone モードに対応する
+  - options に standalone を追加する
+  - standalone モード時は、接続完了時に ayame に type: connected を送信する
+  - standalone モード時は、ayame から WebSocket 接続が切断されても、ブラウザ間の接続は維持する
+  - @Hexa
+
+## 2022.1
+
 - [CHANGE] packege.json の devDependencies を最新へ追従する
+  - `rollup` を `^2.66.1` へ上げる
+  - `rollup-plugin-terser` を `^7.0.2` へ上げる
+  - `@rollup/plugin-node-resolve` を `^13.1.3` に変更する
+  - `@rollup/plugin-typescript` を `^8.3.0` に変更する
+  - `typescript` を `^4.5.5` に上げる
+  - `@typescript-eslint/eslint-plugin` を `^5.10.` に上げる
+  - `@typescript-eslint/parse` を `^5.10.` に上げる
+  - `@types/node` を `^16.11.7` へ上げる
+  - `@types/webrtc` を `^0.0.31` へ上げる
+  - `eslint` を `^8.8.0` に上げる
+  - `eslint-config-prettier` を `^8.3.0` に上げる
+  - `eslint-plugin-import` を `^2.25.4` に上げる
   - @voluntas
 - [CHANGE] esdoc を削除
   - @voluntas
-- [CHANGE] yarn の利用をやめ pnpm に切り替える
+- [CHANGE] yarn の利用をやめ npm に切り替える
   - @voluntas
-- [CHANGE] GitHub Actions の node-version を 18 と 20 にする
+- [CHANGE] `.eslintrc.js` から `prettier/@typescript-eslint` を削除
+  - @voluntas
+- [CHANGE] GitHub Actions の node-version を 16 固定にする
   - @voluntas
 - [CHANGE] Google STUN サーバを削除
   - @voluntas
@@ -37,18 +63,13 @@
   - @voluntas
 - [UPDATE] GitHub Actions の actions/checkout を v2 に上げる
   - @voluntas
-- [ADD] biome.json を追加
+- [ADD] `.prettierrc.json` を追加
   - @voluntas
 - [ADD] VideoCodecOption に `AV1` と `H.265` を追加
   - @voluntas
-- [ADD] pnpm run doc コマンド追加
+- [ADD] npm run doc コマンド追加
   - TypeDoc により apidoc/ に出力
   - @voluntas
-- [ADD] standalone モードに対応する
-  - options に standalone を追加する
-  - standalone モード時は、接続完了時に ayame に type: connected を送信する
-  - standalone モード時は、ayame から WebSocket 接続が切断されても、ブラウザ間の接続は維持する
-  - @Hexa
 
 ## 2020.3
 

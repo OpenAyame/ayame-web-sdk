@@ -28,12 +28,14 @@
     "@rollup/plugin-node-resolve": "15.2.3",
     "@rollup/plugin-terser": "0.4.4",
     "@rollup/plugin-typescript": "11.1.6",
-    "@types/node": "20.16.1",
+    "@types/node": "22.4.2",
     "@types/webrtc": "0.0.43",
     "gh-pages": "6.1.1",
+    "playwright": "1.46.1",
     "rollup": "4.21.0",
     "tslib": "2.6.3",
     "typedoc": "0.26.6",
-    "typescript": "5.5.4"
+    "typescript": "5.5.4",
+    "vite": "5.4.2"
   }
 }
