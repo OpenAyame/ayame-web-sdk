@@ -10,18 +10,18 @@ Web SDK for WebRTC Signaling Server Ayame
 
 We will not respond to PRs or issues that have not been discussed on Discord. Also, Discord is only available in Japanese.
 
-Please read https://github.com/shiguredo/oss before use.
+Please read <https://github.com/shiguredo/oss> before use.
 
 ## 時雨堂のオープンソースソフトウェアについて
 
-利用前に https://github.com/shiguredo/oss をお読みください。
+利用前に <https://github.com/shiguredo/oss> をお読みください。
 
 ## 既知の問題
 
 - Chrome と Edge 124 以降ではコーデック指定が正常に動作しません
   - 将来的にコーデック指定を削除予定です
-  - https://groups.google.com/g/discuss-webrtc/c/QS7y-7zR5ok/m/2htOnnHRAQAJ
-  - https://github.com/webrtc/samples/pull/1640
+  - <https://groups.google.com/g/discuss-webrtc/c/QS7y-7zR5ok/m/2htOnnHRAQAJ>
+  - <https://github.com/webrtc/samples/pull/1640>
 
 ## 動作環境
 
@@ -40,13 +40,13 @@ Please read https://github.com/shiguredo/oss before use.
 
 API ドキュメントは以下の URL を参照してください。
 
-https://openayame.github.io/ayame-web-sdk/index.html
+<https://openayame.github.io/ayame-web-sdk/index.html>
 
 ## CDN で利用する
 
 以下のURL を
 
-```
+```html
 <script src="https://unpkg.com/@open-ayame/ayame-web-sdk@2022.1.0/dist/ayame.min.js"></script>
 ```
 
@@ -54,15 +54,11 @@ https://openayame.github.io/ayame-web-sdk/index.html
 
 ### unpkg
 
-```
-https://unpkg.com/@open-ayame/ayame-web-sdk@2022.1.0/dist/ayame.min.js
-```
+<https://unpkg.com/@open-ayame/ayame-web-sdk@2022.1.0/dist/ayame.min.js>
 
 ### jsdelivr
 
-```
-https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2022.1.0/dist/ayame.min.js
-```
+<https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2022.1.0/dist/ayame.min.js>
 
 ### 双方向送受信接続する
 
@@ -153,7 +149,7 @@ const sendData = (data) => {
 
 Apache License 2.0
 
-```
+```text
 Copyright 2019-2022, Shiguredo Inc.
 Copyright 2019, Kyoko Kadowaki aka kdxu (Original Author)
 

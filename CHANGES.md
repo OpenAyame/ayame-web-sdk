@@ -15,7 +15,7 @@
   - @voluntas
 - [CHANGE] GitHub Actions の node-version を 18 と 20 にする
   - @voluntas
-- [ADD] biome.json を追加
+- [ADD] biome.jsonc を追加
   - @voluntas
 - [ADD] standalone モードに対応する
   - options に standalone を追加する
