@@ -16,7 +16,7 @@ devDependencies:
     version: 0.4.4(rollup@4.21.0)
   '@rollup/plugin-typescript':
     specifier: 11.1.6
-    version: 11.1.6(rollup@4.21.0)(tslib@2.6.3)(typescript@5.5.4)
+    version: 11.1.6(rollup@4.21.0)(tslib@2.7.0)(typescript@5.5.4)
   '@types/node':
     specifier: 22.5.0
     version: 22.5.0
@@ -33,8 +33,8 @@ devDependencies:
     specifier: 4.21.0
     version: 4.21.0
   tslib:
-    specifier: 2.6.3
-    version: 2.6.3
+    specifier: 2.7.0
+    version: 2.7.0
   typedoc:
     specifier: 0.26.6
     version: 0.26.6(typescript@5.5.4)
@@ -412,7 +412,7 @@ packages:
       terser: 5.31.6
     dev: true
 
-  /@rollup/plugin-typescript@11.1.6(rollup@4.21.0)(tslib@2.6.3)(typescript@5.5.4):
+  /@rollup/plugin-typescript@11.1.6(rollup@4.21.0)(tslib@2.7.0)(typescript@5.5.4):
     resolution: {integrity: sha512-R92yOmIACgYdJ7dJ97p4K69I8gg6IEHt8M7dUBxN3W6nrO8uUxX5ixl0yU/N3aZTi8WhPuICvOHXQvF6FaykAA==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -428,7 +428,7 @@ packages:
       '@rollup/pluginutils': 5.1.0(rollup@4.21.0)
       resolve: 1.22.8
       rollup: 4.21.0
-      tslib: 2.6.3
+      tslib: 2.7.0
       typescript: 5.5.4
     dev: true
 
@@ -1162,8 +1162,8 @@ packages:
       escape-string-regexp: 1.0.5
     dev: true
 
-  /tslib@2.6.3:
-    resolution: {integrity: sha512-xNvxJEOUiWPGhUuUdQgAJPKOOJfGnIyKySOc09XkKsgdUV/3E2zvwZYdejjmRgPCgcym1juLH3226yA7sEFJKQ==}
+  /tslib@2.7.0:
+    resolution: {integrity: sha512-gLXCKdN1/j47AiHiOkJN69hJmcbGTHI0ImLmbYLHykhgeN0jVGola9yVjFgzCUklsZQMW55o+dW7IXv3RCXDzA==}
     dev: true
 
   /typedoc@0.26.6(typescript@5.5.4):
