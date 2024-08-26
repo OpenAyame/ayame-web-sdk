@@ -32,7 +32,7 @@
     "@types/webrtc": "0.0.43",
     "gh-pages": "6.1.1",
     "playwright": "1.46.1",
-    "rollup": "4.21.0",
+    "rollup": "4.21.1",
     "tslib": "2.7.0",
     "typedoc": "0.26.6",
     "typescript": "5.5.4",
