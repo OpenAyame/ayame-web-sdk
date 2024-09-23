@@ -18,8 +18,8 @@ devDependencies:
     specifier: 11.1.6
     version: 11.1.6(rollup@4.22.4)(tslib@2.7.0)(typescript@5.6.2)
   '@types/node':
-    specifier: 22.5.5
-    version: 22.5.5
+    specifier: 22.6.0
+    version: 22.6.0
   '@types/webrtc':
     specifier: 0.0.43
     version: 0.0.43
@@ -43,7 +43,7 @@ devDependencies:
     version: 5.6.2
   vite:
     specifier: 5.4.7
-    version: 5.4.7(@types/node@22.5.5)
+    version: 5.4.7(@types/node@22.6.0)
 
 packages:
 
@@ -595,8 +595,8 @@ packages:
       '@types/unist': 3.0.3
     dev: true
 
-  /@types/node@22.5.5:
-    resolution: {integrity: sha512-Xjs4y5UPO/CLdzpgR6GirZJx36yScjh73+2NlLlkFRSoQN8B0DpfXPdZGnvVmLRLOsqDpOfTNv7D9trgGhmOIA==}
+  /@types/node@22.6.0:
+    resolution: {integrity: sha512-QyR8d5bmq+eR72TwQDfujwShHMcIrWIYsaQFtXRE58MHPTEKUNxjxvl0yS0qPMds5xbSDWtp7ZpvGFtd7dfMdQ==}
     dependencies:
       undici-types: 6.19.8
     dev: true
@@ -1193,7 +1193,7 @@ packages:
     engines: {node: '>= 10.0.0'}
     dev: true
 
-  /vite@5.4.7(@types/node@22.5.5):
+  /vite@5.4.7(@types/node@22.6.0):
     resolution: {integrity: sha512-5l2zxqMEPVENgvzTuBpHer2awaetimj2BGkhBPdnwKbPNOlHsODU+oiazEZzLK7KhAnOrO+XGYJYn4ZlUhDtDQ==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
@@ -1224,7 +1224,7 @@ packages:
       terser:
         optional: true
     dependencies:
-      '@types/node': 22.5.5
+      '@types/node': 22.6.0
       esbuild: 0.21.5
       postcss: 8.4.44
       rollup: 4.22.4
