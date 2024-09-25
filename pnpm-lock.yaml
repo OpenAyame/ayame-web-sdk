@@ -42,8 +42,8 @@ devDependencies:
     specifier: 5.6.2
     version: 5.6.2
   vite:
-    specifier: 5.4.7
-    version: 5.4.7(@types/node@22.6.2)
+    specifier: 5.4.8
+    version: 5.4.8(@types/node@22.6.2)
 
 packages:
 
@@ -1193,8 +1193,8 @@ packages:
     engines: {node: '>= 10.0.0'}
     dev: true
 
-  /vite@5.4.7(@types/node@22.6.2):
-    resolution: {integrity: sha512-5l2zxqMEPVENgvzTuBpHer2awaetimj2BGkhBPdnwKbPNOlHsODU+oiazEZzLK7KhAnOrO+XGYJYn4ZlUhDtDQ==}
+  /vite@5.4.8(@types/node@22.6.2):
+    resolution: {integrity: sha512-FqrItQ4DT1NC4zCUqMB4c4AZORMKIa0m8/URVCZ77OZ/QSNeJ54bU1vrFADbDsuwfIPcgknRkmqakQcgnL4GiQ==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
     peerDependencies:
