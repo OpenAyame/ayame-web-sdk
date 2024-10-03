@@ -21,8 +21,8 @@ devDependencies:
     specifier: 22.7.4
     version: 22.7.4
   '@types/webrtc':
-    specifier: 0.0.43
-    version: 0.0.43
+    specifier: 0.0.44
+    version: 0.0.44
   gh-pages:
     specifier: 6.1.1
     version: 6.1.1
@@ -609,8 +609,8 @@ packages:
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
     dev: true
 
-  /@types/webrtc@0.0.43:
-    resolution: {integrity: sha512-W5FyScaZ+nLb0CXP/4UaRiNr042RwW/RnLUZYt0uwveZN8w+X1gtt0bYIg9oMzt5ODiU/aQV/kyCFv24wfNrXA==}
+  /@types/webrtc@0.0.44:
+    resolution: {integrity: sha512-4BJZdzrApNFeuXgucyqs24k69f7oti3wUcGEbFbaV08QBh7yEe3tnRRuYXlyXJNXiumpZujiZqUZZ2/gMSeO0g==}
     dev: true
 
   /acorn@8.12.1:
