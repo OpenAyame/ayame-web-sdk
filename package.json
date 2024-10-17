@@ -27,7 +27,7 @@
     "@biomejs/biome": "1.9.3",
     "@rollup/plugin-node-resolve": "15.3.0",
     "@rollup/plugin-terser": "0.4.4",
-    "@rollup/plugin-typescript": "11.1.6",
+    "@rollup/plugin-typescript": "12.1.1",
     "@types/node": "22.7.6",
     "@types/webrtc": "0.0.44",
     "gh-pages": "6.2.0",
