@@ -36,8 +36,8 @@ devDependencies:
     specifier: 2.8.1
     version: 2.8.1
   typedoc:
-    specifier: 0.27.0
-    version: 0.27.0(typescript@5.7.2)
+    specifier: 0.27.1
+    version: 0.27.1(typescript@5.7.2)
   typescript:
     specifier: 5.7.2
     version: 5.7.2
@@ -1233,8 +1233,8 @@ packages:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
     dev: true
 
-  /typedoc@0.27.0(typescript@5.7.2):
-    resolution: {integrity: sha512-7AkTJhFdhsihthaBFHNpj5iFdLyR7FpQqXM+IABJmE1/qTjWypirCLrheToUP3fjpWHN1Drn3K7PWH1t37KvNQ==}
+  /typedoc@0.27.1(typescript@5.7.2):
+    resolution: {integrity: sha512-cbFtNFpkCtHAHRvMnCDdtM2+xhO2uiJAcw4ooLmVMuaY9yLJswKvi6wOwPZgTnKKnm/HKpO/Ub6DVk4KRf/vRg==}
     engines: {node: '>= 18'}
     hasBin: true
     peerDependencies:
