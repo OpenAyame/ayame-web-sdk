@@ -1,4 +1,4 @@
-import { ConnectionOptions } from './options';
+import type { ConnectionOptions } from './options';
 /**
  * @ignore
  */

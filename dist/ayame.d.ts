@@ -1,5 +1,5 @@
 import Connection from './connection';
-import { ConnectionOptions } from './connection/options';
+import type { ConnectionOptions } from './connection/options';
 /**
  * オーディオ、ビデオの送受信方向に関するオプションです。
  * - sendrecv

@@ -5,7 +5,8 @@
 function randomString(strLength) {
     const result = [];
     const charSet = '0123456789';
-    while (strLength--) {
+    let length = strLength;
+    while (length--) {
         result.push(charSet.charAt(Math.floor(Math.random() * charSet.length)));
     }
     return result.join('');
@@ -18,16 +19,16 @@ function browser() {
     if (ua.indexOf('edge') !== -1) {
         return 'edge';
     }
-    else if (ua.indexOf('chrome') !== -1 && ua.indexOf('edge') === -1) {
+    if (ua.indexOf('chrome') !== -1 && ua.indexOf('edge') === -1) {
         return 'chrome';
     }
-    else if (ua.indexOf('safari') !== -1 && ua.indexOf('chrome') === -1) {
+    if (ua.indexOf('safari') !== -1 && ua.indexOf('chrome') === -1) {
         return 'safari';
     }
-    else if (ua.indexOf('opera') !== -1) {
+    if (ua.indexOf('opera') !== -1) {
         return 'opera';
     }
-    else if (ua.indexOf('firefox') !== -1) {
+    if (ua.indexOf('firefox') !== -1) {
         return 'firefox';
     }
     return 'unknown';
@@ -38,13 +39,13 @@ function browser() {
 function traceLog(title, value) {
     let prefix = '';
     if (window.performance) {
-        prefix = '[Ayame ' + (window.performance.now() / 1000).toFixed(3) + ']';
+        prefix = `[Ayame ${(window.performance.now() / 1000).toFixed(3)}]`;
     }
     if (browser() === 'edge') {
-        console.log(prefix + ' ' + title + '\n', value);
+        console.log(`${prefix} ${title}\n`, value);
     }
     else {
-        console.info(prefix + ' ' + title + '\n', value);
+        console.info(`${prefix} ${title}\n`, value);
     }
 }
 // Stack Overflow より引用: https://stackoverflow.com/a/52760103
@@ -64,7 +65,7 @@ function getVideoCodecsFromString(codec, codecs) {
     else {
         mimeType = `video/${codec}`;
     }
-    const filteredCodecs = codecs.filter((c) => c.mimeType == mimeType);
+    const filteredCodecs = codecs.filter((c) => c.mimeType === mimeType);
     if (filteredCodecs.length < 1) {
         throw new Error('invalid video codec type');
     }
@@ -76,24 +77,24 @@ function getVideoCodecsFromString(codec, codecs) {
 function removeCodec(sdp, codec) {
     function internalFunc(tmpSdp) {
         // eslint-disable-next-line no-useless-escape
-        const codecre = new RegExp('(a=rtpmap:(\\d*) ' + codec + '/90000\\r\\n)');
+        const codecre = new RegExp(`(a=rtpmap:(\\d*) ${codec}/90000\\r\\n)`);
         const rtpmaps = tmpSdp.match(codecre);
         if (rtpmaps == null || rtpmaps.length <= 2) {
             return sdp;
         }
         const rtpmap = rtpmaps[2];
         let modsdp = tmpSdp.replace(codecre, '');
-        const rtcpre = new RegExp('(a=rtcp-fb:' + rtpmap + '.*\r\n)', 'g');
+        const rtcpre = new RegExp(`(a=rtcp-fb:${rtpmap}.*\r\n)`, 'g');
         modsdp = modsdp.replace(rtcpre, '');
-        const fmtpre = new RegExp('(a=fmtp:' + rtpmap + '.*\r\n)', 'g');
+        const fmtpre = new RegExp(`(a=fmtp:${rtpmap}.*\r\n)`, 'g');
         modsdp = modsdp.replace(fmtpre, '');
-        const aptpre = new RegExp('(a=fmtp:(\\d*) apt=' + rtpmap + '\\r\\n)');
+        const aptpre = new RegExp(`(a=fmtp:(\\d*) apt=${rtpmap}\\r\\n)`);
         const aptmaps = modsdp.match(aptpre);
         let fmtpmap = '';
         if (aptmaps != null && aptmaps.length >= 3) {
             fmtpmap = aptmaps[2];
             modsdp = modsdp.replace(aptpre, '');
-            const rtppre = new RegExp('(a=rtpmap:' + fmtpmap + '.*\r\n)', 'g');
+            const rtppre = new RegExp(`(a=rtpmap:${fmtpmap}.*\r\n)`, 'g');
             modsdp = modsdp.replace(rtppre, '');
         }
         const videore = /(m=video.*\r\n)/;
@@ -106,10 +107,10 @@ function removeCodec(sdp, codec) {
             videoelems.forEach((videoelem, index) => {
                 if (index === 0)
                     return;
-                if (videoelem == rtpmap || videoelem == fmtpmap) {
+                if (videoelem === rtpmap || videoelem === fmtpmap) {
                     return;
                 }
-                modvideoline += ' ' + videoelem;
+                modvideoline += ` ${videoelem}`;
             });
             modvideoline += '\r\n';
             modsdp = modsdp.replace(videore, modvideoline);
@@ -127,7 +128,7 @@ class ConnectionBase {
     /**
      * @ignore
      */
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // biome-ignore lint/complexity/noBannedTypes: <explanation>
     on(kind, callback) {
         if (kind in this._callbacks) {
             this._callbacks[kind] = callback;
@@ -165,7 +166,7 @@ class ConnectionBase {
         this.connectionState = 'new';
         this._pcConfig = {
             iceServers: this.options.iceServers,
-            iceTransportPolicy: isRelay ? 'relay' : 'all'
+            iceTransportPolicy: isRelay ? 'relay' : 'all',
         };
         this._callbacks = {
             open: () => { },
@@ -174,11 +175,12 @@ class ConnectionBase {
             addstream: () => { },
             removestream: () => { },
             bye: () => { },
-            datachannel: () => { }
+            datachannel: () => { },
         };
     }
     async _disconnect() {
-        await this._dataChannels.forEach(async (dataChannel) => {
+        // biome-ignore lint/complexity/noForEach: <explanation>
+        this._dataChannels.forEach(async (dataChannel) => {
             await this._closeDataChannel(dataChannel);
         });
         await this._closePeerConnection();
@@ -214,7 +216,7 @@ class ConnectionBase {
                     clientId: this.options.clientId,
                     authnMetadata: undefined,
                     key: undefined,
-                    standalone: this.options.standalone
+                    standalone: this.options.standalone,
                 };
                 if (this.authnMetadata !== null) {
                     registerMessage.authnMetadata = this.authnMetadata;
@@ -285,15 +287,17 @@ class ConnectionBase {
     _createPeerConnection() {
         this._traceLog('RTCConfiguration=>', this._pcConfig);
         const pc = new RTCPeerConnection(this._pcConfig);
-        const audioTrack = this.stream && this.stream.getAudioTracks()[0];
+        const audioTrack = this.stream?.getAudioTracks()[0];
         if (audioTrack && this.options.audio.direction !== 'recvonly') {
+            // biome-ignore lint/style/noNonNullAssertion: <explanation>
             pc.addTrack(audioTrack, this.stream);
         }
         else if (this.options.audio.enabled) {
             pc.addTransceiver('audio', { direction: 'recvonly' });
         }
-        const videoTrack = this.stream && this.stream.getVideoTracks()[0];
+        const videoTrack = this.stream?.getVideoTracks()[0];
         if (videoTrack && this.options.video.direction !== 'recvonly') {
+            // biome-ignore lint/style/noNonNullAssertion: <explanation>
             const videoSender = pc.addTrack(videoTrack, this.stream);
             const videoTransceiver = this._getTransceiver(pc, videoSender);
             if (this._isVideoCodecSpecified() && videoTransceiver !== null) {
@@ -406,11 +410,11 @@ class ConnectionBase {
                 dataChannel = this._pc.createDataChannel(label, options);
                 dataChannel.onclose = (event) => {
                     this._traceLog('datachannel onclosed=>', event);
-                    this._dataChannels = this._dataChannels.filter((dataChannel) => dataChannel.label != label);
+                    this._dataChannels = this._dataChannels.filter((dataChannel) => dataChannel.label !== label);
                 };
                 dataChannel.onerror = (event) => {
                     this._traceLog('datachannel onerror=>', event);
-                    this._dataChannels = this._dataChannels.filter((dataChannel) => dataChannel.label != label);
+                    this._dataChannels = this._dataChannels.filter((dataChannel) => dataChannel.label !== label);
                 };
                 dataChannel.onmessage = (event) => {
                     this._traceLog('datachannel onmessage=>', event.data);
@@ -453,12 +457,10 @@ class ConnectionBase {
         }
         else {
             this._dataChannels = this._dataChannels.map((channel) => {
-                if (channel.label == label) {
+                if (channel.label === label) {
                     return dataChannel;
                 }
-                else {
-                    return channel;
-                }
+                return channel;
             });
         }
         this._callbacks.datachannel(dataChannel);
@@ -477,10 +479,11 @@ class ConnectionBase {
         }
         const offer = await this._pc.createOffer({
             offerToReceiveAudio: this.options.audio.enabled && this.options.audio.direction !== 'sendonly',
-            offerToReceiveVideo: this.options.video.enabled && this.options.video.direction !== 'sendonly'
+            offerToReceiveVideo: this.options.video.enabled && this.options.video.direction !== 'sendonly',
         });
         if (this._removeCodec && this.options.video.codec) {
             const codecs = ['VP8', 'VP9', 'H264'];
+            // biome-ignore lint/complexity/noForEach: <explanation>
             codecs.forEach((codec) => {
                 if (this.options.video.codec !== codec) {
                     offer.sdp = removeCodec(offer.sdp, codec);
@@ -558,8 +561,9 @@ class ConnectionBase {
     }
     _getTransceiver(pc, track) {
         let transceiver = null;
+        // biome-ignore lint/complexity/noForEach: <explanation>
         pc.getTransceivers().forEach((t) => {
-            if (t.sender == track || t.receiver == track)
+            if (t.sender === track || t.receiver === track)
                 transceiver = t;
         });
         if (!transceiver) {
@@ -568,7 +572,7 @@ class ConnectionBase {
         return transceiver;
     }
     _findDataChannel(label) {
-        return this._dataChannels.find((channel) => channel.label == label);
+        return this._dataChannels.find((channel) => channel.label === label);
     }
     async _closeDataChannel(dataChannel) {
         return new Promise((resolve) => {
@@ -581,7 +585,7 @@ class ConnectionBase {
                     return resolve();
                 }
             }, 400);
-            dataChannel && dataChannel.close();
+            dataChannel?.close();
         });
     }
     async _closePeerConnection() {
@@ -594,7 +598,7 @@ class ConnectionBase {
             }
             if (!this._pc)
                 return resolve();
-            if (this._pc && this._pc.signalingState == 'closed') {
+            if (this._pc && this._pc.signalingState === 'closed') {
                 this._pc = null;
                 return resolve();
             }
@@ -604,7 +608,7 @@ class ConnectionBase {
                     clearInterval(timerId);
                     return resolve();
                 }
-                if (this._pc && this._pc.signalingState == 'closed') {
+                if (this._pc && this._pc.signalingState === 'closed') {
                     this._pc = null;
                     clearInterval(timerId);
                     return resolve();
@@ -633,7 +637,7 @@ class ConnectionBase {
                     return resolve();
                 }
             }, 400);
-            this._ws && this._ws.close();
+            this._ws?.close();
         });
     }
     _traceLog(title, message) {
@@ -777,7 +781,7 @@ const defaultOptions = {
     audio: { direction: 'sendrecv', enabled: true },
     video: { direction: 'sendrecv', enabled: true },
     iceServers: [],
-    clientId: randomString(17)
+    clientId: randomString(17),
 };
 /**
  * @desc Ayame Connection を生成します。

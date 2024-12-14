@@ -1,5 +1,5 @@
 import ConnectionBase from './base';
-import { ConnectionOptions, MetadataOption } from './options';
+import type { ConnectionOptions, MetadataOption } from './options';
 /**
  * Peer Connection 接続を管理するクラスです。
  */

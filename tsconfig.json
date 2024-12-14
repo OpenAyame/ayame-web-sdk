@@ -18,7 +18,9 @@
       "@/*": ["src/*"]
     },
     "lib": ["dom", "esnext", "scripthost"],
-    "declarationDir": "."
+    "declarationDir": ".",
+    "outDir": "dist",
+    "rootDir": "src"
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules"]
