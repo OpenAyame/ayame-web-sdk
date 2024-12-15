@@ -1,0 +1,11 @@
+{
+  "name": "@open-ayame/ayame-web-sdk-examples",
+  "scripts": {
+    "lint": "biome lint .",
+    "fmt": "biome format --write .",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@open-ayame/ayame-web-sdk": "workspace:*"
+  }
+}

@@ -15,6 +15,7 @@
   "scripts": {
     "build": "vite build",
     "watch": "vite build --watch",
+    "dev": "vite --config examples/vite.config.mjs",
     "lint": "biome lint ./src",
     "fmt": "biome format --write ./src",
     "doc": "typedoc",
