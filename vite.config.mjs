@@ -30,6 +30,7 @@ export default defineConfig({
     },
     rollupOptions: {
       output: {
+        // 本来不要なはず
         entryFileNames: 'ayame.mjs',
         banner: banner,
       },
