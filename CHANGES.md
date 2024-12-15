@@ -19,6 +19,8 @@
 
 ### misc
 
+- [CHANGE] rollup から vite へ変更
+  - @voluntas
 - [CHANGE] npm から pnpm に変更する
   - @voluntas
 - [CHANGE] eslint から biome へ変更

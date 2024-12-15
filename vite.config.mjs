@@ -18,10 +18,10 @@ export default defineConfig({
   root: process.cwd(),
   build: {
     minify: 'esbuild',
-    target: 'es2020',
+    target: 'es2022',
     emptyOutDir: true,
     manifest: true,
-    outDir: resolve(__dirname, '../../dist'),
+    outDir: resolve(__dirname, './dist'),
     lib: {
       entry: resolve(__dirname, 'src/ayame.ts'),
       name: 'Ayame',
