@@ -150,7 +150,7 @@ const sendData = (data) => {
 Apache License 2.0
 
 ```text
-Copyright 2019-2022, Shiguredo Inc.
+Copyright 2019-2024, Shiguredo Inc.
 Copyright 2019, Kyoko Kadowaki aka kdxu (Original Author)
 
 Licensed under the Apache License, Version 2.0 (the "License");

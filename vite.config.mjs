@@ -1,0 +1,45 @@
+import { resolve } from 'node:path'
+import { defineConfig } from 'vite'
+import dts from 'vite-plugin-dts'
+import pkg from './package.json'
+
+const banner = `/**
+ * ${pkg.name}
+ * ${pkg.description}
+ * @version: ${pkg.version}
+ * @author: ${pkg.author}
+ * @license: ${pkg.license}
+ **/
+`
+export default defineConfig({
+  define: {
+    __AYAME_WEB_SDK_VERSION__: JSON.stringify(pkg.version),
+  },
+  root: resolve(__dirname, './'),
+  build: {
+    minify: 'esbuild',
+    target: 'es2022',
+    emptyOutDir: true,
+    manifest: true,
+    outDir: resolve(__dirname, './dist'),
+    lib: {
+      entry: resolve(__dirname, 'src/ayame.ts'),
+      name: 'Ayame',
+      formats: ['es'],
+      fileName: 'ayame',
+    },
+    rollupOptions: {
+      output: {
+        // 本来不要なはず
+        entryFileNames: 'ayame.mjs',
+        banner: banner,
+      },
+    },
+  },
+  envDir: resolve(__dirname, './'),
+  plugins: [
+    dts({
+      include: ['src/**/*'],
+    }),
+  ],
+})

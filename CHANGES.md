@@ -11,17 +11,26 @@
 
 ## develop
 
-- [CHANGE] eslint から biome へ変更
-  - @voluntas
-- [CHANGE] GitHub Actions の node-version を 18 と 20 にする
-  - @voluntas
-- [ADD] biome.jsonc を追加
-  - @voluntas
 - [ADD] standalone モードに対応する
   - options に standalone を追加する
   - standalone モード時は、接続完了時に ayame に type: connected を送信する
   - standalone モード時は、ayame から WebSocket 接続が切断されても、ブラウザ間の接続は維持する
   - @Hexa
+
+### misc
+
+- [CHANGE] rollup から vite へ変更
+  - @voluntas
+- [CHANGE] npm から pnpm に変更する
+  - @voluntas
+- [CHANGE] eslint から biome へ変更
+  - @voluntas
+- [CHANGE] prettier から biome へ変更する
+  - @voluntas
+- [CHANGE] GitHub Actions の node-version を 18 と 20 と 22 にする
+  - @voluntas
+- [UPDATE] ubuntu-latest から ubuntu-24.04 に変更する
+  - @voluntas
 
 ## 2022.1
 
