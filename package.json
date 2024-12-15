@@ -1,9 +1,17 @@
 {
-  "type": "module",
   "name": "@open-ayame/ayame-web-sdk",
-  "version": "2022.1.0",
-  "description": "Web SDK for WebRTC Signaling Server Ayame",
-  "main": "dist/ayame.min.js",
+  "version": "2024.1.0-canary.0",
+  "description": "WebRTC Signaling Server Ayame Web SDK",
+  "type": "module",
+  "module": "dist/ayame.mjs",
+  "exports": {
+    ".": {
+      "types": "./dist/ayame.d.ts",
+      "import": "./dist/ayame.mjs",
+      "require": "./dist/ayame.mjs"
+    }
+  },
+  "types": "dist/ayame.d.ts",
   "scripts": {
     "build": "vite build",
     "watch": "vite build --watch",
@@ -12,6 +20,9 @@
     "doc": "typedoc",
     "deploy:docs": "pnpx gh-pages -d apidoc"
   },
+  "bugs": {
+    "url": "https://discord.gg/shiguredo"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/OpenAyame/ayame-web-sdk.git"
@@ -19,7 +30,6 @@
   "directories": {
     "doc": "docs/"
   },
-  "types": "dist/ayame.d.ts",
   "homepage": "https://github.com/OpenAyame/ayame-web-sdk",
   "author": "Shiguredo Inc.",
   "license": "Apache-2.0",
@@ -33,5 +43,9 @@
     "typescript": "5.7.2",
     "vite": "6.0.3",
     "vite-plugin-dts": "4.3.0"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=18"
   }
 }

@@ -15,7 +15,7 @@ export default defineConfig({
   define: {
     __AYAME_WEB_SDK_VERSION__: JSON.stringify(pkg.version),
   },
-  root: process.cwd(),
+  root: resolve(__dirname, './'),
   build: {
     minify: 'esbuild',
     target: 'es2022',
@@ -30,6 +30,7 @@ export default defineConfig({
     },
     rollupOptions: {
       output: {
+        entryFileNames: 'ayame.mjs',
         banner: banner,
       },
     },
