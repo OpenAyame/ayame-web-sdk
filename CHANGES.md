@@ -29,6 +29,8 @@
   - @voluntas
 - [CHANGE] GitHub Actions の node-version を 18 と 20 と 22 にする
   - @voluntas
+- [UPDATE] ubuntu-latest から ubuntu-24.04 に変更する
+  - @voluntas
 
 ## 2022.1
 
