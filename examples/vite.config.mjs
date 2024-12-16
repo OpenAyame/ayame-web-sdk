@@ -1,8 +1,6 @@
 import { resolve } from 'node:path'
 import { defineConfig } from 'vite'
 
-// root が examples なので examples/dist にビルドされる
-
 export default defineConfig({
   root: resolve(__dirname),
   resolve: {

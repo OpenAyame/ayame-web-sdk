@@ -1,0 +1,39 @@
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8">
+  <title>Ayame 送受信サンプル</title>
+  <link rel="stylesheet" href="https://cdn.rawgit.com/Chalarangelo/mini.css/v3.0.1/dist/mini-default.min.css">
+</head>
+
+<body>
+  <header class="sticky row">
+    <h4>Ayame 送受信サンプル</h4>
+  </header>
+  <div>
+    <p>ルームID
+      <input id="roomIdInput" type="text"></input>
+    </p>
+    <p>クライアントID
+      <input id="clientIdInput" disabled type="text" value=""></input>
+    </p>
+    <!-- 映像コーデックは videoCodecs でチェックボックスを用意する -->
+    <details>
+      <summary>映像コーデック選択</summary>
+      <div id="videoCodecs" class="codec-options">
+      </div>
+    </details>
+    <button id="connectButton">接続</button>
+    <button id="disconnectButton">切断</button>
+  </div>
+  <div style="float:left;">
+    <video id="local-video" muted autoplay playsinline
+      style="width: 400px; height: 300px; border: 1px solid black;"></video>
+  </div>
+  <div style="float:left; margin-left: 20px;">
+    <video id="remote-video" autoplay playsinline style="width: 400px; height: 300px; border: 1px solid black;"></video>
+  </div>
+  <script type="module" src="./main.mts"></script>
+</body>
+
+</html>

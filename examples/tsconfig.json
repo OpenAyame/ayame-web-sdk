@@ -11,17 +11,13 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    "baseUrl": ".",
     "newLine": "LF",
-    "types": ["webrtc", "node"],
     "paths": {
-      "@/*": ["src/*"]
+      "@open-ayame/ayame-web-sdk": ["../dist/ayame.d.ts"]
     },
+    "types": ["webrtc", "node"],
     "lib": ["dom", "esnext", "scripthost"],
     "declarationDir": ".",
-    "outDir": "dist",
-    "rootDir": "src"
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules"]
 }
