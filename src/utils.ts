@@ -1,4 +1,4 @@
-import type { VideoCodecOption } from './options'
+import type { VideoCodecOption } from './types'
 
 /**
  * @ignore

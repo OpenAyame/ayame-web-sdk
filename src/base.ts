@@ -1,4 +1,4 @@
-import type { ConnectionOptions, VideoCodecOption } from './options'
+import type { ConnectionOptions, VideoCodecOption } from './types'
 /* @private */
 import { browser, getVideoCodecsFromString, removeCodec, traceLog } from './utils'
 
@@ -27,14 +27,14 @@ class ConnectionBase {
   remoteStream: MediaStream | null
   authnMetadata: any
   authzMetadata: any
-  _ws: WebSocket | null
-  _pc: RTCPeerConnection | null
-  _callbacks: any
-  _removeCodec: boolean
-  _isOffer: boolean
-  _isExistUser: boolean
-  _dataChannels: Array<RTCDataChannel>
-  _pcConfig: {
+  protected _ws: WebSocket | null
+  protected _pc: RTCPeerConnection | null
+  protected _callbacks: any
+  protected _removeCodec: boolean
+  protected _isOffer: boolean
+  protected _isExistUser: boolean
+  protected _dataChannels: Array<RTCDataChannel>
+  protected _pcConfig: {
     iceServers: Array<RTCIceServer>
     iceTransportPolicy: RTCIceTransportPolicy
   }

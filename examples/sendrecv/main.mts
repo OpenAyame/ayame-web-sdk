@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   videoCodecsElement.appendChild(container)
 
-  let ayame: Ayame | null = null
+  const conn: Ayame.Connection | null = null
 
   // connect ボタンを押す
   const connectButton = document.getElementById('connectButton')
@@ -91,12 +91,9 @@ document.addEventListener('DOMContentLoaded', () => {
       selectedVideoCodecs.some((selectedCodec) => selectedCodec.mimeType === codec.mimeType),
     )
 
-    ayame = new Ayame({
-      signalingUrl,
-      roomId,
-      clientId,
-      signalingKey,
-    })
+    const conn = Ayame.connection(signalingUrl, roomId)
+
+    await conn.connect(null)
 
     const pc = new RTCPeerConnection()
     for (const transceiver of pc.getTransceivers()) {
