@@ -11,7 +11,7 @@ interface WindowPerformance {
 declare let window: Window
 
 /**
- * @ignore
+ * ランダムな文字列を生成する
  */
 export function randomString(strLength: number): string {
   const result = []
@@ -24,7 +24,7 @@ export function randomString(strLength: number): string {
 }
 
 /**
- * @ignore
+ * ブラウザを判定する
  */
 export function browser(): string {
   const ua = window.navigator.userAgent.toLocaleLowerCase()
@@ -47,7 +47,7 @@ export function browser(): string {
 }
 
 /**
- * @ignore
+ * デバッグログを出力する
  */
 export function traceLog(title: string, value?: string | Record<string, any>): void {
   let prefix = ''
@@ -61,8 +61,10 @@ export function traceLog(title: string, value?: string | Record<string, any>): v
   }
 }
 
-// 指定された codec にマッチする codec のリストを返す
-// リストなのはプロファイルが複数合ったり、 RTX, RED, ULPFEC などの codec も含めるため
+/**
+ * 指定された codec にマッチする codec のリストを返す
+ * リストなのはプロファイルが複数合ったり、 RTX, RED, ULPFEC などの codec も含めるため
+ */
 export const getSelectedCodecs = (
   selectedCodecMimeType: string,
   codecs: RTCRtpCodec[],
@@ -96,7 +98,9 @@ export enum Direction {
   Sendonly = 'sendonly',
 }
 
-// 利用者向けのライブラリ
+/**
+ * 利用可能な映像のコーデックを取得する
+ */
 export const getAvailableVideoCodecs = (direction: Direction): string[] => {
   if (typeof RTCRtpSender === 'undefined' || typeof RTCRtpReceiver === 'undefined') {
     return []

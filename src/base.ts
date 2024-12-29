@@ -100,11 +100,14 @@ class ConnectionBase {
   }
 
   protected async disconnect(): Promise<void> {
+    // DataChannel を閉じる
     for (const dataChannel of this.dataChannels) {
       await this.closeDataChannel(dataChannel)
     }
     // WebSocket と PeerConnection を閉じる
     await Promise.all([this.closePeerConnection(), this.closeWebSocketConnection()])
+
+    // 状態の初期化
     this.authzMetadata = null
     this.isOffer = false
     this.isExistUser = false

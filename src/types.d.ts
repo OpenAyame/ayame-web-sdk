@@ -1,55 +1,43 @@
-/**
- * @typedef {string} ConnectionDirection - オーディオ、ビデオの送受信方向に関するオプションです。
- *
- * - sendrecv
- * - recvonly
- * - sendonly
- */
 export type ConnectionDirection = 'sendrecv' | 'recvonly' | 'sendonly'
 
-/**
- * @typedef {Object} ConnectionAudioOption - オーディオ接続に関するオプションです。
- * @property {ConnectionDirection} direction 送受信方向
- * @property {boolean} enabled 有効かどうかのフラグ
- */
+/** 音声の設定 */
 export interface ConnectionAudioOption {
-  direction: ConnectionDirection
-  enabled: boolean
-}
-
-/**
- * @typedef {Object} ConnectionVideoOption - ビデオ接続に関するオプションです。
- * @property {string} codecMimeType コーデックの MIME type
- * @property {ConnectionDirection} direction 送受信方向
- * @property {boolean} enabled 有効かどうかのフラグ
- */
-export interface ConnectionVideoOption {
+  /** コーデックの MIME type */
   codecMimeType?: string
+  /** 送受信方向 */
   direction: ConnectionDirection
+  /** 有効かどうかのフラグ */
   enabled: boolean
 }
 
-/**
- * @typedef {Object} ConnectionOptions - 接続時に指定するオプションです。
- * @property {ConnectionAudioOption} audio オーディオの設定
- * @property {ConnectionVideoOption} video ビデオの設定
- * @property {string} clientId クライアントID
- * @property {Array.<RTCIceServer>} iceServers ayame server から iceServers が返って来なかった場合に使われる iceServer の情報
- * @property {string} signalingKey 送信するシグナリングキー
- */
+/** 映像の設定 */
+export interface ConnectionVideoOption {
+  /** コーデックの MIME type */
+  codecMimeType?: string
+  /** 送受信方向 */
+  direction: ConnectionDirection
+  /** 有効かどうかのフラグ */
+  enabled: boolean
+}
+
+/** 接続時に指定するオプション */
 export interface ConnectionOptions {
+  /** オーディオの設定 */
   audio: ConnectionAudioOption
+  /** ビデオの設定 */
   video: ConnectionVideoOption
+  /** クライアントID */
   clientId: string
+  /** ayame server から iceServers が返って来なかった場合に使われる iceServer の情報 */
   iceServers: RTCIceServer[]
+  /** 送信するシグナリングキー */
   signalingKey?: string
+  /** standalone モードの場合は true */
   standalone?: boolean
 }
 
-/**
- * @typedef {Object} MetadataOption - 接続時に指定できるメタデータです。
- * @property {any} authnMetadata 送信するメタデータ
- */
+/** 接続時に指定できるメタデータ */
 export interface MetadataOption {
+  /** 送信するメタデータ */
   authnMetadata?: any
 }
