@@ -100,10 +100,9 @@ class ConnectionBase {
   }
 
   protected async disconnect(): Promise<void> {
-    // biome-ignore lint/complexity/noForEach: <explanation>
-    this.dataChannels.forEach(async (dataChannel: RTCDataChannel) => {
+    for (const dataChannel of this.dataChannels) {
       await this.closeDataChannel(dataChannel)
-    })
+    }
     await this.closePeerConnection()
     await this.closeWebSocketConnection()
     this.authzMetadata = null
@@ -535,8 +534,10 @@ class ConnectionBase {
 
   private async closeWebSocketConnection(): Promise<void> {
     return new Promise<void>((resolve) => {
-      if (!this.ws) return resolve()
-      if (this.ws && this.ws.readyState === 3) {
+      if (!this.ws) {
+        return resolve()
+      }
+      if (this.ws && this.ws.readyState === WebSocket.CLOSED) {
         this.ws = null
         return resolve()
       }
