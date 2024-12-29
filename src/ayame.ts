@@ -94,7 +94,7 @@ class Connection extends ConnectionBase {
 
     // standalone モードの場合はここで切断する
     if (this.options.standalone) {
-      await this._disconnect()
+      await this.disconnect()
       this.callbacks.disconnect({ reason: 'DISCONNECTED' })
     }
   }

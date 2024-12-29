@@ -30,10 +30,10 @@ class ConnectionBase {
   protected ws: WebSocket | null
   protected pc: RTCPeerConnection | null
   protected callbacks: any
-  protected _isOffer: boolean
-  protected _isExistUser: boolean
-  protected _dataChannels: RTCDataChannel[]
-  protected pcConfig: {
+  private isOffer: boolean
+  private isExistUser: boolean
+  private dataChannels: RTCDataChannel[]
+  private pcConfig: {
     iceServers: RTCIceServer[]
     iceTransportPolicy: RTCIceTransportPolicy
   }
@@ -80,9 +80,9 @@ class ConnectionBase {
     this.ws = null
     this.authnMetadata = null
     this.authzMetadata = null
-    this._dataChannels = []
-    this._isOffer = false
-    this._isExistUser = false
+    this.dataChannels = []
+    this.isOffer = false
+    this.isExistUser = false
     this.connectionState = 'new'
     this.pcConfig = {
       iceServers: this.options.iceServers,
@@ -99,17 +99,17 @@ class ConnectionBase {
     }
   }
 
-  async _disconnect(): Promise<void> {
+  protected async disconnect(): Promise<void> {
     // biome-ignore lint/complexity/noForEach: <explanation>
-    this._dataChannels.forEach(async (dataChannel: RTCDataChannel) => {
+    this.dataChannels.forEach(async (dataChannel: RTCDataChannel) => {
       await this._closeDataChannel(dataChannel)
     })
-    await this._closePeerConnection()
-    await this._closeWebSocketConnection()
+    await this.closePeerConnection()
+    await this.closeWebSocketConnection()
     this.authzMetadata = null
-    this._isOffer = false
-    this._isExistUser = false
-    this._dataChannels = []
+    this.isOffer = false
+    this.isExistUser = false
+    this.dataChannels = []
     this.connectionState = 'new'
   }
 
@@ -121,13 +121,13 @@ class ConnectionBase {
       this.ws = new WebSocket(this.signalingUrl)
       this.ws.onclose = async () => {
         if (!this.options.standalone) {
-          await this._disconnect()
+          await this.disconnect()
           this.callbacks.disconnect({ reason: 'WS-CLOSED' })
           return reject('WS-CLOSED')
         }
       }
       this.ws.onerror = async () => {
-        await this._disconnect()
+        await this.disconnect()
         return reject('WS-CLOSED-WITH-ERROR')
       }
       this.ws.onopen = () => {
@@ -165,23 +165,23 @@ class ConnectionBase {
                   this.pcConfig.iceServers = message.iceServers
                 }
                 this._traceLog('isExistUser=>', message.isExistUser)
-                this._isExistUser = message.isExistUser
+                this.isExistUser = message.isExistUser
                 this._createPeerConnection()
-                if (this._isExistUser === true) {
-                  await this._sendOffer()
+                if (this.isExistUser === true) {
+                  await this.sendOffer()
                 }
                 return resolve()
               } else if (message.type === 'reject') {
-                await this._disconnect()
+                await this.disconnect()
                 this.callbacks.disconnect({ reason: message.reason || 'REJECTED' })
                 return reject('REJECTED')
               } else if (message.type === 'offer') {
                 if (this.pc && this.pc.signalingState === 'have-local-offer') {
                   this._createPeerConnection()
                 }
-                this._setOffer(new RTCSessionDescription(message))
+                this.setOffer(new RTCSessionDescription(message))
               } else if (message.type === 'answer') {
-                await this._setAnswer(new RTCSessionDescription(message))
+                await this.setAnswer(new RTCSessionDescription(message))
               } else if (message.type === 'candidate') {
                 if (message.ice) {
                   this._traceLog('Received ICE candidate ...', message.ice)
@@ -190,7 +190,7 @@ class ConnectionBase {
                 }
               }
             } catch (error) {
-              await this._disconnect()
+              await this.disconnect()
               this.callbacks.disconnect({ reason: 'SIGNALING-ERROR', error: error })
             }
           }
@@ -279,12 +279,12 @@ class ConnectionBase {
         this.connectionState = pc.iceConnectionState
         switch (this.connectionState) {
           case 'connected':
-            this._isOffer = false
+            this.isOffer = false
             this.callbacks.connect()
             break
           case 'disconnected':
           case 'failed':
-            await this._disconnect()
+            await this.disconnect()
             this.callbacks.disconnect({ reason: 'ICE-CONNECTION-STATE-FAILED' })
             break
         }
@@ -315,24 +315,20 @@ class ConnectionBase {
   ): Promise<RTCDataChannel | null> {
     return new Promise<RTCDataChannel | null>((resolve, reject) => {
       if (!this.pc) return reject('PeerConnection Does Not Ready')
-      if (this._isOffer) return reject('PeerConnection Has Local Offer')
+      if (this.isOffer) return reject('PeerConnection Has Local Offer')
       let dataChannel = this._findDataChannel(label)
       if (dataChannel) {
         return reject('DataChannel Already Exists!')
       }
-      if (this._isExistUser) {
+      if (this.isExistUser) {
         dataChannel = this.pc.createDataChannel(label, options)
         dataChannel.onclose = (event: Record<string, any>) => {
           this._traceLog('datachannel onclosed=>', event)
-          this._dataChannels = this._dataChannels.filter(
-            (dataChannel) => dataChannel.label !== label,
-          )
+          this.dataChannels = this.dataChannels.filter((dataChannel) => dataChannel.label !== label)
         }
         dataChannel.onerror = (event: Record<string, any>) => {
           this._traceLog('datachannel onerror=>', event)
-          this._dataChannels = this._dataChannels.filter(
-            (dataChannel) => dataChannel.label !== label,
-          )
+          this.dataChannels = this.dataChannels.filter((dataChannel) => dataChannel.label !== label)
         }
         dataChannel.onmessage = (event: any) => {
           this._traceLog('datachannel onmessage=>', event.data)
@@ -341,7 +337,7 @@ class ConnectionBase {
         dataChannel.onopen = (event: Record<string, any>) => {
           this._traceLog('datachannel onopen=>', event)
         }
-        this._dataChannels.push(dataChannel)
+        this.dataChannels.push(dataChannel)
         return resolve(dataChannel)
       }
       return resolve(null)
@@ -369,9 +365,9 @@ class ConnectionBase {
       event.label = label
     }
     if (!this._findDataChannel(label)) {
-      this._dataChannels.push(event.channel)
+      this.dataChannels.push(event.channel)
     } else {
-      this._dataChannels = this._dataChannels.map((channel) => {
+      this.dataChannels = this.dataChannels.map((channel) => {
         if (channel.label === label) {
           return dataChannel
         }
@@ -381,7 +377,7 @@ class ConnectionBase {
     this.callbacks.datachannel(dataChannel)
   }
 
-  async _sendOffer() {
+  private async sendOffer(): Promise<void> {
     if (!this.pc) {
       return
     }
@@ -404,14 +400,14 @@ class ConnectionBase {
     if (this.pc.localDescription) {
       this._sendSdp(this.pc.localDescription)
     }
-    this._isOffer = true
+    this.isOffer = true
   }
 
   private isVideoCodecSpecified(): boolean {
     return this.options.video.enabled && this.options.video.codecMimeType !== undefined
   }
 
-  async _createAnswer(): Promise<void> {
+  private async createAnswer(): Promise<void> {
     if (!this.pc) {
       return
     }
@@ -421,12 +417,12 @@ class ConnectionBase {
       await this.pc.setLocalDescription(answer)
       if (this.pc.localDescription) this._sendSdp(this.pc.localDescription)
     } catch (error) {
-      await this._disconnect()
+      await this.disconnect()
       this.callbacks.disconnect({ reason: 'CREATE-ANSWER-ERROR', error: error })
     }
   }
 
-  async _setAnswer(sessionDescription: RTCSessionDescription): Promise<void> {
+  private async setAnswer(sessionDescription: RTCSessionDescription): Promise<void> {
     if (!this.pc) {
       return
     }
@@ -434,16 +430,16 @@ class ConnectionBase {
     this._traceLog('set answer sdp=', sessionDescription.sdp)
   }
 
-  async _setOffer(sessionDescription: RTCSessionDescription): Promise<void> {
+  private async setOffer(sessionDescription: RTCSessionDescription): Promise<void> {
     try {
       if (!this.pc) {
         return
       }
       await this.pc.setRemoteDescription(sessionDescription)
       this._traceLog('set offer sdp=', sessionDescription.sdp)
-      await this._createAnswer()
+      await this.createAnswer()
     } catch (error) {
-      await this._disconnect()
+      await this.disconnect()
       this.callbacks.disconnect({ reason: 'SET-OFFER-ERROR', error: error })
     }
   }
@@ -486,7 +482,7 @@ class ConnectionBase {
   }
 
   _findDataChannel(label: string): RTCDataChannel | undefined {
-    return this._dataChannels.find((channel) => channel.label === label)
+    return this.dataChannels.find((channel) => channel.label === label)
   }
 
   async _closeDataChannel(dataChannel: RTCDataChannel): Promise<void> {
@@ -503,7 +499,7 @@ class ConnectionBase {
     })
   }
 
-  async _closePeerConnection(): Promise<void> {
+  private async closePeerConnection(): Promise<void> {
     return new Promise<void>((resolve) => {
       if (browser() === 'safari' && this.pc) {
         this.pc.oniceconnectionstatechange = () => {}
@@ -532,7 +528,7 @@ class ConnectionBase {
     })
   }
 
-  async _closeWebSocketConnection(): Promise<void> {
+  private async closeWebSocketConnection(): Promise<void> {
     return new Promise<void>((resolve) => {
       if (!this.ws) return resolve()
       if (this.ws && this.ws.readyState === 3) {
