@@ -1,6 +1,6 @@
 {
   "name": "@open-ayame/ayame-web-sdk",
-  "version": "2024.1.0-canary.0",
+  "version": "2025.1.0-canary.0",
   "description": "WebRTC Signaling Server Ayame Web SDK",
   "type": "module",
   "module": "dist/ayame.mjs",
@@ -11,7 +11,6 @@
       "require": "./dist/ayame.mjs"
     }
   },
-  "types": "dist/ayame.d.ts",
   "scripts": {
     "build": "vite build",
     "dev": "vite --config examples/vite.config.mjs",
