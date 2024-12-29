@@ -61,7 +61,6 @@ export function traceLog(title: string, value?: string | Record<string, any>): v
   }
 }
 
-
 // 指定された codec にマッチする codec のリストを返す
 // リストなのはプロファイルが複数合ったり、 RTX, RED, ULPFEC などの codec も含めるため
 export const getSelectedCodecs = (
@@ -90,17 +89,30 @@ export const getSelectedCodecs = (
   return filteredCodecs
 }
 
+export enum Direction {
+  Sendrecv = 'sendrecv',
+  Recvonly = 'recvonly',
+  Sendonly = 'sendonly',
+}
+
 // 利用者向けのライブラリ
-export const getAvailableVideoCodecs = (): string[] => {
-  if (typeof RTCRtpSender === 'undefined') {
+export const getAvailableVideoCodecs = (direction: Direction): string[] => {
+  if (typeof RTCRtpSender === 'undefined' || typeof RTCRtpReceiver === 'undefined') {
     return []
   }
 
-  if (typeof RTCRtpSender.getCapabilities !== 'function') {
+  // sendrecv と sendonly は RTCRtpSender を使う
+  // recvonly は RTCRtpReceiver を使う
+  const getCapabilities =
+    direction === Direction.Sendrecv || direction === Direction.Sendonly
+      ? RTCRtpSender.getCapabilities
+      : RTCRtpReceiver.getCapabilities
+
+  if (typeof getCapabilities !== 'function') {
     return []
   }
 
-  const codecs = RTCRtpSender.getCapabilities('video')?.codecs
+  const codecs = getCapabilities('video')?.codecs
   if (!codecs) {
     return []
   }

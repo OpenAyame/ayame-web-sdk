@@ -1,4 +1,9 @@
-import { connection, defaultOptions, getAvailableVideoCodecs } from '@open-ayame/ayame-web-sdk'
+import {
+  Direction,
+  connection,
+  defaultOptions,
+  getAvailableVideoCodecs,
+} from '@open-ayame/ayame-web-sdk'
 import type { Connection, ConnectionOptions } from '@open-ayame/ayame-web-sdk'
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -29,7 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // getAvailableVideoCodecs で取得したコーデックをセレクトボックスに設定する
-  const availableVideoCodecs = getAvailableVideoCodecs()
+  // 送受信なので Direction.Sendrecv を渡す
+  const availableVideoCodecs = getAvailableVideoCodecs(Direction.Sendrecv)
   for (const codec of availableVideoCodecs) {
     const option = document.createElement('option')
     option.value = codec

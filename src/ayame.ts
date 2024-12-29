@@ -192,4 +192,4 @@ export function version(): string {
 }
 
 export type { Connection, ConnectionOptions }
-export { getAvailableVideoCodecs } from './utils'
+export { getAvailableVideoCodecs, Direction } from './utils'
