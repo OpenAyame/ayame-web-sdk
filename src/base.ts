@@ -103,8 +103,8 @@ class ConnectionBase {
     for (const dataChannel of this.dataChannels) {
       await this.closeDataChannel(dataChannel)
     }
-    await this.closePeerConnection()
-    await this.closeWebSocketConnection()
+    // WebSocket と PeerConnection を閉じる
+    await Promise.all([this.closePeerConnection(), this.closeWebSocketConnection()])
     this.authzMetadata = null
     this.isOffer = false
     this.isExistUser = false
@@ -298,6 +298,10 @@ class ConnectionBase {
       if (pc.connectionState === 'connected') {
         if (this.options.standalone) {
           this.sendWs({ type: 'connected' })
+          if (this.ws) {
+            this.traceLog('websocket is closed')
+            this.ws.close()
+          }
         }
       }
     }
@@ -320,7 +324,7 @@ class ConnectionBase {
     return new Promise<RTCDataChannel | null>((resolve, reject) => {
       if (!this.pc) return reject('PeerConnection Does Not Ready')
       if (this.isOffer) return reject('PeerConnection Has Local Offer')
-      let dataChannel = this._findDataChannel(label)
+      let dataChannel = this.findDataChannel(label)
       if (dataChannel) {
         return reject('DataChannel Already Exists!')
       }
@@ -368,7 +372,7 @@ class ConnectionBase {
       this.traceLog('datachannel onmessage=>', event.data)
       event.label = label
     }
-    if (!this._findDataChannel(label)) {
+    if (!this.findDataChannel(label)) {
       this.dataChannels.push(event.channel)
     } else {
       this.dataChannels = this.dataChannels.map((channel) => {
@@ -485,80 +489,103 @@ class ConnectionBase {
     return transceiver
   }
 
-  _findDataChannel(label: string): RTCDataChannel | undefined {
+  protected findDataChannel(label: string): RTCDataChannel | undefined {
     return this.dataChannels.find((channel) => channel.label === label)
   }
 
   protected async closeDataChannel(dataChannel: RTCDataChannel): Promise<void> {
+    this.traceLog('close data channel')
     return new Promise((resolve) => {
-      if (dataChannel.readyState === 'closed') return resolve()
+      if (!dataChannel) {
+        this.traceLog('data channel is null')
+        return resolve()
+      }
+      if (dataChannel.readyState === 'closed') {
+        this.traceLog('data channel is closed')
+        return resolve()
+      }
       dataChannel.onclose = null
       const timerId = setInterval(() => {
         if (dataChannel.readyState === 'closed') {
           clearInterval(timerId)
+          this.traceLog('data channel is closed')
           return resolve()
         }
-      }, 400)
-      dataChannel?.close()
+      }, 200)
+      dataChannel.close()
     })
   }
 
   private async closePeerConnection(): Promise<void> {
+    this.traceLog('close peer connection')
     return new Promise<void>((resolve) => {
-      if (browser() === 'safari' && this.pc) {
-        this.pc.oniceconnectionstatechange = () => {}
-        this.pc.close()
-        this.pc = null
+      if (!this.pc) {
+        this.traceLog('peer connection is null')
         return resolve()
       }
-      if (!this.pc) return resolve()
-      if (this.pc && this.pc.signalingState === 'closed') {
+      if (this.pc.connectionState === 'closed') {
         this.pc = null
+        this.traceLog('peer connection is closed')
         return resolve()
       }
-      this.pc.oniceconnectionstatechange = () => {}
+      this.pc.oniceconnectionstatechange = null
       const timerId = setInterval(() => {
         if (!this.pc) {
           clearInterval(timerId)
+          this.traceLog('peer connection is null')
           return resolve()
         }
-        if (this.pc && this.pc.signalingState === 'closed') {
+        if (this.pc.connectionState === 'closed') {
           this.pc = null
           clearInterval(timerId)
+          this.traceLog('peer connection is closed')
           return resolve()
         }
-      }, 400)
+      }, 200)
       this.pc.close()
     })
   }
 
   private async closeWebSocketConnection(): Promise<void> {
     return new Promise<void>((resolve) => {
+      // WS がない場合はすでに閉じられているので resolve
       if (!this.ws) {
+        this.traceLog('websocket is null')
         return resolve()
       }
+      // WS がすでに閉じられている場合は resolve
       if (this.ws && this.ws.readyState === WebSocket.CLOSED) {
         this.ws = null
+        this.traceLog('websocket is closed')
         return resolve()
       }
-      this.ws.onclose = () => {}
+      // WS の onclose を null 入れる
+      this.ws.onclose = null
+      // WS が閉じられるまで待つ
       const timerId = setInterval(() => {
+        // WS がない場合はすでに閉じられているので resolve
         if (!this.ws) {
           clearInterval(timerId)
+          this.traceLog('websocket is null')
           return resolve()
         }
-        if (this.ws.readyState === 3) {
+        // WS が閉じられている場合は resolve
+        if (this.ws.readyState === WebSocket.CLOSED) {
           this.ws = null
           clearInterval(timerId)
+          this.traceLog('websocket is closed')
           return resolve()
         }
-      }, 400)
-      this.ws?.close()
+      }, 200)
+      // WS を閉じる
+      this.ws.close()
     })
   }
 
   protected traceLog(title: string, message?: Record<string, any> | string) {
-    if (!this.debug) return
+    if (!this.debug) {
+      return
+    }
     traceLog(title, message)
   }
 }

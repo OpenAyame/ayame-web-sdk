@@ -76,7 +76,7 @@ class Connection extends ConnectionBase {
    */
   public async removeDataChannel(label: string): Promise<void> {
     this.traceLog('datachannel remove=>', label)
-    const dataChannel = this._findDataChannel(label)
+    const dataChannel = this.findDataChannel(label)
     if (dataChannel && dataChannel.readyState === 'open') {
       await this.closeDataChannel(dataChannel)
     } else {
@@ -88,15 +88,7 @@ class Connection extends ConnectionBase {
    * @desc PeerConnection  接続を切断します。
    */
   public async disconnect(): Promise<void> {
-    if (this.ws) {
-      this.ws.close()
-    }
-
-    // standalone モードの場合はここで切断する
-    if (this.options.standalone) {
-      await this.disconnect()
-      this.callbacks.disconnect({ reason: 'DISCONNECTED' })
-    }
+    await super.disconnect()
   }
 }
 

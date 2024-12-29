@@ -1,6 +1,6 @@
 import {
   Direction,
-  connection,
+  createConnection,
   defaultOptions,
   getAvailableVideoCodecs,
 } from '@open-ayame/ayame-web-sdk'
@@ -43,15 +43,16 @@ document.addEventListener('DOMContentLoaded', () => {
     videoCodecMimeTypeElement.appendChild(option)
   }
 
-  const conn: Connection | null = null
+  let conn: Connection | null = null
 
   // connect ボタンを押す
   document.querySelector('#connect')?.addEventListener('click', async () => {
-    console.log('connect button clicked')
+    console.debug('connect button clicked')
 
     const options: ConnectionOptions = defaultOptions
     if (signalingKey) {
       options.signalingKey = signalingKey
+      options.standalone = true
     }
 
     // セレクトボックスの値を取得する
@@ -64,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // createConnection に変更する
-    const conn = connection(signalingUrl, roomId, options)
+    conn = createConnection(signalingUrl, roomId, options, true)
 
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: options.audio.enabled,
@@ -96,7 +97,13 @@ document.addEventListener('DOMContentLoaded', () => {
     await conn.connect(stream)
   })
 
-  document.querySelector('#disconnect')?.addEventListener('click', () => {
-    console.log('disconnect')
+  document.querySelector('#disconnect')?.addEventListener('click', async () => {
+    if (!conn) {
+      return
+    }
+    console.debug('disconnecting...')
+    await conn.disconnect()
+    console.debug('disconnected')
+    conn = null
   })
 })

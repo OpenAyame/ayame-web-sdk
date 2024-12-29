@@ -18,6 +18,8 @@
   - standalone モード時は、接続完了時に ayame に type: connected を送信する
   - standalone モード時は、ayame から WebSocket 接続が切断されても、ブラウザ間の接続は維持する
   - @Hexa
+- [FIX] disconnect の処理が正常に動作しない問題を修正する
+  - @voluntas
 
 ### misc
 
