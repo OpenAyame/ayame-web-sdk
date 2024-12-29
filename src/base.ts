@@ -166,7 +166,7 @@ class ConnectionBase {
                 }
                 this._traceLog('isExistUser=>', message.isExistUser)
                 this.isExistUser = message.isExistUser
-                this._createPeerConnection()
+                this.createPeerConnection()
                 if (this.isExistUser === true) {
                   await this.sendOffer()
                 }
@@ -177,7 +177,7 @@ class ConnectionBase {
                 return reject('REJECTED')
               } else if (message.type === 'offer') {
                 if (this.pc && this.pc.signalingState === 'have-local-offer') {
-                  this._createPeerConnection()
+                  this.createPeerConnection()
                 }
                 this.setOffer(new RTCSessionDescription(message))
               } else if (message.type === 'answer') {
@@ -199,7 +199,7 @@ class ConnectionBase {
     })
   }
 
-  _createPeerConnection(): void {
+  private createPeerConnection(): void {
     this._traceLog('RTCConfiguration=>', this.pcConfig)
     const pc = new RTCPeerConnection(this.pcConfig)
     const audioTrack = this.stream?.getAudioTracks()[0]
