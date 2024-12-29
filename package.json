@@ -17,6 +17,7 @@
     "watch": "vite build --watch",
     "lint": "biome lint ./src",
     "fmt": "biome format --write ./src",
+    "check": "tsc --noEmit",
     "doc": "typedoc",
     "deploy:docs": "pnpx gh-pages -d apidoc"
   },

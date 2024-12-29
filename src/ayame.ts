@@ -1,6 +1,6 @@
-import { randomString } from './utils'
 import ConnectionBase from './base'
 import type { ConnectionOptions, MetadataOption } from './types'
+import { randomString } from './utils'
 
 /**
  * Peer Connection 接続を管理するクラスです。
@@ -44,7 +44,7 @@ class Connection extends ConnectionBase {
     stream: MediaStream | null,
     metadataOption: MetadataOption | null = null,
   ): Promise<void> {
-    if (this._ws || this._pc) {
+    if (this.ws || this.pc) {
       this._traceLog('connection already exists')
       throw new Error('Connection Already Exists!')
     }
@@ -88,8 +88,8 @@ class Connection extends ConnectionBase {
    * @desc PeerConnection  接続を切断します。
    */
   public async disconnect(): Promise<void> {
-    if (this._ws) {
-      this._ws.close()
+    if (this.ws) {
+      this.ws.close()
     }
 
     // standalone モードの場合はここで切断する
@@ -190,3 +190,5 @@ export function connection(
 export function version(): string {
   return process.version
 }
+
+export type { Connection, ConnectionOptions }

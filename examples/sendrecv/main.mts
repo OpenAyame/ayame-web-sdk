@@ -1,5 +1,5 @@
-import { connection } from '@open-ayame/ayame-web-sdk'
-import type Connection from '@open-ayame/ayame-web-sdk'
+import { connection, defaultOptions } from '@open-ayame/ayame-web-sdk'
+import type { Connection, ConnectionOptions } from '@open-ayame/ayame-web-sdk'
 
 document.addEventListener('DOMContentLoaded', () => {
   const signalingUrl = import.meta.env.VITE_AYAME_SIGNALING_URL
@@ -7,115 +7,65 @@ document.addEventListener('DOMContentLoaded', () => {
   const clientId = import.meta.env.VITE_AYAME_CLIENT_ID
   const signalingKey = import.meta.env.VITE_AYAME_SIGNALING_KEY
 
-  // ここでコーデック一覧を取得する
-  const videoCodecs = RTCRtpSender.getCapabilities('video')?.codecs
-  if (!videoCodecs) {
+  // ここで roomId を設定する
+  const roomIdElement = document.getElementById('room-id') as HTMLInputElement
+  if (!roomIdElement) {
     return
   }
-  console.log(videoCodecs)
+  roomIdElement.value = roomId
 
-  // 映像コーデックを選択できるようにする
-  const videoCodecsElement = document.getElementById('videoCodecs') as HTMLSelectElement
-  if (!videoCodecsElement) {
+  // ここで clientId を設定する
+  const clientIdElement = document.getElementById('client-id') as HTMLInputElement
+  if (!clientIdElement) {
     return
   }
-
-  // mimeType でソートする
-  videoCodecs.sort((a, b) => a.mimeType.localeCompare(b.mimeType))
-
-  // div要素でコンテナを作成
-  const container = document.createElement('div')
-  container.style.display = 'flex'
-  container.style.flexDirection = 'column'
-  container.style.gap = '8px' // 項目間の間隔
-
-  // クリアボタンを追加
-  const clearButton = document.createElement('button')
-  clearButton.textContent = 'すべてクリア'
-  clearButton.style.alignSelf = 'flex-start' // コンテナの左側に配置
-  clearButton.style.padding = '4px 8px' // 内側の余白を調整
-  clearButton.style.width = 'fit-content' // コンテンツに合わせた幅に設定
-  clearButton.addEventListener('click', () => {
-    const checkboxes = container.querySelectorAll('input[type="checkbox"]')
-    for (const checkbox of Array.from(checkboxes)) {
-      ;(checkbox as HTMLInputElement).checked = false
-    }
-  })
-  container.appendChild(clearButton)
-
-  videoCodecsElement.appendChild(container)
-
-  for (const codec of videoCodecs) {
-    if (!['VP8', 'VP9', 'AV1', 'H264', 'H265'].includes(codec.mimeType.replace('video/', ''))) {
-      continue
-    }
-
-    // 各項目用のdiv
-    const itemDiv = document.createElement('div')
-
-    const label = document.createElement('label')
-    const checkbox = document.createElement('input')
-    checkbox.type = 'checkbox'
-    checkbox.value = videoCodecs.indexOf(codec).toString()
-    checkbox.name = 'videoCodecs'
-
-    const span = document.createElement('span')
-    const displayText = codec.sdpFmtpLine
-      ? `${codec.mimeType} (${codec.sdpFmtpLine})`
-      : codec.mimeType
-    span.textContent = displayText
-
-    label.appendChild(checkbox)
-    label.appendChild(span)
-    itemDiv.appendChild(label)
-    container.appendChild(itemDiv)
-  }
-
-  videoCodecsElement.appendChild(container)
+  clientIdElement.value = clientId
 
   const conn: Connection | null = null
 
   // connect ボタンを押す
-  const connectButton = document.getElementById('connectButton')
-  if (!connectButton) {
-    return
-  }
-  connectButton.addEventListener('click', async () => {
-    // 選択されたコーデックリストを取得する
-    const selectedVideoCodecs = Array.from(
-      videoCodecsElement.querySelectorAll('input[name="videoCodecs"]:checked'),
-    ).map((checkbox) => videoCodecs[Number.parseInt((checkbox as HTMLInputElement).value)])
+  document.querySelector('#connect')?.addEventListener('click', async () => {
+    console.log('connect button clicked')
 
-    // 選択されたコーデックとプロファイルから RTCRtpCodecCapability を取得する
-    // videoCodecs を利用する
-    const matchingCodecs = videoCodecs.filter((codec) =>
-      selectedVideoCodecs.some((selectedCodec) => selectedCodec.mimeType === codec.mimeType),
-    )
-
-    const conn = connection(signalingUrl, roomId)
-    await conn.connect(null)
-
-    const pc = new RTCPeerConnection()
-    for (const transceiver of pc.getTransceivers()) {
-      // direction が sendonly または sendrecv の場合にする
-      if (transceiver.direction === 'sendonly' || transceiver.direction === 'sendrecv') {
-        // コーデックが存在しない場合は指定できいようにする
-        if (!matchingCodecs.length) {
-          return
-        }
-        transceiver.setCodecPreferences(matchingCodecs)
-      }
+    const options: ConnectionOptions = defaultOptions
+    if (signalingKey) {
+      options.signalingKey = signalingKey
     }
 
-    console.log('connect')
+    // createConnection に変更する
+    const conn = connection(signalingUrl, roomId, options)
+
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: options.audio.enabled,
+      video: options.video.enabled,
+    })
+
+    const localVideo = document.getElementById('local-video') as HTMLVideoElement
+    if (!localVideo) {
+      return
+    }
+    localVideo.srcObject = stream
+
+    conn.on('addstream', (event) => {
+      const remoteVideo = document.getElementById('remote-video') as HTMLVideoElement
+      if (!remoteVideo) {
+        return
+      }
+      remoteVideo.srcObject = event.stream
+    })
+
+    conn.on('removestream', (event) => {
+      const remoteVideo = document.getElementById('remote-video') as HTMLVideoElement
+      if (!remoteVideo) {
+        return
+      }
+      remoteVideo.srcObject = null
+    })
+
+    await conn.connect(stream)
   })
 
-  // disconnect ボタンを押す
-  const disconnectButton = document.getElementById('disconnectButton')
-  if (!disconnectButton) {
-    return
-  }
-  disconnectButton.addEventListener('click', () => {
+  document.querySelector('#disconnect')?.addEventListener('click', () => {
     console.log('disconnect')
   })
 })

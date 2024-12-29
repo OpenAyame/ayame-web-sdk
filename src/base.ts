@@ -27,14 +27,14 @@ class ConnectionBase {
   remoteStream: MediaStream | null
   authnMetadata: any
   authzMetadata: any
-  protected _ws: WebSocket | null
-  protected _pc: RTCPeerConnection | null
+  protected ws: WebSocket | null
+  protected pc: RTCPeerConnection | null
   protected _callbacks: any
   protected _removeCodec: boolean
   protected _isOffer: boolean
   protected _isExistUser: boolean
   protected _dataChannels: Array<RTCDataChannel>
-  protected _pcConfig: {
+  protected pcConfig: {
     iceServers: Array<RTCIceServer>
     iceTransportPolicy: RTCIceTransportPolicy
   }
@@ -78,15 +78,15 @@ class ConnectionBase {
     this._removeCodec = false
     this.stream = null
     this.remoteStream = null
-    this._pc = null
-    this._ws = null
+    this.pc = null
+    this.ws = null
     this.authnMetadata = null
     this.authzMetadata = null
     this._dataChannels = []
     this._isOffer = false
     this._isExistUser = false
     this.connectionState = 'new'
-    this._pcConfig = {
+    this.pcConfig = {
       iceServers: this.options.iceServers,
       iceTransportPolicy: isRelay ? 'relay' : 'all',
     }
@@ -118,22 +118,22 @@ class ConnectionBase {
 
   async _signaling(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      if (this._ws) {
+      if (this.ws) {
         return reject('WS-ALREADY-EXISTS')
       }
-      this._ws = new WebSocket(this.signalingUrl)
-      this._ws.onclose = async () => {
+      this.ws = new WebSocket(this.signalingUrl)
+      this.ws.onclose = async () => {
         if (!this.options.standalone) {
           await this._disconnect()
           this._callbacks.disconnect({ reason: 'WS-CLOSED' })
           return reject('WS-CLOSED')
         }
       }
-      this._ws.onerror = async () => {
+      this.ws.onerror = async () => {
         await this._disconnect()
         return reject('WS-CLOSED-WITH-ERROR')
       }
-      this._ws.onopen = () => {
+      this.ws.onopen = () => {
         const registerMessage: AyameRegisterMessage = {
           type: 'register',
           roomId: this.roomId,
@@ -149,8 +149,8 @@ class ConnectionBase {
           registerMessage.key = this.options.signalingKey
         }
         this._sendWs(registerMessage)
-        if (this._ws) {
-          this._ws.onmessage = async (event: MessageEvent) => {
+        if (this.ws) {
+          this.ws.onmessage = async (event: MessageEvent) => {
             try {
               if (typeof event.data !== 'string') {
                 return
@@ -165,7 +165,7 @@ class ConnectionBase {
                 this.authzMetadata = message.authzMetadata
                 if (Array.isArray(message.iceServers) && message.iceServers.length > 0) {
                   this._traceLog('iceServers=>', message.iceServers)
-                  this._pcConfig.iceServers = message.iceServers
+                  this.pcConfig.iceServers = message.iceServers
                 }
                 this._traceLog('isExistUser=>', message.isExistUser)
                 this._isExistUser = message.isExistUser
@@ -179,7 +179,7 @@ class ConnectionBase {
                 this._callbacks.disconnect({ reason: message.reason || 'REJECTED' })
                 return reject('REJECTED')
               } else if (message.type === 'offer') {
-                if (this._pc && this._pc.signalingState === 'have-local-offer') {
+                if (this.pc && this.pc.signalingState === 'have-local-offer') {
                   this._createPeerConnection()
                 }
                 this._setOffer(new RTCSessionDescription(message))
@@ -203,8 +203,8 @@ class ConnectionBase {
   }
 
   _createPeerConnection(): void {
-    this._traceLog('RTCConfiguration=>', this._pcConfig)
-    const pc = new RTCPeerConnection(this._pcConfig)
+    this._traceLog('RTCConfiguration=>', this.pcConfig)
+    const pc = new RTCPeerConnection(this.pcConfig)
     const audioTrack = this.stream?.getAudioTracks()[0]
     if (audioTrack && this.options.audio.direction !== 'recvonly') {
       // biome-ignore lint/style/noNonNullAssertion: <explanation>
@@ -306,11 +306,11 @@ class ConnectionBase {
       this._traceLog('signaling state changes:', pc.signalingState)
     }
     pc.ondatachannel = this._onDataChannel.bind(this)
-    if (!this._pc) {
-      this._pc = pc
+    if (!this.pc) {
+      this.pc = pc
       this._callbacks.open({ authzMetadata: this.authzMetadata })
     } else {
-      this._pc = pc
+      this.pc = pc
     }
   }
 
@@ -319,14 +319,14 @@ class ConnectionBase {
     options: RTCDataChannelInit | undefined,
   ): Promise<RTCDataChannel | null> {
     return new Promise<RTCDataChannel | null>((resolve, reject) => {
-      if (!this._pc) return reject('PeerConnection Does Not Ready')
+      if (!this.pc) return reject('PeerConnection Does Not Ready')
       if (this._isOffer) return reject('PeerConnection Has Local Offer')
       let dataChannel = this._findDataChannel(label)
       if (dataChannel) {
         return reject('DataChannel Already Exists!')
       }
       if (this._isExistUser) {
-        dataChannel = this._pc.createDataChannel(label, options)
+        dataChannel = this.pc.createDataChannel(label, options)
         dataChannel.onclose = (event: Record<string, any>) => {
           this._traceLog('datachannel onclosed=>', event)
           this._dataChannels = this._dataChannels.filter(
@@ -355,7 +355,7 @@ class ConnectionBase {
 
   _onDataChannel(event: RTCDataChannelEvent): void {
     this._traceLog('on data channel', event)
-    if (!this._pc) return
+    if (!this.pc) return
     const dataChannel = event.channel
     const label = event.channel.label
     if (!event.channel) return
@@ -387,18 +387,18 @@ class ConnectionBase {
   }
 
   async _sendOffer() {
-    if (!this._pc) {
+    if (!this.pc) {
       return
     }
     if (browser() === 'safari') {
       if (this.options.video.enabled && this.options.video.direction === 'sendrecv') {
-        this._pc.addTransceiver('video', { direction: 'recvonly' })
+        this.pc.addTransceiver('video', { direction: 'recvonly' })
       }
       if (this.options.audio.enabled && this.options.audio.direction === 'sendrecv') {
-        this._pc.addTransceiver('audio', { direction: 'recvonly' })
+        this.pc.addTransceiver('audio', { direction: 'recvonly' })
       }
     }
-    const offer: any = await this._pc.createOffer({
+    const offer: any = await this.pc.createOffer({
       offerToReceiveAudio:
         this.options.audio.enabled && this.options.audio.direction !== 'sendonly',
       offerToReceiveVideo:
@@ -414,9 +414,9 @@ class ConnectionBase {
       })
     }
     this._traceLog('create offer sdp, sdp=', offer.sdp)
-    await this._pc.setLocalDescription(offer)
-    if (this._pc.localDescription) {
-      this._sendSdp(this._pc.localDescription)
+    await this.pc.setLocalDescription(offer)
+    if (this.pc.localDescription) {
+      this._sendSdp(this.pc.localDescription)
     }
     this._isOffer = true
   }
@@ -426,14 +426,14 @@ class ConnectionBase {
   }
 
   async _createAnswer(): Promise<void> {
-    if (!this._pc) {
+    if (!this.pc) {
       return
     }
     try {
-      const answer = await this._pc.createAnswer()
+      const answer = await this.pc.createAnswer()
       this._traceLog('create answer sdp, sdp=', answer.sdp)
-      await this._pc.setLocalDescription(answer)
-      if (this._pc.localDescription) this._sendSdp(this._pc.localDescription)
+      await this.pc.setLocalDescription(answer)
+      if (this.pc.localDescription) this._sendSdp(this.pc.localDescription)
     } catch (error) {
       await this._disconnect()
       this._callbacks.disconnect({ reason: 'CREATE-ANSWER-ERROR', error: error })
@@ -441,19 +441,19 @@ class ConnectionBase {
   }
 
   async _setAnswer(sessionDescription: RTCSessionDescription): Promise<void> {
-    if (!this._pc) {
+    if (!this.pc) {
       return
     }
-    await this._pc.setRemoteDescription(sessionDescription)
+    await this.pc.setRemoteDescription(sessionDescription)
     this._traceLog('set answer sdp=', sessionDescription.sdp)
   }
 
   async _setOffer(sessionDescription: RTCSessionDescription): Promise<void> {
     try {
-      if (!this._pc) {
+      if (!this.pc) {
         return
       }
-      await this._pc.setRemoteDescription(sessionDescription)
+      await this.pc.setRemoteDescription(sessionDescription)
       this._traceLog('set offer sdp=', sessionDescription.sdp)
       await this._createAnswer()
     } catch (error) {
@@ -464,8 +464,8 @@ class ConnectionBase {
 
   async _addIceCandidate(candidate: RTCIceCandidate): Promise<void> {
     try {
-      if (this._pc) {
-        await this._pc.addIceCandidate(candidate)
+      if (this.pc) {
+        await this.pc.addIceCandidate(candidate)
       }
     } catch (_error) {
       this._traceLog('invalid ice candidate', candidate)
@@ -482,8 +482,8 @@ class ConnectionBase {
   }
 
   _sendWs(message: Record<string, any>) {
-    if (this._ws) {
-      this._ws.send(JSON.stringify(message))
+    if (this.ws) {
+      this.ws.send(JSON.stringify(message))
     }
   }
 
@@ -519,53 +519,53 @@ class ConnectionBase {
 
   async _closePeerConnection(): Promise<void> {
     return new Promise<void>((resolve) => {
-      if (browser() === 'safari' && this._pc) {
-        this._pc.oniceconnectionstatechange = () => {}
-        this._pc.close()
-        this._pc = null
+      if (browser() === 'safari' && this.pc) {
+        this.pc.oniceconnectionstatechange = () => {}
+        this.pc.close()
+        this.pc = null
         return resolve()
       }
-      if (!this._pc) return resolve()
-      if (this._pc && this._pc.signalingState === 'closed') {
-        this._pc = null
+      if (!this.pc) return resolve()
+      if (this.pc && this.pc.signalingState === 'closed') {
+        this.pc = null
         return resolve()
       }
-      this._pc.oniceconnectionstatechange = () => {}
+      this.pc.oniceconnectionstatechange = () => {}
       const timerId = setInterval(() => {
-        if (!this._pc) {
+        if (!this.pc) {
           clearInterval(timerId)
           return resolve()
         }
-        if (this._pc && this._pc.signalingState === 'closed') {
-          this._pc = null
+        if (this.pc && this.pc.signalingState === 'closed') {
+          this.pc = null
           clearInterval(timerId)
           return resolve()
         }
       }, 400)
-      this._pc.close()
+      this.pc.close()
     })
   }
 
   async _closeWebSocketConnection(): Promise<void> {
     return new Promise<void>((resolve) => {
-      if (!this._ws) return resolve()
-      if (this._ws && this._ws.readyState === 3) {
-        this._ws = null
+      if (!this.ws) return resolve()
+      if (this.ws && this.ws.readyState === 3) {
+        this.ws = null
         return resolve()
       }
-      this._ws.onclose = () => {}
+      this.ws.onclose = () => {}
       const timerId = setInterval(() => {
-        if (!this._ws) {
+        if (!this.ws) {
           clearInterval(timerId)
           return resolve()
         }
-        if (this._ws.readyState === 3) {
-          this._ws = null
+        if (this.ws.readyState === 3) {
+          this.ws = null
           clearInterval(timerId)
           return resolve()
         }
       }, 400)
-      this._ws?.close()
+      this.ws?.close()
     })
   }
 
