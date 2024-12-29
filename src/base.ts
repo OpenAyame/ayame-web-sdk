@@ -102,7 +102,7 @@ class ConnectionBase {
   protected async disconnect(): Promise<void> {
     // biome-ignore lint/complexity/noForEach: <explanation>
     this.dataChannels.forEach(async (dataChannel: RTCDataChannel) => {
-      await this._closeDataChannel(dataChannel)
+      await this.closeDataChannel(dataChannel)
     })
     await this.closePeerConnection()
     await this.closeWebSocketConnection()
@@ -145,7 +145,7 @@ class ConnectionBase {
         if (this.options.signalingKey !== null) {
           registerMessage.key = this.options.signalingKey
         }
-        this._sendWs(registerMessage)
+        this.sendWs(registerMessage)
         if (this.ws) {
           this.ws.onmessage = async (event: MessageEvent) => {
             try {
@@ -154,17 +154,17 @@ class ConnectionBase {
               }
               const message = JSON.parse(event.data)
               if (message.type === 'ping') {
-                this._sendWs({ type: 'pong' })
+                this.sendWs({ type: 'pong' })
               } else if (message.type === 'bye') {
                 this.callbacks.bye(event)
                 return resolve()
               } else if (message.type === 'accept') {
                 this.authzMetadata = message.authzMetadata
                 if (Array.isArray(message.iceServers) && message.iceServers.length > 0) {
-                  this._traceLog('iceServers=>', message.iceServers)
+                  this.traceLog('iceServers=>', message.iceServers)
                   this.pcConfig.iceServers = message.iceServers
                 }
-                this._traceLog('isExistUser=>', message.isExistUser)
+                this.traceLog('isExistUser=>', message.isExistUser)
                 this.isExistUser = message.isExistUser
                 this.createPeerConnection()
                 if (this.isExistUser === true) {
@@ -184,9 +184,9 @@ class ConnectionBase {
                 await this.setAnswer(new RTCSessionDescription(message))
               } else if (message.type === 'candidate') {
                 if (message.ice) {
-                  this._traceLog('Received ICE candidate ...', message.ice)
+                  this.traceLog('Received ICE candidate ...', message.ice)
                   const candidate = new RTCIceCandidate(message.ice)
-                  this._addIceCandidate(candidate)
+                  this.addIceCandidate(candidate)
                 }
               }
             } catch (error) {
@@ -199,62 +199,67 @@ class ConnectionBase {
     })
   }
 
+  private setCodecPreferences(
+    videoCapabilities: RTCRtpCapabilities,
+    transceiver: RTCRtpTransceiver,
+  ): void {
+    if (typeof transceiver.setCodecPreferences !== 'undefined') {
+      return
+    }
+    let videoCodecs: RTCRtpCodecCapability[] = []
+    if (this.options.video.codecMimeType) {
+      videoCodecs = getSelectedCodecs(this.options.video.codecMimeType, videoCapabilities.codecs)
+    }
+    this.traceLog('video codecs=', videoCodecs)
+    transceiver.setCodecPreferences(videoCodecs)
+  }
+
   private createPeerConnection(): void {
-    this._traceLog('RTCConfiguration=>', this.pcConfig)
+    this.traceLog('RTCConfiguration=>', this.pcConfig)
+
     const pc = new RTCPeerConnection(this.pcConfig)
+
     const audioTrack = this.stream?.getAudioTracks()[0]
-    if (audioTrack && this.options.audio.direction !== 'recvonly') {
-      // biome-ignore lint/style/noNonNullAssertion: <explanation>
-      pc.addTrack(audioTrack, this.stream!)
+    if (audioTrack && this.options.audio.direction !== 'recvonly' && this.stream) {
+      pc.addTrack(audioTrack, this.stream)
     } else if (this.options.audio.enabled) {
       pc.addTransceiver('audio', { direction: 'recvonly' })
     }
-    const videoTrack = this.stream?.getVideoTracks()[0]
-    if (videoTrack && this.options.video.direction !== 'recvonly') {
-      // biome-ignore lint/style/noNonNullAssertion: <explanation>
-      const videoSender = pc.addTrack(videoTrack, this.stream!)
-      const videoTransceiver = this._getTransceiver(pc, videoSender)
-      if (this.isVideoCodecSpecified() && videoTransceiver !== null) {
-        if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
+
+    // sendrecv / recvonly が指定されている場合は setCodecPreferences を試みる
+    if (this.stream && this.options.video.direction !== 'recvonly') {
+      // そもそも videoTracks が 0 じゃないかどうか確認する
+      const videoTracks = this.stream.getVideoTracks()
+      if (videoTracks.length > 0) {
+        const videoTrack = videoTracks[0]
+        const videoSender = pc.addTrack(videoTrack, this.stream)
+        const videoTransceiver = this.getTransceiver(pc, videoSender)
+        // videoCodecMimeType が指定されている場合は映像コーデックの設定を試みる
+        if (this.isVideoCodecSpecified() && videoTransceiver !== null) {
           const videoCapabilities = RTCRtpSender.getCapabilities('video')
           if (videoCapabilities) {
-            let videoCodecs: RTCRtpCodecCapability[] = []
-            if (this.options.video.codecMimeType) {
-              videoCodecs = getSelectedCodecs(
-                this.options.video.codecMimeType,
-                videoCapabilities.codecs,
-              )
-            }
-            this._traceLog('video codecs=', videoCodecs)
-            videoTransceiver.setCodecPreferences(videoCodecs)
+            this.setCodecPreferences(videoCapabilities, videoTransceiver)
           }
         }
       }
+      // 基本的に受信側はコーデック指定はしないほうがいい
+      // recvonly で video が有効な場合、
+      // コーデックが指定されていた場合は setCodecPreferences を試みる
     } else if (this.options.video.enabled) {
       const videoTransceiver = pc.addTransceiver('video', { direction: 'recvonly' })
-      // videoCodec が指定されている場合は映像コーデックの設定を試みる
+      // videoCodecMimeType が指定されている場合は映像コーデックの設定を試みる
       if (this.isVideoCodecSpecified()) {
-        // setCodecPreferences が利用できるかどうかを確認する
-        if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
-          const videoCapabilities = RTCRtpReceiver.getCapabilities('video')
-          if (videoCapabilities) {
-            let videoCodecs: RTCRtpCodecCapability[] = []
-            if (this.options.video.codecMimeType) {
-              videoCodecs = getSelectedCodecs(
-                this.options.video.codecMimeType,
-                videoCapabilities.codecs,
-              )
-            }
-            this._traceLog('video codecs=', videoCodecs)
-            videoTransceiver.setCodecPreferences(videoCodecs)
-          }
+        // コーデックを指定された場合は受信出来るかどうかの確認をする
+        const videoCapabilities = RTCRtpReceiver.getCapabilities('video')
+        if (videoCapabilities) {
+          this.setCodecPreferences(videoCapabilities, videoTransceiver)
         }
       }
     }
     const tracks: MediaStreamTrack[] = []
     pc.ontrack = (event: RTCTrackEvent) => {
       const callbackEvent: any = event
-      this._traceLog('peer.ontrack()', event)
+      this.traceLog('peer.ontrack()', event)
       if (browser() === 'safari') {
         tracks.push(event.track)
         const mediaStream = new MediaStream(tracks)
@@ -266,15 +271,15 @@ class ConnectionBase {
       this.callbacks.addstream(callbackEvent)
     }
     pc.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
-      this._traceLog('peer.onicecandidate()', event)
+      this.traceLog('peer.onicecandidate()', event)
       if (event.candidate) {
-        this._sendIceCandidate(event.candidate)
+        this.sendIceCandidate(event.candidate)
       } else {
-        this._traceLog('empty ice event', '')
+        this.traceLog('empty ice event', '')
       }
     }
     pc.oniceconnectionstatechange = async () => {
-      this._traceLog('ICE connection Status has changed to ', pc.iceConnectionState)
+      this.traceLog('ICE connection Status has changed to ', pc.iceConnectionState)
       if (this.connectionState !== pc.iceConnectionState) {
         this.connectionState = pc.iceConnectionState
         switch (this.connectionState) {
@@ -293,12 +298,12 @@ class ConnectionBase {
     pc.onconnectionstatechange = (_) => {
       if (pc.connectionState === 'connected') {
         if (this.options.standalone) {
-          this._sendWs({ type: 'connected' })
+          this.sendWs({ type: 'connected' })
         }
       }
     }
     pc.onsignalingstatechange = (_) => {
-      this._traceLog('signaling state changes:', pc.signalingState)
+      this.traceLog('signaling state changes:', pc.signalingState)
     }
     pc.ondatachannel = this._onDataChannel.bind(this)
     if (!this.pc) {
@@ -309,7 +314,7 @@ class ConnectionBase {
     }
   }
 
-  async _createDataChannel(
+  protected async createDataChannel(
     label: string,
     options: RTCDataChannelInit | undefined,
   ): Promise<RTCDataChannel | null> {
@@ -323,19 +328,19 @@ class ConnectionBase {
       if (this.isExistUser) {
         dataChannel = this.pc.createDataChannel(label, options)
         dataChannel.onclose = (event: Record<string, any>) => {
-          this._traceLog('datachannel onclosed=>', event)
+          this.traceLog('datachannel onclosed=>', event)
           this.dataChannels = this.dataChannels.filter((dataChannel) => dataChannel.label !== label)
         }
         dataChannel.onerror = (event: Record<string, any>) => {
-          this._traceLog('datachannel onerror=>', event)
+          this.traceLog('datachannel onerror=>', event)
           this.dataChannels = this.dataChannels.filter((dataChannel) => dataChannel.label !== label)
         }
         dataChannel.onmessage = (event: any) => {
-          this._traceLog('datachannel onmessage=>', event.data)
+          this.traceLog('datachannel onmessage=>', event.data)
           event.label = label
         }
         dataChannel.onopen = (event: Record<string, any>) => {
-          this._traceLog('datachannel onopen=>', event)
+          this.traceLog('datachannel onopen=>', event)
         }
         this.dataChannels.push(dataChannel)
         return resolve(dataChannel)
@@ -345,23 +350,23 @@ class ConnectionBase {
   }
 
   _onDataChannel(event: RTCDataChannelEvent): void {
-    this._traceLog('on data channel', event)
+    this.traceLog('on data channel', event)
     if (!this.pc) return
     const dataChannel = event.channel
     const label = event.channel.label
     if (!event.channel) return
     if (!label || label.length < 1) return
     dataChannel.onopen = async (event: Record<string, any>) => {
-      this._traceLog('datachannel onopen=>', event)
+      this.traceLog('datachannel onopen=>', event)
     }
     dataChannel.onclose = async (event: Record<string, any>) => {
-      this._traceLog('datachannel onclosed=>', event)
+      this.traceLog('datachannel onclosed=>', event)
     }
     dataChannel.onerror = async (event: Record<string, any>) => {
-      this._traceLog('datachannel onerror=>', event)
+      this.traceLog('datachannel onerror=>', event)
     }
     dataChannel.onmessage = (event: any) => {
-      this._traceLog('datachannel onmessage=>', event.data)
+      this.traceLog('datachannel onmessage=>', event.data)
       event.label = label
     }
     if (!this._findDataChannel(label)) {
@@ -395,10 +400,10 @@ class ConnectionBase {
       offerToReceiveVideo:
         this.options.video.enabled && this.options.video.direction !== 'sendonly',
     })
-    this._traceLog('create offer sdp, sdp=', offer.sdp)
+    this.traceLog('create offer sdp, sdp=', offer.sdp)
     await this.pc.setLocalDescription(offer)
     if (this.pc.localDescription) {
-      this._sendSdp(this.pc.localDescription)
+      this.sendSdp(this.pc.localDescription)
     }
     this.isOffer = true
   }
@@ -413,9 +418,9 @@ class ConnectionBase {
     }
     try {
       const answer = await this.pc.createAnswer()
-      this._traceLog('create answer sdp, sdp=', answer.sdp)
+      this.traceLog('create answer sdp, sdp=', answer.sdp)
       await this.pc.setLocalDescription(answer)
-      if (this.pc.localDescription) this._sendSdp(this.pc.localDescription)
+      if (this.pc.localDescription) this.sendSdp(this.pc.localDescription)
     } catch (error) {
       await this.disconnect()
       this.callbacks.disconnect({ reason: 'CREATE-ANSWER-ERROR', error: error })
@@ -427,7 +432,7 @@ class ConnectionBase {
       return
     }
     await this.pc.setRemoteDescription(sessionDescription)
-    this._traceLog('set answer sdp=', sessionDescription.sdp)
+    this.traceLog('set answer sdp=', sessionDescription.sdp)
   }
 
   private async setOffer(sessionDescription: RTCSessionDescription): Promise<void> {
@@ -436,7 +441,7 @@ class ConnectionBase {
         return
       }
       await this.pc.setRemoteDescription(sessionDescription)
-      this._traceLog('set offer sdp=', sessionDescription.sdp)
+      this.traceLog('set offer sdp=', sessionDescription.sdp)
       await this.createAnswer()
     } catch (error) {
       await this.disconnect()
@@ -444,32 +449,32 @@ class ConnectionBase {
     }
   }
 
-  async _addIceCandidate(candidate: RTCIceCandidate): Promise<void> {
+  private async addIceCandidate(candidate: RTCIceCandidate): Promise<void> {
     try {
       if (this.pc) {
         await this.pc.addIceCandidate(candidate)
       }
     } catch (_error) {
-      this._traceLog('invalid ice candidate', candidate)
+      this.traceLog('invalid ice candidate', candidate)
     }
   }
 
-  _sendIceCandidate(candidate: RTCIceCandidate): void {
+  private sendIceCandidate(candidate: RTCIceCandidate): void {
     const message = { type: 'candidate', ice: candidate }
-    this._sendWs(message)
+    this.sendWs(message)
   }
 
-  _sendSdp(sessionDescription: RTCSessionDescription): void {
-    this._sendWs(sessionDescription)
+  private sendSdp(sessionDescription: RTCSessionDescription): void {
+    this.sendWs(sessionDescription)
   }
 
-  _sendWs(message: Record<string, any>) {
+  private sendWs(message: Record<string, any>) {
     if (this.ws) {
       this.ws.send(JSON.stringify(message))
     }
   }
 
-  _getTransceiver(pc: RTCPeerConnection, track: any): RTCRtpTransceiver | null {
+  private getTransceiver(pc: RTCPeerConnection, track: any): RTCRtpTransceiver | null {
     let transceiver = null
     // biome-ignore lint/complexity/noForEach: <explanation>
     pc.getTransceivers().forEach((t: RTCRtpTransceiver) => {
@@ -485,7 +490,7 @@ class ConnectionBase {
     return this.dataChannels.find((channel) => channel.label === label)
   }
 
-  async _closeDataChannel(dataChannel: RTCDataChannel): Promise<void> {
+  protected async closeDataChannel(dataChannel: RTCDataChannel): Promise<void> {
     return new Promise((resolve) => {
       if (dataChannel.readyState === 'closed') return resolve()
       dataChannel.onclose = null
@@ -551,7 +556,7 @@ class ConnectionBase {
     })
   }
 
-  _traceLog(title: string, message?: Record<string, any> | string) {
+  protected traceLog(title: string, message?: Record<string, any> | string) {
     if (!this.debug) return
     traceLog(title, message)
   }

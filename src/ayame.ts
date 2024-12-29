@@ -45,7 +45,7 @@ class Connection extends ConnectionBase {
     metadataOption: MetadataOption | null = null,
   ): Promise<void> {
     if (this.ws || this.pc) {
-      this._traceLog('connection already exists')
+      this.traceLog('connection already exists')
       throw new Error('Connection Already Exists!')
     }
     /** @type {MediaStream|null} */
@@ -67,7 +67,7 @@ class Connection extends ConnectionBase {
     label: string,
     options: RTCDataChannelInit | undefined = undefined,
   ): Promise<RTCDataChannel | null> {
-    return await this._createDataChannel(label, options)
+    return await this.createDataChannel(label, options)
   }
 
   /**
@@ -75,10 +75,10 @@ class Connection extends ConnectionBase {
    * @param {string} label - 削除する dataChannel の label
    */
   public async removeDataChannel(label: string): Promise<void> {
-    this._traceLog('datachannel remove=>', label)
+    this.traceLog('datachannel remove=>', label)
     const dataChannel = this._findDataChannel(label)
     if (dataChannel && dataChannel.readyState === 'open') {
-      await this._closeDataChannel(dataChannel)
+      await this.closeDataChannel(dataChannel)
     } else {
       throw new Error('data channel is not exist or open')
     }
@@ -166,11 +166,12 @@ export const defaultOptions: ConnectionOptions = {
 
 /**
  * @desc Ayame Connection を生成します。
+ * @deprecated この関数は廃止予定です。代わりに createConnection を使用してください。
  * @param {string} signalingUrl シグナリングに用いる websocket url
  * @param {string} roomId 接続する roomId
  * @param {ConnectionOptions} [options=defaultOptions] 接続時のオプション
  * @param {boolean} [debug=false] デバッグログを出力するかどうかのフラグ
- * @param {boolean} [isRelay=false] iceTranspolicy を強制的に relay するかどうかのフラグ(デバッグ用)
+ * @param {boolean} [isRelay=false] iceTransportPolicy を強制的に relay するかどうかのフラグ(デバッグ用)
  * @return {Connection} 生成された Ayame Connection
  */
 export function connection(
@@ -180,6 +181,25 @@ export function connection(
   debug = false,
   isRelay = false,
 ): Connection {
+  return new Connection(signalingUrl, roomId, options, debug, isRelay)
+}
+
+/**
+ * @desc Ayame Connection を生成します。
+ * @param {string} signalingUrl シグナリングに用いる websocket url
+ * @param {string} roomId 接続する roomId
+ * @param {ConnectionOptions} [options=defaultOptions] 接続時のオプション
+ * @param {boolean} [debug=false] デバッグログを出力するかどうかのフラグ
+ * @param {boolean} [isRelay=false] iceTransportPolicy を強制的に relay するかどうかのフラグ(デバッグ用)
+ * @return {Connection} 生成された Ayame Connection
+ */
+export const createConnection = (
+  signalingUrl: string,
+  roomId: string,
+  options: ConnectionOptions = defaultOptions,
+  debug = false,
+  isRelay = false,
+): Connection => {
   return new Connection(signalingUrl, roomId, options, debug, isRelay)
 }
 
