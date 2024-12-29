@@ -311,7 +311,7 @@ class ConnectionBase {
     pc.onsignalingstatechange = (_) => {
       this.traceLog('signaling state changes:', pc.signalingState)
     }
-    pc.ondatachannel = this._onDataChannel.bind(this)
+    pc.ondatachannel = this.onDataChannel.bind(this)
     if (!this.pc) {
       this.pc = pc
       this.callbacks.open({ authzMetadata: this.authzMetadata })
@@ -355,7 +355,7 @@ class ConnectionBase {
     })
   }
 
-  _onDataChannel(event: RTCDataChannelEvent): void {
+  private onDataChannel(event: RTCDataChannelEvent): void {
     this.traceLog('on data channel', event)
     if (!this.pc) return
     const dataChannel = event.channel
