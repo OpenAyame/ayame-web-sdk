@@ -14,6 +14,7 @@
   "types": "dist/ayame.d.ts",
   "scripts": {
     "build": "vite build",
+    "dev": "vite --config examples/vite.config.mjs",
     "watch": "vite build --watch",
     "lint": "biome lint ./src",
     "fmt": "biome format --write ./src",
