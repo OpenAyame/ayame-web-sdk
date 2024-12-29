@@ -23,7 +23,9 @@ export interface ConnectionAudioOption {
  *
  * - VP8
  * - VP9
+ * - AV1
  * - H264
+ * - H265
  */
 export type VideoCodecOption = 'VP8' | 'VP9' | 'AV1' | 'H264' | 'H265'
 
