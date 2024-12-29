@@ -61,37 +61,6 @@ export function traceLog(title: string, value?: string | Record<string, any>): v
   }
 }
 
-// 対応
-export const getAvailableVideoCodecs = (): Array<any> => {
-  if (typeof RTCRtpSender === 'undefined' || typeof RTCRtpSender.getCapabilities === 'function') {
-    return []
-  }
-
-  const codecs = RTCRtpSender.getCapabilities('video')?.codecs
-  if (!codecs) {
-    return []
-  }
-
-  return (
-    codecs
-      .filter((c) => {
-        const videoCodecType = c.mimeType.toLowerCase()
-
-        // rtx/red/ulpfec はフィルターとして削除する
-        if (
-          videoCodecType === 'video/rtx' ||
-          videoCodecType === 'video/red' ||
-          videoCodecType === 'video/ulpfec'
-        ) {
-          return false
-        }
-
-        return true
-      })
-      // mimeType が既に存在している場合は重複を削除する
-      .filter((c, index, self) => index === self.findIndex((t) => t.mimeType === c.mimeType))
-  )
-}
 
 // 指定された codec にマッチする codec のリストを返す
 // リストなのはプロファイルが複数合ったり、 RTX, RED, ULPFEC などの codec も含めるため
@@ -119,4 +88,43 @@ export const getSelectedCodecs = (
     return false
   })
   return filteredCodecs
+}
+
+// 利用者向けのライブラリ
+export const getAvailableVideoCodecs = (): string[] => {
+  if (typeof RTCRtpSender === 'undefined') {
+    return []
+  }
+
+  if (typeof RTCRtpSender.getCapabilities !== 'function') {
+    return []
+  }
+
+  const codecs = RTCRtpSender.getCapabilities('video')?.codecs
+  if (!codecs) {
+    return []
+  }
+
+  return (
+    codecs
+      .filter((c) => {
+        // mimeType は insensitive-case なので lowerCase に変換する
+        const videoCodecType = c.mimeType.toLowerCase()
+
+        // rtx/red/ulpfec はフィルターとして削除する
+        if (
+          videoCodecType === 'video/rtx' ||
+          videoCodecType === 'video/red' ||
+          videoCodecType === 'video/ulpfec'
+        ) {
+          return false
+        }
+
+        return true
+      })
+      // mimeType が既に存在している場合は重複を削除する
+      .filter((c, index, self) => index === self.findIndex((t) => t.mimeType === c.mimeType))
+      .map((c) => c.mimeType)
+      .sort()
+  )
 }

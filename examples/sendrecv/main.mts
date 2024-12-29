@@ -1,4 +1,4 @@
-import { connection, defaultOptions } from '@open-ayame/ayame-web-sdk'
+import { connection, defaultOptions, getAvailableVideoCodecs } from '@open-ayame/ayame-web-sdk'
 import type { Connection, ConnectionOptions } from '@open-ayame/ayame-web-sdk'
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // getAvailableVideoCodecs で取得したコーデックをセレクトボックスに設定する
-  // getAvailableVideoCodecs は Ayame.getAvailableVideoCodecs で呼べるようにしたい
   const availableVideoCodecs = getAvailableVideoCodecs()
   for (const codec of availableVideoCodecs) {
     const option = document.createElement('option')
@@ -95,42 +94,3 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('disconnect')
   })
 })
-
-// 対応
-export const getAvailableVideoCodecs = (): string[] => {
-  if (typeof RTCRtpSender === 'undefined') {
-    return []
-  }
-
-  if (typeof RTCRtpSender.getCapabilities !== 'function') {
-    return []
-  }
-
-  const codecs = RTCRtpSender.getCapabilities('video')?.codecs
-  if (!codecs) {
-    return []
-  }
-
-  return (
-    codecs
-      .filter((c) => {
-        // mimeType は insensitive-case なので lowerCase に変換する
-        const videoCodecType = c.mimeType.toLowerCase()
-
-        // rtx/red/ulpfec はフィルターとして削除する
-        if (
-          videoCodecType === 'video/rtx' ||
-          videoCodecType === 'video/red' ||
-          videoCodecType === 'video/ulpfec'
-        ) {
-          return false
-        }
-
-        return true
-      })
-      // mimeType が既に存在している場合は重複を削除する
-      .filter((c, index, self) => index === self.findIndex((t) => t.mimeType === c.mimeType))
-      .map((c) => c.mimeType)
-      .sort()
-  )
-}
