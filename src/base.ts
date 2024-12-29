@@ -116,7 +116,7 @@ class ConnectionBase {
     this.connectionState = 'new'
   }
 
-  async _signaling(): Promise<void> {
+  protected async signaling(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       if (this.ws) {
         return reject('WS-ALREADY-EXISTS')

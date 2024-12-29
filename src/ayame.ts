@@ -54,7 +54,7 @@ class Connection extends ConnectionBase {
       /** @type {any} */
       this.authnMetadata = metadataOption.authnMetadata
     }
-    await this._signaling()
+    await this.signaling()
   }
 
   /**
