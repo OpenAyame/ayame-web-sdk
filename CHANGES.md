@@ -11,6 +11,8 @@
 
 ## develop
 
+- [CHANGE] ConnectionVideoOption の codec を codecMimeType へ変更する
+  - @voluntas
 - [ADD] standalone モードに対応する
   - options に standalone を追加する
   - standalone モード時は、接続完了時に ayame に type: connected を送信する

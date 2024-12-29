@@ -1,5 +1,3 @@
-import type { VideoCodecOption } from './types'
-
 /**
  * @ignore
  */
@@ -63,76 +61,62 @@ export function traceLog(title: string, value?: string | Record<string, any>): v
   }
 }
 
-// Stack Overflow より引用: https://stackoverflow.com/a/52760103
-// https://stackoverflow.com/questions/52738290/how-to-remove-video-codecs-in-webrtc-sdp
-/** @private */
-export function getVideoCodecsFromString(codec: VideoCodecOption, codecs: Array<any>): Array<any> {
-  let mimeType = ''
-  if (codec === 'VP8') {
-    mimeType = 'video/VP8'
-  } else if (codec === 'VP9') {
-    mimeType = 'video/VP9'
-  } else if (codec === 'H264') {
-    mimeType = 'video/H264'
-  } else {
-    mimeType = `video/${codec}`
+// 対応
+export const getAvailableVideoCodecs = (): Array<any> => {
+  if (typeof RTCRtpSender === 'undefined' || typeof RTCRtpSender.getCapabilities === 'function') {
+    return []
   }
-  const filteredCodecs: Array<any> = codecs.filter((c) => c.mimeType === mimeType)
-  if (filteredCodecs.length < 1) {
-    throw new Error('invalid video codec type')
+
+  const codecs = RTCRtpSender.getCapabilities('video')?.codecs
+  if (!codecs) {
+    return []
   }
-  return filteredCodecs
+
+  return (
+    codecs
+      .filter((c) => {
+        const videoCodecType = c.mimeType.toLowerCase()
+
+        // rtx/red/ulpfec はフィルターとして削除する
+        if (
+          videoCodecType === 'video/rtx' ||
+          videoCodecType === 'video/red' ||
+          videoCodecType === 'video/ulpfec'
+        ) {
+          return false
+        }
+
+        return true
+      })
+      // mimeType が既に存在している場合は重複を削除する
+      .filter((c, index, self) => index === self.findIndex((t) => t.mimeType === c.mimeType))
+  )
 }
 
-/**
- * @ignore
- */
-export function removeCodec(sdp: string, codec: VideoCodecOption): string {
-  function internalFunc(tmpSdp: string): string {
-    // eslint-disable-next-line no-useless-escape
-    const codecre = new RegExp(`(a=rtpmap:(\\d*) ${codec}/90000\\r\\n)`)
-    const rtpmaps = tmpSdp.match(codecre)
-    if (rtpmaps == null || rtpmaps.length <= 2) {
-      return sdp
-    }
-    const rtpmap = rtpmaps[2]
-    let modsdp = tmpSdp.replace(codecre, '')
+// 指定された codec にマッチする codec のリストを返す
+// リストなのはプロファイルが複数合ったり、 RTX, RED, ULPFEC などの codec も含めるため
+export const getSelectedCodecs = (
+  selectedCodecMimeType: string,
+  codecs: RTCRtpCodec[],
+): RTCRtpCodecCapability[] => {
+  const filteredCodecs = codecs.filter((c) => {
+    const codecMimeType = c.mimeType.toLowerCase()
 
-    const rtcpre = new RegExp(`(a=rtcp-fb:${rtpmap}.*\r\n)`, 'g')
-    modsdp = modsdp.replace(rtcpre, '')
-
-    const fmtpre = new RegExp(`(a=fmtp:${rtpmap}.*\r\n)`, 'g')
-    modsdp = modsdp.replace(fmtpre, '')
-
-    const aptpre = new RegExp(`(a=fmtp:(\\d*) apt=${rtpmap}\\r\\n)`)
-    const aptmaps = modsdp.match(aptpre)
-    let fmtpmap = ''
-    if (aptmaps != null && aptmaps.length >= 3) {
-      fmtpmap = aptmaps[2]
-      modsdp = modsdp.replace(aptpre, '')
-
-      const rtppre = new RegExp(`(a=rtpmap:${fmtpmap}.*\r\n)`, 'g')
-      modsdp = modsdp.replace(rtppre, '')
+    // 指定された codec はマッチしたら true
+    if (codecMimeType === selectedCodecMimeType.toLowerCase()) {
+      return true
     }
 
-    const videore = /(m=video.*\r\n)/
-    const videolines = modsdp.match(videore)
-    if (videolines != null) {
-      //If many m=video are found in SDP, this program doesn't work.
-      const videoline = videolines[0].substring(0, videolines[0].length - 2)
-      const videoelems = videoline.split(' ')
-      let modvideoline = videoelems[0]
-      videoelems.forEach((videoelem, index) => {
-        if (index === 0) return
-        if (videoelem === rtpmap || videoelem === fmtpmap) {
-          return
-        }
-        modvideoline += ` ${videoelem}`
-      })
-      modvideoline += '\r\n'
-      modsdp = modsdp.replace(videore, modvideoline)
+    // rtx, red, ulpfec は常に true にする
+    if (
+      codecMimeType === 'video/rtx' ||
+      codecMimeType === 'video/red' ||
+      codecMimeType === 'video/ulpfec'
+    ) {
+      return true
     }
-    return internalFunc(modsdp)
-  }
-  return internalFunc(sdp)
+
+    return false
+  })
+  return filteredCodecs
 }

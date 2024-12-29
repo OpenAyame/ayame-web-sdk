@@ -18,25 +18,13 @@ export interface ConnectionAudioOption {
 }
 
 /**
- * @public
- * @typedef {string} VideoCodecOption - ビデオ接続のコーデックに関するオプションです。
- *
- * - VP8
- * - VP9
- * - AV1
- * - H264
- * - H265
- */
-export type VideoCodecOption = 'VP8' | 'VP9' | 'AV1' | 'H264' | 'H265'
-
-/**
  * @typedef {Object} ConnectionVideoOption - ビデオ接続に関するオプションです。
- * @property {VideoCodecOption} codec コーデックの設定
+ * @property {string} codecMimeType コーデックの MIME type
  * @property {ConnectionDirection} direction 送受信方向
  * @property {boolean} enabled 有効かどうかのフラグ
  */
 export interface ConnectionVideoOption {
-  codec?: VideoCodecOption
+  codecMimeType?: string
   direction: ConnectionDirection
   enabled: boolean
 }

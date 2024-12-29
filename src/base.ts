@@ -1,6 +1,6 @@
-import type { ConnectionOptions, VideoCodecOption } from './types'
+import type { ConnectionOptions } from './types'
 /* @private */
-import { browser, getVideoCodecsFromString, removeCodec, traceLog } from './utils'
+import { browser, getSelectedCodecs, traceLog } from './utils'
 
 /**
  * @ignore
@@ -30,7 +30,6 @@ class ConnectionBase {
   protected ws: WebSocket | null
   protected pc: RTCPeerConnection | null
   protected _callbacks: any
-  protected _removeCodec: boolean
   protected _isOffer: boolean
   protected _isExistUser: boolean
   protected _dataChannels: Array<RTCDataChannel>
@@ -75,7 +74,6 @@ class ConnectionBase {
     this.roomId = roomId
     this.signalingUrl = signalingUrl
     this.options = options
-    this._removeCodec = false
     this.stream = null
     this.remoteStream = null
     this.pc = null
@@ -109,7 +107,6 @@ class ConnectionBase {
     await this._closePeerConnection()
     await this._closeWebSocketConnection()
     this.authzMetadata = null
-    this._removeCodec = false
     this._isOffer = false
     this._isExistUser = false
     this._dataChannels = []
@@ -217,42 +214,40 @@ class ConnectionBase {
       // biome-ignore lint/style/noNonNullAssertion: <explanation>
       const videoSender = pc.addTrack(videoTrack, this.stream!)
       const videoTransceiver = this._getTransceiver(pc, videoSender)
-      if (this._isVideoCodecSpecified() && videoTransceiver !== null) {
+      if (this.isVideoCodecSpecified() && videoTransceiver !== null) {
         if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
           const videoCapabilities = RTCRtpSender.getCapabilities('video')
           if (videoCapabilities) {
-            let videoCodecs = []
-            if (this.options.video.codec) {
-              videoCodecs = getVideoCodecsFromString(
-                this.options.video.codec,
+            let videoCodecs: RTCRtpCodecCapability[] = []
+            if (this.options.video.codecMimeType) {
+              videoCodecs = getSelectedCodecs(
+                this.options.video.codecMimeType,
                 videoCapabilities.codecs,
               )
             }
             this._traceLog('video codecs=', videoCodecs)
             videoTransceiver.setCodecPreferences(videoCodecs)
           }
-        } else {
-          this._removeCodec = true
         }
       }
     } else if (this.options.video.enabled) {
       const videoTransceiver = pc.addTransceiver('video', { direction: 'recvonly' })
-      if (this._isVideoCodecSpecified()) {
+      // videoCodec が指定されている場合は映像コーデックの設定を試みる
+      if (this.isVideoCodecSpecified()) {
+        // setCodecPreferences が利用できるかどうかを確認する
         if (typeof videoTransceiver.setCodecPreferences !== 'undefined') {
-          const videoCapabilities = RTCRtpSender.getCapabilities('video')
+          const videoCapabilities = RTCRtpReceiver.getCapabilities('video')
           if (videoCapabilities) {
-            let videoCodecs = []
-            if (this.options.video.codec) {
-              videoCodecs = getVideoCodecsFromString(
-                this.options.video.codec,
+            let videoCodecs: RTCRtpCodecCapability[] = []
+            if (this.options.video.codecMimeType) {
+              videoCodecs = getSelectedCodecs(
+                this.options.video.codecMimeType,
                 videoCapabilities.codecs,
               )
             }
             this._traceLog('video codecs=', videoCodecs)
             videoTransceiver.setCodecPreferences(videoCodecs)
           }
-        } else {
-          this._removeCodec = true
         }
       }
     }
@@ -404,15 +399,6 @@ class ConnectionBase {
       offerToReceiveVideo:
         this.options.video.enabled && this.options.video.direction !== 'sendonly',
     })
-    if (this._removeCodec && this.options.video.codec) {
-      const codecs: Array<VideoCodecOption> = ['VP8', 'VP9', 'H264']
-      // biome-ignore lint/complexity/noForEach: <explanation>
-      codecs.forEach((codec: VideoCodecOption) => {
-        if (this.options.video.codec !== codec) {
-          offer.sdp = removeCodec(offer.sdp, codec)
-        }
-      })
-    }
     this._traceLog('create offer sdp, sdp=', offer.sdp)
     await this.pc.setLocalDescription(offer)
     if (this.pc.localDescription) {
@@ -421,8 +407,8 @@ class ConnectionBase {
     this._isOffer = true
   }
 
-  _isVideoCodecSpecified(): boolean {
-    return this.options.video.enabled && this.options.video.codec !== null
+  private isVideoCodecSpecified(): boolean {
+    return this.options.video.enabled && this.options.video.codecMimeType !== undefined
   }
 
   async _createAnswer(): Promise<void> {
