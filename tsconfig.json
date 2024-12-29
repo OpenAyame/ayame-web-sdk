@@ -18,8 +18,8 @@
       "@/*": ["src/*"]
     },
     "lib": ["dom", "esnext", "scripthost"],
-    "declarationDir": ".",
-    "outDir": "dist",
+    "declarationDir": "./dist",
+    "outDir": "./dist",
     "rootDir": "src"
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts"],

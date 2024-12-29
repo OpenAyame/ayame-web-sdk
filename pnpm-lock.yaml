@@ -36,6 +36,12 @@ importers:
         specifier: 4.4.0
         version: 4.4.0(@types/node@22.10.2)(rollup@4.29.1)(typescript@5.7.2)(vite@6.0.6(@types/node@22.10.2)(terser@5.37.0)(yaml@2.6.1))
 
+  examples:
+    dependencies:
+      '@open-ayame/ayame-web-sdk':
+        specifier: workspace:*
+        version: link:..
+
 packages:
 
   '@babel/helper-string-parser@7.25.9':

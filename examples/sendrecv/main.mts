@@ -1,4 +1,5 @@
-import Ayame from '@open-ayame/ayame-web-sdk'
+import { connection } from '@open-ayame/ayame-web-sdk'
+import type Connection from '@open-ayame/ayame-web-sdk'
 
 document.addEventListener('DOMContentLoaded', () => {
   const signalingUrl = import.meta.env.VITE_AYAME_SIGNALING_URL
@@ -72,14 +73,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   videoCodecsElement.appendChild(container)
 
-  const conn: Ayame.Connection | null = null
+  const conn: Connection | null = null
 
   // connect ボタンを押す
   const connectButton = document.getElementById('connectButton')
   if (!connectButton) {
     return
   }
-  connectButton.addEventListener('click', () => {
+  connectButton.addEventListener('click', async () => {
     // 選択されたコーデックリストを取得する
     const selectedVideoCodecs = Array.from(
       videoCodecsElement.querySelectorAll('input[name="videoCodecs"]:checked'),
@@ -91,8 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
       selectedVideoCodecs.some((selectedCodec) => selectedCodec.mimeType === codec.mimeType),
     )
 
-    const conn = Ayame.connection(signalingUrl, roomId)
-
+    const conn = connection(signalingUrl, roomId)
     await conn.connect(null)
 
     const pc = new RTCPeerConnection()
