@@ -29,12 +29,12 @@ class ConnectionBase {
   authzMetadata: any
   protected ws: WebSocket | null
   protected pc: RTCPeerConnection | null
-  protected _callbacks: any
+  protected callbacks: any
   protected _isOffer: boolean
   protected _isExistUser: boolean
-  protected _dataChannels: Array<RTCDataChannel>
+  protected _dataChannels: RTCDataChannel[]
   protected pcConfig: {
-    iceServers: Array<RTCIceServer>
+    iceServers: RTCIceServer[]
     iceTransportPolicy: RTCIceTransportPolicy
   }
 
@@ -44,8 +44,8 @@ class ConnectionBase {
 
   // biome-ignore lint/complexity/noBannedTypes: <explanation>
   on(kind: string, callback: Function): void {
-    if (kind in this._callbacks) {
-      this._callbacks[kind] = callback
+    if (kind in this.callbacks) {
+      this.callbacks[kind] = callback
     }
   }
 
@@ -88,7 +88,7 @@ class ConnectionBase {
       iceServers: this.options.iceServers,
       iceTransportPolicy: isRelay ? 'relay' : 'all',
     }
-    this._callbacks = {
+    this.callbacks = {
       open: () => {},
       connect: () => {},
       disconnect: () => {},
@@ -122,7 +122,7 @@ class ConnectionBase {
       this.ws.onclose = async () => {
         if (!this.options.standalone) {
           await this._disconnect()
-          this._callbacks.disconnect({ reason: 'WS-CLOSED' })
+          this.callbacks.disconnect({ reason: 'WS-CLOSED' })
           return reject('WS-CLOSED')
         }
       }
@@ -156,7 +156,7 @@ class ConnectionBase {
               if (message.type === 'ping') {
                 this._sendWs({ type: 'pong' })
               } else if (message.type === 'bye') {
-                this._callbacks.bye(event)
+                this.callbacks.bye(event)
                 return resolve()
               } else if (message.type === 'accept') {
                 this.authzMetadata = message.authzMetadata
@@ -173,7 +173,7 @@ class ConnectionBase {
                 return resolve()
               } else if (message.type === 'reject') {
                 await this._disconnect()
-                this._callbacks.disconnect({ reason: message.reason || 'REJECTED' })
+                this.callbacks.disconnect({ reason: message.reason || 'REJECTED' })
                 return reject('REJECTED')
               } else if (message.type === 'offer') {
                 if (this.pc && this.pc.signalingState === 'have-local-offer') {
@@ -191,7 +191,7 @@ class ConnectionBase {
               }
             } catch (error) {
               await this._disconnect()
-              this._callbacks.disconnect({ reason: 'SIGNALING-ERROR', error: error })
+              this.callbacks.disconnect({ reason: 'SIGNALING-ERROR', error: error })
             }
           }
         }
@@ -251,7 +251,7 @@ class ConnectionBase {
         }
       }
     }
-    const tracks: Array<MediaStreamTrack> = []
+    const tracks: MediaStreamTrack[] = []
     pc.ontrack = (event: RTCTrackEvent) => {
       const callbackEvent: any = event
       this._traceLog('peer.ontrack()', event)
@@ -263,7 +263,7 @@ class ConnectionBase {
         this.remoteStream = event.streams[0]
       }
       callbackEvent.stream = this.remoteStream
-      this._callbacks.addstream(callbackEvent)
+      this.callbacks.addstream(callbackEvent)
     }
     pc.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
       this._traceLog('peer.onicecandidate()', event)
@@ -280,12 +280,12 @@ class ConnectionBase {
         switch (this.connectionState) {
           case 'connected':
             this._isOffer = false
-            this._callbacks.connect()
+            this.callbacks.connect()
             break
           case 'disconnected':
           case 'failed':
             await this._disconnect()
-            this._callbacks.disconnect({ reason: 'ICE-CONNECTION-STATE-FAILED' })
+            this.callbacks.disconnect({ reason: 'ICE-CONNECTION-STATE-FAILED' })
             break
         }
       }
@@ -303,7 +303,7 @@ class ConnectionBase {
     pc.ondatachannel = this._onDataChannel.bind(this)
     if (!this.pc) {
       this.pc = pc
-      this._callbacks.open({ authzMetadata: this.authzMetadata })
+      this.callbacks.open({ authzMetadata: this.authzMetadata })
     } else {
       this.pc = pc
     }
@@ -378,7 +378,7 @@ class ConnectionBase {
         return channel
       })
     }
-    this._callbacks.datachannel(dataChannel)
+    this.callbacks.datachannel(dataChannel)
   }
 
   async _sendOffer() {
@@ -422,7 +422,7 @@ class ConnectionBase {
       if (this.pc.localDescription) this._sendSdp(this.pc.localDescription)
     } catch (error) {
       await this._disconnect()
-      this._callbacks.disconnect({ reason: 'CREATE-ANSWER-ERROR', error: error })
+      this.callbacks.disconnect({ reason: 'CREATE-ANSWER-ERROR', error: error })
     }
   }
 
@@ -444,7 +444,7 @@ class ConnectionBase {
       await this._createAnswer()
     } catch (error) {
       await this._disconnect()
-      this._callbacks.disconnect({ reason: 'SET-OFFER-ERROR', error: error })
+      this.callbacks.disconnect({ reason: 'SET-OFFER-ERROR', error: error })
     }
   }
 

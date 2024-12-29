@@ -41,7 +41,7 @@ export interface ConnectionOptions {
   audio: ConnectionAudioOption
   video: ConnectionVideoOption
   clientId: string
-  iceServers: Array<RTCIceServer>
+  iceServers: RTCIceServer[]
   signalingKey?: string
   standalone?: boolean
 }

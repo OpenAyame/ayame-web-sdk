@@ -89,6 +89,7 @@ export const getSelectedCodecs = (
   return filteredCodecs
 }
 
+// https://developer.mozilla.org/en-US/docs/Web/API/RTCRtpTransceiver/direction
 export enum Direction {
   Sendrecv = 'sendrecv',
   Recvonly = 'recvonly',
