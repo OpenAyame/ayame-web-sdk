@@ -23,9 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // チェックボックスを取得する
   const audioElement = document.getElementById('audio') as HTMLInputElement
-  const audioDirectionElement = document.getElementById(
-    'audio-direction',
-  ) as HTMLSelectElement
+  const audioDirectionElement = document.getElementById('audio-direction') as HTMLSelectElement
+  const audioDirection = audioDirectionElement.value as Direction
 
   const audioCodecMimeTypeElement = document.getElementById(
     'audio-codec-mime-type',
@@ -34,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return
   }
 
-  const availableAudioCodecs = getAvailableCodecs('audio', 'sender')
+  const availableAudioCodecs = getAvailableCodecs('audio', senderOrReceiver(audioDirection))
   for (const codec of availableAudioCodecs) {
     const option = document.createElement('option')
     option.value = codec
@@ -44,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const videoElement = document.getElementById('video') as HTMLInputElement
   const videoDirectionElement = document.getElementById('video-direction') as HTMLSelectElement
+  const videoDirection = videoDirectionElement.value as Direction
   const videoCodecMimeTypeElement = document.getElementById(
     'video-codec-mime-type',
   ) as HTMLSelectElement
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // getAvailableVideoCodecs で取得したコーデックをセレクトボックスに設定する
   // 送受信なので Direction.Sendrecv を渡す
-  const availableVideoCodecs = getAvailableCodecs('video', 'sender')
+  const availableVideoCodecs = getAvailableCodecs('video', senderOrReceiver(videoDirection))
   for (const codec of availableVideoCodecs) {
     const option = document.createElement('option')
     option.value = codec
@@ -167,3 +167,16 @@ document.addEventListener('DOMContentLoaded', () => {
     conn = null
   })
 })
+
+const senderOrReceiver = (direction: Direction) => {
+  switch (direction) {
+    case 'sendrecv':
+      return 'sender'
+    case 'sendonly':
+      return 'sender'
+    case 'recvonly':
+      return 'receiver'
+    default:
+      throw new Error(`Invalid direction: ${direction}`)
+  }
+}
