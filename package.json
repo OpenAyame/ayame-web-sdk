@@ -1,7 +1,10 @@
 {
   "name": "@open-ayame/ayame-web-sdk",
-  "version": "2024.1.0-canary.0",
+  "version": "2025.1.0-canary.0",
   "description": "WebRTC Signaling Server Ayame Web SDK",
+  "author": "Shiguredo Inc.",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/OpenAyame/ayame-web-sdk",
   "type": "module",
   "module": "dist/ayame.mjs",
   "exports": {
@@ -11,12 +14,13 @@
       "require": "./dist/ayame.mjs"
     }
   },
-  "types": "dist/ayame.d.ts",
   "scripts": {
     "build": "vite build",
+    "dev": "vite --config devtools/vite.config.mjs",
     "watch": "vite build --watch",
     "lint": "biome lint ./src",
     "fmt": "biome format --write ./src",
+    "check": "tsc --noEmit",
     "doc": "typedoc",
     "deploy:docs": "pnpx gh-pages -d apidoc"
   },
@@ -30,15 +34,12 @@
   "directories": {
     "doc": "docs/"
   },
-  "homepage": "https://github.com/OpenAyame/ayame-web-sdk",
-  "author": "Shiguredo Inc.",
-  "license": "Apache-2.0",
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
+    "@playwright/test": "1.49.1",
     "@types/node": "22.10.2",
     "@types/webrtc": "0.0.44",
     "gh-pages": "6.2.0",
-    "playwright": "1.49.1",
     "typedoc": "0.27.6",
     "typescript": "5.7.2",
     "vite": "6.0.6",

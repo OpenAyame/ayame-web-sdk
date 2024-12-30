@@ -23,6 +23,9 @@ jobs:
       - run: pnpm run lint
         env:
           CI: true
+      - run: pnpm run check
+        env:
+          CI: true
       - run: pnpm run build
         env:
           CI: true
