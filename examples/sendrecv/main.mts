@@ -1,3 +1,5 @@
+import queryString from 'query-string'
+
 import {
   Direction,
   createConnection,
@@ -41,6 +43,19 @@ document.addEventListener('DOMContentLoaded', () => {
     option.value = codec
     option.textContent = codec
     videoCodecMimeTypeElement.appendChild(option)
+  }
+
+  // qs の videoCodecMimeType の値が select の value でマッチするモノがあったら切り替える
+  const videoCodecMimeType = queryString.parse(location.search).videoCodecMimeType
+  if (videoCodecMimeType && typeof videoCodecMimeType === 'string') {
+    const videoCodecMimeTypeElement = document.getElementById(
+      'video-codec-mime-type',
+    ) as HTMLSelectElement
+    if (!videoCodecMimeTypeElement) {
+      return
+    }
+    // セレクトボックスの値を更新
+    videoCodecMimeTypeElement.value = videoCodecMimeType
   }
 
   let conn: Connection | null = null

@@ -7,5 +7,8 @@
   },
   "dependencies": {
     "@open-ayame/ayame-web-sdk": "workspace:*"
+  },
+  "devDependencies": {
+    "query-string": "9.1.1"
   }
 }
