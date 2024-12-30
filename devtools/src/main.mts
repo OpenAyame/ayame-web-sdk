@@ -3,28 +3,31 @@ import type { Connection, ConnectionOptions, Direction } from '@open-ayame/ayame
 import queryString from 'query-string'
 
 document.addEventListener('DOMContentLoaded', () => {
-  const signalingUrl = import.meta.env.VITE_AYAME_SIGNALING_URL
-  const roomId = import.meta.env.VITE_AYAME_ROOM_ID
-  const signalingKey = import.meta.env.VITE_AYAME_SIGNALING_KEY
+  let signalingUrl = import.meta.env.VITE_AYAME_SIGNALING_URL
+  let roomId = import.meta.env.VITE_AYAME_ROOM_ID
+  let signalingKey = import.meta.env.VITE_AYAME_SIGNALING_KEY
 
-  // ここで roomId を設定する
-  const roomIdElement = document.getElementById('room-id') as HTMLInputElement
-  if (!roomIdElement) {
-    return
+  const queryParams = queryString.parse(location.search)
+
+  if (queryParams.signalingUrl && typeof queryParams.signalingUrl === 'string') {
+    signalingUrl = queryParams.signalingUrl as string
   }
-  roomIdElement.value = roomId
-
-  // ここで clientId を設定する
-  const clientIdElement = document.getElementById('client-id') as HTMLInputElement
-  if (!clientIdElement) {
-    return
+  if (queryParams.roomId && typeof queryParams.roomId === 'string') {
+    roomId = queryParams.roomId as string
   }
-  clientIdElement.value = crypto.randomUUID()
+  if (queryParams.signalingKey && typeof queryParams.signalingKey === 'string') {
+    signalingKey = queryParams.signalingKey as string
+  }
 
-  // チェックボックスを取得する
-  const audioElement = document.getElementById('audio') as HTMLInputElement
-  const audioDirectionElement = document.getElementById('audio-direction') as HTMLSelectElement
-  const audioDirection = audioDirectionElement.value as Direction
+  setSignalingUrl(signalingUrl)
+  setRoomId(roomId)
+  setClientId(crypto.randomUUID())
+  setSignalingKey(signalingKey)
+
+  if (queryParams.audioDirection && typeof queryParams.audioDirection === 'string') {
+    setAudioDirection(queryParams.audioDirection as Direction)
+  }
+  const audioDirection = getAudioDirection()
 
   const audioCodecMimeTypeElement = document.getElementById(
     'audio-codec-mime-type',
@@ -41,9 +44,28 @@ document.addEventListener('DOMContentLoaded', () => {
     audioCodecMimeTypeElement.appendChild(option)
   }
 
-  const videoElement = document.getElementById('video') as HTMLInputElement
-  const videoDirectionElement = document.getElementById('video-direction') as HTMLSelectElement
-  const videoDirection = videoDirectionElement.value as Direction
+  const audioCodecMimeType = queryParams.audioCodecMimeType
+  if (audioCodecMimeType && typeof audioCodecMimeType === 'string') {
+    const audioCodecMimeTypeElement = document.getElementById(
+      'audio-codec-mime-type',
+    ) as HTMLSelectElement
+    if (!audioCodecMimeTypeElement) {
+      return
+    }
+    // セレクトボックスの値に audioCodecMimeType の値があったら反映する
+    const option = audioCodecMimeTypeElement.querySelector(
+      `option[value="${audioCodecMimeType}"]`,
+    ) as HTMLOptionElement
+    if (option) {
+      option.selected = true
+    }
+  }
+
+  if (queryParams.videoDirection && typeof queryParams.videoDirection === 'string') {
+    setVideoDirection(queryParams.videoDirection as Direction)
+  }
+  const videoDirection = getVideoDirection()
+
   const videoCodecMimeTypeElement = document.getElementById(
     'video-codec-mime-type',
   ) as HTMLSelectElement
@@ -62,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // qs の videoCodecMimeType の値が select の value でマッチするモノがあったら切り替える
-  const videoCodecMimeType = queryString.parse(location.search).videoCodecMimeType
+  const videoCodecMimeType = queryParams.videoCodecMimeType
   if (videoCodecMimeType && typeof videoCodecMimeType === 'string') {
     const videoCodecMimeTypeElement = document.getElementById(
       'video-codec-mime-type',
@@ -70,44 +92,32 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!videoCodecMimeTypeElement) {
       return
     }
-    // セレクトボックスの値を更新
     videoCodecMimeTypeElement.value = videoCodecMimeType
   }
-
-  const standaloneElement = document.getElementById('standalone') as HTMLInputElement
-  if (!standaloneElement) {
-    return
-  }
-  const standalone = standaloneElement.checked
 
   let conn: Connection | null = null
 
   // connect ボタンを押す
   document.querySelector('#connect')?.addEventListener('click', async () => {
-    console.debug('connect button clicked')
-
     const options: ConnectionOptions = defaultOptions
     if (signalingKey) {
-      options.audio.enabled = audioElement.checked
-      options.audio.direction = audioDirectionElement.value as Direction
-      options.video.enabled = videoElement.checked
-      options.video.direction = videoDirectionElement.value as Direction
-      options.signalingKey = signalingKey
-      options.standalone = standalone
-      options.clientId = clientIdElement.value
+      options.audio.enabled = getAudioEnabled()
+      options.audio.direction = getAudioDirection()
+      options.audio.codecMimeType = getAudioCodecMimeType()
+      options.video.enabled = getVideoEnabled()
+      options.video.direction = getVideoDirection()
+      options.video.codecMimeType = getVideoCodecMimeType()
+      options.standalone = getStandalone()
+      options.clientId = getClientId()
+      options.signalingKey = getSignalingKey()
     }
 
-    // セレクトボックスの値を取得する
-    const videoCodecMimeTypeElement = document.getElementById(
-      'video-codec-mime-type',
-    ) as HTMLSelectElement
-    const videoCodecMimeType = videoCodecMimeTypeElement.value
-    if (videoCodecMimeType !== 'undefined') {
-      options.video.codecMimeType = videoCodecMimeType
-    }
+    const signalingUrl = getSignalingUrl()
+    const roomId = getRoomId()
+    const debug = getDebug()
 
     // createConnection に変更する
-    conn = createConnection(signalingUrl, roomId, options, true)
+    conn = createConnection(signalingUrl, roomId, options, debug)
 
     let stream: MediaStream | null = null
 
@@ -166,7 +176,49 @@ document.addEventListener('DOMContentLoaded', () => {
     console.debug('disconnected')
     conn = null
   })
+
+  // コピーURLボタンのイベントリスナーを追加
+  document.querySelector('#copy-url')?.addEventListener('click', async () => {
+    const queryParams = getSettingsAsQueryParams()
+    // URLを更新
+    window.history.replaceState(null, '', `?${queryParams}`)
+    // 更新されたURLをコピー
+    const url = window.location.href
+
+    try {
+      await navigator.clipboard.writeText(url)
+      console.log('Copied to clipboard')
+    } catch (err) {
+      console.error('Failed to copy URL:', err)
+    }
+  })
 })
+
+// 設定をクエリパラメータとして取得する関数を追加
+const getSettingsAsQueryParams = () => {
+  const params: Record<string, string | boolean> = {
+    signalingUrl: getSignalingUrl(),
+    roomId: getRoomId(),
+    signalingKey: getSignalingKey(),
+    standalone: getStandalone(),
+    debug: getDebug(),
+    audio: getAudioEnabled(),
+    audioDirection: getAudioDirection(),
+    audioCodecMimeType: getAudioCodecMimeType() || '',
+    video: getVideoEnabled(),
+    videoDirection: getVideoDirection(),
+    videoCodecMimeType: getVideoCodecMimeType() || '',
+  }
+
+  // undefinedの値を除外
+  for (const key in params) {
+    if (params[key] === undefined) {
+      delete params[key]
+    }
+  }
+
+  return queryString.stringify(params)
+}
 
 const senderOrReceiver = (direction: Direction) => {
   switch (direction) {
@@ -179,4 +231,204 @@ const senderOrReceiver = (direction: Direction) => {
     default:
       throw new Error(`Invalid direction: ${direction}`)
   }
+}
+
+const getSignalingUrl = (): string => {
+  const signalingUrlElement = document.getElementById('signaling-url') as HTMLInputElement
+  if (!signalingUrlElement) {
+    return ''
+  }
+  return signalingUrlElement.value
+}
+
+const setSignalingUrl = (signalingUrl: string): void => {
+  const signalingUrlElement = document.getElementById('signaling-url') as HTMLInputElement
+  if (!signalingUrlElement) {
+    return
+  }
+  signalingUrlElement.value = signalingUrl
+}
+
+const getRoomId = (): string => {
+  const roomIdElement = document.getElementById('room-id') as HTMLInputElement
+  if (!roomIdElement) {
+    return ''
+  }
+  return roomIdElement.value
+}
+
+const setRoomId = (roomId: string): void => {
+  const roomIdElement = document.getElementById('room-id') as HTMLInputElement
+  if (!roomIdElement) {
+    return
+  }
+  roomIdElement.value = roomId
+}
+
+const getClientId = () => {
+  const clientIdElement = document.getElementById('client-id') as HTMLInputElement
+  if (!clientIdElement) {
+    return ''
+  }
+  return clientIdElement.value
+}
+
+const setClientId = (clientId: string): void => {
+  const clientIdElement = document.getElementById('client-id') as HTMLInputElement
+  if (!clientIdElement) {
+    return
+  }
+  clientIdElement.value = clientId
+}
+
+const getSignalingKey = (): string => {
+  const signalingKeyElement = document.getElementById('signaling-key') as HTMLInputElement
+  if (!signalingKeyElement) {
+    return ''
+  }
+  return signalingKeyElement.value
+}
+
+const setSignalingKey = (signalingKey: string): void => {
+  const signalingKeyElement = document.getElementById('signaling-key') as HTMLInputElement
+  if (!signalingKeyElement) {
+    return
+  }
+  signalingKeyElement.value = signalingKey
+}
+
+const getStandalone = () => {
+  const standaloneElement = document.getElementById('standalone') as HTMLInputElement
+  if (!standaloneElement) {
+    return false
+  }
+  return standaloneElement.checked
+}
+
+const setStandalone = (standalone: boolean): void => {
+  const standaloneElement = document.getElementById('standalone') as HTMLInputElement
+  if (!standaloneElement) {
+    return
+  }
+  standaloneElement.checked = standalone
+}
+
+const getDebug = () => {
+  const debugElement = document.getElementById('debug') as HTMLInputElement
+  if (!debugElement) {
+    return false
+  }
+  return debugElement.checked
+}
+
+const setDebug = (debug: boolean): void => {
+  const debugElement = document.getElementById('debug') as HTMLInputElement
+  if (!debugElement) {
+    return
+  }
+  debugElement.checked = debug
+}
+
+const getAudioEnabled = () => {
+  const audioElement = document.getElementById('audio') as HTMLInputElement
+  if (!audioElement) {
+    return false
+  }
+  return audioElement.checked
+}
+
+const setAudioEnabled = (audioEnabled: boolean): void => {
+  const audioElement = document.getElementById('audio') as HTMLInputElement
+  if (!audioElement) {
+    return
+  }
+  audioElement.checked = audioEnabled
+}
+
+const getAudioDirection = (): Direction => {
+  const audioDirectionElement = document.getElementById('audio-direction') as HTMLSelectElement
+  if (!audioDirectionElement) {
+    return 'sendrecv'
+  }
+  return audioDirectionElement.value as Direction
+}
+
+const setAudioDirection = (audioDirection: Direction): void => {
+  const audioDirectionElement = document.getElementById('audio-direction') as HTMLSelectElement
+  if (!audioDirectionElement) {
+    return
+  }
+  audioDirectionElement.value = audioDirection
+}
+
+const getAudioCodecMimeType = () => {
+  const audioCodecMimeTypeElement = document.getElementById(
+    'audio-codec-mime-type',
+  ) as HTMLSelectElement
+  if (!audioCodecMimeTypeElement) {
+    return undefined
+  }
+  return audioCodecMimeTypeElement.value
+}
+
+const setAudioCodecMimeType = (audioCodecMimeType: string): void => {
+  const audioCodecMimeTypeElement = document.getElementById(
+    'audio-codec-mime-type',
+  ) as HTMLSelectElement
+  if (!audioCodecMimeTypeElement) {
+    return
+  }
+  audioCodecMimeTypeElement.value = audioCodecMimeType
+}
+
+const getVideoEnabled = () => {
+  const videoElement = document.getElementById('video') as HTMLInputElement
+  if (!videoElement) {
+    return false
+  }
+  return videoElement.checked
+}
+
+const setVideoEnabled = (videoEnabled: boolean): void => {
+  const videoElement = document.getElementById('video') as HTMLInputElement
+  if (!videoElement) {
+    return
+  }
+  videoElement.checked = videoEnabled
+}
+
+const getVideoDirection = (): Direction => {
+  const videoDirectionElement = document.getElementById('video-direction') as HTMLSelectElement
+  if (!videoDirectionElement) {
+    return 'sendrecv'
+  }
+  return videoDirectionElement.value as Direction
+}
+
+const setVideoDirection = (videoDirection: Direction): void => {
+  const videoDirectionElement = document.getElementById('video-direction') as HTMLSelectElement
+  if (!videoDirectionElement) {
+    return
+  }
+  videoDirectionElement.value = videoDirection
+}
+
+const getVideoCodecMimeType = (): string | undefined => {
+  const videoCodecMimeTypeElement = document.getElementById(
+    'video-codec-mime-type',
+  ) as HTMLSelectElement
+  if (!videoCodecMimeTypeElement) {
+    return undefined
+  }
+  return videoCodecMimeTypeElement.value
+}
+
+const setVideoCodecMimeType = (videoCodecMimeType: string): void => {
+  const videoCodecMimeTypeElement = document.getElementById(
+    'video-codec-mime-type',
+  ) as HTMLSelectElement
+  if (!videoCodecMimeTypeElement) {
+    return
+  }
+  videoCodecMimeTypeElement.value = videoCodecMimeType
 }

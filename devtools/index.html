@@ -11,8 +11,16 @@
     <h3>Ayame DevTools</h3>
   </header>
   <div>
+    <p>
+      <button id="copy-url">Copy URL</button>
+    </p>
     <fieldset style="max-width: 500px;">
       <legend>Connection settings</legend>
+      <p>
+        Signaling URL:
+        <input id="signaling-url" type="text" style="width: 350px;"></input>
+      </p>
+
       <p>
         Room ID:
         <input id="room-id" type="text" style="width: 350px;"></input>
@@ -22,8 +30,16 @@
         <input id="client-id" disabled type="text" value="" style="width: 350px;"></input>
       </p>
       <p>
+        Signaling Key:
+        <input id="signaling-key" type="password" style="width: 350px;"></input>
+      </p>
+      <p>
         Standalone:
         <input id="standalone" type="checkbox"></input>
+      </p>
+      <p>
+        Debug:
+        <input id="debug" type="checkbox"></input>
       </p>
     </fieldset>
 
