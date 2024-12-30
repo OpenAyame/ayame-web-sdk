@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const queryParams = queryString.parse(location.search)
 
+  // もし qs があれば適用していく
   if (queryParams.signalingUrl && typeof queryParams.signalingUrl === 'string') {
     signalingUrl = queryParams.signalingUrl as string
   }
@@ -19,23 +20,28 @@ document.addEventListener('DOMContentLoaded', () => {
     signalingKey = queryParams.signalingKey as string
   }
 
+  // コネクション関連の設定をする
   setSignalingUrl(signalingUrl)
   setRoomId(roomId)
   setClientId(crypto.randomUUID())
   setSignalingKey(signalingKey)
 
+  // qs の standalone の値があれば適用する
   if (queryParams.standalone && typeof queryParams.standalone === 'string') {
     setStandalone(queryParams.standalone === 'true')
   }
 
+  // qs の debug の値があれば適用する
   if (queryParams.debug && typeof queryParams.debug === 'string') {
     setDebug(queryParams.debug === 'true')
   }
 
+  // qs の audio の値があれば適用する
   if (queryParams.audio && typeof queryParams.audio === 'string') {
     setAudioEnabled(queryParams.audio === 'true')
   }
 
+  // qs の audioDirection の値があれば適用する
   if (queryParams.audioDirection && typeof queryParams.audioDirection === 'string') {
     setAudioDirection(queryParams.audioDirection as Direction)
   }
@@ -108,7 +114,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!videoCodecMimeTypeElement) {
       return
     }
-    videoCodecMimeTypeElement.value = videoCodecMimeType
+    // セレクトボックスの値に videoCodecMimeType の値があったら反映する
+    const option = videoCodecMimeTypeElement.querySelector(
+      `option[value="${videoCodecMimeType}"]`,
+    ) as HTMLOptionElement
+    if (option) {
+      option.selected = true
+    }
   }
 
   let conn: Connection | null = null
