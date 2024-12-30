@@ -11,24 +11,32 @@ interface AyameRegisterMessage {
 }
 
 class Connection {
-  debug: boolean
-  roomId: string
-  signalingUrl: string
-  options: ConnectionOptions
-  connectionState: string
-  stream: MediaStream | null
-  remoteStream: MediaStream | null
-  authnMetadata: any
-  authzMetadata: any
-  protected ws: WebSocket | null
-  protected pc: RTCPeerConnection | null
-  protected callbacks: any
+  private debug: boolean
+  private roomId: string
+  private signalingUrl: string
+  private options: ConnectionOptions
+  private connectionState: string
+  private stream: MediaStream | null
+  private remoteStream: MediaStream | null
+  private authnMetadata: any
+  private authzMetadata: any
+  private ws: WebSocket | null
+  private pc: RTCPeerConnection | null
+  private callbacks: any
   private isOffer: boolean
   private isExistUser: boolean
   private dataChannels: RTCDataChannel[]
   private pcConfig: {
     iceServers: RTCIceServer[]
     iceTransportPolicy: RTCIceTransportPolicy
+  }
+
+  get webSocket(): WebSocket | null {
+    return this.ws
+  }
+
+  get peerConnection(): RTCPeerConnection | null {
+    return this.pc
   }
 
   // biome-ignore lint/complexity/noBannedTypes: <explanation>
@@ -110,7 +118,7 @@ class Connection {
     this.connectionState = 'new'
   }
 
-  protected async signaling(): Promise<void> {
+  public async signaling(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       if (this.ws) {
         return reject('WS-ALREADY-EXISTS')
@@ -496,11 +504,11 @@ class Connection {
     return transceiver
   }
 
-  protected findDataChannel(label: string): RTCDataChannel | undefined {
+  private findDataChannel(label: string): RTCDataChannel | undefined {
     return this.dataChannels.find((channel) => channel.label === label)
   }
 
-  protected async closeDataChannel(dataChannel: RTCDataChannel): Promise<void> {
+  private async closeDataChannel(dataChannel: RTCDataChannel): Promise<void> {
     this.traceLog('close data channel')
     return new Promise((resolve) => {
       if (!dataChannel) {
@@ -589,7 +597,7 @@ class Connection {
     })
   }
 
-  protected traceLog(title: string, message?: Record<string, any> | string) {
+  private traceLog(title: string, message?: Record<string, any> | string) {
     if (!this.debug) {
       return
     }
