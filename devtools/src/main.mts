@@ -24,6 +24,18 @@ document.addEventListener('DOMContentLoaded', () => {
   setClientId(crypto.randomUUID())
   setSignalingKey(signalingKey)
 
+  if (queryParams.standalone && typeof queryParams.standalone === 'string') {
+    setStandalone(queryParams.standalone === 'true')
+  }
+
+  if (queryParams.debug && typeof queryParams.debug === 'string') {
+    setDebug(queryParams.debug === 'true')
+  }
+
+  if (queryParams.audio && typeof queryParams.audio === 'string') {
+    setAudioEnabled(queryParams.audio === 'true')
+  }
+
   if (queryParams.audioDirection && typeof queryParams.audioDirection === 'string') {
     setAudioDirection(queryParams.audioDirection as Direction)
   }
@@ -59,6 +71,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (option) {
       option.selected = true
     }
+  }
+
+  if (queryParams.video && typeof queryParams.video === 'string') {
+    setVideoEnabled(queryParams.video === 'true')
   }
 
   if (queryParams.videoDirection && typeof queryParams.videoDirection === 'string') {
