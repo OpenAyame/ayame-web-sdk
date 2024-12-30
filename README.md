@@ -18,6 +18,20 @@ Please read <https://github.com/shiguredo/oss> before use.
 
 WebRTC Signaling Server Ayame をブラウザから利用する SDK です。
 
+## 使い方
+
+### npm
+
+```bash
+npm install @open-ayame/ayame-web-sdk
+```
+
+### pnpm
+
+```bash
+pnpm add @open-ayame/ayame-web-sdk
+```
+
 ## 動作環境
 
 最新のブラウザを利用してください。
