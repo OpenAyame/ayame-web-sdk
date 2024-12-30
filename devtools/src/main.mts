@@ -103,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!remoteVideo) {
         return
       }
+      console.debug('addstream', event)
       remoteVideo.srcObject = event.stream
     })
 
@@ -111,6 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!remoteVideo) {
         return
       }
+      console.debug('removestream', event)
       remoteVideo.srcObject = null
     })
 

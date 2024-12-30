@@ -85,23 +85,33 @@ class Connection {
     }
   }
 
+  /**
+   * 接続する
+   */
   public async connect(
     stream: MediaStream | null,
     metadataOption: MetadataOption | null = null,
   ): Promise<void> {
-    if (this.ws || this.pc) {
-      this.traceLog('connection already exists')
-      throw new Error('Connection Already Exists!')
+    if (this.ws) {
+      this.traceLog('WebSocket Already Exists!')
+      throw new Error('WebSocket Already Exists!')
     }
-    /** @type {MediaStream|null} */
+
+    if (this.pc) {
+      this.traceLog('RTCPeerConnection already exists')
+      throw new Error('RTCPeerConnection Already Exists!')
+    }
+
     this.stream = stream
     if (metadataOption) {
-      /** @type {any} */
       this.authnMetadata = metadataOption.authnMetadata
     }
     await this.signaling()
   }
 
+  /**
+   * 接続を切断する
+   */
   public async disconnect(): Promise<void> {
     // DataChannel を閉じる
     for (const dataChannel of this.dataChannels) {
@@ -118,7 +128,17 @@ class Connection {
     this.connectionState = 'new'
   }
 
-  public async signaling(): Promise<void> {
+  /**
+   * 統計情報を取得する
+   */
+  public async getStats(): Promise<RTCStatsReport> {
+    if (!this.pc) {
+      throw new Error('PeerConnection is not ready')
+    }
+    return await this.pc.getStats()
+  }
+
+  private async signaling(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       if (this.ws) {
         return reject('WS-ALREADY-EXISTS')
