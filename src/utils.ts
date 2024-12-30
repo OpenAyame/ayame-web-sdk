@@ -53,6 +53,7 @@ export function traceLog(title: string, value?: string | Record<string, any>): v
  * リストなのはプロファイルが複数合ったり、 RTX, RED, ULPFEC などの codec も含めるため
  */
 export const getSelectedCodecs = (
+  kind: 'audio' | 'video',
   selectedCodecMimeType: string,
   codecs: RTCRtpCodec[],
 ): RTCRtpCodecCapability[] => {
@@ -66,9 +67,9 @@ export const getSelectedCodecs = (
 
     // rtx, red, ulpfec は常に true にする
     if (
-      codecMimeType === 'video/rtx' ||
-      codecMimeType === 'video/red' ||
-      codecMimeType === 'video/ulpfec'
+      codecMimeType === `${kind}/rtx` ||
+      codecMimeType === `${kind}/red` ||
+      codecMimeType === `${kind}/ulpfec`
     ) {
       return true
     }

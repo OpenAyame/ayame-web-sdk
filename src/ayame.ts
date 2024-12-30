@@ -234,6 +234,7 @@ class Connection {
   }
 
   private setCodecPreferences(
+    kind: 'audio' | 'video',
     videoCapabilities: RTCRtpCapabilities,
     transceiver: RTCRtpTransceiver,
   ): void {
@@ -242,9 +243,13 @@ class Connection {
     }
     let videoCodecs: RTCRtpCodecCapability[] = []
     if (this.options.video.codecMimeType) {
-      videoCodecs = getSelectedCodecs(this.options.video.codecMimeType, videoCapabilities.codecs)
+      videoCodecs = getSelectedCodecs(
+        kind,
+        this.options.video.codecMimeType,
+        videoCapabilities.codecs,
+      )
     }
-    this.traceLog('video codecs=', videoCodecs)
+    this.traceLog(`${kind} codecs=`, videoCodecs)
     transceiver.setCodecPreferences(videoCodecs)
   }
 
@@ -253,14 +258,38 @@ class Connection {
 
     const pc = new RTCPeerConnection(this.pcConfig)
 
-    const audioTrack = this.stream?.getAudioTracks()[0]
-    if (audioTrack && this.options.audio.direction !== 'recvonly' && this.stream) {
-      pc.addTrack(audioTrack, this.stream)
+    // sendrecv / sendonly が指定されている場合は setCodecPreferences を試みる
+    if (this.stream && this.options.audio.direction !== 'recvonly') {
+      // そもそも audioTracks が 0 じゃないかどうか確認する
+      const audioTracks = this.stream.getAudioTracks()
+      if (audioTracks.length > 0) {
+        const audioTrack = audioTracks[0]
+        const audioSender = pc.addTrack(audioTrack, this.stream)
+        const audioTransceiver = this.getTransceiver(pc, audioSender)
+        // audioCodecMimeType が指定されている場合は音声コーデックの設定を試みる
+        if (this.isAudioCodecSpecified() && audioTransceiver !== null) {
+          const audioCapabilities = RTCRtpSender.getCapabilities('audio')
+          if (audioCapabilities) {
+            this.setCodecPreferences('audio', audioCapabilities, audioTransceiver)
+          }
+        }
+      }
+      // 基本的に受信側はコーデック指定はしないほうがいい
+      // recvonly で audio が有効な場合、
+      // コーデックが指定されていた場合は setCodecPreferences を試みる
     } else if (this.options.audio.enabled) {
-      pc.addTransceiver('audio', { direction: 'recvonly' })
+      const audioTransceiver = pc.addTransceiver('audio', { direction: 'recvonly' })
+      // audioCodecMimeType が指定されている場合は音声コーデックの設定を試みる
+      if (this.isAudioCodecSpecified()) {
+        // コーデックを指定された場合は受信出来るかどうかの確認をする
+        const audioCapabilities = RTCRtpReceiver.getCapabilities('audio')
+        if (audioCapabilities) {
+          this.setCodecPreferences('audio', audioCapabilities, audioTransceiver)
+        }
+      }
     }
 
-    // sendrecv / recvonly が指定されている場合は setCodecPreferences を試みる
+    // sendrecv / sendonly が指定されている場合は setCodecPreferences を試みる
     if (this.stream && this.options.video.direction !== 'recvonly') {
       // そもそも videoTracks が 0 じゃないかどうか確認する
       const videoTracks = this.stream.getVideoTracks()
@@ -272,7 +301,7 @@ class Connection {
         if (this.isVideoCodecSpecified() && videoTransceiver !== null) {
           const videoCapabilities = RTCRtpSender.getCapabilities('video')
           if (videoCapabilities) {
-            this.setCodecPreferences(videoCapabilities, videoTransceiver)
+            this.setCodecPreferences('video', videoCapabilities, videoTransceiver)
           }
         }
       }
@@ -286,10 +315,11 @@ class Connection {
         // コーデックを指定された場合は受信出来るかどうかの確認をする
         const videoCapabilities = RTCRtpReceiver.getCapabilities('video')
         if (videoCapabilities) {
-          this.setCodecPreferences(videoCapabilities, videoTransceiver)
+          this.setCodecPreferences('video', videoCapabilities, videoTransceiver)
         }
       }
     }
+
     const tracks: MediaStreamTrack[] = []
     pc.ontrack = (event: RTCTrackEvent) => {
       const callbackEvent: any = event
@@ -444,6 +474,10 @@ class Connection {
       this.sendSdp(this.pc.localDescription)
     }
     this.isOffer = true
+  }
+
+  private isAudioCodecSpecified(): boolean {
+    return this.options.audio.enabled && this.options.audio.codecMimeType !== undefined
   }
 
   private isVideoCodecSpecified(): boolean {

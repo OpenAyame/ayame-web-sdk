@@ -23,7 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // チェックボックスを取得する
   const audioElement = document.getElementById('audio') as HTMLInputElement
-  const audioDirectionElement = document.getElementById('audio-direction') as HTMLSelectElement
+  const audioDirectionElement = document.getElementById(
+    'audio-direction',
+  ) as HTMLSelectElement
 
   const audioCodecMimeTypeElement = document.getElementById(
     'audio-codec-mime-type',
