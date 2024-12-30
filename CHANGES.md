@@ -23,6 +23,8 @@
 
 ### misc
 
+- [CHANGE] ConnectionBase を Connection へ変更する
+  - @voluntas
 - [CHANGE] rollup から vite へ変更
   - @voluntas
 - [CHANGE] npm から pnpm に変更する
@@ -34,6 +36,8 @@
 - [CHANGE] GitHub Actions の node-version を 18 と 20 と 22 にする
   - @voluntas
 - [UPDATE] ubuntu-latest から ubuntu-24.04 に変更する
+  - @voluntas
+- [ADD] DevTools を追加
   - @voluntas
 
 ## 2022.1
