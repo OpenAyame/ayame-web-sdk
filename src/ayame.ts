@@ -1,5 +1,5 @@
 import type { ConnectionOptions, MetadataOption } from './types'
-import { browser, getSelectedCodecs, randomString, traceLog } from './utils'
+import { browser, getSelectedCodecs, traceLog } from './utils'
 
 interface AyameRegisterMessage {
   type: string
@@ -614,7 +614,7 @@ export const defaultOptions: ConnectionOptions = {
   audio: { direction: 'sendrecv', enabled: true },
   video: { direction: 'sendrecv', enabled: true },
   iceServers: [],
-  clientId: randomString(17),
+  clientId: crypto.randomUUID(),
 }
 
 /**

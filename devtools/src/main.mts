@@ -1,5 +1,3 @@
-import queryString from 'query-string'
-
 import {
   Direction,
   createConnection,
@@ -7,11 +5,11 @@ import {
   getAvailableVideoCodecs,
 } from '@open-ayame/ayame-web-sdk'
 import type { Connection, ConnectionOptions } from '@open-ayame/ayame-web-sdk'
+import queryString from 'query-string'
 
 document.addEventListener('DOMContentLoaded', () => {
   const signalingUrl = import.meta.env.VITE_AYAME_SIGNALING_URL
   const roomId = import.meta.env.VITE_AYAME_ROOM_ID
-  const clientId = import.meta.env.VITE_AYAME_CLIENT_ID
   const signalingKey = import.meta.env.VITE_AYAME_SIGNALING_KEY
 
   // ここで roomId を設定する
@@ -26,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!clientIdElement) {
     return
   }
-  clientIdElement.value = clientId
+  clientIdElement.value = crypto.randomUUID()
 
   const videoCodecMimeTypeElement = document.getElementById(
     'video-codec-mime-type',
@@ -74,6 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (signalingKey) {
       options.signalingKey = signalingKey
       options.standalone = standalone
+      options.clientId = clientIdElement.value
     }
 
     // セレクトボックスの値を取得する

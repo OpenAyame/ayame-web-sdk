@@ -10,18 +10,6 @@ interface WindowPerformance {
 }
 declare let window: Window
 
-/**
- * ランダムな文字列を生成する
- */
-export function randomString(strLength: number): string {
-  const result = []
-  const charSet = '0123456789'
-  let length = strLength
-  while (length--) {
-    result.push(charSet.charAt(Math.floor(Math.random() * charSet.length)))
-  }
-  return result.join('')
-}
 
 /**
  * ブラウザを判定する

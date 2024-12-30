@@ -1,0 +1,66 @@
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8">
+  <title>Ayame DevTools</title>
+</head>
+
+<body>
+  <header class="sticky row">
+    <h4>Ayame DevTools</h4>
+  </header>
+  <div>
+    <p>Room ID
+      <input id="room-id" type="text" style="width: 350px;"></input>
+    </p>
+    <p>Client ID
+      <input id="client-id" disabled type="text" value="" style="width: 350px;"></input>
+    </p>
+
+    <p>
+      Audio
+      <input id="audio-enabled" type="checkbox" checked></input>
+      Direction
+      <select id="audio-direction">
+        <option value="sendrecv">sendrecv</option>
+        <option value="sendonly">sendonly</option>
+        <option value="recvonly">recvonly</option>
+      </select>
+    </p>
+
+    <p>
+      Video
+      <input id="video-enabled" type="checkbox" checked></input>
+      Codec (MIME type)
+      <select id="video-codec-mime-type">
+        <option value="undefined">未指定</option>
+      </select>
+      Direction
+      <select id="video-direction">
+        <option value="sendrecv">sendrecv</option>
+        <option value="sendonly">sendonly</option>
+        <option value="recvonly">recvonly</option>
+      </select>
+    </p>
+
+    <p>
+      Standalone
+      <input id="standalone" type="checkbox"></input>
+    </p>
+
+    <p>
+      <button id="connect">Connect</button>
+      <button id="disconnect">Disconnect</button>
+    </p>
+  </div>
+  <div style="float:left;">
+    <video id="local-video" muted autoplay playsinline
+      style="width: 400px; height: 300px; border: 1px solid rgb(0, 13, 255);"></video>
+  </div>
+  <div style="float:left; margin-left: 20px;">
+    <video id="remote-video" autoplay playsinline style="width: 400px; height: 300px; border: 1px solid rgb(255, 0, 0);"></video>
+  </div>
+  <script type="module" src="./src/main.mts"></script>
+</body>
+
+</html>
