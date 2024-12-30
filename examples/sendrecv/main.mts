@@ -58,6 +58,12 @@ document.addEventListener('DOMContentLoaded', () => {
     videoCodecMimeTypeElement.value = videoCodecMimeType
   }
 
+  const standaloneElement = document.getElementById('standalone') as HTMLInputElement
+  if (!standaloneElement) {
+    return
+  }
+  const standalone = standaloneElement.checked
+
   let conn: Connection | null = null
 
   // connect ボタンを押す
@@ -67,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const options: ConnectionOptions = defaultOptions
     if (signalingKey) {
       options.signalingKey = signalingKey
-      options.standalone = true
+      options.standalone = standalone
     }
 
     // セレクトボックスの値を取得する
