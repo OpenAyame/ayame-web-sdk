@@ -1,6 +1,6 @@
 {
   "name": "@open-ayame/ayame-web-sdk",
-  "version": "2025.1.0-canary.0",
+  "version": "2025.0.0",
   "description": "WebRTC Signaling Server Ayame Web SDK",
   "author": "Shiguredo Inc.",
   "license": "Apache-2.0",
