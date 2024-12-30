@@ -36,6 +36,20 @@ Please read <https://github.com/shiguredo/oss> before use.
 
 [OpenAyame/ayame-web-sdk-samples](https://github.com/OpenAyame/ayame-web-sdk-samples) にサンプルコードを用意しています。
 
+## DevTools
+
+```bash
+# cp .env.template .env.local
+VITE_AYAME_SIGNALING_URL=wss://ayame.example.com/signaling
+VITE_AYAME_ROOM_ID={ayame-room-id}
+VITE_AYAME_SIGNALING_KEY={ayame-signaling-key}
+```
+
+```bash
+pnpm install
+pnpm run dev
+```
+
 ## API ドキュメント
 
 API ドキュメントは以下の URL を参照してください。
