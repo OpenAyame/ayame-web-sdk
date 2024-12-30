@@ -1,10 +1,5 @@
-import {
-  Direction,
-  createConnection,
-  defaultOptions,
-  getAvailableVideoCodecs,
-} from '@open-ayame/ayame-web-sdk'
-import type { Connection, ConnectionOptions } from '@open-ayame/ayame-web-sdk'
+import { createConnection, defaultOptions, getAvailableCodecs } from '@open-ayame/ayame-web-sdk'
+import type { Connection, ConnectionOptions, Direction } from '@open-ayame/ayame-web-sdk'
 import queryString from 'query-string'
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -26,6 +21,27 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   clientIdElement.value = crypto.randomUUID()
 
+  // チェックボックスを取得する
+  const audioElement = document.getElementById('audio') as HTMLInputElement
+  const audioDirectionElement = document.getElementById('audio-direction') as HTMLSelectElement
+
+  const audioCodecMimeTypeElement = document.getElementById(
+    'audio-codec-mime-type',
+  ) as HTMLSelectElement
+  if (!audioCodecMimeTypeElement) {
+    return
+  }
+
+  const availableAudioCodecs = getAvailableCodecs('audio', 'sender')
+  for (const codec of availableAudioCodecs) {
+    const option = document.createElement('option')
+    option.value = codec
+    option.textContent = codec
+    audioCodecMimeTypeElement.appendChild(option)
+  }
+
+  const videoElement = document.getElementById('video') as HTMLInputElement
+  const videoDirectionElement = document.getElementById('video-direction') as HTMLSelectElement
   const videoCodecMimeTypeElement = document.getElementById(
     'video-codec-mime-type',
   ) as HTMLSelectElement
@@ -35,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // getAvailableVideoCodecs で取得したコーデックをセレクトボックスに設定する
   // 送受信なので Direction.Sendrecv を渡す
-  const availableVideoCodecs = getAvailableVideoCodecs(Direction.Sendrecv)
+  const availableVideoCodecs = getAvailableCodecs('video', 'sender')
   for (const codec of availableVideoCodecs) {
     const option = document.createElement('option')
     option.value = codec
@@ -70,6 +86,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const options: ConnectionOptions = defaultOptions
     if (signalingKey) {
+      options.audio.enabled = audioElement.checked
+      options.audio.direction = audioDirectionElement.value as Direction
+      options.video.enabled = videoElement.checked
+      options.video.direction = videoDirectionElement.value as Direction
       options.signalingKey = signalingKey
       options.standalone = standalone
       options.clientId = clientIdElement.value
@@ -87,16 +107,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // createConnection に変更する
     conn = createConnection(signalingUrl, roomId, options, true)
 
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: options.audio.enabled,
-      video: options.video.enabled,
-    })
+    let stream: MediaStream | null = null
 
-    const localVideo = document.getElementById('local-video') as HTMLVideoElement
-    if (!localVideo) {
-      return
+    // audio が有効かつ sendrecv または sendonly の場合はローカルの音声を取得する
+    const audioEnabled =
+      options.audio.enabled &&
+      (options.audio.direction === 'sendrecv' || options.audio.direction === 'sendonly')
+    // video が有効かつ sendrecv または sendonly の場合はローカルの映像を取得する
+    const videoEnabled =
+      options.video.enabled &&
+      (options.video.direction === 'sendrecv' || options.video.direction === 'sendonly')
+
+    if (audioEnabled || videoEnabled) {
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: audioEnabled,
+        video: videoEnabled,
+      })
     }
-    localVideo.srcObject = stream
+
+    // stream が取得できたら local-video に設定する
+    if (stream) {
+      const localVideo = document.getElementById('local-video') as HTMLVideoElement
+      if (!localVideo) {
+        return
+      }
+      localVideo.srcObject = stream
+    }
 
     conn.on('addstream', (event) => {
       const remoteVideo = document.getElementById('remote-video') as HTMLVideoElement

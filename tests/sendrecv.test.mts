@@ -17,6 +17,8 @@ test('sendrecv x2', async ({ browser }) => {
   await sendrecv1.click('#connect')
   await sendrecv2.click('#connect')
 
+  
+
   await sendrecv1.click('#disconnect')
   await sendrecv2.click('#disconnect')
 

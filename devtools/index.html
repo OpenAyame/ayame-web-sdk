@@ -11,43 +11,57 @@
     <h3>Ayame DevTools</h3>
   </header>
   <div>
-    <p>Room ID
-      <input id="room-id" type="text" style="width: 350px;"></input>
-    </p>
-    <p>Client ID
-      <input id="client-id" disabled type="text" value="" style="width: 350px;"></input>
-    </p>
+    <fieldset style="max-width: 500px;">
+      <legend>Connection settings</legend>
+      <p>
+        Room ID:
+        <input id="room-id" type="text" style="width: 350px;"></input>
+      </p>
+      <p>
+        Client ID:
+        <input id="client-id" disabled type="text" value="" style="width: 350px;"></input>
+      </p>
+      <p>
+        Standalone:
+        <input id="standalone" type="checkbox"></input>
+      </p>
+    </fieldset>
 
-    <p>
-      Audio
-      <input id="audio-enabled" type="checkbox" checked></input>
-      Direction
-      <select id="audio-direction">
-        <option value="sendrecv">sendrecv</option>
-        <option value="sendonly">sendonly</option>
-        <option value="recvonly">recvonly</option>
-      </select>
-    </p>
-
-    <p>
-      Video
-      <input id="video-enabled" type="checkbox" checked></input>
-      Codec (MIME type)
-      <select id="video-codec-mime-type">
-        <option value="undefined">未指定</option>
-      </select>
-      Direction
-      <select id="video-direction">
-        <option value="sendrecv">sendrecv</option>
-        <option value="sendonly">sendonly</option>
-        <option value="recvonly">recvonly</option>
-      </select>
-    </p>
-
-    <p>
-      Standalone
-      <input id="standalone" type="checkbox"></input>
-    </p>
+    <fieldset style="max-width: 500px;">
+      <legend>Media settings</legend>
+      <p>
+        Audio:
+        <input id="audio" type="checkbox" checked></input>
+        <br>
+        Direction:
+        <select id="audio-direction">
+          <option value="sendrecv">sendrecv</option>
+          <option value="sendonly">sendonly</option>
+          <option value="recvonly">recvonly</option>
+        </select>
+        <br>
+        Codec (MIME type):
+        <select id="audio-codec-mime-type">
+          <option value="undefined">未指定</option>
+        </select>
+      </p>
+      <p>
+        Video:
+        <input id="video" type="checkbox" checked></input>
+        <br>
+        Direction:
+        <select id="video-direction">
+          <option value="sendrecv">sendrecv</option>
+          <option value="sendonly">sendonly</option>
+          <option value="recvonly">recvonly</option>
+        </select>
+        <br>
+        Codec (MIME type):
+        <select id="video-codec-mime-type">
+          <option value="undefined">未指定</option>
+        </select>
+      </p>
+    </fieldset>
 
     <p>
       <button id="connect">Connect</button>

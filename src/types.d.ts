@@ -1,11 +1,11 @@
-export type ConnectionDirection = 'sendrecv' | 'recvonly' | 'sendonly'
+export type Direction = 'sendrecv' | 'recvonly' | 'sendonly'
 
 /** 音声の設定 */
 export interface ConnectionAudioOption {
   /** コーデックの MIME type */
   codecMimeType?: string
   /** 送受信方向 */
-  direction: ConnectionDirection
+  direction: Direction
   /** 有効かどうかのフラグ */
   enabled: boolean
 }
@@ -15,7 +15,7 @@ export interface ConnectionVideoOption {
   /** コーデックの MIME type */
   codecMimeType?: string
   /** 送受信方向 */
-  direction: ConnectionDirection
+  direction: Direction
   /** 有効かどうかのフラグ */
   enabled: boolean
 }

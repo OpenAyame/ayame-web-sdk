@@ -1,4 +1,4 @@
-import type { ConnectionOptions, MetadataOption } from './types'
+import type { ConnectionOptions, Direction, MetadataOption } from './types'
 import { browser, getSelectedCodecs, traceLog } from './utils'
 
 interface AyameRegisterMessage {
@@ -671,5 +671,5 @@ export function version(): string {
   return process.version
 }
 
-export type { Connection, ConnectionOptions }
-export { getAvailableVideoCodecs, Direction } from './utils'
+export type { Connection, ConnectionOptions, Direction, MetadataOption }
+export { getAvailableCodecs } from './utils'

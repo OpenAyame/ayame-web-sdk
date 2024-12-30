@@ -10,7 +10,6 @@ interface WindowPerformance {
 }
 declare let window: Window
 
-
 /**
  * ブラウザを判定する
  */
@@ -79,17 +78,13 @@ export const getSelectedCodecs = (
   return filteredCodecs
 }
 
-// https://developer.mozilla.org/en-US/docs/Web/API/RTCRtpTransceiver/direction
-export enum Direction {
-  Sendrecv = 'sendrecv',
-  Recvonly = 'recvonly',
-  Sendonly = 'sendonly',
-}
-
 /**
  * 利用可能な映像のコーデックを取得する
  */
-export const getAvailableVideoCodecs = (direction: Direction): string[] => {
+export const getAvailableCodecs = (
+  kind: 'audio' | 'video',
+  direction: 'sender' | 'receiver',
+): string[] => {
   if (typeof RTCRtpSender === 'undefined' || typeof RTCRtpReceiver === 'undefined') {
     return []
   }
@@ -97,7 +92,7 @@ export const getAvailableVideoCodecs = (direction: Direction): string[] => {
   // sendrecv と sendonly は RTCRtpSender を使う
   // recvonly は RTCRtpReceiver を使う
   const getCapabilities =
-    direction === Direction.Sendrecv || direction === Direction.Sendonly
+    direction === 'sender' || direction === 'receiver'
       ? RTCRtpSender.getCapabilities
       : RTCRtpReceiver.getCapabilities
 
@@ -105,7 +100,7 @@ export const getAvailableVideoCodecs = (direction: Direction): string[] => {
     return []
   }
 
-  const codecs = getCapabilities('video')?.codecs
+  const codecs = getCapabilities(kind)?.codecs
   if (!codecs) {
     return []
   }
@@ -114,13 +109,13 @@ export const getAvailableVideoCodecs = (direction: Direction): string[] => {
     codecs
       .filter((c) => {
         // mimeType は insensitive-case なので lowerCase に変換する
-        const videoCodecType = c.mimeType.toLowerCase()
+        const codecType = c.mimeType.toLowerCase()
 
         // rtx/red/ulpfec はフィルターとして削除する
         if (
-          videoCodecType === 'video/rtx' ||
-          videoCodecType === 'video/red' ||
-          videoCodecType === 'video/ulpfec'
+          codecType === `${kind}/rtx` ||
+          codecType === `${kind}/red` ||
+          codecType === `${kind}/ulpfec`
         ) {
           return false
         }

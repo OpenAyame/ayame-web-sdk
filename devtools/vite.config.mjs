@@ -3,6 +3,7 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   root: resolve(__dirname),
+  dist: resolve(__dirname, 'dist'),
   resolve: {
     alias: {
       '@open-ayame/ayame-web-sdk': resolve(__dirname, '../dist/ayame.mjs'),
