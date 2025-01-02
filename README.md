@@ -41,10 +41,6 @@ pnpm add @open-ayame/ayame-web-sdk
 - Mozilla Firefox
 - Microsoft Edge
 
-## サンプル
-
-[OpenAyame/ayame-web-sdk-examples](https://github.com/OpenAyame/ayame-web-sdk-examples) にサンプルコードを用意しています。
-
 ## DevTools
 
 ```bash
@@ -58,6 +54,10 @@ VITE_AYAME_SIGNALING_KEY={ayame-signaling-key}
 pnpm install
 pnpm run dev
 ```
+
+## 最小限のサンプル
+
+[OpenAyame/ayame-web-sdk-examples](https://github.com/OpenAyame/ayame-web-sdk-examples) に最小限のサンプルコードを用意しています。
 
 ## API ドキュメント
 
