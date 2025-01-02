@@ -22,7 +22,9 @@
     "fmt": "biome format --write ./src",
     "check": "tsc --noEmit",
     "doc": "typedoc",
-    "deploy:docs": "pnpx gh-pages -d apidoc"
+    "deploy:docs": "pnpx gh-pages -d apidoc",
+    "dist": "pnpm clean && pnpm install && pnpm build",
+    "clean": "git clean -ffdx -e .env"
   },
   "bugs": {
     "url": "https://discord.gg/shiguredo"
