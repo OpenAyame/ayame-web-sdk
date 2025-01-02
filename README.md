@@ -60,6 +60,12 @@ pnpm install
 pnpm run dev
 ```
 
+<http://localhost:5173/> にアクセスすると、以下のような画面が憑依されます。
+
+[![Image from Gyazo](https://i.gyazo.com/bb7468cabcf461165efe11b6a5cc6ee0.png)](https://gyazo.com/bb7468cabcf461165efe11b6a5cc6ee0)
+
+この画面を 2 つタブで開いて、 `connect` ボタンを押して映像が双方向に表示されたら成功です。
+
 ## 最小限のサンプル
 
 [OpenAyame/ayame-web-sdk-examples](https://github.com/OpenAyame/ayame-web-sdk-examples) に最小限のサンプルコードを用意しています。
