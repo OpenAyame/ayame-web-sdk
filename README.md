@@ -16,7 +16,7 @@ Please read <https://github.com/shiguredo/oss> before use.
 
 ## 概要
 
-WebRTC Signaling Server Ayame をブラウザから利用する SDK です。
+[WebRTC Signaling Server Ayame](https://github.com/OpenAyame/ayame) をブラウザから利用する SDK です。
 
 ## 使い方
 
@@ -43,8 +43,9 @@ pnpm add @open-ayame/ayame-web-sdk
 
 ## DevTools
 
-**[Ayame Labo](https://ayame-labo.shiguredo.app/)** を利用する前提です。
+Ayame Web SDK を利用した、開発ツールです。
 
+- [Ayame Labo](https://ayame-labo.shiguredo.app/) を利用する例です
 - `GitHub ログイン名@ayame-devtools` というルーム ID にしていますが、ルーム名の `ayame-devtools` は任意の文字列に変更できます
 - シグナリングキーは [Ayame Labo](https://ayame-labo.shiguredo.app/) のダッシュボード上で取得してください
 
