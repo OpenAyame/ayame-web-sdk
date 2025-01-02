@@ -43,7 +43,7 @@ pnpm add @open-ayame/ayame-web-sdk
 
 ## サンプル
 
-[OpenAyame/ayame-web-sdk-samples](https://github.com/OpenAyame/ayame-web-sdk-samples) にサンプルコードを用意しています。
+[OpenAyame/ayame-web-sdk-examples](https://github.com/OpenAyame/ayame-web-sdk-examples) にサンプルコードを用意しています。
 
 ## DevTools
 
