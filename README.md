@@ -62,11 +62,11 @@ pnpm build
 pnpm dev
 ```
 
-<http://localhost:5173/> にアクセスすると、以下のような画面が憑依されます。
+<http://localhost:5173/> にアクセスすると、以下のような画面が表示されます。
 
-[![Image from Gyazo](https://i.gyazo.com/bb7468cabcf461165efe11b6a5cc6ee0.png)](https://gyazo.com/bb7468cabcf461165efe11b6a5cc6ee0)
+[![Image from Gyazo](https://i.gyazo.com/1bbe3d0e2b9fcd8d409856b7b0b6f28a.png)](https://gyazo.com/1bbe3d0e2b9fcd8d409856b7b0b6f28a)
 
-この画面を 2 つタブで開いて、 `connect` ボタンを押して映像が双方向に表示されたら成功です。
+この画面を 2 つタブで開いて、 `Connect` ボタンを押して映像が双方向に表示されたら成功です。
 
 ## 最小限のサンプル
 
