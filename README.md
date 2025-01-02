@@ -64,7 +64,7 @@ pnpm dev
 
 <http://localhost:5173/> にアクセスすると、以下のような画面が表示されます。
 
-[![Image from Gyazo](https://i.gyazo.com/1bbe3d0e2b9fcd8d409856b7b0b6f28a.png)](https://gyazo.com/1bbe3d0e2b9fcd8d409856b7b0b6f28a)
+[![Image from Gyazo](https://i.gyazo.com/69b1e9529f1a0e26bd3bcd3b74c95021.png)](https://gyazo.com/69b1e9529f1a0e26bd3bcd3b74c95021)
 
 この画面を 2 つタブで開いて、 `Connect` ボタンを押して映像が双方向に表示されたら成功です。
 
