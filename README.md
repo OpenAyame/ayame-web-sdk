@@ -58,7 +58,8 @@ VITE_AYAME_SIGNALING_KEY={シグナリングキー}
 
 ```bash
 pnpm install
-pnpm run dev
+pnpm build
+pnpm dev
 ```
 
 <http://localhost:5173/> にアクセスすると、以下のような画面が憑依されます。
