@@ -4,8 +4,8 @@ test('sendrecv x2', async ({ browser }) => {
   const sendrecv1 = await browser.newPage()
   const sendrecv2 = await browser.newPage()
 
-  await sendrecv1.goto('http://localhost:9000/sendrecv/')
-  await sendrecv2.goto('http://localhost:9000/sendrecv/')
+  await sendrecv1.goto('http://localhost:9000/')
+  await sendrecv2.goto('http://localhost:9000/')
 
   // チャンネル名を設定
   await sendrecv1.fill('#channel-name', 'sendrecv-different-video-codec-type')
@@ -16,8 +16,6 @@ test('sendrecv x2', async ({ browser }) => {
 
   await sendrecv1.click('#connect')
   await sendrecv2.click('#connect')
-
-  
 
   await sendrecv1.click('#disconnect')
   await sendrecv2.click('#disconnect')

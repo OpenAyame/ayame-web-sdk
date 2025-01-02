@@ -24,7 +24,8 @@
     "doc": "typedoc",
     "deploy:docs": "pnpx gh-pages -d apidoc",
     "dist": "pnpm clean && pnpm install && pnpm build",
-    "clean": "git clean -ffdx -e .env"
+    "clean": "git clean -ffdx -e .env.local",
+    "test": "playwright test --project=chromium --workers=1"
   },
   "bugs": {
     "url": "https://discord.gg/shiguredo"
@@ -49,7 +50,7 @@
   },
   "packageManager": "pnpm@9.15.2",
   "engines": {
-    "node": ">=18"
+    "node": ">=20.11"
   },
   "files": [
     "dist"
