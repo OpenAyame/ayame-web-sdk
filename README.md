@@ -43,11 +43,16 @@ pnpm add @open-ayame/ayame-web-sdk
 
 ## DevTools
 
+**[Ayame Labo](https://ayame-labo.shiguredo.app/)** を利用する前提です。
+
+- `GitHub ログイン名@ayame-devtools` というルーム ID にしていますが、 `ayame-devtools` は任意の文字列に変更できます
+- シグナリングキーは [Ayame Labo](https://ayame-labo.shiguredo.app/) のダッシュボード上で取得してください
+
 ```bash
 # cp .env.template .env.local
-VITE_AYAME_SIGNALING_URL=wss://ayame.example.com/signaling
-VITE_AYAME_ROOM_ID={ayame-room-id}
-VITE_AYAME_SIGNALING_KEY={ayame-signaling-key}
+VITE_AYAME_SIGNALING_URL=wss://ayame-labo.shiguredo.app/signaling
+VITE_AYAME_ROOM_ID={GitHubログイン名}@ayame-devtools
+VITE_AYAME_SIGNALING_KEY={シグナリングキー}
 ```
 
 ```bash
