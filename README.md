@@ -43,17 +43,29 @@ pnpm add @open-ayame/ayame-web-sdk
 
 ## DevTools
 
+**[Ayame Labo](https://ayame-labo.shiguredo.app/)** を利用する前提です。
+
+- `GitHub ログイン名@ayame-devtools` というルーム ID にしていますが、ルーム名の `ayame-devtools` は任意の文字列に変更できます
+- シグナリングキーは [Ayame Labo](https://ayame-labo.shiguredo.app/) のダッシュボード上で取得してください
+
 ```bash
 # cp .env.template .env.local
-VITE_AYAME_SIGNALING_URL=wss://ayame.example.com/signaling
-VITE_AYAME_ROOM_ID={ayame-room-id}
-VITE_AYAME_SIGNALING_KEY={ayame-signaling-key}
+VITE_AYAME_SIGNALING_URL=wss://ayame-labo.shiguredo.app/signaling
+VITE_AYAME_ROOM_ID_PREFIX={GitHubログイン名}@
+VITE_AYAME_ROOM_NAME=ayame-devtools
+VITE_AYAME_SIGNALING_KEY={シグナリングキー}
 ```
 
 ```bash
 pnpm install
 pnpm run dev
 ```
+
+<http://localhost:5173/> にアクセスすると、以下のような画面が憑依されます。
+
+[![Image from Gyazo](https://i.gyazo.com/bb7468cabcf461165efe11b6a5cc6ee0.png)](https://gyazo.com/bb7468cabcf461165efe11b6a5cc6ee0)
+
+この画面を 2 つタブで開いて、 `connect` ボタンを押して映像が双方向に表示されたら成功です。
 
 ## 最小限のサンプル
 

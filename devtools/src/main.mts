@@ -31,7 +31,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   let signalingUrl = import.meta.env.VITE_AYAME_SIGNALING_URL
-  let roomId = import.meta.env.VITE_AYAME_ROOM_ID
+  let roomIdPrefix = import.meta.env.VITE_AYAME_ROOM_ID_PREFIX
+  let roomName = import.meta.env.VITE_AYAME_ROOM_NAME
   let signalingKey = import.meta.env.VITE_AYAME_SIGNALING_KEY
 
   const queryParams = queryString.parse(location.search)
@@ -40,16 +41,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (queryParams.signalingUrl && typeof queryParams.signalingUrl === 'string') {
     signalingUrl = queryParams.signalingUrl as string
   }
-  if (queryParams.roomId && typeof queryParams.roomId === 'string') {
-    roomId = queryParams.roomId as string
+  if (queryParams.roomIdPrefix && typeof queryParams.roomIdPrefix === 'string') {
+    roomIdPrefix = queryParams.roomIdPrefix as string
   }
+  if (queryParams.roomName && typeof queryParams.roomName === 'string') {
+    roomName = queryParams.roomName as string
+  }
+
   if (queryParams.signalingKey && typeof queryParams.signalingKey === 'string') {
     signalingKey = queryParams.signalingKey as string
   }
 
   // コネクション関連の設定をする
   setSignalingUrl(signalingUrl)
-  setRoomId(roomId)
+  setRoomId(roomIdPrefix, roomName)
   setClientId(crypto.randomUUID())
   setSignalingKey(signalingKey)
 
@@ -423,7 +428,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         return
       }
       pc.onconnectionstatechange = (event: Event) => {
-        console.debug('onconnectionstatechange', event)
+        const connectionStateElement = document.getElementById(
+          'connection-state',
+        ) as HTMLSpanElement
+        if (!connectionStateElement) {
+          return
+        }
+        // data-connection-state の値を更新する
+        connectionStateElement.dataset.connectionState = pc.connectionState
       }
     })
 
@@ -559,12 +571,12 @@ const getRoomId = (): string => {
   return roomIdElement.value
 }
 
-const setRoomId = (roomId: string): void => {
+const setRoomId = (roomIdPrefix: string, roomName: string): void => {
   const roomIdElement = document.getElementById('room-id') as HTMLInputElement
   if (!roomIdElement) {
     return
   }
-  roomIdElement.value = roomId
+  roomIdElement.value = `${roomIdPrefix}${roomName}`
 }
 
 const getClientId = () => {
