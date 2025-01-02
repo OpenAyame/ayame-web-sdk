@@ -10,6 +10,11 @@ interface AyameRegisterMessage {
   standalone?: boolean
 }
 
+export interface AyameAddStreamEvent {
+  type: string
+  stream: MediaStream
+}
+
 class Connection {
   private debug: boolean
   private roomId: string
@@ -79,7 +84,6 @@ class Connection {
       connect: () => {},
       disconnect: () => {},
       addstream: () => {},
-      removestream: () => {},
       bye: () => {},
       datachannel: () => {},
     }
@@ -322,16 +326,15 @@ class Connection {
 
     const tracks: MediaStreamTrack[] = []
     pc.ontrack = (event: RTCTrackEvent) => {
-      const callbackEvent: any = event
-      this.traceLog('peer.ontrack()', event)
-      if (browser() === 'safari') {
-        tracks.push(event.track)
-        const mediaStream = new MediaStream(tracks)
-        this.remoteStream = mediaStream
-      } else {
-        this.remoteStream = event.streams[0]
+      if (this.remoteStream) {
+        return
       }
-      callbackEvent.stream = this.remoteStream
+      this.traceLog('peer.ontrack()', event)
+      this.remoteStream = event.streams[0]
+      const callbackEvent: AyameAddStreamEvent = {
+        type: 'addstream',
+        stream: this.remoteStream,
+      }
       this.callbacks.addstream(callbackEvent)
     }
     pc.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
