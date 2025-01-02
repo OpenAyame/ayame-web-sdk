@@ -428,7 +428,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         return
       }
       pc.onconnectionstatechange = (event: Event) => {
-        console.debug('onconnectionstatechange', event)
+        const connectionStateElement = document.getElementById(
+          'connection-state',
+        ) as HTMLSpanElement
+        if (!connectionStateElement) {
+          return
+        }
+        // data-connection-state の値を更新する
+        connectionStateElement.dataset.connectionState = pc.connectionState
       }
     })
 

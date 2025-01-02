@@ -34,7 +34,6 @@ jobs:
       # - run: pnpm lint
       - run: pnpm check
       - run: pnpm exec playwright install ${{ matrix.browser }} --with-deps
-      # workers 1 にしないと、テストが並列に実行されて失敗する
-      - run: pnpm exec playwright test --project=${{ matrix.browser }} --workers=1
+      - run: pnpm exec playwright test --project=${{ matrix.browser }}
         env:
           VITE_AYAME_ROOM_NAME: ${{ matrix.node }}

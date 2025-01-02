@@ -25,7 +25,7 @@
     "deploy:docs": "pnpx gh-pages -d apidoc",
     "dist": "pnpm clean && pnpm install && pnpm build",
     "clean": "git clean -ffdx -e .env.local",
-    "test": "playwright test --project=chromium --workers=1"
+    "test": "playwright test --project=chromium"
   },
   "bugs": {
     "url": "https://discord.gg/shiguredo"
