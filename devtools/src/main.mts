@@ -7,9 +7,29 @@ import type {
 } from '@open-ayame/ayame-web-sdk'
 import queryString from 'query-string'
 
-// https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/1129
-
 document.addEventListener('DOMContentLoaded', async () => {
+  // <permission> を利用した microphone/camera の権限取得
+  // https://developer.chrome.com/blog/permission-element-origin-trial?hl=ja
+  if ('HTMLPermissionElement' in window) {
+    // @ts-ignore HTMLPermissionElement を認識しないため
+    const permission = document.createElement('permission') as HTMLPermissionElement
+    permission.type = 'microphone camera'
+    // <permission type="microphone camera"> を作って追加する
+    const permissionContainer = document.getElementById('permission-container')
+    if (permissionContainer) {
+      permissionContainer.appendChild(permission)
+    }
+  } else {
+    // <permission> が非対応な場合はただボタンを作る
+    const permission = document.createElement('button')
+    permission.id = 'request-media-permission'
+    permission.textContent = 'Request Media Permission'
+    const permissionContainer = document.getElementById('permission-container')
+    if (permissionContainer) {
+      permissionContainer.appendChild(permission)
+    }
+  }
+
   let signalingUrl = import.meta.env.VITE_AYAME_SIGNALING_URL
   let roomId = import.meta.env.VITE_AYAME_ROOM_ID
   let signalingKey = import.meta.env.VITE_AYAME_SIGNALING_KEY
@@ -43,6 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setDebug(queryParams.debug === 'true')
   }
 
+  // <permission> が非対応な場合は getUserMedia を利用して microphone/camera の権限取得を行う
   document.querySelector('#request-media-permission')?.addEventListener('click', async () => {
     const audioPermission = await navigator.permissions.query({
       name: 'microphone' as PermissionName,
@@ -50,16 +71,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (audioPermission.state === 'granted') {
       return
     }
+    // microphone/camera は NodeJS ではまだ非対応
+    // https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/1129
     const cameraPermission = await navigator.permissions.query({ name: 'camera' as PermissionName })
     if (cameraPermission.state === 'granted') {
       return
     }
 
+    // 権限取得して
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: true,
       video: true,
     })
+    // デバイス一覧も取得して
     await navigator.mediaDevices.enumerateDevices()
+    // トラック停止する
     for (const track of stream.getTracks()) {
       track.stop()
     }

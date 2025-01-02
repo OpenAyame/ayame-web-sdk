@@ -326,6 +326,7 @@ class Connection {
 
     const tracks: MediaStreamTrack[] = []
     pc.ontrack = (event: RTCTrackEvent) => {
+      // すでに remoteStream がある場合はなにもしない
       if (this.remoteStream) {
         return
       }
@@ -362,15 +363,19 @@ class Connection {
         }
       }
     }
-    pc.onconnectionstatechange = (_) => {
+    pc.onconnectionstatechange = async (event: Event) => {
       if (pc.connectionState === 'connected') {
         if (this.options.standalone) {
           this.sendWs({ type: 'connected' })
           if (this.ws) {
             this.traceLog('websocket is closed')
             this.ws.close()
+            this.ws = null
           }
         }
+      } else if (pc.connectionState === 'closed') {
+        this.traceLog('peer connection is closed')
+        await this.disconnect()
       }
     }
     pc.onsignalingstatechange = (_) => {
