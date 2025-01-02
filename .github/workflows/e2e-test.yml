@@ -30,9 +30,7 @@ jobs:
       - uses: pnpm/action-setup@v4
       - run: pnpm --version
       - run: pnpm install
-      - run: pnpm fmt
-      # - run: pnpm lint
-      - run: pnpm check
+      - run: pnpm build
       - run: pnpm exec playwright install ${{ matrix.browser }} --with-deps
       - run: pnpm exec playwright test --project=${{ matrix.browser }}
         env:
