@@ -13,7 +13,7 @@
 
 - [CHANGE] ConnectionVideoOption の codec を codecMimeType へ変更する
   - @voluntas
-- [CHANGE] `removestream` は古い仕様だったため削除する
+- [CHANGE] `removestream` は利用されていないため廃止する
   - @voluntas
 - [ADD] `AyameAddStreamEvent` を追加する
   - `addstream` コールバックのイベント型を `AyameAddStreamEvent` として追加する
