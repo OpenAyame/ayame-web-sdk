@@ -1,8 +1,35 @@
 import { createConnection, defaultOptions, getAvailableCodecs } from '@open-ayame/ayame-web-sdk'
-import type { Connection, ConnectionOptions, Direction } from '@open-ayame/ayame-web-sdk'
+import type {
+  AyameAddStreamEvent,
+  Connection,
+  ConnectionOptions,
+  Direction,
+} from '@open-ayame/ayame-web-sdk'
 import queryString from 'query-string'
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // <permission> を利用した microphone/camera の権限取得
+  // https://developer.chrome.com/blog/permission-element-origin-trial?hl=ja
+  if ('HTMLPermissionElement' in window) {
+    // @ts-ignore HTMLPermissionElement を認識しないため
+    const permission = document.createElement('permission') as HTMLPermissionElement
+    permission.type = 'microphone camera'
+    // <permission type="microphone camera"> を作って追加する
+    const permissionContainer = document.getElementById('permission-container')
+    if (permissionContainer) {
+      permissionContainer.appendChild(permission)
+    }
+  } else {
+    // <permission> が非対応な場合はただボタンを作る
+    const permission = document.createElement('button')
+    permission.id = 'request-media-permission'
+    permission.textContent = 'Request Media Permission'
+    const permissionContainer = document.getElementById('permission-container')
+    if (permissionContainer) {
+      permissionContainer.appendChild(permission)
+    }
+  }
+
   let signalingUrl = import.meta.env.VITE_AYAME_SIGNALING_URL
   let roomId = import.meta.env.VITE_AYAME_ROOM_ID
   let signalingKey = import.meta.env.VITE_AYAME_SIGNALING_KEY
@@ -36,9 +63,149 @@ document.addEventListener('DOMContentLoaded', () => {
     setDebug(queryParams.debug === 'true')
   }
 
+  // <permission> が非対応な場合は getUserMedia を利用して microphone/camera の権限取得を行う
+  document.querySelector('#request-media-permission')?.addEventListener('click', async () => {
+    const audioPermission = await navigator.permissions.query({
+      name: 'microphone' as PermissionName,
+    })
+    if (audioPermission.state === 'granted') {
+      return
+    }
+    // microphone/camera は NodeJS ではまだ非対応
+    // https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/1129
+    const cameraPermission = await navigator.permissions.query({ name: 'camera' as PermissionName })
+    if (cameraPermission.state === 'granted') {
+      return
+    }
+
+    // 権限取得して
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: true,
+    })
+    // デバイス一覧も取得して
+    await navigator.mediaDevices.enumerateDevices()
+    // トラック停止する
+    for (const track of stream.getTracks()) {
+      track.stop()
+    }
+  })
+
   // qs の audio の値があれば適用する
   if (queryParams.audio && typeof queryParams.audio === 'string') {
     setAudioEnabled(queryParams.audio === 'true')
+  }
+
+  // 音声デバイスの権限の状態を取得する
+  const audioPermission = await navigator.permissions.query({
+    name: 'microphone' as PermissionName,
+  })
+  audioPermission.onchange = async (event: Event) => {
+    const permissionStatus = event.target as PermissionStatus
+    console.debug('audioPermissionStatus', permissionStatus)
+    const audioPermissionStateElement = document.getElementById(
+      'audio-device-permission-state',
+    ) as HTMLSpanElement
+    if (!audioPermissionStateElement) {
+      return
+    }
+    audioPermissionStateElement.textContent = permissionStatus.state
+    // パーミッションが granted だった場合は音声デバイス一覧を取得する
+    if (permissionStatus.state === 'granted') {
+      // 音声入力デバイス一覧の取得
+      const audioInputDeviceElement = document.getElementById(
+        'audio-input-device',
+      ) as HTMLSelectElement
+      if (!audioInputDeviceElement) {
+        return
+      }
+      const audioInputDevices = await navigator.mediaDevices.enumerateDevices()
+      for (const device of audioInputDevices) {
+        if (device.kind === 'audioinput') {
+          const option = document.createElement('option')
+          option.value = device.deviceId
+          option.textContent = device.label
+          audioInputDeviceElement.appendChild(option)
+        }
+      }
+
+      // 音声出力デバイス一覧の取得
+      const audioOutputDeviceElement = document.getElementById(
+        'audio-output-device',
+      ) as HTMLSelectElement
+      if (!audioOutputDeviceElement) {
+        return
+      }
+      const audioOutputDevices = await navigator.mediaDevices.enumerateDevices()
+      for (const device of audioOutputDevices) {
+        if (device.kind === 'audiooutput') {
+          const option = document.createElement('option')
+          option.value = device.deviceId
+          option.textContent = device.label
+          audioOutputDeviceElement.appendChild(option)
+        }
+      }
+    } else if (permissionStatus.state === 'prompt' || permissionStatus.state === 'denied') {
+      // パーミッションが prompt だった場合は音声デバイス一覧クリアにして選択できないようにする
+      const audioInputDeviceElement = document.getElementById(
+        'audio-input-device',
+      ) as HTMLSelectElement
+      if (!audioInputDeviceElement) {
+        return
+      }
+      audioInputDeviceElement.innerHTML = ''
+      const audioOutputDeviceElement = document.getElementById(
+        'audio-output-device',
+      ) as HTMLSelectElement
+      if (!audioOutputDeviceElement) {
+        return
+      }
+      audioOutputDeviceElement.innerHTML = ''
+    }
+  }
+
+  const audioPermissionStateElement = document.getElementById(
+    'audio-device-permission-state',
+  ) as HTMLSpanElement
+  if (!audioPermissionStateElement) {
+    return
+  }
+  audioPermissionStateElement.textContent = audioPermission.state
+  // パーミッションが granted だった場合は音声デバイス一覧を取得する
+  if (audioPermission.state === 'granted') {
+    // 音声入力デバイス一覧の取得
+    const audioInputDeviceElement = document.getElementById(
+      'audio-input-device',
+    ) as HTMLSelectElement
+    if (!audioInputDeviceElement) {
+      return
+    }
+    const audioInputDevices = await navigator.mediaDevices.enumerateDevices()
+    for (const device of audioInputDevices) {
+      if (device.kind === 'audioinput') {
+        const option = document.createElement('option')
+        option.value = device.deviceId
+        option.textContent = device.label
+        audioInputDeviceElement.appendChild(option)
+      }
+    }
+
+    // 音声出力デバイス一覧の取得
+    const audioOutputDeviceElement = document.getElementById(
+      'audio-output-device',
+    ) as HTMLSelectElement
+    if (!audioOutputDeviceElement) {
+      return
+    }
+    const audioOutputDevices = await navigator.mediaDevices.enumerateDevices()
+    for (const device of audioOutputDevices) {
+      if (device.kind === 'audiooutput') {
+        const option = document.createElement('option')
+        option.value = device.deviceId
+        option.textContent = device.label
+        audioOutputDeviceElement.appendChild(option)
+      }
+    }
   }
 
   // qs の audioDirection の値があれば適用する
@@ -83,6 +250,71 @@ document.addEventListener('DOMContentLoaded', () => {
     setVideoEnabled(queryParams.video === 'true')
   }
 
+  // 映像デバイスの権限の状態を取得する
+  const videoPermission = await navigator.permissions.query({
+    name: 'camera' as PermissionName,
+  })
+  videoPermission.onchange = async (event: Event) => {
+    const permissionStatus = event.target as PermissionStatus
+    console.debug('videoPermissionStatus', permissionStatus)
+    const videoPermissionStateElement = document.getElementById(
+      'video-device-permission-state',
+    ) as HTMLSpanElement
+    if (!videoPermissionStateElement) {
+      return
+    }
+    videoPermissionStateElement.textContent = permissionStatus.state
+    if (permissionStatus.state === 'granted') {
+      // 映像入力デバイス一覧の取得
+      const videoInputDeviceElement = document.getElementById(
+        'video-input-device',
+      ) as HTMLSelectElement
+      if (!videoInputDeviceElement) {
+        return
+      }
+      const videoInputDevices = await navigator.mediaDevices.enumerateDevices()
+      for (const device of videoInputDevices) {
+        if (device.kind === 'videoinput') {
+          const option = document.createElement('option')
+          option.value = device.deviceId
+          option.textContent = device.label
+          videoInputDeviceElement.appendChild(option)
+        }
+      }
+    } else if (permissionStatus.state === 'prompt' || permissionStatus.state === 'denied') {
+      // 映像入力デバイス一覧クリアにして選択できないようにする
+      const videoInputDeviceElement = document.getElementById(
+        'video-input-device',
+      ) as HTMLSelectElement
+      if (!videoInputDeviceElement) {
+        return
+      }
+      videoInputDeviceElement.innerHTML = ''
+    }
+  }
+  const videoPermissionStateElement = document.getElementById(
+    'video-device-permission-state',
+  ) as HTMLSpanElement
+  if (!videoPermissionStateElement) {
+    return
+  }
+  videoPermissionStateElement.textContent = videoPermission.state
+
+  // 映像入力デバイス一覧の取得
+  const videoInputDeviceElement = document.getElementById('video-input-device') as HTMLSelectElement
+  if (!videoInputDeviceElement) {
+    return
+  }
+  const videoInputDevices = await navigator.mediaDevices.enumerateDevices()
+  for (const device of videoInputDevices) {
+    if (device.kind === 'videoinput') {
+      const option = document.createElement('option')
+      option.value = device.deviceId
+      option.textContent = device.label
+      videoInputDeviceElement.appendChild(option)
+    }
+  }
+
   if (queryParams.videoDirection && typeof queryParams.videoDirection === 'string') {
     setVideoDirection(queryParams.videoDirection as Direction)
   }
@@ -123,6 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  let stream: MediaStream | null = null
   let conn: Connection | null = null
 
   // connect ボタンを押す
@@ -146,8 +379,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // createConnection に変更する
     conn = createConnection(signalingUrl, roomId, options, debug)
-
-    let stream: MediaStream | null = null
 
     // audio が有効かつ sendrecv または sendonly の場合はローカルの音声を取得する
     const audioEnabled =
@@ -174,7 +405,7 @@ document.addEventListener('DOMContentLoaded', () => {
       localVideo.srcObject = stream
     }
 
-    conn.on('addstream', (event) => {
+    conn.on('addstream', (event: AyameAddStreamEvent) => {
       const remoteVideo = document.getElementById('remote-video') as HTMLVideoElement
       if (!remoteVideo) {
         return
@@ -183,13 +414,39 @@ document.addEventListener('DOMContentLoaded', () => {
       remoteVideo.srcObject = event.stream
     })
 
-    conn.on('removestream', (event) => {
-      const remoteVideo = document.getElementById('remote-video') as HTMLVideoElement
-      if (!remoteVideo) {
+    conn.on('open', () => {
+      if (!conn) {
         return
       }
-      console.debug('removestream', event)
-      remoteVideo.srcObject = null
+      const pc = conn.peerConnection
+      if (!pc) {
+        return
+      }
+      pc.onconnectionstatechange = (event: Event) => {
+        console.debug('onconnectionstatechange', event)
+      }
+    })
+
+    conn.on('disconnect', () => {
+      if (!conn) {
+        return
+      }
+      if (stream) {
+        for (const track of stream.getTracks()) {
+          track.stop()
+        }
+        const localVideo = document.getElementById('local-video') as HTMLVideoElement
+        if (localVideo) {
+          localVideo.srcObject = null
+        }
+      }
+      const remoteVideo = document.getElementById('remote-video') as HTMLVideoElement
+      if (remoteVideo) {
+        remoteVideo.srcObject = null
+      }
+      stream = null
+      conn = null
+      console.debug('disconnect')
     })
 
     await conn.connect(stream)
@@ -202,6 +459,23 @@ document.addEventListener('DOMContentLoaded', () => {
     console.debug('disconnecting...')
     await conn.disconnect()
     console.debug('disconnected')
+
+    if (stream) {
+      for (const track of stream.getTracks()) {
+        track.stop()
+      }
+      const localVideo = document.getElementById('local-video') as HTMLVideoElement
+      if (localVideo) {
+        localVideo.srcObject = null
+      }
+      stream = null
+    }
+
+    const remoteVideo = document.getElementById('remote-video') as HTMLVideoElement
+    if (remoteVideo) {
+      remoteVideo.srcObject = null
+    }
+
     conn = null
   })
 

@@ -13,6 +13,11 @@
 
 - [CHANGE] ConnectionVideoOption の codec を codecMimeType へ変更する
   - @voluntas
+- [CHANGE] `removestream` は利用されていないため廃止する
+  - @voluntas
+- [ADD] `AyameAddStreamEvent` を追加する
+  - `addstream` コールバックのイベント型を `AyameAddStreamEvent` として追加する
+  - @voluntas
 - [ADD] standalone モードに対応する
   - options に standalone を追加する
   - standalone モード時は、接続完了時に ayame に type: connected を送信する
