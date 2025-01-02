@@ -1,0 +1,40 @@
+name: e2e-test
+
+on:
+  push:
+    paths-ignore:
+      - "**.md"
+      - "LICENSE"
+  schedule:
+    # UTC 時間で毎日 2:00 (JST で 11:00) に実行、月曜日から金曜日
+    - cron: "0 2 * * 1-5"
+
+jobs:
+  e2e-test:
+    timeout-minutes: 10
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        node: ["20", "22"]
+        # browser: ["chromium", "firefox", "webkit"]
+        browser: ["chromium"]
+    env:
+      VITE_AYAME_SIGNALING_URL: ${{ secrets.TEST_SIGNALING_URL }}
+      VITE_AYAME_ROOM_ID_PREFIX: ${{ secrets.TEST_ROOM_ID_PREFIX }}
+      VITE_AYAME_SIGNALING_KEY: ${{ secrets.TEST_SIGNALING_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - uses: pnpm/action-setup@v4
+      - run: pnpm --version
+      - run: pnpm install
+      - run: pnpm fmt
+      # - run: pnpm lint
+      - run: pnpm check
+      - run: pnpm exec playwright install ${{ matrix.browser }} --with-deps
+      # workers 1 にしないと、テストが並列に実行されて失敗する
+      - run: pnpm exec playwright test --project=${{ matrix.browser }} --workers=1
+        env:
+          VITE_AYAME_ROOM_NAME: ${{ matrix.node }}
