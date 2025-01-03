@@ -1,8 +1,12 @@
 import type React from 'react'
 import { useEffect } from 'react'
+import ConnectButton from './components/ConnectButton'
 import ConnectionSettings from './components/ConnectionSettings'
 import CopyUrlButton from './components/CopyUrlButton'
+import DisconnectButton from './components/DisconnectButton'
+import LocalVideo from './components/LocalVideo'
 import MediaSettings from './components/MediaSettings'
+import RemoteVideo from './components/RemoteVideo'
 import { useSettingsStore } from './store/useSettingsStore'
 
 const App: React.FC = () => {
@@ -20,6 +24,14 @@ const App: React.FC = () => {
       </p>
       <MediaSettings />
       <ConnectionSettings />
+      <p>
+        <ConnectButton />
+        <DisconnectButton />
+      </p>
+      <p>
+        <LocalVideo />
+        <RemoteVideo />
+      </p>
     </>
   )
 }
