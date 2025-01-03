@@ -18,6 +18,12 @@ type Settings = {
   }
 
   signalingUrl: string
+  roomId: string
+  clientId: string
+  signalingKey: string
+
+  debug: boolean
+  standalone: boolean
 }
 
 type SettingsStore = {
@@ -35,6 +41,13 @@ type SettingsStore = {
   setCameraPermissionState: () => Promise<void>
 
   setSignalingUrl: (url: string) => void
+
+  setRoomId: (roomId: string) => void
+  setClientId: (clientId: string) => void
+  setSignalingKey: (signalingKey: string) => void
+
+  toggleDebug: (enabled: boolean) => void
+  toggleStandalone: (enabled: boolean) => void
 
   // Copy URL 関連
   generateUrlParams: () => string
@@ -59,6 +72,12 @@ export const useSettingsStore = create<SettingsStore>()((set, get) => ({
       codecMimeType: 'undefined',
     },
     signalingUrl: import.meta.env.VITE_AYAME_SIGNALING_URL || '',
+    roomId:
+      `${import.meta.env.VITE_AYAME_ROOM_ID_PREFIX}${import.meta.env.VITE_AYAME_ROOM_NAME}` || '',
+    clientId: crypto.randomUUID(),
+    signalingKey: import.meta.env.VITE_AYAME_SIGNALING_KEY || '',
+    debug: false,
+    standalone: false,
   },
 
   setMicrophonePermissionState: async () => {
@@ -189,6 +208,49 @@ export const useSettingsStore = create<SettingsStore>()((set, get) => ({
       },
     }))
   },
+
+  setRoomId: (roomId: string) => {
+    set((state) => ({
+      settings: {
+        ...state.settings,
+        roomId: roomId,
+      },
+    }))
+  },
+
+  setClientId: (clientId: string) => {
+    set((state) => ({
+      settings: {
+        ...state.settings,
+        clientId: clientId,
+      },
+    }))
+  },
+
+  setSignalingKey: (signalingKey: string) => {
+    set((state) => ({
+      settings: {
+        ...state.settings,
+        signalingKey: signalingKey,
+      },
+    }))
+  },
+
+  toggleDebug: (enabled: boolean) =>
+    set((state) => ({
+      settings: {
+        ...state.settings,
+        debug: enabled,
+      },
+    })),
+
+  toggleStandalone: (enabled: boolean) =>
+    set((state) => ({
+      settings: {
+        ...state.settings,
+        standalone: enabled,
+      },
+    })),
 
   generateUrlParams: () => {
     const { settings } = get()

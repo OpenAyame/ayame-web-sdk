@@ -1,6 +1,6 @@
 import { useSettingsStore } from '../store/useSettingsStore'
 
-export const SignalingUrl = () => {
+const SignalingUrl = () => {
   const signalingUrl = useSettingsStore((state) => state.settings.signalingUrl)
   const setSignalingUrl = useSettingsStore((state) => state.setSignalingUrl)
 
@@ -8,5 +8,9 @@ export const SignalingUrl = () => {
     setSignalingUrl(e.target.value)
   }
 
-  return <input type="text" value={signalingUrl} onChange={handleChange} />
+  return (
+    <input type="text" style={{ width: '350px' }} value={signalingUrl} onChange={handleChange} />
+  )
 }
+
+export default SignalingUrl
