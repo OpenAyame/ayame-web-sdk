@@ -207,7 +207,7 @@ export const useSettingsStore = create<SettingsStore>()((set, get) => ({
     return params.toString()
   },
 
-  setSettingsFromUrl: (params: URLSearchParams) =>
+  setSettingsFromUrl: (params: URLSearchParams) => {
     set((state) => ({
       settings: {
         ...state.settings,
@@ -223,7 +223,9 @@ export const useSettingsStore = create<SettingsStore>()((set, get) => ({
           direction: (params.get('videoDirection') as Direction) || 'sendrecv',
           codecMimeType: params.get('videoCodecMimeType') || 'undefined',
         },
-        signalingUrl: params.get('signalingUrl') || '',
+        // 項目がなかった場合は今ある値をそのまま利用する
+        signalingUrl: params.get('signalingUrl') || state.settings.signalingUrl,
       },
-    })),
+    }))
+  },
 }))
