@@ -41,3 +41,21 @@ export const useAyameStore = create<AyameStore>()((set, get) => ({
     set({ remoteMediaStream: stream })
   },
 }))
+
+// ストアの作成後に subscribe を設定
+useAyameStore.subscribe((state, prevState) => {
+  if (state.localMediaStream !== prevState.localMediaStream) {
+    console.log('localMediaStream changed:', {
+      from: prevState.localMediaStream,
+      to: state.localMediaStream,
+      stack: new Error().stack,
+    })
+  }
+  if (state.remoteMediaStream !== prevState.remoteMediaStream) {
+    console.log('remoteMediaStream changed:', {
+      from: prevState.remoteMediaStream,
+      to: state.remoteMediaStream,
+      stack: new Error().stack,
+    })
+  }
+})

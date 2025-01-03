@@ -68,6 +68,12 @@ const RequestMediaPermissionButton: React.FC<{
     }
   }
 
+  // <permission> を利用した microphone/camera の権限取得
+  if ('HTMLPermissionElement' in window) {
+    // @ts-ignore HTMLPermissionElement を認識しないため
+    return <permission type="microphone camera" />
+  }
+
   return (
     <button type="button" disabled={isPermissionsGranted} onClick={handleClick}>
       {buttonText}

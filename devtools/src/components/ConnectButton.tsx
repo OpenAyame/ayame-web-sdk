@@ -20,6 +20,9 @@ const ConnectButton: React.FC = () => {
   const setRemoteMediaStream = useAyameStore((state) => state.setRemoteMediaStream)
   const setConnectionState = useAyameStore((state) => state.setConnectionState)
 
+  const localMediaStream = useAyameStore((state) => state.localMediaStream)
+  const remoteMediaStream = useAyameStore((state) => state.remoteMediaStream)
+
   const handleClick = async () => {
     const options = defaultOptions
     options.audio.enabled = audioEnabled
@@ -57,8 +60,19 @@ const ConnectButton: React.FC = () => {
       }
     })
 
+    // 切断時にローカルとリモートのメディアストリームを停止する
     conn.on('disconnect', () => {
-      console.log('disconnect')
+      // この関数内で取得した localStream を停止する
+      // store を経由しないようにする
+      if (localStream) {
+        for (const track of localStream.getTracks()) {
+          track.stop()
+        }
+      }
+
+      setLocalMediaStream(null)
+      setRemoteMediaStream(null)
+      setAyameConnection(null)
     })
 
     await conn.connect(localStream)
