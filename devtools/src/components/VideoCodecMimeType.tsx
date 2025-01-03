@@ -8,11 +8,15 @@ const VideoCodecMimeType: React.FC = () => {
   const [codecs, setCodecs] = useState<string[]>([])
   const setVideoCodecMimeType = useSettingsStore((state) => state.setVideoCodecMimeType)
   const videoCodecMimeType = useSettingsStore((state) => state.settings.video.codecMimeType)
+  const videoDirection = useSettingsStore((state) => state.settings.video.direction)
 
   useEffect(() => {
-    const mimeTypes = getAvailableCodecs('video', 'sender')
+    const mimeTypes = getAvailableCodecs(
+      'video',
+      videoDirection === 'sendrecv' || videoDirection === 'sendonly' ? 'sender' : 'receiver',
+    )
     setCodecs(mimeTypes)
-  }, [])
+  }, [videoDirection])
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setVideoCodecMimeType(e.target.value)

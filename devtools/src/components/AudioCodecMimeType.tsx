@@ -8,11 +8,15 @@ const VideoCodecMimeType: React.FC = () => {
   const [codecs, setCodecs] = useState<string[]>([])
   const setAudioCodecMimeType = useSettingsStore((state) => state.setAudioCodecMimeType)
   const audioCodecMimeType = useSettingsStore((state) => state.settings.audio.codecMimeType)
+  const audioDirection = useSettingsStore((state) => state.settings.audio.direction)
 
   useEffect(() => {
-    const mimeTypes = getAvailableCodecs('audio', 'sender')
+    const mimeTypes = getAvailableCodecs(
+      'audio',
+      audioDirection === 'sendrecv' || audioDirection === 'sendonly' ? 'sender' : 'receiver',
+    )
     setCodecs(mimeTypes)
-  }, [])
+  }, [audioDirection])
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setAudioCodecMimeType(e.target.value)
