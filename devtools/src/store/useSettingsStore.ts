@@ -42,6 +42,7 @@ type SettingsStore = {
 }
 
 export const useSettingsStore = create<SettingsStore>()((set, get) => ({
+  // 初期値
   settings: {
     permissionState: {
       microphone: 'undefined',
