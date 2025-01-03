@@ -1,5 +1,6 @@
 import type React from 'react'
 import { useEffect } from 'react'
+import ConnectionSettings from './components/ConnectionSettings'
 import CopyUrlButton from './components/CopyUrlButton'
 import MediaSettings from './components/MediaSettings'
 import { useSettingsStore } from './store/useSettingsStore'
@@ -14,8 +15,11 @@ const App: React.FC = () => {
 
   return (
     <>
-      <CopyUrlButton />
+      <p>
+        <CopyUrlButton />
+      </p>
       <MediaSettings />
+      <ConnectionSettings />
     </>
   )
 }

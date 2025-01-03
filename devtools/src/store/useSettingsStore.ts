@@ -1,12 +1,15 @@
+import type { Direction } from '@open-ayame/ayame-web-sdk'
 import { create } from 'zustand'
 
 type Settings = {
   audio: {
     isEnable: boolean
+    direction: Direction
     codecMimeType: string
   }
   video: {
     isEnable: boolean
+    direction: Direction
     codecMimeType: string
   }
   permissionState: {
@@ -19,9 +22,11 @@ type SettingsStore = {
   settings: Settings
 
   toggleAudio: (enabled: boolean) => void
+  setAudioDirection: (direction: Direction) => void
   setAudioCodecMimeType: (mimeType: string) => void
 
   toggleVideo: (enabled: boolean) => void
+  setVideoDirection: (direction: Direction) => void
   setVideoCodecMimeType: (mimeType: string) => void
 
   setMicrophonePermissionState: () => Promise<void>
@@ -40,10 +45,12 @@ export const useSettingsStore = create<SettingsStore>()((set, get) => ({
     },
     audio: {
       isEnable: true,
+      direction: 'sendrecv',
       codecMimeType: 'undefined',
     },
     video: {
       isEnable: true,
+      direction: 'sendrecv',
       codecMimeType: 'undefined',
     },
   },
@@ -113,6 +120,17 @@ export const useSettingsStore = create<SettingsStore>()((set, get) => ({
       },
     })),
 
+  setAudioDirection: (direction: Direction) =>
+    set((state) => ({
+      settings: {
+        ...state.settings,
+        audio: {
+          ...state.settings.audio,
+          direction: direction,
+        },
+      },
+    })),
+
   setAudioCodecMimeType: (mimeType: string) =>
     set((state) => ({
       settings: {
@@ -135,6 +153,17 @@ export const useSettingsStore = create<SettingsStore>()((set, get) => ({
       },
     })),
 
+  setVideoDirection: (direction: Direction) =>
+    set((state) => ({
+      settings: {
+        ...state.settings,
+        video: {
+          ...state.settings.video,
+          direction: direction,
+        },
+      },
+    })),
+
   setVideoCodecMimeType: (mimeType: string) =>
     set((state) => ({
       settings: {
@@ -151,9 +180,11 @@ export const useSettingsStore = create<SettingsStore>()((set, get) => ({
     const params = new URLSearchParams()
 
     params.set('audio', settings.audio.isEnable.toString())
+    params.set('audioDirection', settings.audio.direction)
     params.set('audioCodecMimeType', settings.audio.codecMimeType)
 
     params.set('video', settings.video.isEnable.toString())
+    params.set('videoDirection', settings.video.direction)
     params.set('videoCodecMimeType', settings.video.codecMimeType)
 
     return params.toString()
@@ -166,11 +197,13 @@ export const useSettingsStore = create<SettingsStore>()((set, get) => ({
         audio: {
           ...state.settings.audio,
           isEnable: params.get('audio') !== 'false',
+          direction: (params.get('audioDirection') as Direction) || 'sendrecv',
           codecMimeType: params.get('audioCodecMimeType') || 'undefined',
         },
         video: {
           ...state.settings.video,
           isEnable: params.get('video') !== 'false',
+          direction: (params.get('videoDirection') as Direction) || 'sendrecv',
           codecMimeType: params.get('videoCodecMimeType') || 'undefined',
         },
       },
