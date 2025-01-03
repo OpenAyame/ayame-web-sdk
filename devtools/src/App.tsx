@@ -1,10 +1,7 @@
 import type React from 'react'
 import { useEffect } from 'react'
-import AudioCodecMimeType from './components/AudioCodecMimeType'
-import AudioToggle from './components/AudioToggle'
 import CopyUrlButton from './components/CopyUrlButton'
-import VideoCodecMimeType from './components/VideoCodecMimeType'
-import VideoToggle from './components/VideoToggle'
+import MediaSettings from './components/MediaSettings'
 import { useSettingsStore } from './store/useSettingsStore'
 
 const App: React.FC = () => {
@@ -18,20 +15,7 @@ const App: React.FC = () => {
   return (
     <>
       <CopyUrlButton />
-      <p>
-        Audio:
-        <AudioToggle />
-        <br />
-        AudioCodecMimeType:
-        <AudioCodecMimeType />
-      </p>
-      <p>
-        Video:
-        <VideoToggle />
-        <br />
-        VideoCodecMimeType:
-        <VideoCodecMimeType />
-      </p>
+      <MediaSettings />
     </>
   )
 }

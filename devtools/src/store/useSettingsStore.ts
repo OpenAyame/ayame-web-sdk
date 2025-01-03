@@ -9,16 +9,23 @@ type Settings = {
     isEnable: boolean
     codecMimeType: string
   }
+  permissionState: {
+    microphone: 'granted' | 'denied' | 'prompt' | 'undefined'
+    camera: 'granted' | 'denied' | 'prompt' | 'undefined'
+  }
 }
 
 type SettingsStore = {
   settings: Settings
 
   toggleAudio: (enabled: boolean) => void
-  toggleVideo: (enabled: boolean) => void
-
   setAudioCodecMimeType: (mimeType: string) => void
+
+  toggleVideo: (enabled: boolean) => void
   setVideoCodecMimeType: (mimeType: string) => void
+
+  setMicrophonePermissionState: () => Promise<void>
+  setCameraPermissionState: () => Promise<void>
 
   // Copy URL 関連
   generateUrlParams: () => string
@@ -27,6 +34,10 @@ type SettingsStore = {
 
 export const useSettingsStore = create<SettingsStore>()((set, get) => ({
   settings: {
+    permissionState: {
+      microphone: 'undefined',
+      camera: 'undefined',
+    },
     audio: {
       isEnable: true,
       codecMimeType: 'undefined',
@@ -35,6 +46,60 @@ export const useSettingsStore = create<SettingsStore>()((set, get) => ({
       isEnable: true,
       codecMimeType: 'undefined',
     },
+  },
+
+  setMicrophonePermissionState: async () => {
+    const permissionState = await navigator.permissions.query({
+      name: 'microphone' as PermissionName,
+    })
+    set((state) => ({
+      settings: {
+        ...state.settings,
+        permissionState: {
+          ...state.settings.permissionState,
+          microphone: permissionState.state,
+        },
+      },
+    }))
+    // リアルタイムにパーミッションが変わったときに反映するようにする
+    permissionState.onchange = () => {
+      set((state) => ({
+        settings: {
+          ...state.settings,
+          permissionState: {
+            ...state.settings.permissionState,
+            microphone: permissionState.state,
+          },
+        },
+      }))
+    }
+  },
+
+  setCameraPermissionState: async () => {
+    const permissionState = await navigator.permissions.query({
+      name: 'camera' as PermissionName,
+    })
+    set((state) => ({
+      settings: {
+        ...state.settings,
+        permissionState: {
+          ...state.settings.permissionState,
+          camera: permissionState.state,
+        },
+      },
+    }))
+    // リアルタイムにパーミッションが変わったときに反映するようにする
+    permissionState.onchange = () => {
+      set((state) => ({
+        settings: {
+          ...state.settings,
+          permissionState: {
+            ...state.settings.permissionState,
+            camera: permissionState.state,
+          },
+        },
+      }))
+    }
   },
 
   toggleAudio: (enabled: boolean) =>
