@@ -8,7 +8,15 @@ const RoomId = () => {
     setRoomId(e.target.value)
   }
 
-  return <input type="text" style={{ width: '350px' }} value={roomId} onChange={handleChange} />
+  return (
+    <input
+      id="room-id"
+      type="text"
+      style={{ width: '350px' }}
+      value={roomId}
+      onChange={handleChange}
+    />
+  )
 }
 
 export default RoomId

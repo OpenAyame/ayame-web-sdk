@@ -4,7 +4,7 @@ const DatasetConnectionState: React.FC = () => {
   const connectionState = useAyameStore((state) => state.connectionState)
 
   // playwright の E2E テスト用
-  return <div id="dataset-connection-state" data-connection-state={connectionState} />
+  return <div id="connection-state" data-connection-state={connectionState} />
 }
 
 export default DatasetConnectionState
