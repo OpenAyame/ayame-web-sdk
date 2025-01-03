@@ -34,25 +34,22 @@ type SettingsStore = {
   settings: Settings
 
   toggleAudio: (enabled: boolean) => void
+  setMicrophonePermissionState: () => Promise<void>
   setAudioInputDeviceId: (deviceId: string) => void
   setAudioOutputDeviceId: (deviceId: string) => void
   setAudioDirection: (direction: Direction) => void
   setAudioCodecMimeType: (mimeType: string) => void
 
   toggleVideo: (enabled: boolean) => void
+  setCameraPermissionState: () => Promise<void>
   setVideoInputDeviceId: (deviceId: string) => void
   setVideoDirection: (direction: Direction) => void
   setVideoCodecMimeType: (mimeType: string) => void
 
-  setMicrophonePermissionState: () => Promise<void>
-  setCameraPermissionState: () => Promise<void>
-
   setSignalingUrl: (url: string) => void
-
   setRoomId: (roomId: string) => void
   setClientId: (clientId: string) => void
   setSignalingKey: (signalingKey: string) => void
-
   toggleDebug: (enabled: boolean) => void
   toggleStandalone: (enabled: boolean) => void
 
