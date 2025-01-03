@@ -59,6 +59,7 @@ const RequestMediaPermissionButton: React.FC<{
       }
       // メディアデバイスのパーミッションを取りに行く
       const stream = await navigator.mediaDevices.getUserMedia(constraints)
+      // ストリームを停止する
       for (const track of stream.getTracks()) {
         track.stop()
       }
