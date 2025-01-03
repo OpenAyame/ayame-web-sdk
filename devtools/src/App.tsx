@@ -28,10 +28,12 @@ const App: React.FC = () => {
         <ConnectButton />
         <DisconnectButton />
       </p>
-      <p>
+      <div style={{ float: 'left' }}>
         <LocalVideo />
+      </div>
+      <div style={{ float: 'left', marginLeft: '20px' }}>
         <RemoteVideo />
-      </p>
+      </div>
     </>
   )
 }
