@@ -81,7 +81,7 @@ const ConnectButton: React.FC = () => {
   }
 
   return (
-    <button id="connect" type="button" onClick={handleClick}>
+    <button data-testid="connect" type="button" onClick={handleClick}>
       Connect
     </button>
   )

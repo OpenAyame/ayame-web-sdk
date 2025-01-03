@@ -32,7 +32,7 @@ const DisconnectButton: React.FC = () => {
   }
 
   return (
-    <button id="disconnect" type="button" onClick={handleClick}>
+    <button data-testid="disconnect" type="button" onClick={handleClick}>
       Disconnect
     </button>
   )

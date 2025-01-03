@@ -10,7 +10,7 @@ const RoomId = () => {
 
   return (
     <input
-      id="room-id"
+      data-testid="room-id"
       type="text"
       style={{ width: '350px' }}
       value={roomId}
