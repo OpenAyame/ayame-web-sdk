@@ -265,6 +265,10 @@ export const useSettingsStore = create<SettingsStore>()((set, get) => ({
     params.set('videoCodecMimeType', settings.video.codecMimeType)
 
     params.set('signalingUrl', settings.signalingUrl)
+    params.set('roomId', settings.roomId)
+    params.set('signalingKey', settings.signalingKey)
+    params.set('debug', settings.debug.toString())
+    params.set('standalone', settings.standalone.toString())
 
     return params.toString()
   },
@@ -287,6 +291,11 @@ export const useSettingsStore = create<SettingsStore>()((set, get) => ({
         },
         // 項目がなかった場合は今ある値をそのまま利用する
         signalingUrl: params.get('signalingUrl') || state.settings.signalingUrl,
+        roomId: params.get('roomId') || state.settings.roomId,
+        clientId: params.get('clientId') || state.settings.clientId,
+        signalingKey: params.get('signalingKey') || state.settings.signalingKey,
+        debug: params.get('debug') === 'true',
+        standalone: params.get('standalone') === 'true',
       },
     }))
   },
