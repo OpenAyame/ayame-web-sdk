@@ -1,11 +1,16 @@
 import type React from 'react'
+import { SignalingUrl } from './SignalingUrl'
 
-const MediaSettings: React.FC = () => {
+const ConnectionSettings: React.FC = () => {
   return (
     <fieldset style={{ maxWidth: '500px' }}>
       <legend>Connection settings</legend>
+      <p>
+        Signaling URL:
+        <SignalingUrl />
+      </p>
     </fieldset>
   )
 }
 
-export default MediaSettings
+export default ConnectionSettings

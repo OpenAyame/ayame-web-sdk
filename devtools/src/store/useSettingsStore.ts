@@ -16,6 +16,8 @@ type Settings = {
     microphone: 'granted' | 'denied' | 'prompt' | 'undefined'
     camera: 'granted' | 'denied' | 'prompt' | 'undefined'
   }
+
+  signalingUrl: string
 }
 
 type SettingsStore = {
@@ -31,6 +33,8 @@ type SettingsStore = {
 
   setMicrophonePermissionState: () => Promise<void>
   setCameraPermissionState: () => Promise<void>
+
+  setSignalingUrl: (url: string) => void
 
   // Copy URL 関連
   generateUrlParams: () => string
@@ -53,6 +57,7 @@ export const useSettingsStore = create<SettingsStore>()((set, get) => ({
       direction: 'sendrecv',
       codecMimeType: 'undefined',
     },
+    signalingUrl: import.meta.env.VITE_AYAME_SIGNALING_URL || '',
   },
 
   setMicrophonePermissionState: async () => {
@@ -175,6 +180,15 @@ export const useSettingsStore = create<SettingsStore>()((set, get) => ({
       },
     })),
 
+  setSignalingUrl: (url: string) => {
+    set((state) => ({
+      settings: {
+        ...state.settings,
+        signalingUrl: url,
+      },
+    }))
+  },
+
   generateUrlParams: () => {
     const { settings } = get()
     const params = new URLSearchParams()
@@ -186,6 +200,8 @@ export const useSettingsStore = create<SettingsStore>()((set, get) => ({
     params.set('video', settings.video.isEnable.toString())
     params.set('videoDirection', settings.video.direction)
     params.set('videoCodecMimeType', settings.video.codecMimeType)
+
+    params.set('signalingUrl', settings.signalingUrl)
 
     return params.toString()
   },
@@ -206,6 +222,7 @@ export const useSettingsStore = create<SettingsStore>()((set, get) => ({
           direction: (params.get('videoDirection') as Direction) || 'sendrecv',
           codecMimeType: params.get('videoCodecMimeType') || 'undefined',
         },
+        signalingUrl: params.get('signalingUrl') || '',
       },
     })),
 }))
