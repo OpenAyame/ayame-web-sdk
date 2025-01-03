@@ -11,13 +11,17 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
     "newLine": "LF",
     "paths": {
       "@open-ayame/ayame-web-sdk": ["../dist/ayame.d.ts"]
     },
     "types": ["webrtc", "node"],
-    "lib": ["dom", "esnext", "scripthost"],
+    "lib": ["dom", "esnext", "dom.iterable"],
     "declarationDir": "."
   },
+  "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }

@@ -1,0 +1,118 @@
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8">
+  <title>Ayame DevTools</title>
+  <link rel="icon" href="data:,">
+</head>
+
+<body>
+  <header class="sticky row">
+    <h3>Ayame DevTools</h3>
+  </header>
+  <div>
+    <p>
+      <button id="copy-url">Copy URL</button>
+    </p>
+
+    <fieldset style="max-width: 500px;">
+      <legend>Media settings</legend>
+      <p id="permission-container">
+      </p>
+      <p>
+        Audio:
+        <input id="audio" type="checkbox" checked></input>
+        <br />
+        Audio Device Permission State: <span id="audio-device-permission-state"></span>
+        <br />
+        Audio Input Device:
+        <select id="audio-input-device">
+        </select>
+        <br />
+        Audio Output Device:
+        <select id="audio-output-device">
+        </select>
+        <br />
+        Direction:
+        <select id="audio-direction">
+          <option value="sendrecv">sendrecv</option>
+          <option value="sendonly">sendonly</option>
+          <option value="recvonly">recvonly</option>
+        </select>
+        <br />
+        Codec (MIME type):
+        <select id="audio-codec-mime-type">
+          <option value="undefined">未指定</option>
+        </select>
+      </p>
+      <p>
+        Video:
+        <input id="video" type="checkbox" checked></input>
+        <br>
+        Video Device Permission State: <span id="video-device-permission-state"></span>
+        <br>
+        Video Input Device:
+        <select id="video-input-device">
+        </select>
+        <br>
+        Direction:
+        <select id="video-direction">
+          <option value="sendrecv">sendrecv</option>
+          <option value="sendonly">sendonly</option>
+          <option value="recvonly">recvonly</option>
+        </select>
+        <br>
+        Codec (MIME type):
+        <select id="video-codec-mime-type">
+          <option value="undefined">未指定</option>
+        </select>
+      </p>
+    </fieldset>
+
+    <fieldset style="max-width: 500px;">
+      <legend>Connection settings</legend>
+      <p>
+        Signaling URL:
+        <input id="signaling-url" type="text" style="width: 350px;"></input>
+      </p>
+
+      <p>
+        Room ID:
+        <input id="room-id" type="text" style="width: 350px;"></input>
+      </p>
+      <p>
+        Client ID:
+        <input id="client-id" disabled type="text" value="" style="width: 350px;"></input>
+      </p>
+      <p>
+        Signaling Key:
+        <input id="signaling-key" type="password" style="width: 350px;"></input>
+      </p>
+      <p>
+        Standalone:
+        <input id="standalone" type="checkbox"></input>
+      </p>
+      <p>
+        Debug:
+        <input id="debug" type="checkbox"></input>
+      </p>
+    </fieldset>
+
+    <p>
+      <button id="connect">Connect</button>
+      <button id="disconnect">Disconnect</button>
+    </p>
+  </div>
+  <div style="float:left;">
+    <video id="local-video" muted autoplay playsinline
+      style="width: 400px; height: 300px; border: 1px solid rgb(0, 0, 255);"></video>
+  </div>
+  <div style="float:left; margin-left: 20px;">
+    <video id="remote-video" autoplay playsinline
+      style="width: 400px; height: 300px; border: 1px solid rgb(255, 0, 0);"></video>
+  </div>
+  <span id="connection-state"></span>
+  <script type="module" src="./src/main2.ts"></script>
+</body>
+
+</html>
