@@ -4,14 +4,18 @@ import { create } from 'zustand'
 type Settings = {
   audio: {
     isEnable: boolean
+    inputDeviceId: string
+    outputDeviceId: string
     direction: Direction
     codecMimeType: string
   }
   video: {
     isEnable: boolean
+    inputDeviceId: string
     direction: Direction
     codecMimeType: string
   }
+
   permissionState: {
     microphone: 'granted' | 'denied' | 'prompt' | 'undefined'
     camera: 'granted' | 'denied' | 'prompt' | 'undefined'
@@ -30,10 +34,13 @@ type SettingsStore = {
   settings: Settings
 
   toggleAudio: (enabled: boolean) => void
+  setAudioInputDeviceId: (deviceId: string) => void
+  setAudioOutputDeviceId: (deviceId: string) => void
   setAudioDirection: (direction: Direction) => void
   setAudioCodecMimeType: (mimeType: string) => void
 
   toggleVideo: (enabled: boolean) => void
+  setVideoInputDeviceId: (deviceId: string) => void
   setVideoDirection: (direction: Direction) => void
   setVideoCodecMimeType: (mimeType: string) => void
 
@@ -63,11 +70,14 @@ export const useSettingsStore = create<SettingsStore>()((set, get) => ({
     },
     audio: {
       isEnable: true,
+      inputDeviceId: 'default',
+      outputDeviceId: 'default',
       direction: 'sendrecv',
       codecMimeType: 'undefined',
     },
     video: {
       isEnable: true,
+      inputDeviceId: 'default',
       direction: 'sendrecv',
       codecMimeType: 'undefined',
     },
@@ -145,6 +155,28 @@ export const useSettingsStore = create<SettingsStore>()((set, get) => ({
       },
     })),
 
+  setAudioInputDeviceId: (deviceId: string) =>
+    set((state) => ({
+      settings: {
+        ...state.settings,
+        audio: {
+          ...state.settings.audio,
+          inputDeviceId: deviceId,
+        },
+      },
+    })),
+
+  setAudioOutputDeviceId: (deviceId: string) =>
+    set((state) => ({
+      settings: {
+        ...state.settings,
+        audio: {
+          ...state.settings.audio,
+          outputDeviceId: deviceId,
+        },
+      },
+    })),
+
   setAudioDirection: (direction: Direction) =>
     set((state) => ({
       settings: {
@@ -177,6 +209,18 @@ export const useSettingsStore = create<SettingsStore>()((set, get) => ({
         },
       },
     })),
+
+  setVideoInputDeviceId: (deviceId: string) => {
+    set((state) => ({
+      settings: {
+        ...state.settings,
+        video: {
+          ...state.settings.video,
+          inputDeviceId: deviceId,
+        },
+      },
+    }))
+  },
 
   setVideoDirection: (direction: Direction) =>
     set((state) => ({
