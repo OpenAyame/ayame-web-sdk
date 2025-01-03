@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import ConnectButton from './components/ConnectButton'
 import ConnectionSettings from './components/ConnectionSettings'
 import CopyUrlButton from './components/CopyUrlButton'
+import DatasetConnectionState from './components/DatasetConnectionState'
 import DisconnectButton from './components/DisconnectButton'
 import LocalVideo from './components/LocalVideo'
 import MediaSettings from './components/MediaSettings'
@@ -34,6 +35,7 @@ const App: React.FC = () => {
       <div style={{ float: 'left', marginLeft: '20px' }}>
         <RemoteVideo />
       </div>
+      <DatasetConnectionState />
     </>
   )
 }
