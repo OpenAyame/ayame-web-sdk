@@ -5,7 +5,7 @@ import { useStore } from '../store/useStore'
 const AudioOutputDevice: React.FC = () => {
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([])
   const setAudioOutputDeviceId = useStore((state) => state.setAudioOutputDeviceId)
-  const audioOutputDeviceId = useStore((state) => state.settings.audio.outputDeviceId)
+  const audioOutputDeviceId = useStore((state) => state.mediaDevice.audioOutputDeviceId)
 
   useEffect(() => {
     const getDevices = async () => {

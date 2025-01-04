@@ -5,7 +5,7 @@ import { useStore } from '../store/useStore'
 const VideoInputDevice: React.FC = () => {
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([])
   const setVideoInputDeviceId = useStore((state) => state.setVideoInputDeviceId)
-  const videoInputDeviceId = useStore((state) => state.settings.video.inputDeviceId)
+  const videoInputDeviceId = useStore((state) => state.mediaDevice.videoInputDeviceId)
 
   useEffect(() => {
     const getDevices = async () => {
