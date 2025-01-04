@@ -2,28 +2,29 @@ import type { Connection } from '@open-ayame/ayame-web-sdk'
 import type { StateCreator } from 'zustand'
 
 export interface AyameSlice {
-  ayameConnection: Connection | null
+  ayame: {
+    connection: Connection | null
+    connectionState: RTCPeerConnectionState
+  }
 
   mediaStream: {
     local: MediaStream | null
     remote: MediaStream | null
   }
 
-  ayameConnectionState: RTCPeerConnectionState
-
   setAyameConnection: (conn: Connection | null) => void
+  setAyameConnectionState: (state: RTCPeerConnectionState) => void
 
   setLocalMediaStream: (stream: MediaStream | null) => void
   setRemoteMediaStream: (stream: MediaStream | null) => void
-
-  setAyameConnectionState: (state: RTCPeerConnectionState) => void
 }
 
 export const createAyameSlice: StateCreator<AyameSlice> = (set, get) => ({
-  ayameConnection: null,
-
-  // とりあえず初期値なので new にしておく
-  ayameConnectionState: 'new' as RTCPeerConnectionState,
+  ayame: {
+    connection: null,
+    // とりあえず初期値なので new にしておく
+    connectionState: 'new' as RTCPeerConnectionState,
+  },
 
   mediaStream: {
     local: null,
@@ -34,11 +35,15 @@ export const createAyameSlice: StateCreator<AyameSlice> = (set, get) => ({
   remoteMediaStream: null,
 
   setAyameConnection: (conn: Connection | null) => {
-    set({ ayameConnection: conn })
+    set((state) => ({
+      ayame: { ...state.ayame, connection: conn },
+    }))
   },
 
-  setAyameConnectionState: (state: RTCPeerConnectionState) => {
-    set({ ayameConnectionState: state })
+  setAyameConnectionState: (connectionState: RTCPeerConnectionState) => {
+    set((state) => ({
+      ayame: { ...state.ayame, connectionState: connectionState },
+    }))
   },
 
   setLocalMediaStream: (stream: MediaStream | null) => {

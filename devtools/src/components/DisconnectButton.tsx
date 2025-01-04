@@ -2,7 +2,7 @@ import type React from 'react'
 import { useStore } from '../store/useStore'
 
 const DisconnectButton: React.FC = () => {
-  const ayameConnection = useStore((state) => state.ayameConnection)
+  const ayameConnection = useStore((state) => state.ayame.connection)
 
   const localMediaStream = useStore((state) => state.mediaStream.local)
 
