@@ -17,7 +17,7 @@ const ConnectButton: React.FC = () => {
   const setAyameConnection = useStore((state) => state.setAyameConnection)
   const setLocalMediaStream = useStore((state) => state.setLocalMediaStream)
   const setRemoteMediaStream = useStore((state) => state.setRemoteMediaStream)
-  const setConnectionState = useStore((state) => state.setConnectionState)
+  const setAyameConnectionState = useStore((state) => state.setAyameConnectionState)
 
   const handleClick = async () => {
     const options = defaultOptions
@@ -52,7 +52,7 @@ const ConnectButton: React.FC = () => {
         return
       }
       pc.onconnectionstatechange = (event) => {
-        setConnectionState(pc.connectionState)
+        setAyameConnectionState(pc.connectionState)
       }
     })
 

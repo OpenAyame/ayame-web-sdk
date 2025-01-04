@@ -9,21 +9,21 @@ export interface AyameSlice {
     remote: MediaStream | null
   }
 
-  connectionState: RTCPeerConnectionState
+  ayameConnectionState: RTCPeerConnectionState
 
   setAyameConnection: (conn: Connection | null) => void
 
   setLocalMediaStream: (stream: MediaStream | null) => void
   setRemoteMediaStream: (stream: MediaStream | null) => void
 
-  setConnectionState: (state: RTCPeerConnectionState) => void
+  setAyameConnectionState: (state: RTCPeerConnectionState) => void
 }
 
 export const createAyameSlice: StateCreator<AyameSlice> = (set, get) => ({
   ayameConnection: null,
 
   // とりあえず初期値なので new にしておく
-  connectionState: 'new' as RTCPeerConnectionState,
+  ayameConnectionState: 'new' as RTCPeerConnectionState,
 
   mediaStream: {
     local: null,
@@ -37,8 +37,8 @@ export const createAyameSlice: StateCreator<AyameSlice> = (set, get) => ({
     set({ ayameConnection: conn })
   },
 
-  setConnectionState: (state: RTCPeerConnectionState) => {
-    set({ connectionState: state })
+  setAyameConnectionState: (state: RTCPeerConnectionState) => {
+    set({ ayameConnectionState: state })
   },
 
   setLocalMediaStream: (stream: MediaStream | null) => {
