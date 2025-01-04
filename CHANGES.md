@@ -42,7 +42,7 @@
   - @voluntas
 - [UPDATE] ubuntu-latest から ubuntu-24.04 に変更する
   - @voluntas
-- [ADD] DevTools を追加
+- [ADD] Ayame DevTools を追加
   - @voluntas
 
 ## 2022.1
