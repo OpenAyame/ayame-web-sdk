@@ -1,12 +1,16 @@
 import type React from 'react'
-import { useSettingsStore } from '../store/useSettingsStore.js'
+import { useStore } from '../store/useStore'
 
 const StandaloneToggle: React.FC = () => {
-  const isEnable = useSettingsStore((state) => state.settings.standalone)
-  const toggleStandalone = useSettingsStore((state) => state.toggleStandalone)
+  const isEnable = useStore((state) => state.settings.standalone)
+  const toggleStandalone = useStore((state) => state.toggleStandalone)
 
   return (
-    <input type="checkbox" checked={isEnable} onChange={(e) => toggleStandalone(e.target.checked)} />
+    <input
+      type="checkbox"
+      checked={isEnable}
+      onChange={(e) => toggleStandalone(e.target.checked)}
+    />
   )
 }
 

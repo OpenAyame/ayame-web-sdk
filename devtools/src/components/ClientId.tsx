@@ -1,8 +1,8 @@
-import { useSettingsStore } from '../store/useSettingsStore'
+import { useStore } from '../store/useStore'
 
 const ClientId = () => {
-  const clientId = useSettingsStore((state) => state.settings.clientId)
-  const setClientId = useSettingsStore((state) => state.setClientId)
+  const clientId = useStore((state) => state.settings.clientId)
+  const setClientId = useStore((state) => state.setClientId)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setClientId(e.target.value)

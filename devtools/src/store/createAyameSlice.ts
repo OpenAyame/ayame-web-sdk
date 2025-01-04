@@ -1,11 +1,13 @@
 import type { Connection } from '@open-ayame/ayame-web-sdk'
-import { create } from 'zustand'
+import type { StateCreator } from 'zustand'
 
-type AyameStore = {
+export interface AyameSlice {
   ayameConnection: Connection | null
 
-  localMediaStream: MediaStream | null
-  remoteMediaStream: MediaStream | null
+  mediaStream: {
+    local: MediaStream | null
+    remote: MediaStream | null
+  }
 
   connectionState: RTCPeerConnectionState
 
@@ -17,11 +19,16 @@ type AyameStore = {
   setConnectionState: (state: RTCPeerConnectionState) => void
 }
 
-export const useAyameStore = create<AyameStore>()((set, get) => ({
+export const createAyameSlice: StateCreator<AyameSlice> = (set, get) => ({
   ayameConnection: null,
 
   // とりあえず初期値なので new にしておく
   connectionState: 'new' as RTCPeerConnectionState,
+
+  mediaStream: {
+    local: null,
+    remote: null,
+  },
 
   localMediaStream: null,
   remoteMediaStream: null,
@@ -35,12 +42,16 @@ export const useAyameStore = create<AyameStore>()((set, get) => ({
   },
 
   setLocalMediaStream: (stream: MediaStream | null) => {
-    set({ localMediaStream: stream })
+    set((state) => ({
+      mediaStream: { ...state.mediaStream, local: stream },
+    }))
   },
   setRemoteMediaStream: (stream: MediaStream | null) => {
-    set({ remoteMediaStream: stream })
+    set((state) => ({
+      mediaStream: { ...state.mediaStream, remote: stream },
+    }))
   },
-}))
+})
 
 // デバッグ用の subscribe 設定
 // ストアの作成後に subscribe を設定

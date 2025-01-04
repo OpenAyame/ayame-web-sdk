@@ -1,14 +1,14 @@
 import type React from 'react'
 import { useEffect, useState } from 'react'
-import { useSettingsStore } from '../store/useSettingsStore'
+import { useStore } from '../store/useStore'
 
 import { getAvailableCodecs } from '@open-ayame/ayame-web-sdk'
 
 const VideoCodecMimeType: React.FC = () => {
   const [codecs, setCodecs] = useState<string[]>([])
-  const setAudioCodecMimeType = useSettingsStore((state) => state.setAudioCodecMimeType)
-  const audioCodecMimeType = useSettingsStore((state) => state.settings.audio.codecMimeType)
-  const audioDirection = useSettingsStore((state) => state.settings.audio.direction)
+  const setAudioCodecMimeType = useStore((state) => state.setAudioCodecMimeType)
+  const audioCodecMimeType = useStore((state) => state.settings.audio.codecMimeType)
+  const audioDirection = useStore((state) => state.settings.audio.direction)
 
   useEffect(() => {
     const mimeTypes = getAvailableCodecs(

@@ -1,10 +1,10 @@
 import type React from 'react'
 import { useEffect } from 'react'
-import { useSettingsStore } from '../store/useSettingsStore'
+import { useStore } from '../store/useStore'
 
 const CameraPermissionState: React.FC = () => {
-  const cameraPermissionState = useSettingsStore((state) => state.settings.permissionState.camera)
-  const setCameraPermissionState = useSettingsStore((state) => state.setCameraPermissionState)
+  const cameraPermissionState = useStore((state) => state.settings.permissionState.camera)
+  const setCameraPermissionState = useStore((state) => state.setCameraPermissionState)
 
   useEffect(() => {
     setCameraPermissionState()

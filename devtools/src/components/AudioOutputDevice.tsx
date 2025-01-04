@@ -1,11 +1,11 @@
 import type React from 'react'
 import { useEffect, useState } from 'react'
-import { useSettingsStore } from '../store/useSettingsStore'
+import { useStore } from '../store/useStore'
 
 const AudioOutputDevice: React.FC = () => {
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([])
-  const setAudioOutputDeviceId = useSettingsStore((state) => state.setAudioOutputDeviceId)
-  const audioOutputDeviceId = useSettingsStore((state) => state.settings.audio.outputDeviceId)
+  const setAudioOutputDeviceId = useStore((state) => state.setAudioOutputDeviceId)
+  const audioOutputDeviceId = useStore((state) => state.settings.audio.outputDeviceId)
 
   useEffect(() => {
     const getDevices = async () => {

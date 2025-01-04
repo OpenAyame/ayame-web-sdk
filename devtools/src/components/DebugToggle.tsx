@@ -1,9 +1,9 @@
 import type React from 'react'
-import { useSettingsStore } from '../store/useSettingsStore.js'
+import { useStore } from '../store/useStore'
 
 const DebugToggle: React.FC = () => {
-  const isEnable = useSettingsStore((state) => state.settings.debug)
-  const toggleDebug = useSettingsStore((state) => state.toggleDebug)
+  const isEnable = useStore((state) => state.settings.debug)
+  const toggleDebug = useStore((state) => state.toggleDebug)
 
   return (
     <input type="checkbox" checked={isEnable} onChange={(e) => toggleDebug(e.target.checked)} />

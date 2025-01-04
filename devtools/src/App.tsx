@@ -8,10 +8,10 @@ import DisconnectButton from './components/DisconnectButton'
 import LocalVideo from './components/LocalVideo'
 import MediaSettings from './components/MediaSettings'
 import RemoteVideo from './components/RemoteVideo'
-import { useSettingsStore } from './store/useSettingsStore'
+import { useStore } from './store/useStore'
 
 const App: React.FC = () => {
-  const setSettingsFromUrl = useSettingsStore((state) => state.setSettingsFromUrl)
+  const setSettingsFromUrl = useStore((state) => state.setSettingsFromUrl)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)

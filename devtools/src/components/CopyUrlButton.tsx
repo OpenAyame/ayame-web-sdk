@@ -1,8 +1,8 @@
 import type React from 'react'
-import { useSettingsStore } from '../store/useSettingsStore.js'
+import { useStore } from '../store/useStore'
 
 const CopyUrlButton: React.FC = () => {
-  const generateUrlParams = useSettingsStore((state) => state.generateUrlParams)
+  const generateUrlParams = useStore((state) => state.generateUrlParams)
 
   const handleClick = () => {
     const urlParams = generateUrlParams()

@@ -1,9 +1,9 @@
 import type React from 'react'
 import { useEffect, useRef } from 'react'
-import { useAyameStore } from '../store/useAyameStore'
+import { useStore } from '../store/useStore'
 
 const LocalVideo: React.FC = () => {
-  const localMediaStream = useAyameStore((state) => state.localMediaStream)
+  const localMediaStream = useStore((state) => state.mediaStream.local)
   const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {

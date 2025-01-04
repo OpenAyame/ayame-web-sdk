@@ -1,5 +1,5 @@
 import type { Direction } from '@open-ayame/ayame-web-sdk'
-import { create } from 'zustand'
+import type { StateCreator } from 'zustand'
 
 type Settings = {
   audio: {
@@ -30,7 +30,7 @@ type Settings = {
   standalone: boolean
 }
 
-type SettingsStore = {
+export interface SettingsSlice {
   settings: Settings
 
   toggleAudio: (enabled: boolean) => void
@@ -58,7 +58,7 @@ type SettingsStore = {
   setSettingsFromUrl: (params: URLSearchParams) => void
 }
 
-export const useSettingsStore = create<SettingsStore>()((set, get) => ({
+export const createSettingsSlice: StateCreator<SettingsSlice> = (set, get) => ({
   // 初期値
   settings: {
     permissionState: {
@@ -340,4 +340,4 @@ export const useSettingsStore = create<SettingsStore>()((set, get) => ({
       },
     }))
   },
-}))
+})

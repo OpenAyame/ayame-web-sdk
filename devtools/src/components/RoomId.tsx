@@ -1,8 +1,8 @@
-import { useSettingsStore } from '../store/useSettingsStore'
+import { useStore } from '../store/useStore'
 
 const RoomId = () => {
-  const roomId = useSettingsStore((state) => state.settings.roomId)
-  const setRoomId = useSettingsStore((state) => state.setRoomId)
+  const roomId = useStore((state) => state.settings.roomId)
+  const setRoomId = useStore((state) => state.setRoomId)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRoomId(e.target.value)

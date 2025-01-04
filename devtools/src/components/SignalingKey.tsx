@@ -1,8 +1,8 @@
-import { useSettingsStore } from '../store/useSettingsStore'
+import { useStore } from '../store/useStore'
 
 const SignalingKey = () => {
-  const signalingKey = useSettingsStore((state) => state.settings.signalingKey)
-  const setSignalingKey = useSettingsStore((state) => state.setSignalingKey)
+  const signalingKey = useStore((state) => state.settings.signalingKey)
+  const setSignalingKey = useStore((state) => state.setSignalingKey)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSignalingKey(e.target.value)

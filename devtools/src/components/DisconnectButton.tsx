@@ -1,15 +1,14 @@
 import type React from 'react'
-import { useAyameStore } from '../store/useAyameStore'
+import { useStore } from '../store/useStore'
 
 const DisconnectButton: React.FC = () => {
-  const ayameConnection = useAyameStore((state) => state.ayameConnection)
+  const ayameConnection = useStore((state) => state.ayameConnection)
 
-  const localMediaStream = useAyameStore((state) => state.localMediaStream)
-  const remoteMediaStream = useAyameStore((state) => state.remoteMediaStream)
+  const localMediaStream = useStore((state) => state.mediaStream.local)
 
-  const setAyameConnection = useAyameStore((state) => state.setAyameConnection)
-  const setLocalMediaStream = useAyameStore((state) => state.setLocalMediaStream)
-  const setRemoteMediaStream = useAyameStore((state) => state.setRemoteMediaStream)
+  const setAyameConnection = useStore((state) => state.setAyameConnection)
+  const setLocalMediaStream = useStore((state) => state.setLocalMediaStream)
+  const setRemoteMediaStream = useStore((state) => state.setRemoteMediaStream)
 
   const handleClick = async () => {
     if (!ayameConnection) {

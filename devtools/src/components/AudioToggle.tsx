@@ -1,9 +1,9 @@
 import type React from 'react'
-import { useSettingsStore } from '../store/useSettingsStore.js'
+import { useStore } from '../store/useStore'
 
 const AudioToggle: React.FC = () => {
-  const isEnable = useSettingsStore((state) => state.settings.audio.isEnable)
-  const toggleAudio = useSettingsStore((state) => state.toggleAudio)
+  const isEnable = useStore((state) => state.settings.audio.isEnable)
+  const toggleAudio = useStore((state) => state.toggleAudio)
 
   return (
     <input type="checkbox" checked={isEnable} onChange={(e) => toggleAudio(e.target.checked)} />

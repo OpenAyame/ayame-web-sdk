@@ -1,27 +1,23 @@
 import { createConnection, defaultOptions } from '@open-ayame/ayame-web-sdk'
 import type { AyameAddStreamEvent } from '@open-ayame/ayame-web-sdk'
-import { useAyameStore } from '../store/useAyameStore'
-import { useSettingsStore } from '../store/useSettingsStore'
+import { useStore } from '../store/useStore'
 
 import type React from 'react'
 const ConnectButton: React.FC = () => {
-  const audioEnabled = useSettingsStore((state) => state.settings.audio.isEnable)
-  const audioDirection = useSettingsStore((state) => state.settings.audio.direction)
-  const videoEnabled = useSettingsStore((state) => state.settings.video.isEnable)
-  const videoDirection = useSettingsStore((state) => state.settings.video.direction)
+  const audioEnabled = useStore((state) => state.settings.audio.isEnable)
+  const audioDirection = useStore((state) => state.settings.audio.direction)
+  const videoEnabled = useStore((state) => state.settings.video.isEnable)
+  const videoDirection = useStore((state) => state.settings.video.direction)
 
-  const signalingUrl = useSettingsStore((state) => state.settings.signalingUrl)
-  const roomId = useSettingsStore((state) => state.settings.roomId)
-  const debug = useSettingsStore((state) => state.settings.debug)
-  const signalingKey = useSettingsStore((state) => state.settings.signalingKey)
+  const signalingUrl = useStore((state) => state.settings.signalingUrl)
+  const roomId = useStore((state) => state.settings.roomId)
+  const debug = useStore((state) => state.settings.debug)
+  const signalingKey = useStore((state) => state.settings.signalingKey)
 
-  const setAyameConnection = useAyameStore((state) => state.setAyameConnection)
-  const setLocalMediaStream = useAyameStore((state) => state.setLocalMediaStream)
-  const setRemoteMediaStream = useAyameStore((state) => state.setRemoteMediaStream)
-  const setConnectionState = useAyameStore((state) => state.setConnectionState)
-
-  const localMediaStream = useAyameStore((state) => state.localMediaStream)
-  const remoteMediaStream = useAyameStore((state) => state.remoteMediaStream)
+  const setAyameConnection = useStore((state) => state.setAyameConnection)
+  const setLocalMediaStream = useStore((state) => state.setLocalMediaStream)
+  const setRemoteMediaStream = useStore((state) => state.setRemoteMediaStream)
+  const setConnectionState = useStore((state) => state.setConnectionState)
 
   const handleClick = async () => {
     const options = defaultOptions

@@ -1,5 +1,5 @@
 import type React from 'react'
-import { useSettingsStore } from '../store/useSettingsStore'
+import { useStore } from '../store/useStore'
 import AudioCodecMimeType from './AudioCodecMimeType'
 import AudioInputDevice from './AudioInputDevice'
 import AudioOutputDevice from './AudioOutputDevice'
@@ -13,10 +13,10 @@ import VideoInputDevice from './VideoInputDevice'
 import VideoToggle from './VideoToggle'
 
 const MediaSettings: React.FC = () => {
-  const audioDirection = useSettingsStore((state) => state.settings.audio.direction)
-  const setAudioDirection = useSettingsStore((state) => state.setAudioDirection)
-  const videoDirection = useSettingsStore((state) => state.settings.video.direction)
-  const setVideoDirection = useSettingsStore((state) => state.setVideoDirection)
+  const audioDirection = useStore((state) => state.settings.audio.direction)
+  const setAudioDirection = useStore((state) => state.setAudioDirection)
+  const videoDirection = useStore((state) => state.settings.video.direction)
+  const setVideoDirection = useStore((state) => state.setVideoDirection)
 
   return (
     <fieldset style={{ maxWidth: '500px' }}>

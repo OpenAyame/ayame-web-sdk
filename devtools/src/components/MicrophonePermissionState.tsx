@@ -1,14 +1,10 @@
 import type React from 'react'
 import { useEffect } from 'react'
-import { useSettingsStore } from '../store/useSettingsStore'
+import { useStore } from '../store/useStore'
 
 const MicrophonePermissionState: React.FC = () => {
-  const microphonePermissionState = useSettingsStore(
-    (state) => state.settings.permissionState.microphone,
-  )
-  const setMicrophonePermissionState = useSettingsStore(
-    (state) => state.setMicrophonePermissionState,
-  )
+  const microphonePermissionState = useStore((state) => state.settings.permissionState.microphone)
+  const setMicrophonePermissionState = useStore((state) => state.setMicrophonePermissionState)
 
   useEffect(() => {
     setMicrophonePermissionState()

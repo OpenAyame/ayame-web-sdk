@@ -1,12 +1,12 @@
 import type React from 'react'
 import { useEffect, useState } from 'react'
-import { useSettingsStore } from '../store/useSettingsStore'
+import { useStore } from '../store/useStore'
 
 const RequestMediaPermissionButton: React.FC<{
   buttonText?: string
 }> = ({ buttonText = 'Request media permission' }) => {
-  const isAudioEnabled = useSettingsStore((state) => state.settings.audio.isEnable)
-  const isVideoEnabled = useSettingsStore((state) => state.settings.video.isEnable)
+  const isAudioEnabled = useStore((state) => state.settings.audio.isEnable)
+  const isVideoEnabled = useStore((state) => state.settings.video.isEnable)
   const [isPermissionsGranted, setIsPermissionsGranted] = useState(false)
 
   useEffect(() => {

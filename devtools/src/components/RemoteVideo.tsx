@@ -1,9 +1,9 @@
 import type React from 'react'
 import { useEffect, useRef } from 'react'
-import { useAyameStore } from '../store/useAyameStore'
+import { useStore } from '../store/useStore'
 
 const RemoteVideo: React.FC = () => {
-  const remoteMediaStream = useAyameStore((state) => state.remoteMediaStream)
+  const remoteMediaStream = useStore((state) => state.mediaStream.remote)
   const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {

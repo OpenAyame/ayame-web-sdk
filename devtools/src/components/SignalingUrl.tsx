@@ -1,8 +1,8 @@
-import { useSettingsStore } from '../store/useSettingsStore'
+import { useStore } from '../store/useStore'
 
 const SignalingUrl = () => {
-  const signalingUrl = useSettingsStore((state) => state.settings.signalingUrl)
-  const setSignalingUrl = useSettingsStore((state) => state.setSignalingUrl)
+  const signalingUrl = useStore((state) => state.settings.signalingUrl)
+  const setSignalingUrl = useStore((state) => state.setSignalingUrl)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSignalingUrl(e.target.value)
