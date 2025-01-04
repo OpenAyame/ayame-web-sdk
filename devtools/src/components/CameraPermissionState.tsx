@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { useStore } from '../store/useStore'
 
 const CameraPermissionState: React.FC = () => {
-  const cameraPermissionState = useStore((state) => state.settings.permissionState.camera)
+  const cameraPermissionState = useStore((state) => state.permissionState.cameraState)
   const setCameraPermissionState = useStore((state) => state.setCameraPermissionState)
 
   useEffect(() => {
