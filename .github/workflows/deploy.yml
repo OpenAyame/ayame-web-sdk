@@ -23,6 +23,7 @@ jobs:
         run: pnpm build:typedoc
       - name: copy
         run: |
+          mkdir -p ./output/devtools
           cp -r ./typedoc ./output/typedoc
           cp -r ./devtools/dist/* ./output/devtools
       - name: Upload files
