@@ -16,6 +16,7 @@ jobs:
           node-version: "22"
       - uses: pnpm/action-setup@v4
       - run: pnpm install
+      - run: pnpm build
       - name: Build devtools
         run: pnpm build:devtools
       - name: Build typedoc
