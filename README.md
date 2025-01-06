@@ -77,7 +77,7 @@ pnpm dev
 
 API ドキュメントは以下の URL を参照してください。
 
-<https://openayame.github.io/ayame-web-sdk/index.html>
+<https://openayame.github.io/ayame-web-sdk/typedoc/index.html>
 
 ## ライセンス
 
