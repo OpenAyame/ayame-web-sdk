@@ -16,13 +16,13 @@
   },
   "scripts": {
     "build": "vite build",
+    "build:devtools": "vite build --config devtools/vite.config.mjs",
+    "build:docs": "typedoc",
     "dev": "vite --config devtools/vite.config.mjs",
     "watch": "vite build --watch",
     "lint": "biome lint ./src",
     "fmt": "biome format --write ./src",
     "check": "tsc --noEmit",
-    "doc": "typedoc",
-    "deploy:docs": "pnpx gh-pages -d apidoc",
     "dist": "pnpm clean && pnpm install && pnpm build",
     "clean": "git clean -ffdx -e .env.local",
     "test": "playwright test --project=chromium"
@@ -42,7 +42,6 @@
     "@playwright/test": "1.49.1",
     "@types/node": "22.10.5",
     "@types/webrtc": "0.0.44",
-    "gh-pages": "6.3.0",
     "typedoc": "0.27.6",
     "typescript": "5.7.2",
     "vite": "6.0.7",
