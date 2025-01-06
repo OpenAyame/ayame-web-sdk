@@ -3,6 +3,7 @@ typedoc/
 apidoc/
 .log/
 dist/
+.DS_Store
 
 # .env
 .env*
