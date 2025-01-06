@@ -17,7 +17,7 @@
   "scripts": {
     "build": "vite build",
     "build:devtools": "vite build --config devtools/vite.config.mjs",
-    "build:docs": "typedoc",
+    "build:typedoc": "typedoc",
     "dev": "vite --config devtools/vite.config.mjs",
     "watch": "vite build --watch",
     "lint": "biome lint ./src",

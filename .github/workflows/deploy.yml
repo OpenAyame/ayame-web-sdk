@@ -1,0 +1,52 @@
+name: GitHub Pages Deploy
+
+on:
+  push:
+    branches: ["develop"]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: pnpm/action-setup@v4
+      - run: pnpm install
+      - name: Build devtools
+        run: pnpm build:devtools
+      - name: Build typedoc
+        run: pnpm build:typedoc
+      - name: copy
+        run: |
+          cp -r ./typedoc ./output/typedoc
+          cp -r ./devtools/dist/* ./output/devtools
+      - name: Upload files
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./output
+      - name: Slack Notification
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: media-processors
+          SLACK_COLOR: danger
+          SLACK_TITLE: Failure test
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+  deploy:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
