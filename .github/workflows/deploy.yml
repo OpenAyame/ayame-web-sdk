@@ -26,6 +26,7 @@ jobs:
           mkdir -p ./output/devtools
           cp -r ./typedoc ./output/typedoc
           cp -r ./devtools/dist/* ./output/devtools
+          cp -r ./devtools/dist/assets ./output/devtools/assets
       - name: Upload files
         uses: actions/upload-pages-artifact@v3
         with:

@@ -16,15 +16,16 @@
   },
   "scripts": {
     "build": "vite build",
-    "build:devtools": "vite build --config devtools/vite.config.mjs",
-    "build:typedoc": "typedoc",
-    "dev": "vite --config devtools/vite.config.mjs",
     "watch": "vite build --watch",
+    "dev": "vite --config devtools/vite.config.mjs",
+    "build:devtools": "vite build --config devtools/vite.config.mjs",
+    "preview:devtools": "vite preview --config devtools/vite.config.mjs",
+    "build:typedoc": "typedoc",
     "lint": "biome lint ./src",
     "fmt": "biome format --write ./src",
     "check": "tsc --noEmit",
     "dist": "pnpm clean && pnpm install && pnpm build",
-    "clean": "git clean -ffdx -e .env.local",
+    "clean": "git clean -ffdx -e .env.local -e .env",
     "test": "playwright test --project=chromium"
   },
   "bugs": {
