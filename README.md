@@ -41,7 +41,7 @@ pnpm add @open-ayame/ayame-web-sdk
 - Mozilla Firefox
 - Microsoft Edge
 
-## DevTools
+## Ayame DevTools
 
 Ayame Web SDK を利用した、開発ツールです。
 
@@ -68,6 +68,12 @@ pnpm dev
 [![Image from Gyazo](https://i.gyazo.com/69b1e9529f1a0e26bd3bcd3b74c95021.png)](https://gyazo.com/69b1e9529f1a0e26bd3bcd3b74c95021)
 
 この画面を 2 つタブで開いて、 `Connect` ボタンを押して映像が双方向に表示されたら成功です。
+
+### オンライン Ayame DevTools
+
+以下から利用できます。
+
+<https://openayame.github.io/ayame-web-sdk/devtools/index.html>
 
 ## 最小限のサンプル
 
