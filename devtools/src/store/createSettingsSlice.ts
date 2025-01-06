@@ -64,7 +64,8 @@ export const createSettingsSlice: StateCreator<SettingsSlice> = (set, get) => ({
     },
     signalingUrl: import.meta.env.VITE_AYAME_SIGNALING_URL || '',
     roomId:
-      `${import.meta.env.VITE_AYAME_ROOM_ID_PREFIX}${import.meta.env.VITE_AYAME_ROOM_NAME}` || '',
+      `${import.meta.env.VITE_AYAME_ROOM_ID_PREFIX ?? ''}${import.meta.env.VITE_AYAME_ROOM_NAME ?? ''}` ||
+      '',
     clientId: crypto.randomUUID(),
     signalingKey: import.meta.env.VITE_AYAME_SIGNALING_KEY || '',
     debug: false,
@@ -114,7 +115,6 @@ export const createSettingsSlice: StateCreator<SettingsSlice> = (set, get) => ({
         },
       },
     })),
-
 
   setVideoDirection: (direction: Direction) =>
     set((state) => ({
