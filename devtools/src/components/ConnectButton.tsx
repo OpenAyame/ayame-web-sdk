@@ -6,8 +6,10 @@ import type React from 'react'
 const ConnectButton: React.FC = () => {
   const audioEnabled = useStore((state) => state.settings.audio.isEnable)
   const audioDirection = useStore((state) => state.settings.audio.direction)
+  const audioCodecMimeType = useStore((state) => state.settings.audio.codecMimeType)
   const videoEnabled = useStore((state) => state.settings.video.isEnable)
   const videoDirection = useStore((state) => state.settings.video.direction)
+  const videoCodecMimeType = useStore((state) => state.settings.video.codecMimeType)
 
   const signalingUrl = useStore((state) => state.settings.signalingUrl)
   const roomId = useStore((state) => state.settings.roomId)
@@ -23,8 +25,10 @@ const ConnectButton: React.FC = () => {
     const options = defaultOptions
     options.audio.enabled = audioEnabled
     options.audio.direction = audioDirection
+    options.audio.codecMimeType = audioCodecMimeType
     options.video.enabled = videoEnabled
     options.video.direction = videoDirection
+    options.video.codecMimeType = videoCodecMimeType
     options.signalingKey = signalingKey
 
     const conn = createConnection(signalingUrl, roomId, options, debug)
