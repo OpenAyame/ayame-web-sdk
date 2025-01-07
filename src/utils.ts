@@ -55,7 +55,7 @@ export function traceLog(title: string, value?: string | Record<string, any>): v
 export const getSelectedCodecs = (
   kind: 'audio' | 'video',
   selectedCodecMimeType: string,
-  codecs: RTCRtpCodec[],
+  codecs: RTCRtpCodecCapability[],
 ): RTCRtpCodecCapability[] => {
   const filteredCodecs = codecs.filter((c) => {
     const codecMimeType = c.mimeType.toLowerCase()
