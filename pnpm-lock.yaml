@@ -22,16 +22,16 @@ importers:
         version: 0.0.44
       typedoc:
         specifier: 0.27.6
-        version: 0.27.6(typescript@5.7.2)
+        version: 0.27.6(typescript@5.7.3)
       typescript:
-        specifier: 5.7.2
-        version: 5.7.2
+        specifier: 5.7.3
+        version: 5.7.3
       vite:
         specifier: 6.0.7
         version: 6.0.7(@types/node@22.10.5)(sass@1.83.0)(terser@5.37.0)(yaml@2.7.0)
       vite-plugin-dts:
         specifier: 4.4.0
-        version: 4.4.0(@types/node@22.10.5)(rollup@4.29.2)(typescript@5.7.2)(vite@6.0.7(@types/node@22.10.5)(sass@1.83.0)(terser@5.37.0)(yaml@2.7.0))
+        version: 4.4.0(@types/node@22.10.5)(rollup@4.29.2)(typescript@5.7.3)(vite@6.0.7(@types/node@22.10.5)(sass@1.83.0)(terser@5.37.0)(yaml@2.7.0))
 
   devtools:
     dependencies:
@@ -1096,8 +1096,8 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  typescript@5.7.2:
-    resolution: {integrity: sha512-i5t66RHxDvVN40HfDd1PsEThGNnlMCMT3jMUuoh9/0TaqWevNontacunWyN02LA9/fIbEWlcHZcgTKb9QoaLfg==}
+  typescript@5.7.3:
+    resolution: {integrity: sha512-84MVSjMEHP+FQRPy3pX9sTVV/INIex71s9TL2Gm5FG/WG1SqXeKyZ0k7/blY/4FdOzI12CBy1vGc4og/eus0fw==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -1758,7 +1758,7 @@ snapshots:
       de-indent: 1.0.2
       he: 1.2.0
 
-  '@vue/language-core@2.1.10(typescript@5.7.2)':
+  '@vue/language-core@2.1.10(typescript@5.7.3)':
     dependencies:
       '@volar/language-core': 2.4.11
       '@vue/compiler-dom': 3.5.13
@@ -1769,7 +1769,7 @@ snapshots:
       muggle-string: 0.4.1
       path-browserify: 1.0.1
     optionalDependencies:
-      typescript: 5.7.2
+      typescript: 5.7.3
 
   '@vue/shared@3.5.13': {}
 
@@ -2169,18 +2169,18 @@ snapshots:
       is-number: 7.0.0
     optional: true
 
-  typedoc@0.27.6(typescript@5.7.2):
+  typedoc@0.27.6(typescript@5.7.3):
     dependencies:
       '@gerrit0/mini-shiki': 1.26.1
       lunr: 2.3.9
       markdown-it: 14.1.0
       minimatch: 9.0.5
-      typescript: 5.7.2
+      typescript: 5.7.3
       yaml: 2.7.0
 
   typescript@5.4.2: {}
 
-  typescript@5.7.2: {}
+  typescript@5.7.3: {}
 
   uc.micro@2.1.0: {}
 
@@ -2200,18 +2200,18 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
-  vite-plugin-dts@4.4.0(@types/node@22.10.5)(rollup@4.29.2)(typescript@5.7.2)(vite@6.0.7(@types/node@22.10.5)(sass@1.83.0)(terser@5.37.0)(yaml@2.7.0)):
+  vite-plugin-dts@4.4.0(@types/node@22.10.5)(rollup@4.29.2)(typescript@5.7.3)(vite@6.0.7(@types/node@22.10.5)(sass@1.83.0)(terser@5.37.0)(yaml@2.7.0)):
     dependencies:
       '@microsoft/api-extractor': 7.48.1(@types/node@22.10.5)
       '@rollup/pluginutils': 5.1.4(rollup@4.29.2)
       '@volar/typescript': 2.4.11
-      '@vue/language-core': 2.1.10(typescript@5.7.2)
+      '@vue/language-core': 2.1.10(typescript@5.7.3)
       compare-versions: 6.1.1
       debug: 4.4.0
       kolorist: 1.8.0
       local-pkg: 0.5.1
       magic-string: 0.30.17
-      typescript: 5.7.2
+      typescript: 5.7.3
     optionalDependencies:
       vite: 6.0.7(@types/node@22.10.5)(sass@1.83.0)(terser@5.37.0)(yaml@2.7.0)
     transitivePeerDependencies:
