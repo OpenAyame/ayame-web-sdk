@@ -239,16 +239,23 @@ class Connection {
 
   private setCodecPreferences(
     kind: 'audio' | 'video',
-    videoCapabilities: RTCRtpCapabilities,
+    codecMimeType: string,
+    capabilities: RTCRtpCapabilities,
     transceiver: RTCRtpTransceiver,
   ): void {
+    this.traceLog(`${kind} codecMimeType=`, codecMimeType)
+    // 指定されたコーデックが存在しない場合は return で返す
+    if (!capabilities.codecs.some((codec) => codec.mimeType === codecMimeType)) {
+      return
+    }
+
+    // codecPreferences が設定できない場合は return で返す
     if (typeof transceiver.setCodecPreferences !== 'function') {
       return
     }
+
     let codecs: RTCRtpCodecCapability[] = []
-    if (this.options.video.codecMimeType) {
-      codecs = getSelectedCodecs(kind, this.options.video.codecMimeType, videoCapabilities.codecs)
-    }
+    codecs = getSelectedCodecs(kind, codecMimeType, capabilities.codecs)
     this.traceLog(`${kind} codecs=`, codecs)
     transceiver.setCodecPreferences(codecs)
   }
@@ -269,28 +276,42 @@ class Connection {
         if (audioTransceiver) {
           audioTransceiver.direction = this.options.audio.direction
         }
-        // audioCodecMimeType が指定されている場合は音声コーデックの設定を試みる
-        if (this.isAudioCodecSpecified() && audioTransceiver !== null) {
-          const audioCapabilities = RTCRtpSender.getCapabilities('audio')
-          if (audioCapabilities) {
-            this.setCodecPreferences('audio', audioCapabilities, audioTransceiver)
-          }
+        const audioCapabilities = RTCRtpSender.getCapabilities('audio')
+        // コーデックが指定されていた場合は setCodecPreferences を試みる
+        if (
+          this.options.audio.enabled &&
+          this.options.audio.codecMimeType !== undefined &&
+          audioTransceiver !== null &&
+          audioCapabilities !== null
+        ) {
+          this.setCodecPreferences(
+            'audio',
+            this.options.audio.codecMimeType,
+            audioCapabilities,
+            audioTransceiver,
+          )
         }
       }
       // 基本的に受信側はコーデック指定はしないほうがいい
       // recvonly で audio が有効な場合、
-      // コーデックが指定されていた場合は setCodecPreferences を試みる
     } else if (this.options.audio.enabled) {
       const audioTransceiver = pc.addTransceiver('audio', {
         direction: this.options.audio.direction,
       })
-      // audioCodecMimeType が指定されている場合は音声コーデックの設定を試みる
-      if (this.isAudioCodecSpecified()) {
+      const audioCapabilities = RTCRtpReceiver.getCapabilities('audio')
+      // コーデックが指定されていた場合は setCodecPreferences を試みる
+      if (
+        this.options.audio.enabled &&
+        this.options.audio.codecMimeType !== undefined &&
+        audioCapabilities !== null
+      ) {
         // コーデックを指定された場合は受信出来るかどうかの確認をする
-        const audioCapabilities = RTCRtpReceiver.getCapabilities('audio')
-        if (audioCapabilities) {
-          this.setCodecPreferences('audio', audioCapabilities, audioTransceiver)
-        }
+        this.setCodecPreferences(
+          'audio',
+          this.options.audio.codecMimeType,
+          audioCapabilities,
+          audioTransceiver,
+        )
       }
     }
 
@@ -305,28 +326,42 @@ class Connection {
         if (videoTransceiver) {
           videoTransceiver.direction = this.options.video.direction
         }
-        // videoCodecMimeType が指定されている場合は映像コーデックの設定を試みる
-        if (this.isVideoCodecSpecified() && videoTransceiver !== null) {
-          const videoCapabilities = RTCRtpSender.getCapabilities('video')
-          if (videoCapabilities) {
-            this.setCodecPreferences('video', videoCapabilities, videoTransceiver)
-          }
+        const videoCapabilities = RTCRtpSender.getCapabilities('video')
+        // コーデックが指定されていた場合は setCodecPreferences を試みる
+        if (
+          this.options.video.enabled &&
+          this.options.video.codecMimeType !== undefined &&
+          videoTransceiver !== null &&
+          videoCapabilities !== null
+        ) {
+          this.setCodecPreferences(
+            'video',
+            this.options.video.codecMimeType,
+            videoCapabilities,
+            videoTransceiver,
+          )
         }
       }
       // 基本的に受信側はコーデック指定はしないほうがいい
       // recvonly で video が有効な場合、
-      // コーデックが指定されていた場合は setCodecPreferences を試みる
     } else if (this.options.video.enabled) {
       const videoTransceiver = pc.addTransceiver('video', {
         direction: this.options.video.direction,
       })
-      // videoCodecMimeType が指定されている場合は映像コーデックの設定を試みる
-      if (this.isVideoCodecSpecified()) {
-        // コーデックを指定された場合は受信出来るかどうかの確認をする
-        const videoCapabilities = RTCRtpReceiver.getCapabilities('video')
-        if (videoCapabilities) {
-          this.setCodecPreferences('video', videoCapabilities, videoTransceiver)
-        }
+      const videoCapabilities = RTCRtpReceiver.getCapabilities('video')
+      // コーデックが指定されていた場合は setCodecPreferences を試みる
+      if (
+        this.options.video.enabled &&
+        this.options.video.codecMimeType !== undefined &&
+        videoTransceiver !== null &&
+        videoCapabilities !== null
+      ) {
+        this.setCodecPreferences(
+          'video',
+          this.options.video.codecMimeType,
+          videoCapabilities,
+          videoTransceiver,
+        )
       }
     }
 

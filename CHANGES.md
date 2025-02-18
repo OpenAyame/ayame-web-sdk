@@ -15,34 +15,38 @@
   - @voluntas
 - [CHANGE] `removestream` は利用されていないため廃止する
   - @voluntas
+- [UPDATE] `setCodecPreferences` を利用してコーデックを指定できるようにする
+  - @voluntas
 - [ADD] `AyameAddStreamEvent` を追加する
   - `addstream` コールバックのイベント型を `AyameAddStreamEvent` として追加する
   - @voluntas
-- [ADD] standalone モードに対応する
-  - options に standalone を追加する
-  - standalone モード時は、接続完了時に ayame に type: connected を送信する
-  - standalone モード時は、ayame から WebSocket 接続が切断されても、ブラウザ間の接続は維持する
+- [ADD] `standalone` モードに対応する
+  - `options` に `standalone` を追加する
+  - `standalone` モード時は、接続完了時に ayame に `type: connected` を送信する
+  - `standalone` モード時は、ayame から WebSocket 接続が切断されても、ブラウザ間の接続は維持する
   - @Hexa
-- [FIX] disconnect の処理が正常に動作しない問題を修正する
+- [FIX] `disconnect` の処理が正常に動作しない問題を修正する
   - @voluntas
 
 ### misc
 
 - [CHANGE] ConnectionBase を Connection へ変更する
   - @voluntas
-- [CHANGE] rollup から vite へ変更
+- [CHANGE] rollup から [Vite](https://vite.dev/) へ変更
   - @voluntas
-- [CHANGE] npm から pnpm に変更する
+- [CHANGE] npm から [pnpm](https://pnpm.io/) に変更
   - @voluntas
-- [CHANGE] eslint から biome へ変更
+- [CHANGE] eslint から [biome](https://biomejs.dev/) へ変更
   - @voluntas
-- [CHANGE] prettier から biome へ変更する
+- [CHANGE] prettier から [biome](https://biomejs.dev/) へ変更する
   - @voluntas
-- [CHANGE] GitHub Actions の node-version を 18 と 20 と 22 にする
+- [CHANGE] GitHub Actions の node-version を 20 と 22 にする
   - @voluntas
 - [UPDATE] ubuntu-latest から ubuntu-24.04 に変更する
   - @voluntas
-- [ADD] Ayame DevTools を追加
+- [ADD] 検証用の Ayame DevTools を追加
+  - @voluntas
+- [ADD] Playwright と Ayame DevTools を利用した E2E テストを追加
   - @voluntas
 
 ## 2022.1
