@@ -468,35 +468,6 @@ class Connection {
     if (!this.pc) {
       return
     }
-    if (this.options.audio.enabled && this.options.audio.direction !== 'recvonly') {
-      this.pc.addTransceiver('audio', { direction: this.options.audio.direction })
-      const audioTransceiver = this.pc.addTransceiver('audio', {
-        direction: this.options.audio.direction,
-      })
-      // audioCodecMimeType が指定されている場合は音声コーデックの設定を試みる
-      if (this.isAudioCodecSpecified()) {
-        // コーデックを指定された場合は受信出来るかどうかの確認をする
-        const audioCapabilities = RTCRtpReceiver.getCapabilities('audio')
-        if (audioCapabilities) {
-          this.setCodecPreferences('audio', audioCapabilities, audioTransceiver)
-        }
-      }
-    }
-
-    if (this.options.video.enabled && this.options.video.direction !== 'recvonly') {
-      this.pc.addTransceiver('video', { direction: this.options.video.direction })
-      const videoTransceiver = this.pc.addTransceiver('video', {
-        direction: this.options.video.direction,
-      })
-      // audioCodecMimeType が指定されている場合は音声コーデックの設定を試みる
-      if (this.isVideoCodecSpecified()) {
-        // コーデックを指定された場合は受信出来るかどうかの確認をする
-        const videoCapabilities = RTCRtpReceiver.getCapabilities('video')
-        if (videoCapabilities) {
-          this.setCodecPreferences('video', videoCapabilities, videoTransceiver)
-        }
-      }
-    }
 
     const offer: any = await this.pc.createOffer({
       offerToReceiveAudio:
