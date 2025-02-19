@@ -3,16 +3,15 @@ name: CI
 on:
   push:
     branches:
-      - master
       - develop
       - "feature/*"
       - "releases/*"
 jobs:
-  build:
+  ci_job:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        node-version: [20, 22]
+        node-version: ["20", "22", "23"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

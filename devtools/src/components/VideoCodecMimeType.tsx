@@ -23,7 +23,7 @@ const VideoCodecMimeType: React.FC = () => {
   }
 
   return (
-    <select onChange={handleChange} value={videoCodecMimeType}>
+    <select onChange={handleChange} value={videoCodecMimeType} data-testid="video-codec-mime-type">
       <option value="undefined">未指定</option>
       {codecs.map((mimeType) => (
         <option key={mimeType} value={mimeType}>
