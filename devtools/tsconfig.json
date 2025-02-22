@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es2022",
-    "module": "es2022",
+    "target": "ESNext",
+    "module": "ESNext",
     "strict": true,
     "declaration": true,
     "strictNullChecks": true,
@@ -11,17 +11,17 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    "baseUrl": ".",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
     "newLine": "LF",
-    "types": ["webrtc", "node"],
     "paths": {
-      "@/*": ["src/*"]
+      "@open-ayame/ayame-web-sdk": ["../dist/ayame.d.ts"]
     },
-    "lib": ["dom", "esnext", "scripthost"],
-    "declarationDir": "./dist",
-    "outDir": "./dist",
-    "rootDir": "src"
+    "types": ["webrtc", "node"],
+    "lib": ["dom", "esnext", "dom.iterable"],
+    "declarationDir": "."
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }

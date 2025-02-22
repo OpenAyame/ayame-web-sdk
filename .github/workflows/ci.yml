@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - develop
+      - "feature/*"
+      - "releases/*"
+jobs:
+  ci_job:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        node-version: ["20", "22", "23"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - uses: pnpm/action-setup@v4
+      - run: pnpm install
+      - run: pnpm run lint
+        env:
+          CI: true
+      - run: pnpm run check
+        env:
+          CI: true
+      - run: pnpm run build
+        env:
+          CI: true

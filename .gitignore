@@ -1,6 +1,16 @@
 node_modules
-npm-debug.log
-flow-typed/
-
-# Others
+typedoc/
 apidoc/
+.log/
+dist/
+.DS_Store
+
+# .env
+.env*
+!.env.template
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
