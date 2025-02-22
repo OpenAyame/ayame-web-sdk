@@ -11,6 +11,8 @@
 
 ## develop
 
+## 2025.1.0
+
 - [CHANGE] `ConnectionVideoOption` の `codec` を `codecMimeType` へ変更する
   - @voluntas
 - [CHANGE] `removestream` コールバックは利用されていないため廃止する
