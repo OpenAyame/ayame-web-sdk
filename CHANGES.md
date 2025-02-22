@@ -11,9 +11,9 @@
 
 ## develop
 
-- [CHANGE] ConnectionVideoOption の codec を codecMimeType へ変更する
+- [CHANGE] `ConnectionVideoOption` の `codec` を `codecMimeType` へ変更する
   - @voluntas
-- [CHANGE] `removestream` は利用されていないため廃止する
+- [CHANGE] `removestream` コールバックは利用されていないため廃止する
   - @voluntas
 - [UPDATE] `setCodecPreferences` を利用してコーデックを指定できるようにする
   - @voluntas
