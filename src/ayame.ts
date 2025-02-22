@@ -1,3 +1,4 @@
+import { version as ayameWebSdkVersion } from '../package.json'
 import type { ConnectionOptions, Direction, MetadataOption } from './types'
 import { browser, getSelectedCodecs, traceLog } from './utils'
 
@@ -718,13 +719,13 @@ export const defaultOptions: ConnectionOptions = {
  * Ayame Connection を生成します。
  * @deprecated この関数は廃止予定です。代わりに createConnection を使用してください。
  */
-export function connection(
+export const connection = (
   signalingUrl: string,
   roomId: string,
   options: ConnectionOptions = defaultOptions,
   debug = false,
   isRelay = false,
-): Connection {
+): Connection => {
   return new Connection(signalingUrl, roomId, options, debug, isRelay)
 }
 
@@ -744,8 +745,8 @@ export const createConnection = (
 /**
  * Ayame Web SDK のバージョンを出力します。
  */
-export function version(): string {
-  return process.version
+export const version = (): string => {
+  return ayameWebSdkVersion
 }
 
 export type { Connection, ConnectionOptions, Direction, MetadataOption }

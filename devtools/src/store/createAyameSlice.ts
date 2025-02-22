@@ -1,8 +1,9 @@
-import type { Connection } from '@open-ayame/ayame-web-sdk'
+import type { Connection, version } from '@open-ayame/ayame-web-sdk'
 import type { StateCreator } from 'zustand'
 
 export interface AyameSlice {
   ayame: {
+    version: string
     connection: Connection | null
     connectionState: RTCPeerConnectionState
   }
@@ -12,6 +13,7 @@ export interface AyameSlice {
     remote: MediaStream | null
   }
 
+  setAyameVersion: (version: string) => void
   setAyameConnection: (conn: Connection | null) => void
   setAyameConnectionState: (state: RTCPeerConnectionState) => void
 
@@ -21,6 +23,7 @@ export interface AyameSlice {
 
 export const createAyameSlice: StateCreator<AyameSlice> = (set, get) => ({
   ayame: {
+    version: '',
     connection: null,
     // とりあえず初期値なので new にしておく
     connectionState: 'new' as RTCPeerConnectionState,
@@ -33,6 +36,12 @@ export const createAyameSlice: StateCreator<AyameSlice> = (set, get) => ({
 
   localMediaStream: null,
   remoteMediaStream: null,
+
+  setAyameVersion: (version: string) => {
+    set((state) => ({
+      ayame: { ...state.ayame, version },
+    }))
+  },
 
   setAyameConnection: (conn: Connection | null) => {
     set((state) => ({
