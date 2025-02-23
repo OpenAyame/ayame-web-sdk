@@ -90,7 +90,7 @@ API ドキュメントは以下の URL を参照してください。
 Apache License 2.0
 
 ```text
-Copyright 2019-2024, Shiguredo Inc.
+Copyright 2019-2025, Shiguredo Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
