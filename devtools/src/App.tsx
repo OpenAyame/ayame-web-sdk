@@ -1,5 +1,6 @@
 import type React from 'react'
 import { useEffect } from 'react'
+import AyameVersion from './components/AyameWebSdkVersion'
 import ConnectButton from './components/ConnectButton'
 import ConnectionSettings from './components/ConnectionSettings'
 import CopyUrlButton from './components/CopyUrlButton'
@@ -20,6 +21,9 @@ const App: React.FC = () => {
 
   return (
     <>
+      <div>
+        Ayame Web SDK Version: <AyameVersion />
+      </div>
       <p>
         <CopyUrlButton />
       </p>

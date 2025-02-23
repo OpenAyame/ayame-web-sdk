@@ -11,6 +11,16 @@
 
 ## develop
 
+## 2025.1.1
+
+- [FIX] Ayame Web SDK のバージョンを取得できなかったのを修正する
+  - @voluntas
+
+### misc
+
+- [ADD] Ayame Web SDK のバージョンを確認する E2E テストを追加
+  - @voluntas
+
 ## 2025.1.0
 
 - [CHANGE] `ConnectionVideoOption` の `codec` を `codecMimeType` へ変更する
