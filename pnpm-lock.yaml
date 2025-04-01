@@ -18,8 +18,8 @@ importers:
         specifier: 22.13.17
         version: 22.13.17
       '@types/webrtc':
-        specifier: 0.0.45
-        version: 0.0.45
+        specifier: 0.0.46
+        version: 0.0.46
       typedoc:
         specifier: 0.28.1
         version: 0.28.1(typescript@5.8.2)
@@ -645,8 +645,8 @@ packages:
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
 
-  '@types/webrtc@0.0.45':
-    resolution: {integrity: sha512-yGzVn7Kj28bB1en5mG5zbAY1DfHvL9lZADswT3HWBd2r4T4tl/W3evznQY0xtPYY+tvEF07J56QFxeMfqDWrtw==}
+  '@types/webrtc@0.0.46':
+    resolution: {integrity: sha512-cvCnjKy0ma9ODWbVYBTMMB+WkocwLcscCwn2/caDVdb9MWaesS8PYGapIIHFsAaIBXRFlH1Fc7ZjIBO6pH0HKA==}
 
   '@vitejs/plugin-react@4.3.4':
     resolution: {integrity: sha512-SCCPBJtYLdE8PX/7ZQAs1QAZ8Jqwih+0VBLum1EGqmCCQal+MIUqLCzj3ZUy8ufbC0cAM4LRlSTm7IQJwWT4ug==}
@@ -1729,7 +1729,7 @@ snapshots:
 
   '@types/unist@3.0.3': {}
 
-  '@types/webrtc@0.0.45': {}
+  '@types/webrtc@0.0.46': {}
 
   '@vitejs/plugin-react@4.3.4(vite@6.2.4(@types/node@22.13.17)(sass@1.83.0)(terser@5.37.0)(yaml@2.7.1))':
     dependencies:
