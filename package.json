@@ -48,9 +48,9 @@
     "vite": "6.2.4",
     "vite-plugin-dts": "4.5.3"
   },
-  "packageManager": "pnpm@10.7.0",
   "engines": {
-    "node": ">=20.11"
+    "node": ">=20",
+    "pnpm": ">=10"
   },
   "files": [
     "dist"
