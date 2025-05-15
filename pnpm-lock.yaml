@@ -30,8 +30,8 @@ importers:
         specifier: 6.3.5
         version: 6.3.5(@types/node@22.15.18)(sass@1.83.0)(terser@5.37.0)(yaml@2.7.1)
       vite-plugin-dts:
-        specifier: 4.5.3
-        version: 4.5.3(@types/node@22.15.18)(rollup@4.40.1)(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.18)(sass@1.83.0)(terser@5.37.0)(yaml@2.7.1))
+        specifier: 4.5.4
+        version: 4.5.4(@types/node@22.15.18)(rollup@4.40.1)(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.18)(sass@1.83.0)(terser@5.37.0)(yaml@2.7.1))
 
   devtools:
     dependencies:
@@ -1158,8 +1158,8 @@ packages:
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
 
-  vite-plugin-dts@4.5.3:
-    resolution: {integrity: sha512-P64VnD00dR+e8S26ESoFELqc17+w7pKkwlBpgXteOljFyT0zDwD8hH4zXp49M/kciy//7ZbVXIwQCekBJjfWzA==}
+  vite-plugin-dts@4.5.4:
+    resolution: {integrity: sha512-d4sOM8M/8z7vRXHHq/ebbblfaxENjogAAekcfcDCCwAyvGqnPrc7f4NZbvItS+g4WTgerW0xDwSz5qz11JT3vg==}
     peerDependencies:
       typescript: '*'
       vite: '*'
@@ -2272,7 +2272,7 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
-  vite-plugin-dts@4.5.3(@types/node@22.15.18)(rollup@4.40.1)(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.18)(sass@1.83.0)(terser@5.37.0)(yaml@2.7.1)):
+  vite-plugin-dts@4.5.4(@types/node@22.15.18)(rollup@4.40.1)(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.18)(sass@1.83.0)(terser@5.37.0)(yaml@2.7.1)):
     dependencies:
       '@microsoft/api-extractor': 7.52.7(@types/node@22.15.18)
       '@rollup/pluginutils': 5.1.4(rollup@4.40.1)
