@@ -41,7 +41,7 @@
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@playwright/test": "1.52.0",
-    "@types/node": "22.15.20",
+    "@types/node": "22.15.21",
     "@types/webrtc": "0.0.46",
     "typedoc": "0.28.4",
     "typescript": "5.8.3",
