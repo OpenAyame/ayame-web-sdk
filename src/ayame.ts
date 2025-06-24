@@ -1,6 +1,6 @@
 import { version as ayameWebSdkVersion } from '../package.json'
 import type { ConnectionOptions, Direction, MetadataOption } from './types'
-import { browser, getSelectedCodecs, traceLog } from './utils'
+import { getSelectedCodecs, traceLog } from './utils'
 
 interface AyameRegisterMessage {
   type: string
@@ -45,7 +45,7 @@ class Connection {
     return this.pc
   }
 
-  // biome-ignore lint/complexity/noBannedTypes: <explanation>
+  // biome-ignore lint/complexity/noBannedTypes: Function type is needed for event callbacks
   on(kind: string, callback: Function): void {
     if (kind in this.callbacks) {
       this.callbacks[kind] = callback
@@ -366,7 +366,7 @@ class Connection {
       }
     }
 
-    const tracks: MediaStreamTrack[] = []
+    const _tracks: MediaStreamTrack[] = []
     pc.ontrack = (event: RTCTrackEvent) => {
       // すでに remoteStream がある場合はなにもしない
       if (this.remoteStream) {
@@ -405,7 +405,7 @@ class Connection {
         }
       }
     }
-    pc.onconnectionstatechange = async (event: Event) => {
+    pc.onconnectionstatechange = async (_event: Event) => {
       if (pc.connectionState === 'connected') {
         if (this.options.standalone) {
           this.sendWs({ type: 'connected' })
