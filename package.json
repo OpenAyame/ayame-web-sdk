@@ -39,7 +39,7 @@
     "doc": "docs/"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.1.1",
+    "@biomejs/biome": "2.1.2",
     "@playwright/test": "1.54.1",
     "@types/node": "24.0.14",
     "@types/webrtc": "0.0.46",
