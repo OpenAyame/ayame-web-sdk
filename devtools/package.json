@@ -9,7 +9,7 @@
     "@open-ayame/ayame-web-sdk": "workspace:*",
     "react": "19.1.1",
     "react-dom": "19.1.1",
-    "zustand": "5.0.7"
+    "zustand": "5.0.8"
   },
   "devDependencies": {
     "@types/react": "19.1.10",
