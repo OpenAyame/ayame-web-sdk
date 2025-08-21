@@ -7,6 +7,7 @@ const RequestMediaPermissionButton: React.FC<{
 }> = ({ buttonText = 'Request media permission' }) => {
   const isAudioEnabled = useStore((state) => state.settings.audio.isEnable)
   const isVideoEnabled = useStore((state) => state.settings.video.isEnable)
+  const videoResolution = useStore((state) => state.settings.video.resolution)
   const [isPermissionsGranted, setIsPermissionsGranted] = useState(false)
 
   useEffect(() => {
@@ -53,9 +54,19 @@ const RequestMediaPermissionButton: React.FC<{
   const handleClick = async () => {
     try {
       // ちゃんと有効にしているデバイスのパーミッションだけを取りに行く
+      let videoConstraints: boolean | MediaTrackConstraints = isVideoEnabled
+      if (isVideoEnabled && videoResolution && videoResolution !== 'undefined') {
+        const [width, height] = videoResolution.split('x').map(Number)
+        if (width && height) {
+          videoConstraints = {
+            width: { ideal: width },
+            height: { ideal: height },
+          }
+        }
+      }
       const constraints = {
         audio: isAudioEnabled,
-        video: isVideoEnabled,
+        video: videoConstraints,
       }
       // メディアデバイスのパーミッションを取りに行く
       const stream = await navigator.mediaDevices.getUserMedia(constraints)

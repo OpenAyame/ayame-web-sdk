@@ -11,6 +11,9 @@
 
 ## develop
 
+- [ADD] DevTools に解像度を設定するオプションを追加
+  - @voluntas
+
 ## 2025.1.1
 
 - [FIX] Ayame Web SDK のバージョンを取得できなかったのを修正する

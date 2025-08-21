@@ -10,6 +10,7 @@ import RequestMediaPermissionButton from './RequestMediaPermissionButton'
 import TransceiverDirection from './TransceiverDirection'
 import VideoCodecMimeType from './VideoCodecMimeType'
 import VideoInputDevice from './VideoInputDevice'
+import VideoResolution from './VideoResolution'
 import VideoToggle from './VideoToggle'
 
 const MediaSettings: React.FC = () => {
@@ -58,6 +59,9 @@ const MediaSettings: React.FC = () => {
         <br />
         Video Codec (MIME type):
         <VideoCodecMimeType />
+        <br />
+        Video Resolution:
+        <VideoResolution />
       </p>
     </fieldset>
   )

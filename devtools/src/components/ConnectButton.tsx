@@ -10,6 +10,7 @@ const ConnectButton: React.FC = () => {
   const videoEnabled = useStore((state) => state.settings.video.isEnable)
   const videoDirection = useStore((state) => state.settings.video.direction)
   const videoCodecMimeType = useStore((state) => state.settings.video.codecMimeType)
+  const videoResolution = useStore((state) => state.settings.video.resolution)
 
   const signalingUrl = useStore((state) => state.settings.signalingUrl)
   const roomId = useStore((state) => state.settings.roomId)
@@ -39,9 +40,19 @@ const ConnectButton: React.FC = () => {
       (audioEnabled && audioDirection !== 'recvonly') ||
       (videoEnabled && videoDirection !== 'recvonly')
     ) {
+      let videoConstraints: boolean | MediaTrackConstraints = videoEnabled
+      if (videoEnabled && videoResolution && videoResolution !== 'undefined') {
+        const [width, height] = videoResolution.split('x').map(Number)
+        if (width && height) {
+          videoConstraints = {
+            width: { ideal: width },
+            height: { ideal: height },
+          }
+        }
+      }
       localStream = await navigator.mediaDevices.getUserMedia({
         audio: audioEnabled,
-        video: videoEnabled,
+        video: videoConstraints,
       })
       setLocalMediaStream(localStream)
     }

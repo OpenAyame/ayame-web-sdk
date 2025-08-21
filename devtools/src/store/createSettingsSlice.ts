@@ -11,6 +11,7 @@ type Settings = {
     isEnable: boolean
     direction: Direction
     codecMimeType: string
+    resolution: string
   }
 
   signalingUrl: string
@@ -32,6 +33,7 @@ export interface SettingsSlice {
   toggleVideo: (enabled: boolean) => void
   setVideoDirection: (direction: Direction) => void
   setVideoCodecMimeType: (mimeType: string) => void
+  setVideoResolution: (resolution: string) => void
 
   setSignalingUrl: (url: string) => void
   setRoomId: (roomId: string) => void
@@ -61,6 +63,7 @@ export const createSettingsSlice: StateCreator<SettingsSlice> = (set, get) => ({
       isEnable: true,
       direction: 'sendrecv',
       codecMimeType: 'undefined',
+      resolution: '640x480',
     },
     signalingUrl: import.meta.env.VITE_AYAME_SIGNALING_URL || '',
     roomId:
@@ -138,6 +141,17 @@ export const createSettingsSlice: StateCreator<SettingsSlice> = (set, get) => ({
       },
     })),
 
+  setVideoResolution: (resolution: string) =>
+    set((state) => ({
+      settings: {
+        ...state.settings,
+        video: {
+          ...state.settings.video,
+          resolution: resolution,
+        },
+      },
+    })),
+
   setSignalingUrl: (url: string) => {
     set((state) => ({
       settings: {
@@ -201,6 +215,7 @@ export const createSettingsSlice: StateCreator<SettingsSlice> = (set, get) => ({
     params.set('video', settings.video.isEnable.toString())
     params.set('videoDirection', settings.video.direction)
     params.set('videoCodecMimeType', settings.video.codecMimeType)
+    params.set('videoResolution', settings.video.resolution)
 
     params.set('signalingUrl', settings.signalingUrl)
     params.set('roomId', settings.roomId)
@@ -226,6 +241,7 @@ export const createSettingsSlice: StateCreator<SettingsSlice> = (set, get) => ({
           isEnable: params.get('video') !== 'false',
           direction: (params.get('videoDirection') as Direction) || 'sendrecv',
           codecMimeType: params.get('videoCodecMimeType') || 'undefined',
+          resolution: params.get('videoResolution') || '640x480',
         },
         // 項目がなかった場合は今ある値をそのまま利用する
         signalingUrl: params.get('signalingUrl') || state.settings.signalingUrl,
