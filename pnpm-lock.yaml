@@ -27,11 +27,11 @@ importers:
         specifier: 5.9.2
         version: 5.9.2
       vite:
-        specifier: 7.1.3
-        version: 7.1.3(@types/node@24.3.0)(sass@1.83.0)(terser@5.37.0)(yaml@2.8.1)
+        specifier: 7.1.4
+        version: 7.1.4(@types/node@24.3.0)(sass@1.83.0)(terser@5.37.0)(yaml@2.8.1)
       vite-plugin-dts:
         specifier: 4.5.4
-        version: 4.5.4(@types/node@24.3.0)(rollup@4.46.4)(typescript@5.9.2)(vite@7.1.3(@types/node@24.3.0)(sass@1.83.0)(terser@5.37.0)(yaml@2.8.1))
+        version: 4.5.4(@types/node@24.3.0)(rollup@4.46.4)(typescript@5.9.2)(vite@7.1.4(@types/node@24.3.0)(sass@1.83.0)(terser@5.37.0)(yaml@2.8.1))
 
   devtools:
     dependencies:
@@ -56,7 +56,7 @@ importers:
         version: 19.1.9(@types/react@19.1.12)
       '@vitejs/plugin-react':
         specifier: 5.0.2
-        version: 5.0.2(vite@7.1.3(@types/node@24.3.0)(sass@1.83.0)(terser@5.37.0)(yaml@2.8.1))
+        version: 5.0.2(vite@7.1.4(@types/node@24.3.0)(sass@1.83.0)(terser@5.37.0)(yaml@2.8.1))
 
 packages:
 
@@ -1175,8 +1175,8 @@ packages:
       vite:
         optional: true
 
-  vite@7.1.3:
-    resolution: {integrity: sha512-OOUi5zjkDxYrKhTV3V7iKsoS37VUM7v40+HuwEmcrsf11Cdx9y3DIr2Px6liIcZFwt3XSRpQvFpL3WVy7ApkGw==}
+  vite@7.1.4:
+    resolution: {integrity: sha512-X5QFK4SGynAeeIt+A7ZWnApdUyHYm+pzv/8/A57LqSGcI88U6R6ipOs3uCesdc6yl7nl+zNO0t8LmqAdXcQihw==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
     peerDependencies:
@@ -1782,7 +1782,7 @@ snapshots:
 
   '@types/webrtc@0.0.46': {}
 
-  '@vitejs/plugin-react@5.0.2(vite@7.1.3(@types/node@24.3.0)(sass@1.83.0)(terser@5.37.0)(yaml@2.8.1))':
+  '@vitejs/plugin-react@5.0.2(vite@7.1.4(@types/node@24.3.0)(sass@1.83.0)(terser@5.37.0)(yaml@2.8.1))':
     dependencies:
       '@babel/core': 7.28.3
       '@babel/plugin-transform-react-jsx-self': 7.27.1(@babel/core@7.28.3)
@@ -1790,7 +1790,7 @@ snapshots:
       '@rolldown/pluginutils': 1.0.0-beta.34
       '@types/babel__core': 7.20.5
       react-refresh: 0.17.0
-      vite: 7.1.3(@types/node@24.3.0)(sass@1.83.0)(terser@5.37.0)(yaml@2.8.1)
+      vite: 7.1.4(@types/node@24.3.0)(sass@1.83.0)(terser@5.37.0)(yaml@2.8.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -2283,7 +2283,7 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
-  vite-plugin-dts@4.5.4(@types/node@24.3.0)(rollup@4.46.4)(typescript@5.9.2)(vite@7.1.3(@types/node@24.3.0)(sass@1.83.0)(terser@5.37.0)(yaml@2.8.1)):
+  vite-plugin-dts@4.5.4(@types/node@24.3.0)(rollup@4.46.4)(typescript@5.9.2)(vite@7.1.4(@types/node@24.3.0)(sass@1.83.0)(terser@5.37.0)(yaml@2.8.1)):
     dependencies:
       '@microsoft/api-extractor': 7.52.11(@types/node@24.3.0)
       '@rollup/pluginutils': 5.2.0(rollup@4.46.4)
@@ -2296,13 +2296,13 @@ snapshots:
       magic-string: 0.30.17
       typescript: 5.9.2
     optionalDependencies:
-      vite: 7.1.3(@types/node@24.3.0)(sass@1.83.0)(terser@5.37.0)(yaml@2.8.1)
+      vite: 7.1.4(@types/node@24.3.0)(sass@1.83.0)(terser@5.37.0)(yaml@2.8.1)
     transitivePeerDependencies:
       - '@types/node'
       - rollup
       - supports-color
 
-  vite@7.1.3(@types/node@24.3.0)(sass@1.83.0)(terser@5.37.0)(yaml@2.8.1):
+  vite@7.1.4(@types/node@24.3.0)(sass@1.83.0)(terser@5.37.0)(yaml@2.8.1):
     dependencies:
       esbuild: 0.25.9
       fdir: 6.5.0(picomatch@4.0.3)
