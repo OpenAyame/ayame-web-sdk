@@ -7,13 +7,13 @@
   },
   "dependencies": {
     "@open-ayame/ayame-web-sdk": "workspace:*",
-    "react": "19.1.1",
-    "react-dom": "19.1.1",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
     "zustand": "5.0.8"
   },
   "devDependencies": {
-    "@types/react": "19.1.17",
-    "@types/react-dom": "19.1.11",
+    "@types/react": "19.2.0",
+    "@types/react-dom": "19.2.0",
     "@vitejs/plugin-react": "5.0.4"
   }
 }
