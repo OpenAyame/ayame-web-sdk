@@ -42,7 +42,7 @@
     "@biomejs/biome": "2.2.5",
     "@playwright/test": "1.55.1",
     "@types/node": "24.6.2",
-    "@types/webrtc": "0.0.46",
+    "@types/webrtc": "0.0.47",
     "typedoc": "0.28.13",
     "typescript": "5.9.3",
     "vite": "7.1.9",
