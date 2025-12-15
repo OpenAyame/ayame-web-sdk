@@ -30,7 +30,7 @@ jobs:
           cp -r ./devtools/dist/* ./output/devtools
           cp -r ./devtools/dist/assets ./output/devtools/assets
       - name: Upload files
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: ./output
       - name: Slack Notification
