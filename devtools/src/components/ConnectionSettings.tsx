@@ -1,16 +1,16 @@
-import type React from 'react'
-import ClientId from './ClientId'
-import DebugToggle from './DebugToggle'
-import RoomId from './RoomId'
-import SignalingKey from './SignalingKey'
-import SignalingUrl from './SignalingUrl'
-import StandaloneToggle from './StandaloneToggle'
+import type React from "react";
+import ClientId from "./ClientId";
+import DebugToggle from "./DebugToggle";
+import RoomId from "./RoomId";
+import SignalingKey from "./SignalingKey";
+import SignalingUrl from "./SignalingUrl";
+import StandaloneToggle from "./StandaloneToggle";
 
 const ConnectionSettings: React.FC = () => {
   return (
     <fieldset
       style={{
-        maxWidth: '500px',
+        maxWidth: "500px",
       }}
     >
       <legend>Connection settings</legend>
@@ -39,7 +39,7 @@ const ConnectionSettings: React.FC = () => {
         <StandaloneToggle />
       </p>
     </fieldset>
-  )
-}
+  );
+};
 
-export default ConnectionSettings
+export default ConnectionSettings;

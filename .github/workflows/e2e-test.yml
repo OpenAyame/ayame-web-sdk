@@ -3,21 +3,21 @@ name: e2e-test
 on:
   push:
     paths-ignore:
-      - '**.md'
-      - 'LICENSE'
+      - "**.md"
+      - "LICENSE"
     # branches-ignore:
     #   - feature/react-zustand
   schedule:
     # UTC 時間で毎日 2:00 (JST で 11:00) に実行、月曜日から金曜日
-    - cron: '0 2 * * 1-5'
+    - cron: "0 2 * * 1-5"
 
 jobs:
   e2e_test_job:
     strategy:
       matrix:
-        node-version: ['20', '22', '23']
+        node-version: ["20", "22", "23"]
         # browser: ["chromium", "firefox", "webkit"]
-        browser: ['chromium']
+        browser: ["chromium"]
     env:
       VITE_AYAME_SIGNALING_URL: ${{ secrets.TEST_SIGNALING_URL }}
       VITE_AYAME_ROOM_ID_PREFIX: ${{ secrets.TEST_ROOM_ID_PREFIX }}

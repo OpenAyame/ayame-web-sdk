@@ -1,32 +1,32 @@
-import type { Connection, version } from '@open-ayame/ayame-web-sdk'
-import type { StateCreator } from 'zustand'
+import type { Connection, version } from "@open-ayame/ayame-web-sdk";
+import type { StateCreator } from "zustand";
 
 export interface AyameSlice {
   ayame: {
-    version: string
-    connection: Connection | null
-    connectionState: RTCPeerConnectionState
-  }
+    version: string;
+    connection: Connection | null;
+    connectionState: RTCPeerConnectionState;
+  };
 
   mediaStream: {
-    local: MediaStream | null
-    remote: MediaStream | null
-  }
+    local: MediaStream | null;
+    remote: MediaStream | null;
+  };
 
-  setAyameVersion: (version: string) => void
-  setAyameConnection: (conn: Connection | null) => void
-  setAyameConnectionState: (state: RTCPeerConnectionState) => void
+  setAyameVersion: (version: string) => void;
+  setAyameConnection: (conn: Connection | null) => void;
+  setAyameConnectionState: (state: RTCPeerConnectionState) => void;
 
-  setLocalMediaStream: (stream: MediaStream | null) => void
-  setRemoteMediaStream: (stream: MediaStream | null) => void
+  setLocalMediaStream: (stream: MediaStream | null) => void;
+  setRemoteMediaStream: (stream: MediaStream | null) => void;
 }
 
 export const createAyameSlice: StateCreator<AyameSlice> = (set, get) => ({
   ayame: {
-    version: '',
+    version: "",
     connection: null,
     // とりあえず初期値なので new にしておく
-    connectionState: 'new' as RTCPeerConnectionState,
+    connectionState: "new" as RTCPeerConnectionState,
   },
 
   mediaStream: {
@@ -43,7 +43,7 @@ export const createAyameSlice: StateCreator<AyameSlice> = (set, get) => ({
         ...state.ayame,
         version,
       },
-    }))
+    }));
   },
 
   setAyameConnection: (conn: Connection | null) => {
@@ -52,7 +52,7 @@ export const createAyameSlice: StateCreator<AyameSlice> = (set, get) => ({
         ...state.ayame,
         connection: conn,
       },
-    }))
+    }));
   },
 
   setAyameConnectionState: (connectionState: RTCPeerConnectionState) => {
@@ -61,7 +61,7 @@ export const createAyameSlice: StateCreator<AyameSlice> = (set, get) => ({
         ...state.ayame,
         connectionState: connectionState,
       },
-    }))
+    }));
   },
 
   setLocalMediaStream: (stream: MediaStream | null) => {
@@ -70,7 +70,7 @@ export const createAyameSlice: StateCreator<AyameSlice> = (set, get) => ({
         ...state.mediaStream,
         local: stream,
       },
-    }))
+    }));
   },
   setRemoteMediaStream: (stream: MediaStream | null) => {
     set((state) => ({
@@ -78,9 +78,9 @@ export const createAyameSlice: StateCreator<AyameSlice> = (set, get) => ({
         ...state.mediaStream,
         remote: stream,
       },
-    }))
+    }));
   },
-})
+});
 
 // デバッグ用の subscribe 設定
 // ストアの作成後に subscribe を設定
