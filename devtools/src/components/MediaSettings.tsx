@@ -14,53 +14,63 @@ import VideoToggle from "./VideoToggle";
 
 const MediaSettings = () => {
   return (
-    <fieldset
-      style={{
-        maxWidth: "500px",
-      }}
-    >
-      <legend>Media settings</legend>
-      <p>
+    <fieldset class="mb-4 p-4 border border-gray-300 rounded max-w-lg">
+      <legend class="px-2 font-semibold">Media settings</legend>
+      <div class="mb-4">
         <RequestMediaPermissionButton buttonText="Request Media Permission" />
-      </p>
-      <p>
-        Audio:
-        <AudioToggle />
-        <br />
-        Microphone permission state:
-        <MicrophonePermissionState />
-        <br />
-        Audio input device:
-        <AudioInputDevice />
-        <br />
-        Audio output device:
-        <AudioOutputDevice />
-        <br />
-        Direction:
-        <TransceiverDirection signal={audioDirection} />
-        <br />
-        AudioCodec (MIME type):
-        <AudioCodecMimeType />
-      </p>
-      <p>
-        Video:
-        <VideoToggle />
-        <br />
-        Camera permission state:
-        <CameraPermissionState />
-        <br />
-        Video input device:
-        <VideoInputDevice />
-        <br />
-        Direction:
-        <TransceiverDirection signal={videoDirection} />
-        <br />
-        Video Codec (MIME type):
-        <VideoCodecMimeType />
-        <br />
-        Video Resolution:
-        <VideoResolution />
-      </p>
+      </div>
+      <div class="space-y-2 mb-4">
+        <div class="flex items-center gap-2">
+          <label class="w-40">Audio:</label>
+          <AudioToggle />
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="w-40">Microphone permission:</label>
+          <MicrophonePermissionState />
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="w-40">Audio input device:</label>
+          <AudioInputDevice />
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="w-40">Audio output device:</label>
+          <AudioOutputDevice />
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="w-40">Direction:</label>
+          <TransceiverDirection signal={audioDirection} />
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="w-40">AudioCodec (MIME type):</label>
+          <AudioCodecMimeType />
+        </div>
+      </div>
+      <div class="space-y-2">
+        <div class="flex items-center gap-2">
+          <label class="w-40">Video:</label>
+          <VideoToggle />
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="w-40">Camera permission:</label>
+          <CameraPermissionState />
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="w-40">Video input device:</label>
+          <VideoInputDevice />
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="w-40">Direction:</label>
+          <TransceiverDirection signal={videoDirection} />
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="w-40">Video Codec (MIME type):</label>
+          <VideoCodecMimeType />
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="w-40">Video Resolution:</label>
+          <VideoResolution />
+        </div>
+      </div>
     </fieldset>
   );
 };

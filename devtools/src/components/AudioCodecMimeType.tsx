@@ -22,6 +22,7 @@ const AudioCodecMimeType = () => {
       }}
       value={audioCodecMimeType.value}
       data-testid="audio-codec-mime-type"
+      class="px-2 py-1 border border-gray-300 rounded"
     >
       <option value="undefined">未指定</option>
       {codecs.value.map((mimeType) => (

@@ -27,7 +27,7 @@ export const audioCodecMimeType = signal("undefined");
 export const videoEnabled = signal(true);
 export const videoDirection = signal<Direction>("sendrecv");
 export const videoCodecMimeType = signal("undefined");
-export const videoResolution = signal("undefined");
+export const videoResolution = signal("");
 
 export const signalingUrl = signal(import.meta.env.VITE_AYAME_SIGNALING_URL || "");
 export const roomId = signal(
@@ -95,7 +95,7 @@ export const setSettingsFromUrl = (params: URLSearchParams) => {
   videoEnabled.value = params.get("video") !== "false";
   videoDirection.value = (params.get("videoDirection") as Direction) || "sendrecv";
   videoCodecMimeType.value = params.get("videoCodecMimeType") || "undefined";
-  videoResolution.value = params.get("videoResolution") || "undefined";
+  videoResolution.value = params.get("videoResolution") || "";
 
   // 項目がなかった場合は今ある値をそのまま利用する
   signalingUrl.value = params.get("signalingUrl") || signalingUrl.value;

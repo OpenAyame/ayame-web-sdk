@@ -1,9 +1,8 @@
-import { useSignal } from "@preact/signals";
-import { useEffect } from "preact/hooks";
+import { useState, useEffect } from "preact/hooks";
 import { videoInputDeviceId } from "../signals";
 
 const VideoInputDevice = () => {
-  const devices = useSignal<MediaDeviceInfo[]>([]);
+  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
 
   useEffect(() => {
     const getDevices = async () => {
@@ -15,9 +14,17 @@ const VideoInputDevice = () => {
         if (permissionStatus.state === "granted") {
           const deviceList = await navigator.mediaDevices.enumerateDevices();
           const videoInputDevices = deviceList.filter((device) => device.kind === "videoinput");
-          devices.value = videoInputDevices;
+          setDevices(videoInputDevices);
+          // 現在の値がデバイスリストに存在しない場合、default または最初のデバイスを選択
+          if (
+            videoInputDevices.length > 0 &&
+            !videoInputDevices.some((d) => d.deviceId === videoInputDeviceId.value)
+          ) {
+            const defaultDevice = videoInputDevices.find((d) => d.deviceId === "default");
+            videoInputDeviceId.value = defaultDevice?.deviceId ?? videoInputDevices[0].deviceId;
+          }
         } else {
-          devices.value = [];
+          setDevices([]);
         }
       };
 
@@ -41,8 +48,9 @@ const VideoInputDevice = () => {
         videoInputDeviceId.value = (e.target as HTMLSelectElement).value;
       }}
       value={videoInputDeviceId.value}
+      class="px-2 py-1 border border-gray-300 rounded"
     >
-      {devices.value.map((device) => (
+      {devices.map((device) => (
         <option key={device.deviceId} value={device.deviceId}>
           {device.label || `Camera ${device.deviceId}`}
         </option>

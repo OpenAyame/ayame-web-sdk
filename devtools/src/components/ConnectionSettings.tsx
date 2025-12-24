@@ -7,36 +7,34 @@ import StandaloneToggle from "./StandaloneToggle";
 
 const ConnectionSettings = () => {
   return (
-    <fieldset
-      style={{
-        maxWidth: "500px",
-      }}
-    >
-      <legend>Connection settings</legend>
-      <p>
-        Signaling URL:
-        <SignalingUrl />
-      </p>
-      <p>
-        Room ID:
-        <RoomId />
-      </p>
-      <p>
-        Client ID:
-        <ClientId />
-      </p>
-      <p>
-        Signaling Key:
-        <SignalingKey />
-      </p>
-      <p>
-        Debug:
-        <DebugToggle />
-      </p>
-      <p>
-        Standalone:
-        <StandaloneToggle />
-      </p>
+    <fieldset class="mb-4 p-4 border border-gray-300 rounded max-w-lg">
+      <legend class="px-2 font-semibold">Connection settings</legend>
+      <div class="space-y-2">
+        <div class="flex items-center gap-2">
+          <label class="w-28">Signaling URL:</label>
+          <SignalingUrl />
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="w-28">Room ID:</label>
+          <RoomId />
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="w-28">Client ID:</label>
+          <ClientId />
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="w-28">Signaling Key:</label>
+          <SignalingKey />
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="w-28">Debug:</label>
+          <DebugToggle />
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="w-28">Standalone:</label>
+          <StandaloneToggle />
+        </div>
+      </div>
     </fieldset>
   );
 };

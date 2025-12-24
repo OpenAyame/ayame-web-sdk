@@ -1,9 +1,8 @@
-import { useSignal } from "@preact/signals";
-import { useEffect } from "preact/hooks";
+import { useState, useEffect } from "preact/hooks";
 import { audioOutputDeviceId } from "../signals";
 
 const AudioOutputDevice = () => {
-  const devices = useSignal<MediaDeviceInfo[]>([]);
+  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
 
   useEffect(() => {
     const getDevices = async () => {
@@ -15,9 +14,17 @@ const AudioOutputDevice = () => {
         if (permissionStatus.state === "granted") {
           const deviceList = await navigator.mediaDevices.enumerateDevices();
           const audioOutputDevices = deviceList.filter((device) => device.kind === "audiooutput");
-          devices.value = audioOutputDevices;
+          setDevices(audioOutputDevices);
+          // 現在の値がデバイスリストに存在しない場合、default または最初のデバイスを選択
+          if (
+            audioOutputDevices.length > 0 &&
+            !audioOutputDevices.some((d) => d.deviceId === audioOutputDeviceId.value)
+          ) {
+            const defaultDevice = audioOutputDevices.find((d) => d.deviceId === "default");
+            audioOutputDeviceId.value = defaultDevice?.deviceId ?? audioOutputDevices[0].deviceId;
+          }
         } else {
-          devices.value = [];
+          setDevices([]);
         }
       };
 
@@ -41,8 +48,9 @@ const AudioOutputDevice = () => {
         audioOutputDeviceId.value = (e.target as HTMLSelectElement).value;
       }}
       value={audioOutputDeviceId.value}
+      class="px-2 py-1 border border-gray-300 rounded"
     >
-      {devices.value.map((device) => (
+      {devices.map((device) => (
         <option key={device.deviceId} value={device.deviceId}>
           {device.label || `Speaker ${device.deviceId}`}
         </option>

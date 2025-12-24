@@ -18,6 +18,7 @@ const TransceiverDirection = ({ signal }: Props) => {
       onChange={(e) => {
         signal.value = (e.target as HTMLSelectElement).value as Direction;
       }}
+      class="px-2 py-1 border border-gray-300 rounded"
     >
       {(Object.values(DIRECTION) as Direction[]).map((direction) => (
         <option key={direction} value={direction}>

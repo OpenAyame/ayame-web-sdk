@@ -14,36 +14,28 @@ const App = () => {
   setSettingsFromUrl(params);
 
   return (
-    <>
-      <div>
-        Ayame Web SDK Version: <AyameVersion />
-      </div>
-      <p>
+    <div class="p-4">
+      <header class="mb-4 pb-4 border-b border-gray-300">
+        <h1 class="text-2xl font-bold text-gray-800">Ayame DevTools</h1>
+        <p class="text-sm text-gray-500">
+          Ayame Web SDK Version: <AyameVersion />
+        </p>
+      </header>
+      <div class="mb-4">
         <CopyUrlButton />
-      </p>
+      </div>
       <MediaSettings />
       <ConnectionSettings />
-      <p>
+      <div class="mb-4 space-x-2">
         <ConnectButton />
         <DisconnectButton />
-      </p>
-      <div
-        style={{
-          float: "left",
-        }}
-      >
-        <LocalVideo />
       </div>
-      <div
-        style={{
-          float: "left",
-          marginLeft: "20px",
-        }}
-      >
+      <div class="flex gap-5">
+        <LocalVideo />
         <RemoteVideo />
       </div>
       <DatasetConnectionState />
-    </>
+    </div>
   );
 };
 

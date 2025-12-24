@@ -93,7 +93,12 @@ const RequestMediaPermissionButton = ({ buttonText = "Request media permission" 
   }
 
   return (
-    <button type="button" disabled={isPermissionsGranted.value} onClick={handleClick}>
+    <button
+      type="button"
+      disabled={isPermissionsGranted.value}
+      onClick={handleClick}
+      class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+    >
       {buttonText}
     </button>
   );

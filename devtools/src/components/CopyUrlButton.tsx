@@ -8,7 +8,11 @@ const CopyUrlButton = () => {
   };
 
   return (
-    <button type="button" onClick={handleClick}>
+    <button
+      type="button"
+      onClick={handleClick}
+      class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+    >
       Copy URL
     </button>
   );

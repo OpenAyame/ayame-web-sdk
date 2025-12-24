@@ -16,11 +16,7 @@ const RemoteVideo = () => {
       ref={videoRef}
       autoPlay
       playsInline
-      style={{
-        width: "400px",
-        height: "300px",
-        border: "1px solid rgb(255, 0, 0)",
-      }}
+      class="w-[400px] h-[300px] border border-red-500"
     >
       <track kind="captions" srcLang="ja" label="日本語" default />
     </video>
