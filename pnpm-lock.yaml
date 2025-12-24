@@ -44,22 +44,22 @@ importers:
       '@open-ayame/ayame-web-sdk':
         specifier: workspace:*
         version: link:..
+      '@preact/signals':
+        specifier: 2.5.1
+        version: 2.5.1(preact@10.28.1)
       preact:
         specifier: 10.28.1
         version: 10.28.1
+      preact-iso:
+        specifier: 2.11.1
+        version: 2.11.1(preact-render-to-string@6.6.4(preact@10.28.1))(preact@10.28.1)
     devDependencies:
       '@preact/preset-vite':
         specifier: 2.10.2
         version: 2.10.2(@babel/core@7.28.5)(preact@10.28.1)(vite@7.3.0(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.83.0)(terser@5.37.0)(yaml@2.8.2))
-      '@preact/signals':
-        specifier: 2.5.1
-        version: 2.5.1(preact@10.28.1)
       '@tailwindcss/vite':
         specifier: 4.1.18
         version: 4.1.18(vite@7.3.0(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.83.0)(terser@5.37.0)(yaml@2.8.2))
-      preact-iso:
-        specifier: 2.11.1
-        version: 2.11.1(preact-render-to-string@6.6.4(preact@10.28.1))(preact@10.28.1)
       tailwindcss:
         specifier: 4.1.18
         version: 4.1.18
