@@ -7,7 +7,7 @@ const CameraPermissionState: React.FC = () => {
   const setCameraPermissionState = useStore((state) => state.setCameraPermissionState);
 
   useEffect(() => {
-    setCameraPermissionState();
+    void setCameraPermissionState();
   }, [setCameraPermissionState]);
 
   return <>{cameraPermissionState}</>;

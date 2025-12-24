@@ -7,7 +7,7 @@ const CopyUrlButton: React.FC = () => {
   const handleClick = () => {
     const urlParams = generateUrlParams();
     window.history.replaceState(null, "", `?${urlParams}`);
-    navigator.clipboard.writeText(window.location.href);
+    void navigator.clipboard.writeText(window.location.href);
   };
 
   return (

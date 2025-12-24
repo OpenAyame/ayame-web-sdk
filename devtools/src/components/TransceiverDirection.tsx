@@ -1,9 +1,4 @@
-import type { Direction as AyameDirection } from "@open-ayame/ayame-web-sdk";
 import type React from "react";
-
-// 型チェック
-type AssertDirection<T extends AyameDirection> = T;
-type CheckDirection = AssertDirection<AyameDirection>;
 
 const DIRECTION = {
   SENDRECV: "sendrecv",

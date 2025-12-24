@@ -1,4 +1,4 @@
-import type { Connection, version } from "@open-ayame/ayame-web-sdk";
+import type { Connection } from "@open-ayame/ayame-web-sdk";
 import type { StateCreator } from "zustand";
 
 export interface AyameSlice {
@@ -21,7 +21,7 @@ export interface AyameSlice {
   setRemoteMediaStream: (stream: MediaStream | null) => void;
 }
 
-export const createAyameSlice: StateCreator<AyameSlice> = (set, get) => ({
+export const createAyameSlice: StateCreator<AyameSlice> = (set) => ({
   ayame: {
     version: "",
     connection: null,

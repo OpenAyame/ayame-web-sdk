@@ -92,16 +92,10 @@ export const getAvailableCodecs = (
 
   // sendrecv と sendonly は RTCRtpSender を使う
   // recvonly は RTCRtpReceiver を使う
-  const getCapabilities =
+  const codecs =
     direction === "sender" || direction === "receiver"
-      ? RTCRtpSender.getCapabilities
-      : RTCRtpReceiver.getCapabilities;
-
-  if (typeof getCapabilities !== "function") {
-    return [];
-  }
-
-  const codecs = getCapabilities(kind)?.codecs;
+      ? RTCRtpSender.getCapabilities(kind)?.codecs
+      : RTCRtpReceiver.getCapabilities(kind)?.codecs;
   if (!codecs) {
     return [];
   }

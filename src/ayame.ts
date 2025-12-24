@@ -215,14 +215,14 @@ class Connection {
                 if (this.pc && this.pc.signalingState === "have-local-offer") {
                   this.createPeerConnection();
                 }
-                this.setOffer(new RTCSessionDescription(message));
+                void this.setOffer(new RTCSessionDescription(message));
               } else if (message.type === "answer") {
                 await this.setAnswer(new RTCSessionDescription(message));
               } else if (message.type === "candidate") {
                 if (message.ice) {
                   this.traceLog("Received ICE candidate ...", message.ice);
                   const candidate = new RTCIceCandidate(message.ice);
-                  this.addIceCandidate(candidate);
+                  void this.addIceCandidate(candidate);
                 }
               }
             } catch (error) {
@@ -594,7 +594,7 @@ class Connection {
       if (this.pc) {
         await this.pc.addIceCandidate(candidate);
       }
-    } catch (_error) {
+    } catch {
       this.traceLog("invalid ice candidate", candidate);
     }
   }

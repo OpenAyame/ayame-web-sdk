@@ -14,7 +14,7 @@ export interface MediaDeviceSlice {
   setVideoInputDeviceId: (deviceId: string) => void;
 }
 
-export const createMediaDeviceSlice: StateCreator<MediaDeviceSlice> = (set, get) => ({
+export const createMediaDeviceSlice: StateCreator<MediaDeviceSlice> = (set) => ({
   // 初期値
   mediaDevice: {
     audioInputDeviceId: "default",

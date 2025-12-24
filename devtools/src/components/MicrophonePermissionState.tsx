@@ -7,7 +7,7 @@ const MicrophonePermissionState: React.FC = () => {
   const setMicrophonePermissionState = useStore((state) => state.setMicrophonePermissionState);
 
   useEffect(() => {
-    setMicrophonePermissionState();
+    void setMicrophonePermissionState();
   }, [setMicrophonePermissionState]);
 
   return <>{microphonePermissionState}</>;

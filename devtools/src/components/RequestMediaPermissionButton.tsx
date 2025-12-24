@@ -48,7 +48,7 @@ const RequestMediaPermissionButton: React.FC<{
       const allGranted = PermissionsToCheck.every((permission) => permission.state === "granted");
       setIsPermissionsGranted(allGranted);
     };
-    checkPermissions();
+    void checkPermissions();
   }, [isAudioEnabled, isVideoEnabled]);
 
   const handleClick = async () => {

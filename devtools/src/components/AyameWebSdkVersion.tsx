@@ -2,7 +2,6 @@ import { version } from "@open-ayame/ayame-web-sdk";
 import { useEffect } from "react";
 import { useStore } from "../store/useStore";
 const AyameVersion = () => {
-  const ayameVersion = useStore((state) => state.ayame.version);
   const setAyameVersion = useStore((state) => state.setAyameVersion);
 
   useEffect(() => {

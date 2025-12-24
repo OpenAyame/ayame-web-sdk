@@ -1,4 +1,4 @@
-import { signal, computed } from "@preact/signals";
+import { signal } from "@preact/signals";
 import type { Connection, Direction } from "@open-ayame/ayame-web-sdk";
 
 // Ayame signals

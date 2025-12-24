@@ -70,7 +70,7 @@ const ConnectButton: React.FC = () => {
       if (!pc) {
         return;
       }
-      pc.onconnectionstatechange = (event) => {
+      pc.onconnectionstatechange = () => {
         setAyameConnectionState(pc.connectionState);
       };
     });

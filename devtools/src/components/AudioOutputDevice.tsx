@@ -24,7 +24,7 @@ const AudioOutputDevice: React.FC = () => {
       };
 
       // 初期状態の処理
-      handlePermissionChange();
+      void handlePermissionChange();
 
       // 権限変更の監視
       permissionStatus.onchange = handlePermissionChange;
@@ -34,7 +34,7 @@ const AudioOutputDevice: React.FC = () => {
         permissionStatus.onchange = null;
       };
     };
-    getDevices();
+    void getDevices();
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
