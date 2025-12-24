@@ -12,12 +12,7 @@ const RemoteVideo = () => {
   });
 
   return (
-    <video
-      ref={videoRef}
-      autoPlay
-      playsInline
-      class="w-[400px] h-[300px] border border-red-500"
-    >
+    <video ref={videoRef} autoPlay playsInline class="w-[400px] h-[300px] border border-red-500">
       <track kind="captions" srcLang="ja" label="日本語" default />
     </video>
   );

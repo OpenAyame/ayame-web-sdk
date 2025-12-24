@@ -54,11 +54,7 @@ const RequestMediaPermissionButton = ({ buttonText = "Request media permission" 
     try {
       // ちゃんと有効にしているデバイスのパーミッションだけを取りに行く
       let videoConstraints: boolean | MediaTrackConstraints = videoEnabled.value;
-      if (
-        videoEnabled.value &&
-        videoResolution.value &&
-        videoResolution.value !== "undefined"
-      ) {
+      if (videoEnabled.value && videoResolution.value && videoResolution.value !== "undefined") {
         const [width, height] = videoResolution.value.split("x").map(Number);
         if (width && height) {
           videoConstraints = {

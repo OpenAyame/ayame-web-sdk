@@ -7,13 +7,13 @@
   },
   "dependencies": {
     "@open-ayame/ayame-web-sdk": "workspace:*",
-    "preact": "10.28.1"
+    "@preact/signals": "2.5.1",
+    "preact": "10.28.1",
+    "preact-iso": "2.11.1"
   },
   "devDependencies": {
     "@preact/preset-vite": "2.10.2",
-    "@preact/signals": "2.5.1",
     "@tailwindcss/vite": "4.1.18",
-    "preact-iso": "2.11.1",
     "tailwindcss": "4.1.18"
   }
 }

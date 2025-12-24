@@ -38,11 +38,7 @@ const ConnectButton = () => {
       (videoEnabled.value && videoDirection.value !== "recvonly")
     ) {
       let videoConstraints: boolean | MediaTrackConstraints = videoEnabled.value;
-      if (
-        videoEnabled.value &&
-        videoResolution.value &&
-        videoResolution.value !== "undefined"
-      ) {
+      if (videoEnabled.value && videoResolution.value && videoResolution.value !== "undefined") {
         const [width, height] = videoResolution.value.split("x").map(Number);
         if (width && height) {
           videoConstraints = {
