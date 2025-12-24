@@ -36,7 +36,7 @@
     "build:typedoc": "typedoc",
     "fmt": "oxfmt --write .",
     "lint": "oxlint --type-aware",
-    "check": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "dist": "pnpm clean && pnpm install && pnpm build",
     "clean": "git clean -ffdx -e .env.local -e .env",
     "test": "playwright test --project=chromium"
