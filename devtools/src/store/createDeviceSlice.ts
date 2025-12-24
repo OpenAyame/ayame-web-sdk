@@ -1,25 +1,25 @@
-import type { StateCreator } from 'zustand'
+import type { StateCreator } from "zustand";
 
 export interface MediaDeviceSlice {
   mediaDevice: {
-    audioInputDeviceId: string
-    audioOutputDeviceId: string
+    audioInputDeviceId: string;
+    audioOutputDeviceId: string;
 
-    videoInputDeviceId: string
-  }
+    videoInputDeviceId: string;
+  };
 
-  setAudioInputDeviceId: (deviceId: string) => void
-  setAudioOutputDeviceId: (deviceId: string) => void
+  setAudioInputDeviceId: (deviceId: string) => void;
+  setAudioOutputDeviceId: (deviceId: string) => void;
 
-  setVideoInputDeviceId: (deviceId: string) => void
+  setVideoInputDeviceId: (deviceId: string) => void;
 }
 
-export const createMediaDeviceSlice: StateCreator<MediaDeviceSlice> = (set, get) => ({
+export const createMediaDeviceSlice: StateCreator<MediaDeviceSlice> = (set) => ({
   // 初期値
   mediaDevice: {
-    audioInputDeviceId: 'default',
-    audioOutputDeviceId: 'default',
-    videoInputDeviceId: 'default',
+    audioInputDeviceId: "default",
+    audioOutputDeviceId: "default",
+    videoInputDeviceId: "default",
   },
 
   setAudioInputDeviceId: (deviceId: string) =>
@@ -44,6 +44,6 @@ export const createMediaDeviceSlice: StateCreator<MediaDeviceSlice> = (set, get)
         ...state.mediaDevice,
         videoInputDeviceId: deviceId,
       },
-    }))
+    }));
   },
-})
+});

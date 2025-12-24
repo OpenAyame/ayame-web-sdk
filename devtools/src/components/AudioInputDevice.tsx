@@ -1,45 +1,45 @@
-import type React from 'react'
-import { useEffect, useState } from 'react'
-import { useStore } from '../store/useStore'
+import type React from "react";
+import { useEffect, useState } from "react";
+import { useStore } from "../store/useStore";
 
 const AudioInputDevice: React.FC = () => {
-  const [devices, setDevices] = useState<MediaDeviceInfo[]>([])
-  const setAudioInputDeviceId = useStore((state) => state.setAudioInputDeviceId)
-  const audioInputDeviceId = useStore((state) => state.mediaDevice.audioInputDeviceId)
+  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
+  const setAudioInputDeviceId = useStore((state) => state.setAudioInputDeviceId);
+  const audioInputDeviceId = useStore((state) => state.mediaDevice.audioInputDeviceId);
 
   useEffect(() => {
     const getDevices = async () => {
       const permissionStatus = await navigator.permissions.query({
-        name: 'microphone' as PermissionName,
-      })
+        name: "microphone" as PermissionName,
+      });
 
       const handlePermissionChange = async () => {
-        if (permissionStatus.state === 'granted') {
-          const devices = await navigator.mediaDevices.enumerateDevices()
-          const audioInputDevices = devices.filter((device) => device.kind === 'audioinput')
-          setDevices(audioInputDevices)
+        if (permissionStatus.state === "granted") {
+          const devices = await navigator.mediaDevices.enumerateDevices();
+          const audioInputDevices = devices.filter((device) => device.kind === "audioinput");
+          setDevices(audioInputDevices);
         } else {
-          setDevices([])
+          setDevices([]);
         }
-      }
+      };
 
       // 初期状態の処理
-      handlePermissionChange()
+      void handlePermissionChange();
 
       // 権限変更の監視
-      permissionStatus.onchange = handlePermissionChange
+      permissionStatus.onchange = handlePermissionChange;
 
       return () => {
         // ククリーンアップ
-        permissionStatus.onchange = null
-      }
-    }
-    getDevices()
-  }, [])
+        permissionStatus.onchange = null;
+      };
+    };
+    void getDevices();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setAudioInputDeviceId(e.target.value)
-  }
+    setAudioInputDeviceId(e.target.value);
+  };
 
   return (
     <select onChange={handleChange} value={audioInputDeviceId}>
@@ -49,7 +49,7 @@ const AudioInputDevice: React.FC = () => {
         </option>
       ))}
     </select>
-  )
-}
+  );
+};
 
-export default AudioInputDevice
+export default AudioInputDevice;

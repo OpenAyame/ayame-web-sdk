@@ -1,10 +1,10 @@
-import { useStore } from '../store/useStore'
+import { useStore } from "../store/useStore";
 
 const DatasetConnectionState: React.FC = () => {
-  const ayameConnectionState = useStore((state) => state.ayame.connectionState)
+  const ayameConnectionState = useStore((state) => state.ayame.connectionState);
 
   // playwright の E2E テスト用
-  return <div data-testid="connection-state" data-connection-state={ayameConnectionState} />
-}
+  return <div data-testid="connection-state" data-connection-state={ayameConnectionState} />;
+};
 
-export default DatasetConnectionState
+export default DatasetConnectionState;

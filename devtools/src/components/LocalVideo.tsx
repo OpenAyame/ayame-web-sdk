@@ -1,16 +1,16 @@
-import type React from 'react'
-import { useEffect, useRef } from 'react'
-import { useStore } from '../store/useStore'
+import type React from "react";
+import { useEffect, useRef } from "react";
+import { useStore } from "../store/useStore";
 
 const LocalVideo: React.FC = () => {
-  const localMediaStream = useStore((state) => state.mediaStream.local)
-  const videoRef = useRef<HTMLVideoElement>(null)
+  const localMediaStream = useStore((state) => state.mediaStream.local);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     if (videoRef.current) {
-      videoRef.current.srcObject = localMediaStream
+      videoRef.current.srcObject = localMediaStream;
     }
-  }, [localMediaStream])
+  }, [localMediaStream]);
 
   return (
     <video
@@ -19,14 +19,14 @@ const LocalVideo: React.FC = () => {
       muted
       playsInline
       style={{
-        width: '400px',
-        height: '300px',
-        border: '1px solid rgb(0, 0, 255)',
+        width: "400px",
+        height: "300px",
+        border: "1px solid rgb(0, 0, 255)",
         // 鏡表示にする
-        transform: 'scaleX(-1)',
+        transform: "scaleX(-1)",
       }}
     />
-  )
-}
+  );
+};
 
-export default LocalVideo
+export default LocalVideo;

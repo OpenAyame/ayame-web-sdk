@@ -1,2 +1,5 @@
 packages:
-  - "devtools"
+  - devtools
+
+onlyBuiltDependencies:
+  - esbuild

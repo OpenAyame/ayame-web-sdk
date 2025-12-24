@@ -1,9 +1,9 @@
-import type React from 'react'
-import { useStore } from '../store/useStore'
+import type React from "react";
+import { useStore } from "../store/useStore";
 
 const StandaloneToggle: React.FC = () => {
-  const isEnable = useStore((state) => state.settings.standalone)
-  const toggleStandalone = useStore((state) => state.toggleStandalone)
+  const isEnable = useStore((state) => state.settings.standalone);
+  const toggleStandalone = useStore((state) => state.toggleStandalone);
 
   return (
     <input
@@ -11,7 +11,7 @@ const StandaloneToggle: React.FC = () => {
       checked={isEnable}
       onChange={(e) => toggleStandalone(e.target.checked)}
     />
-  )
-}
+  );
+};
 
-export default StandaloneToggle
+export default StandaloneToggle;

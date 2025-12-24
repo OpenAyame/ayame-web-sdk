@@ -2,9 +2,22 @@
   "name": "@open-ayame/ayame-web-sdk",
   "version": "2025.1.1",
   "description": "WebRTC Signaling Server Ayame Web SDK",
-  "author": "Shiguredo Inc.",
-  "license": "Apache-2.0",
   "homepage": "https://github.com/OpenAyame/ayame-web-sdk",
+  "bugs": {
+    "url": "https://discord.gg/shiguredo"
+  },
+  "license": "Apache-2.0",
+  "author": "Shiguredo Inc.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenAyame/ayame-web-sdk.git"
+  },
+  "directories": {
+    "doc": "docs/"
+  },
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "module": "dist/ayame.mjs",
   "exports": {
@@ -21,28 +34,20 @@
     "build:devtools": "vite build --config devtools/vite.config.mjs",
     "preview:devtools": "vite preview --config devtools/vite.config.mjs",
     "build:typedoc": "typedoc",
-    "lint": "biome lint ./src",
-    "fmt": "biome format --write ./src",
+    "fmt": "oxfmt --write .",
+    "lint": "oxlint --type-aware",
     "check": "tsc --noEmit",
     "dist": "pnpm clean && pnpm install && pnpm build",
     "clean": "git clean -ffdx -e .env.local -e .env",
     "test": "playwright test --project=chromium"
   },
-  "bugs": {
-    "url": "https://discord.gg/shiguredo"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/OpenAyame/ayame-web-sdk.git"
-  },
-  "directories": {
-    "doc": "docs/"
-  },
   "devDependencies": {
-    "@biomejs/biome": "2.3.10",
     "@playwright/test": "1.57.0",
-    "@types/node": "24.9.1",
+    "@types/node": "25.0.3",
     "@types/webrtc": "0.0.47",
+    "oxfmt": "0.20.0",
+    "oxlint": "1.35.0",
+    "oxlint-tsgolint": "0.10.0",
     "typedoc": "0.28.15",
     "typescript": "5.9.3",
     "vite": "7.3.0",
@@ -51,8 +56,5 @@
   "engines": {
     "node": ">=20",
     "pnpm": ">=10"
-  },
-  "files": [
-    "dist"
-  ]
+  }
 }

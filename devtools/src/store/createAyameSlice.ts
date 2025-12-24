@@ -1,32 +1,32 @@
-import type { Connection, version } from '@open-ayame/ayame-web-sdk'
-import type { StateCreator } from 'zustand'
+import type { Connection } from "@open-ayame/ayame-web-sdk";
+import type { StateCreator } from "zustand";
 
 export interface AyameSlice {
   ayame: {
-    version: string
-    connection: Connection | null
-    connectionState: RTCPeerConnectionState
-  }
+    version: string;
+    connection: Connection | null;
+    connectionState: RTCPeerConnectionState;
+  };
 
   mediaStream: {
-    local: MediaStream | null
-    remote: MediaStream | null
-  }
+    local: MediaStream | null;
+    remote: MediaStream | null;
+  };
 
-  setAyameVersion: (version: string) => void
-  setAyameConnection: (conn: Connection | null) => void
-  setAyameConnectionState: (state: RTCPeerConnectionState) => void
+  setAyameVersion: (version: string) => void;
+  setAyameConnection: (conn: Connection | null) => void;
+  setAyameConnectionState: (state: RTCPeerConnectionState) => void;
 
-  setLocalMediaStream: (stream: MediaStream | null) => void
-  setRemoteMediaStream: (stream: MediaStream | null) => void
+  setLocalMediaStream: (stream: MediaStream | null) => void;
+  setRemoteMediaStream: (stream: MediaStream | null) => void;
 }
 
-export const createAyameSlice: StateCreator<AyameSlice> = (set, get) => ({
+export const createAyameSlice: StateCreator<AyameSlice> = (set) => ({
   ayame: {
-    version: '',
+    version: "",
     connection: null,
     // とりあえず初期値なので new にしておく
-    connectionState: 'new' as RTCPeerConnectionState,
+    connectionState: "new" as RTCPeerConnectionState,
   },
 
   mediaStream: {
@@ -39,33 +39,48 @@ export const createAyameSlice: StateCreator<AyameSlice> = (set, get) => ({
 
   setAyameVersion: (version: string) => {
     set((state) => ({
-      ayame: { ...state.ayame, version },
-    }))
+      ayame: {
+        ...state.ayame,
+        version,
+      },
+    }));
   },
 
   setAyameConnection: (conn: Connection | null) => {
     set((state) => ({
-      ayame: { ...state.ayame, connection: conn },
-    }))
+      ayame: {
+        ...state.ayame,
+        connection: conn,
+      },
+    }));
   },
 
   setAyameConnectionState: (connectionState: RTCPeerConnectionState) => {
     set((state) => ({
-      ayame: { ...state.ayame, connectionState: connectionState },
-    }))
+      ayame: {
+        ...state.ayame,
+        connectionState: connectionState,
+      },
+    }));
   },
 
   setLocalMediaStream: (stream: MediaStream | null) => {
     set((state) => ({
-      mediaStream: { ...state.mediaStream, local: stream },
-    }))
+      mediaStream: {
+        ...state.mediaStream,
+        local: stream,
+      },
+    }));
   },
   setRemoteMediaStream: (stream: MediaStream | null) => {
     set((state) => ({
-      mediaStream: { ...state.mediaStream, remote: stream },
-    }))
+      mediaStream: {
+        ...state.mediaStream,
+        remote: stream,
+      },
+    }));
   },
-})
+});
 
 // デバッグ用の subscribe 設定
 // ストアの作成後に subscribe を設定

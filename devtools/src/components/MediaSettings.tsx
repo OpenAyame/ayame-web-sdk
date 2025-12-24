@@ -1,26 +1,30 @@
-import type React from 'react'
-import { useStore } from '../store/useStore'
-import AudioCodecMimeType from './AudioCodecMimeType'
-import AudioInputDevice from './AudioInputDevice'
-import AudioOutputDevice from './AudioOutputDevice'
-import AudioToggle from './AudioToggle'
-import CameraPermissionState from './CameraPermissionState'
-import MicrophonePermissionState from './MicrophonePermissionState'
-import RequestMediaPermissionButton from './RequestMediaPermissionButton'
-import TransceiverDirection from './TransceiverDirection'
-import VideoCodecMimeType from './VideoCodecMimeType'
-import VideoInputDevice from './VideoInputDevice'
-import VideoResolution from './VideoResolution'
-import VideoToggle from './VideoToggle'
+import type React from "react";
+import { useStore } from "../store/useStore";
+import AudioCodecMimeType from "./AudioCodecMimeType";
+import AudioInputDevice from "./AudioInputDevice";
+import AudioOutputDevice from "./AudioOutputDevice";
+import AudioToggle from "./AudioToggle";
+import CameraPermissionState from "./CameraPermissionState";
+import MicrophonePermissionState from "./MicrophonePermissionState";
+import RequestMediaPermissionButton from "./RequestMediaPermissionButton";
+import TransceiverDirection from "./TransceiverDirection";
+import VideoCodecMimeType from "./VideoCodecMimeType";
+import VideoInputDevice from "./VideoInputDevice";
+import VideoResolution from "./VideoResolution";
+import VideoToggle from "./VideoToggle";
 
 const MediaSettings: React.FC = () => {
-  const audioDirection = useStore((state) => state.settings.audio.direction)
-  const setAudioDirection = useStore((state) => state.setAudioDirection)
-  const videoDirection = useStore((state) => state.settings.video.direction)
-  const setVideoDirection = useStore((state) => state.setVideoDirection)
+  const audioDirection = useStore((state) => state.settings.audio.direction);
+  const setAudioDirection = useStore((state) => state.setAudioDirection);
+  const videoDirection = useStore((state) => state.settings.video.direction);
+  const setVideoDirection = useStore((state) => state.setVideoDirection);
 
   return (
-    <fieldset style={{ maxWidth: '500px' }}>
+    <fieldset
+      style={{
+        maxWidth: "500px",
+      }}
+    >
       <legend>Media settings</legend>
       <p>
         <RequestMediaPermissionButton buttonText="Request Media Permission" />
@@ -64,7 +68,7 @@ const MediaSettings: React.FC = () => {
         <VideoResolution />
       </p>
     </fieldset>
-  )
-}
+  );
+};
 
-export default MediaSettings
+export default MediaSettings;

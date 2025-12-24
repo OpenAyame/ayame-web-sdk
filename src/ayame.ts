@@ -1,54 +1,54 @@
-import { version as ayameWebSdkVersion } from '../package.json'
-import type { ConnectionOptions, Direction, MetadataOption } from './types'
-import { getSelectedCodecs, traceLog } from './utils'
+import { version as ayameWebSdkVersion } from "../package.json";
+import type { ConnectionOptions, Direction, MetadataOption } from "./types";
+import { getSelectedCodecs, traceLog } from "./utils";
 
 interface AyameRegisterMessage {
-  type: string
-  roomId: string
-  clientId: string
-  key?: string
-  authnMetadata?: any
-  standalone?: boolean
+  type: string;
+  roomId: string;
+  clientId: string;
+  key?: string;
+  authnMetadata?: any;
+  standalone?: boolean;
 }
 
 export interface AyameAddStreamEvent {
-  type: string
-  stream: MediaStream
+  type: string;
+  stream: MediaStream;
 }
 
 class Connection {
-  private debug: boolean
-  private roomId: string
-  private signalingUrl: string
-  private options: ConnectionOptions
-  private connectionState: string
-  private stream: MediaStream | null
-  private remoteStream: MediaStream | null
-  private authnMetadata: any
-  private authzMetadata: any
-  private ws: WebSocket | null
-  private pc: RTCPeerConnection | null
-  private callbacks: any
-  private isOffer: boolean
-  private isExistUser: boolean
-  private dataChannels: RTCDataChannel[]
+  private debug: boolean;
+  private roomId: string;
+  private signalingUrl: string;
+  private options: ConnectionOptions;
+  private connectionState: string;
+  private stream: MediaStream | null;
+  private remoteStream: MediaStream | null;
+  private authnMetadata: any;
+  private authzMetadata: any;
+  private ws: WebSocket | null;
+  private pc: RTCPeerConnection | null;
+  private callbacks: any;
+  private isOffer: boolean;
+  private isExistUser: boolean;
+  private dataChannels: RTCDataChannel[];
   private pcConfig: {
-    iceServers: RTCIceServer[]
-    iceTransportPolicy: RTCIceTransportPolicy
-  }
+    iceServers: RTCIceServer[];
+    iceTransportPolicy: RTCIceTransportPolicy;
+  };
 
   get webSocket(): WebSocket | null {
-    return this.ws
+    return this.ws;
   }
 
   get peerConnection(): RTCPeerConnection | null {
-    return this.pc
+    return this.pc;
   }
 
   // biome-ignore lint/complexity/noBannedTypes: Function type is needed for event callbacks
   on(kind: string, callback: Function): void {
     if (kind in this.callbacks) {
-      this.callbacks[kind] = callback
+      this.callbacks[kind] = callback;
     }
   }
 
@@ -62,24 +62,24 @@ class Connection {
     debug = false,
     isRelay = false,
   ) {
-    this.debug = debug
-    this.roomId = roomId
-    this.signalingUrl = signalingUrl
-    this.options = options
-    this.stream = null
-    this.remoteStream = null
-    this.pc = null
-    this.ws = null
-    this.authnMetadata = null
-    this.authzMetadata = null
-    this.dataChannels = []
-    this.isOffer = false
-    this.isExistUser = false
-    this.connectionState = 'new'
+    this.debug = debug;
+    this.roomId = roomId;
+    this.signalingUrl = signalingUrl;
+    this.options = options;
+    this.stream = null;
+    this.remoteStream = null;
+    this.pc = null;
+    this.ws = null;
+    this.authnMetadata = null;
+    this.authzMetadata = null;
+    this.dataChannels = [];
+    this.isOffer = false;
+    this.isExistUser = false;
+    this.connectionState = "new";
     this.pcConfig = {
       iceServers: this.options.iceServers,
-      iceTransportPolicy: isRelay ? 'relay' : 'all',
-    }
+      iceTransportPolicy: isRelay ? "relay" : "all",
+    };
     this.callbacks = {
       open: () => {},
       connect: () => {},
@@ -87,7 +87,7 @@ class Connection {
       addstream: () => {},
       bye: () => {},
       datachannel: () => {},
-    }
+    };
   }
 
   /**
@@ -98,20 +98,20 @@ class Connection {
     metadataOption: MetadataOption | null = null,
   ): Promise<void> {
     if (this.ws) {
-      this.traceLog('WebSocket Already Exists!')
-      throw new Error('WebSocket Already Exists!')
+      this.traceLog("WebSocket Already Exists!");
+      throw new Error("WebSocket Already Exists!");
     }
 
     if (this.pc) {
-      this.traceLog('RTCPeerConnection already exists')
-      throw new Error('RTCPeerConnection Already Exists!')
+      this.traceLog("RTCPeerConnection already exists");
+      throw new Error("RTCPeerConnection Already Exists!");
     }
 
-    this.stream = stream
+    this.stream = stream;
     if (metadataOption) {
-      this.authnMetadata = metadataOption.authnMetadata
+      this.authnMetadata = metadataOption.authnMetadata;
     }
-    await this.signaling()
+    await this.signaling();
   }
 
   /**
@@ -120,17 +120,17 @@ class Connection {
   public async disconnect(): Promise<void> {
     // DataChannel を閉じる
     for (const dataChannel of this.dataChannels) {
-      await this.closeDataChannel(dataChannel)
+      await this.closeDataChannel(dataChannel);
     }
     // WebSocket と PeerConnection を閉じる
-    await Promise.all([this.closePeerConnection(), this.closeWebSocketConnection()])
+    await Promise.all([this.closePeerConnection(), this.closeWebSocketConnection()]);
 
     // 状態の初期化
-    this.authzMetadata = null
-    this.isOffer = false
-    this.isExistUser = false
-    this.dataChannels = []
-    this.connectionState = 'new'
+    this.authzMetadata = null;
+    this.isOffer = false;
+    this.isExistUser = false;
+    this.dataChannels = [];
+    this.connectionState = "new";
   }
 
   /**
@@ -138,146 +138,155 @@ class Connection {
    */
   public async getStats(): Promise<RTCStatsReport> {
     if (!this.pc) {
-      throw new Error('PeerConnection is not ready')
+      throw new Error("PeerConnection is not ready");
     }
-    return await this.pc.getStats()
+    return await this.pc.getStats();
   }
 
   private async signaling(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       if (this.ws) {
-        return reject('WS-ALREADY-EXISTS')
+        return reject("WS-ALREADY-EXISTS");
       }
-      this.ws = new WebSocket(this.signalingUrl)
+      this.ws = new WebSocket(this.signalingUrl);
       this.ws.onclose = async () => {
         if (!this.options.standalone) {
-          await this.disconnect()
-          this.callbacks.disconnect({ reason: 'WS-CLOSED' })
-          return reject('WS-CLOSED')
+          await this.disconnect();
+          this.callbacks.disconnect({
+            reason: "WS-CLOSED",
+          });
+          return reject("WS-CLOSED");
         }
-      }
+      };
       this.ws.onerror = async () => {
-        await this.disconnect()
-        return reject('WS-CLOSED-WITH-ERROR')
-      }
+        await this.disconnect();
+        return reject("WS-CLOSED-WITH-ERROR");
+      };
       this.ws.onopen = () => {
         const registerMessage: AyameRegisterMessage = {
-          type: 'register',
+          type: "register",
           roomId: this.roomId,
           clientId: this.options.clientId,
           authnMetadata: undefined,
           key: undefined,
           standalone: this.options.standalone,
-        }
+        };
         if (this.authnMetadata !== null) {
-          registerMessage.authnMetadata = this.authnMetadata
+          registerMessage.authnMetadata = this.authnMetadata;
         }
         if (this.options.signalingKey !== null) {
-          registerMessage.key = this.options.signalingKey
+          registerMessage.key = this.options.signalingKey;
         }
-        this.sendWs(registerMessage)
+        this.sendWs(registerMessage);
         if (this.ws) {
           this.ws.onmessage = async (event: MessageEvent) => {
             try {
-              if (typeof event.data !== 'string') {
-                return
+              if (typeof event.data !== "string") {
+                return;
               }
-              const message = JSON.parse(event.data)
-              if (message.type === 'ping') {
-                this.sendWs({ type: 'pong' })
-              } else if (message.type === 'bye') {
-                this.callbacks.bye(event)
-                return resolve()
-              } else if (message.type === 'accept') {
-                this.authzMetadata = message.authzMetadata
+              const message = JSON.parse(event.data);
+              if (message.type === "ping") {
+                this.sendWs({
+                  type: "pong",
+                });
+              } else if (message.type === "bye") {
+                this.callbacks.bye(event);
+                return resolve();
+              } else if (message.type === "accept") {
+                this.authzMetadata = message.authzMetadata;
                 if (Array.isArray(message.iceServers) && message.iceServers.length > 0) {
-                  this.traceLog('iceServers=>', message.iceServers)
-                  this.pcConfig.iceServers = message.iceServers
+                  this.traceLog("iceServers=>", message.iceServers);
+                  this.pcConfig.iceServers = message.iceServers;
                 }
-                this.traceLog('isExistUser=>', message.isExistUser)
-                this.isExistUser = message.isExistUser
-                this.createPeerConnection()
+                this.traceLog("isExistUser=>", message.isExistUser);
+                this.isExistUser = message.isExistUser;
+                this.createPeerConnection();
                 if (this.isExistUser === true) {
-                  await this.sendOffer()
+                  await this.sendOffer();
                 }
-                return resolve()
-              } else if (message.type === 'reject') {
-                await this.disconnect()
-                this.callbacks.disconnect({ reason: message.reason || 'REJECTED' })
-                return reject('REJECTED')
-              } else if (message.type === 'offer') {
-                if (this.pc && this.pc.signalingState === 'have-local-offer') {
-                  this.createPeerConnection()
+                return resolve();
+              } else if (message.type === "reject") {
+                await this.disconnect();
+                this.callbacks.disconnect({
+                  reason: message.reason || "REJECTED",
+                });
+                return reject("REJECTED");
+              } else if (message.type === "offer") {
+                if (this.pc && this.pc.signalingState === "have-local-offer") {
+                  this.createPeerConnection();
                 }
-                this.setOffer(new RTCSessionDescription(message))
-              } else if (message.type === 'answer') {
-                await this.setAnswer(new RTCSessionDescription(message))
-              } else if (message.type === 'candidate') {
+                void this.setOffer(new RTCSessionDescription(message));
+              } else if (message.type === "answer") {
+                await this.setAnswer(new RTCSessionDescription(message));
+              } else if (message.type === "candidate") {
                 if (message.ice) {
-                  this.traceLog('Received ICE candidate ...', message.ice)
-                  const candidate = new RTCIceCandidate(message.ice)
-                  this.addIceCandidate(candidate)
+                  this.traceLog("Received ICE candidate ...", message.ice);
+                  const candidate = new RTCIceCandidate(message.ice);
+                  void this.addIceCandidate(candidate);
                 }
               }
             } catch (error) {
-              await this.disconnect()
-              this.callbacks.disconnect({ reason: 'SIGNALING-ERROR', error: error })
+              await this.disconnect();
+              this.callbacks.disconnect({
+                reason: "SIGNALING-ERROR",
+                error: error,
+              });
             }
-          }
+          };
         }
-      }
-    })
+      };
+    });
   }
 
   public async removeDataChannel(label: string): Promise<void> {
-    const dataChannel = this.findDataChannel(label)
-    if (dataChannel && dataChannel.readyState === 'open') {
-      await this.closeDataChannel(dataChannel)
+    const dataChannel = this.findDataChannel(label);
+    if (dataChannel && dataChannel.readyState === "open") {
+      await this.closeDataChannel(dataChannel);
     } else {
-      throw new Error('data channel is not exist or open')
+      throw new Error("data channel is not exist or open");
     }
   }
 
   private setCodecPreferences(
-    kind: 'audio' | 'video',
+    kind: "audio" | "video",
     codecMimeType: string,
     capabilities: RTCRtpCapabilities,
     transceiver: RTCRtpTransceiver,
   ): void {
-    this.traceLog(`${kind} codecMimeType=`, codecMimeType)
+    this.traceLog(`${kind} codecMimeType=`, codecMimeType);
     // 指定されたコーデックが存在しない場合は return で返す
     if (!capabilities.codecs.some((codec) => codec.mimeType === codecMimeType)) {
-      return
+      return;
     }
 
     // codecPreferences が設定できない場合は return で返す
-    if (typeof transceiver.setCodecPreferences !== 'function') {
-      return
+    if (typeof transceiver.setCodecPreferences !== "function") {
+      return;
     }
 
-    let codecs: RTCRtpCodecCapability[] = []
-    codecs = getSelectedCodecs(kind, codecMimeType, capabilities.codecs)
-    this.traceLog(`${kind} codecs=`, codecs)
-    transceiver.setCodecPreferences(codecs)
+    let codecs: RTCRtpCodecCapability[] = [];
+    codecs = getSelectedCodecs(kind, codecMimeType, capabilities.codecs);
+    this.traceLog(`${kind} codecs=`, codecs);
+    transceiver.setCodecPreferences(codecs);
   }
 
   private createPeerConnection(): void {
-    this.traceLog('RTCConfiguration=>', this.pcConfig)
+    this.traceLog("RTCConfiguration=>", this.pcConfig);
 
-    const pc = new RTCPeerConnection(this.pcConfig)
+    const pc = new RTCPeerConnection(this.pcConfig);
 
     // sendrecv / sendonly が指定されている場合は setCodecPreferences を試みる
-    if (this.stream && this.options.audio.direction !== 'recvonly') {
+    if (this.stream && this.options.audio.direction !== "recvonly") {
       // そもそも audioTracks が 0 じゃないかどうか確認する
-      const audioTracks = this.stream.getAudioTracks()
+      const audioTracks = this.stream.getAudioTracks();
       if (audioTracks.length > 0) {
-        const audioTrack = audioTracks[0]
-        const audioSender = pc.addTrack(audioTrack, this.stream)
-        const audioTransceiver = this.getTransceiver(pc, audioSender)
+        const audioTrack = audioTracks[0];
+        const audioSender = pc.addTrack(audioTrack, this.stream);
+        const audioTransceiver = this.getTransceiver(pc, audioSender);
         if (audioTransceiver) {
-          audioTransceiver.direction = this.options.audio.direction
+          audioTransceiver.direction = this.options.audio.direction;
         }
-        const audioCapabilities = RTCRtpSender.getCapabilities('audio')
+        const audioCapabilities = RTCRtpSender.getCapabilities("audio");
         // コーデックが指定されていた場合は setCodecPreferences を試みる
         if (
           this.options.audio.enabled &&
@@ -286,20 +295,20 @@ class Connection {
           audioCapabilities !== null
         ) {
           this.setCodecPreferences(
-            'audio',
+            "audio",
             this.options.audio.codecMimeType,
             audioCapabilities,
             audioTransceiver,
-          )
+          );
         }
       }
       // 基本的に受信側はコーデック指定はしないほうがいい
       // recvonly で audio が有効な場合、
     } else if (this.options.audio.enabled) {
-      const audioTransceiver = pc.addTransceiver('audio', {
+      const audioTransceiver = pc.addTransceiver("audio", {
         direction: this.options.audio.direction,
-      })
-      const audioCapabilities = RTCRtpReceiver.getCapabilities('audio')
+      });
+      const audioCapabilities = RTCRtpReceiver.getCapabilities("audio");
       // コーデックが指定されていた場合は setCodecPreferences を試みる
       if (
         this.options.audio.enabled &&
@@ -308,26 +317,26 @@ class Connection {
       ) {
         // コーデックを指定された場合は受信出来るかどうかの確認をする
         this.setCodecPreferences(
-          'audio',
+          "audio",
           this.options.audio.codecMimeType,
           audioCapabilities,
           audioTransceiver,
-        )
+        );
       }
     }
 
     // sendrecv / sendonly が指定されている場合は setCodecPreferences を試みる
-    if (this.stream && this.options.video.direction !== 'recvonly') {
+    if (this.stream && this.options.video.direction !== "recvonly") {
       // そもそも videoTracks が 0 じゃないかどうか確認する
-      const videoTracks = this.stream.getVideoTracks()
+      const videoTracks = this.stream.getVideoTracks();
       if (videoTracks.length > 0) {
-        const videoTrack = videoTracks[0]
-        const videoSender = pc.addTrack(videoTrack, this.stream)
-        const videoTransceiver = this.getTransceiver(pc, videoSender)
+        const videoTrack = videoTracks[0];
+        const videoSender = pc.addTrack(videoTrack, this.stream);
+        const videoTransceiver = this.getTransceiver(pc, videoSender);
         if (videoTransceiver) {
-          videoTransceiver.direction = this.options.video.direction
+          videoTransceiver.direction = this.options.video.direction;
         }
-        const videoCapabilities = RTCRtpSender.getCapabilities('video')
+        const videoCapabilities = RTCRtpSender.getCapabilities("video");
         // コーデックが指定されていた場合は setCodecPreferences を試みる
         if (
           this.options.video.enabled &&
@@ -336,20 +345,20 @@ class Connection {
           videoCapabilities !== null
         ) {
           this.setCodecPreferences(
-            'video',
+            "video",
             this.options.video.codecMimeType,
             videoCapabilities,
             videoTransceiver,
-          )
+          );
         }
       }
       // 基本的に受信側はコーデック指定はしないほうがいい
       // recvonly で video が有効な場合、
     } else if (this.options.video.enabled) {
-      const videoTransceiver = pc.addTransceiver('video', {
+      const videoTransceiver = pc.addTransceiver("video", {
         direction: this.options.video.direction,
-      })
-      const videoCapabilities = RTCRtpReceiver.getCapabilities('video')
+      });
+      const videoCapabilities = RTCRtpReceiver.getCapabilities("video");
       // コーデックが指定されていた場合は setCodecPreferences を試みる
       if (
         this.options.video.enabled &&
@@ -358,77 +367,83 @@ class Connection {
         videoCapabilities !== null
       ) {
         this.setCodecPreferences(
-          'video',
+          "video",
           this.options.video.codecMimeType,
           videoCapabilities,
           videoTransceiver,
-        )
+        );
       }
     }
 
-    const _tracks: MediaStreamTrack[] = []
+    const _tracks: MediaStreamTrack[] = [];
     pc.ontrack = (event: RTCTrackEvent) => {
       // すでに remoteStream がある場合はなにもしない
       if (this.remoteStream) {
-        return
+        return;
       }
-      this.traceLog('peer.ontrack()', event)
-      this.remoteStream = event.streams[0]
+      this.traceLog("peer.ontrack()", event);
+      this.remoteStream = event.streams[0];
       const callbackEvent: AyameAddStreamEvent = {
-        type: 'addstream',
+        type: "addstream",
         stream: this.remoteStream,
-      }
-      this.callbacks.addstream(callbackEvent)
-    }
+      };
+      this.callbacks.addstream(callbackEvent);
+    };
     pc.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
-      this.traceLog('peer.onicecandidate()', event)
+      this.traceLog("peer.onicecandidate()", event);
       if (event.candidate) {
-        this.sendIceCandidate(event.candidate)
+        this.sendIceCandidate(event.candidate);
       } else {
-        this.traceLog('empty ice event', '')
+        this.traceLog("empty ice event", "");
       }
-    }
+    };
     pc.oniceconnectionstatechange = async () => {
-      this.traceLog('ICE connection Status has changed to ', pc.iceConnectionState)
+      this.traceLog("ICE connection Status has changed to ", pc.iceConnectionState);
       if (this.connectionState !== pc.iceConnectionState) {
-        this.connectionState = pc.iceConnectionState
+        this.connectionState = pc.iceConnectionState;
         switch (this.connectionState) {
-          case 'connected':
-            this.isOffer = false
-            this.callbacks.connect()
-            break
-          case 'disconnected':
-          case 'failed':
-            await this.disconnect()
-            this.callbacks.disconnect({ reason: 'ICE-CONNECTION-STATE-FAILED' })
-            break
+          case "connected":
+            this.isOffer = false;
+            this.callbacks.connect();
+            break;
+          case "disconnected":
+          case "failed":
+            await this.disconnect();
+            this.callbacks.disconnect({
+              reason: "ICE-CONNECTION-STATE-FAILED",
+            });
+            break;
         }
       }
-    }
+    };
     pc.onconnectionstatechange = async (_event: Event) => {
-      if (pc.connectionState === 'connected') {
+      if (pc.connectionState === "connected") {
         if (this.options.standalone) {
-          this.sendWs({ type: 'connected' })
+          this.sendWs({
+            type: "connected",
+          });
           if (this.ws) {
-            this.traceLog('websocket is closed')
-            this.ws.close()
-            this.ws = null
+            this.traceLog("websocket is closed");
+            this.ws.close();
+            this.ws = null;
           }
         }
-      } else if (pc.connectionState === 'closed') {
-        this.traceLog('peer connection is closed')
-        await this.disconnect()
+      } else if (pc.connectionState === "closed") {
+        this.traceLog("peer connection is closed");
+        await this.disconnect();
       }
-    }
+    };
     pc.onsignalingstatechange = (_) => {
-      this.traceLog('signaling state changes:', pc.signalingState)
-    }
-    pc.ondatachannel = this.onDataChannel.bind(this)
+      this.traceLog("signaling state changes:", pc.signalingState);
+    };
+    pc.ondatachannel = this.onDataChannel.bind(this);
     if (!this.pc) {
-      this.pc = pc
-      this.callbacks.open({ authzMetadata: this.authzMetadata })
+      this.pc = pc;
+      this.callbacks.open({
+        authzMetadata: this.authzMetadata,
+      });
     } else {
-      this.pc = pc
+      this.pc = pc;
     }
   }
 
@@ -437,283 +452,302 @@ class Connection {
     options: RTCDataChannelInit | undefined,
   ): Promise<RTCDataChannel | null> {
     return new Promise<RTCDataChannel | null>((resolve, reject) => {
-      if (!this.pc) return reject('PeerConnection Does Not Ready')
-      if (this.isOffer) return reject('PeerConnection Has Local Offer')
-      let dataChannel = this.findDataChannel(label)
+      if (!this.pc) return reject("PeerConnection Does Not Ready");
+      if (this.isOffer) return reject("PeerConnection Has Local Offer");
+      let dataChannel = this.findDataChannel(label);
       if (dataChannel) {
-        return reject('DataChannel Already Exists!')
+        return reject("DataChannel Already Exists!");
       }
       if (this.isExistUser) {
-        dataChannel = this.pc.createDataChannel(label, options)
+        dataChannel = this.pc.createDataChannel(label, options);
         dataChannel.onclose = (event: Record<string, any>) => {
-          this.traceLog('datachannel onclosed=>', event)
-          this.dataChannels = this.dataChannels.filter((dataChannel) => dataChannel.label !== label)
-        }
+          this.traceLog("datachannel onclosed=>", event);
+          this.dataChannels = this.dataChannels.filter(
+            (dataChannel) => dataChannel.label !== label,
+          );
+        };
         dataChannel.onerror = (event: Record<string, any>) => {
-          this.traceLog('datachannel onerror=>', event)
-          this.dataChannels = this.dataChannels.filter((dataChannel) => dataChannel.label !== label)
-        }
+          this.traceLog("datachannel onerror=>", event);
+          this.dataChannels = this.dataChannels.filter(
+            (dataChannel) => dataChannel.label !== label,
+          );
+        };
         dataChannel.onmessage = (event: any) => {
-          this.traceLog('datachannel onmessage=>', event.data)
-          event.label = label
-        }
+          this.traceLog("datachannel onmessage=>", event.data);
+          event.label = label;
+        };
         dataChannel.onopen = (event: Record<string, any>) => {
-          this.traceLog('datachannel onopen=>', event)
-        }
-        this.dataChannels.push(dataChannel)
-        return resolve(dataChannel)
+          this.traceLog("datachannel onopen=>", event);
+        };
+        this.dataChannels.push(dataChannel);
+        return resolve(dataChannel);
       }
-      return resolve(null)
-    })
+      return resolve(null);
+    });
   }
 
   private onDataChannel(event: RTCDataChannelEvent): void {
-    this.traceLog('on data channel', event)
-    if (!this.pc) return
-    const dataChannel = event.channel
-    const label = event.channel.label
-    if (!event.channel) return
-    if (!label || label.length < 1) return
+    this.traceLog("on data channel", event);
+    if (!this.pc) return;
+    const dataChannel = event.channel;
+    const label = event.channel.label;
+    if (!event.channel) return;
+    if (!label || label.length < 1) return;
     dataChannel.onopen = async (event: Record<string, any>) => {
-      this.traceLog('datachannel onopen=>', event)
-    }
+      this.traceLog("datachannel onopen=>", event);
+    };
     dataChannel.onclose = async (event: Record<string, any>) => {
-      this.traceLog('datachannel onclosed=>', event)
-    }
+      this.traceLog("datachannel onclosed=>", event);
+    };
     dataChannel.onerror = async (event: Record<string, any>) => {
-      this.traceLog('datachannel onerror=>', event)
-    }
+      this.traceLog("datachannel onerror=>", event);
+    };
     dataChannel.onmessage = (event: any) => {
-      this.traceLog('datachannel onmessage=>', event.data)
-      event.label = label
-    }
+      this.traceLog("datachannel onmessage=>", event.data);
+      event.label = label;
+    };
     if (!this.findDataChannel(label)) {
-      this.dataChannels.push(event.channel)
+      this.dataChannels.push(event.channel);
     } else {
       this.dataChannels = this.dataChannels.map((channel) => {
         if (channel.label === label) {
-          return dataChannel
+          return dataChannel;
         }
-        return channel
-      })
+        return channel;
+      });
     }
-    this.callbacks.datachannel(dataChannel)
+    this.callbacks.datachannel(dataChannel);
   }
 
   private async sendOffer(): Promise<void> {
     if (!this.pc) {
-      return
+      return;
     }
 
     const offer: any = await this.pc.createOffer({
       offerToReceiveAudio:
-        this.options.audio.enabled && this.options.audio.direction !== 'sendonly',
+        this.options.audio.enabled && this.options.audio.direction !== "sendonly",
       offerToReceiveVideo:
-        this.options.video.enabled && this.options.video.direction !== 'sendonly',
-    })
-    this.traceLog('create offer sdp, sdp=', offer.sdp)
-    await this.pc.setLocalDescription(offer)
+        this.options.video.enabled && this.options.video.direction !== "sendonly",
+    });
+    this.traceLog("create offer sdp, sdp=", offer.sdp);
+    await this.pc.setLocalDescription(offer);
     if (this.pc.localDescription) {
-      this.sendSdp(this.pc.localDescription)
+      this.sendSdp(this.pc.localDescription);
     }
-    this.isOffer = true
+    this.isOffer = true;
   }
 
   private isAudioCodecSpecified(): boolean {
-    return this.options.audio.enabled && this.options.audio.codecMimeType !== undefined
+    return this.options.audio.enabled && this.options.audio.codecMimeType !== undefined;
   }
 
   private isVideoCodecSpecified(): boolean {
-    return this.options.video.enabled && this.options.video.codecMimeType !== undefined
+    return this.options.video.enabled && this.options.video.codecMimeType !== undefined;
   }
 
   private async createAnswer(): Promise<void> {
     if (!this.pc) {
-      return
+      return;
     }
     try {
-      const answer = await this.pc.createAnswer()
-      this.traceLog('create answer sdp, sdp=', answer.sdp)
-      await this.pc.setLocalDescription(answer)
-      if (this.pc.localDescription) this.sendSdp(this.pc.localDescription)
+      const answer = await this.pc.createAnswer();
+      this.traceLog("create answer sdp, sdp=", answer.sdp);
+      await this.pc.setLocalDescription(answer);
+      if (this.pc.localDescription) this.sendSdp(this.pc.localDescription);
     } catch (error) {
-      await this.disconnect()
-      this.callbacks.disconnect({ reason: 'CREATE-ANSWER-ERROR', error: error })
+      await this.disconnect();
+      this.callbacks.disconnect({
+        reason: "CREATE-ANSWER-ERROR",
+        error: error,
+      });
     }
   }
 
   private async setAnswer(sessionDescription: RTCSessionDescription): Promise<void> {
     if (!this.pc) {
-      return
+      return;
     }
-    await this.pc.setRemoteDescription(sessionDescription)
-    this.traceLog('set answer sdp=', sessionDescription.sdp)
+    await this.pc.setRemoteDescription(sessionDescription);
+    this.traceLog("set answer sdp=", sessionDescription.sdp);
   }
 
   private async setOffer(sessionDescription: RTCSessionDescription): Promise<void> {
     try {
       if (!this.pc) {
-        return
+        return;
       }
-      await this.pc.setRemoteDescription(sessionDescription)
-      this.traceLog('set offer sdp=', sessionDescription.sdp)
-      await this.createAnswer()
+      await this.pc.setRemoteDescription(sessionDescription);
+      this.traceLog("set offer sdp=", sessionDescription.sdp);
+      await this.createAnswer();
     } catch (error) {
-      await this.disconnect()
-      this.callbacks.disconnect({ reason: 'SET-OFFER-ERROR', error: error })
+      await this.disconnect();
+      this.callbacks.disconnect({
+        reason: "SET-OFFER-ERROR",
+        error: error,
+      });
     }
   }
 
   private async addIceCandidate(candidate: RTCIceCandidate): Promise<void> {
     try {
       if (this.pc) {
-        await this.pc.addIceCandidate(candidate)
+        await this.pc.addIceCandidate(candidate);
       }
-    } catch (_error) {
-      this.traceLog('invalid ice candidate', candidate)
+    } catch {
+      this.traceLog("invalid ice candidate", candidate);
     }
   }
 
   private sendIceCandidate(candidate: RTCIceCandidate): void {
-    const message = { type: 'candidate', ice: candidate }
-    this.sendWs(message)
+    const message = {
+      type: "candidate",
+      ice: candidate,
+    };
+    this.sendWs(message);
   }
 
   private sendSdp(sessionDescription: RTCSessionDescription): void {
-    this.sendWs(sessionDescription)
+    this.sendWs(sessionDescription);
   }
 
   private sendWs(message: Record<string, any>) {
     if (this.ws) {
-      this.ws.send(JSON.stringify(message))
+      this.ws.send(JSON.stringify(message));
     }
   }
 
   private getTransceiver(pc: RTCPeerConnection, track: any): RTCRtpTransceiver | null {
-    let transceiver = null
+    let transceiver = null;
     for (const t of pc.getTransceivers()) {
       if (t.sender === track || t.receiver === track) {
-        transceiver = t
+        transceiver = t;
       }
     }
     if (!transceiver) {
-      throw new Error('invalid transceiver')
+      throw new Error("invalid transceiver");
     }
-    return transceiver
+    return transceiver;
   }
 
   private findDataChannel(label: string): RTCDataChannel | undefined {
-    return this.dataChannels.find((channel) => channel.label === label)
+    return this.dataChannels.find((channel) => channel.label === label);
   }
 
   private async closeDataChannel(dataChannel: RTCDataChannel): Promise<void> {
-    this.traceLog('close data channel')
+    this.traceLog("close data channel");
     return new Promise((resolve) => {
       if (!dataChannel) {
-        this.traceLog('data channel is null')
-        return resolve()
+        this.traceLog("data channel is null");
+        return resolve();
       }
-      if (dataChannel.readyState === 'closed') {
-        this.traceLog('data channel is closed')
-        return resolve()
+      if (dataChannel.readyState === "closed") {
+        this.traceLog("data channel is closed");
+        return resolve();
       }
-      dataChannel.onclose = null
+      dataChannel.onclose = null;
       const timerId = setInterval(() => {
-        if (dataChannel.readyState === 'closed') {
-          clearInterval(timerId)
-          this.traceLog('data channel is closed')
-          return resolve()
+        if (dataChannel.readyState === "closed") {
+          clearInterval(timerId);
+          this.traceLog("data channel is closed");
+          return resolve();
         }
-      }, 200)
-      dataChannel.close()
-    })
+      }, 200);
+      dataChannel.close();
+    });
   }
 
   private async closePeerConnection(): Promise<void> {
-    this.traceLog('close peer connection')
+    this.traceLog("close peer connection");
     return new Promise<void>((resolve) => {
       if (!this.pc) {
-        this.traceLog('peer connection is null')
-        return resolve()
+        this.traceLog("peer connection is null");
+        return resolve();
       }
-      if (this.pc.connectionState === 'closed') {
-        this.pc = null
-        this.traceLog('peer connection is closed')
-        return resolve()
+      if (this.pc.connectionState === "closed") {
+        this.pc = null;
+        this.traceLog("peer connection is closed");
+        return resolve();
       }
-      this.pc.oniceconnectionstatechange = null
+      this.pc.oniceconnectionstatechange = null;
       const timerId = setInterval(() => {
         if (!this.pc) {
-          clearInterval(timerId)
-          this.traceLog('peer connection is null')
-          return resolve()
+          clearInterval(timerId);
+          this.traceLog("peer connection is null");
+          return resolve();
         }
-        if (this.pc.connectionState === 'closed') {
-          this.pc = null
-          clearInterval(timerId)
-          this.traceLog('peer connection is closed')
-          return resolve()
+        if (this.pc.connectionState === "closed") {
+          this.pc = null;
+          clearInterval(timerId);
+          this.traceLog("peer connection is closed");
+          return resolve();
         }
-      }, 200)
-      this.pc.close()
-    })
+      }, 200);
+      this.pc.close();
+    });
   }
 
   private async closeWebSocketConnection(): Promise<void> {
     return new Promise<void>((resolve) => {
       // WS がない場合はすでに閉じられているので resolve
       if (!this.ws) {
-        this.traceLog('websocket is null')
-        return resolve()
+        this.traceLog("websocket is null");
+        return resolve();
       }
       // WS がすでに閉じられている場合は resolve
       if (this.ws && this.ws.readyState === WebSocket.CLOSED) {
-        this.ws = null
-        this.traceLog('websocket is closed')
-        return resolve()
+        this.ws = null;
+        this.traceLog("websocket is closed");
+        return resolve();
       }
       // WS の onclose を null 入れる
-      this.ws.onclose = null
+      this.ws.onclose = null;
       // WS が閉じられるまで待つ
       const timerId = setInterval(() => {
         // WS がない場合はすでに閉じられているので resolve
         if (!this.ws) {
-          clearInterval(timerId)
-          this.traceLog('websocket is null')
-          return resolve()
+          clearInterval(timerId);
+          this.traceLog("websocket is null");
+          return resolve();
         }
         // WS が閉じられている場合は resolve
         if (this.ws.readyState === WebSocket.CLOSED) {
-          this.ws = null
-          clearInterval(timerId)
-          this.traceLog('websocket is closed')
-          return resolve()
+          this.ws = null;
+          clearInterval(timerId);
+          this.traceLog("websocket is closed");
+          return resolve();
         }
-      }, 200)
+      }, 200);
       // WS を閉じる
-      this.ws.close()
-    })
+      this.ws.close();
+    });
   }
 
   private traceLog(title: string, message?: Record<string, any> | string) {
     if (!this.debug) {
-      return
+      return;
     }
-    traceLog(title, message)
+    traceLog(title, message);
   }
 }
 
-export default Connection
+export default Connection;
 
 /**
  * Ayame Connection のデフォルトのオプションです。
  */
 export const defaultOptions: ConnectionOptions = {
-  audio: { direction: 'sendrecv', enabled: true },
-  video: { direction: 'sendrecv', enabled: true },
+  audio: {
+    direction: "sendrecv",
+    enabled: true,
+  },
+  video: {
+    direction: "sendrecv",
+    enabled: true,
+  },
   iceServers: [],
   clientId: crypto.randomUUID(),
-}
+};
 
 /**
  * Ayame Connection を生成します。
@@ -726,8 +760,8 @@ export const connection = (
   debug = false,
   isRelay = false,
 ): Connection => {
-  return new Connection(signalingUrl, roomId, options, debug, isRelay)
-}
+  return new Connection(signalingUrl, roomId, options, debug, isRelay);
+};
 
 /**
  * Ayame Connection を生成します。
@@ -739,15 +773,15 @@ export const createConnection = (
   debug = false,
   isRelay = false,
 ): Connection => {
-  return new Connection(signalingUrl, roomId, options, debug, isRelay)
-}
+  return new Connection(signalingUrl, roomId, options, debug, isRelay);
+};
 
 /**
  * Ayame Web SDK のバージョンを出力します。
  */
 export const version = (): string => {
-  return ayameWebSdkVersion
-}
+  return ayameWebSdkVersion;
+};
 
-export type { Connection, ConnectionOptions, Direction, MetadataOption }
-export { getAvailableCodecs } from './utils'
+export type { Connection, ConnectionOptions, Direction, MetadataOption };
+export { getAvailableCodecs } from "./utils";
