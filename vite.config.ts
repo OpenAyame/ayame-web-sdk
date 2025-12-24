@@ -18,7 +18,7 @@ export default defineConfig({
   root: resolve(__dirname, "./"),
   build: {
     minify: "esbuild",
-    target: "es2022",
+    target: "es2023",
     emptyOutDir: true,
     manifest: true,
     outDir: resolve(__dirname, "./dist"),

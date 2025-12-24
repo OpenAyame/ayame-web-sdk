@@ -1,33 +1,30 @@
-import type React from "react";
-import { useStore } from "../store/useStore";
+import {
+  ayameConnection,
+  localMediaStream,
+  remoteMediaStream,
+} from "../signals";
 
-const DisconnectButton: React.FC = () => {
-  const ayameConnection = useStore((state) => state.ayame.connection);
-
-  const localMediaStream = useStore((state) => state.mediaStream.local);
-
-  const setAyameConnection = useStore((state) => state.setAyameConnection);
-  const setLocalMediaStream = useStore((state) => state.setLocalMediaStream);
-  const setRemoteMediaStream = useStore((state) => state.setRemoteMediaStream);
-
+const DisconnectButton = () => {
   const handleClick = async () => {
-    if (!ayameConnection) {
+    const conn = ayameConnection.value;
+    if (!conn) {
       return;
     }
 
-    if (localMediaStream) {
-      for (const track of localMediaStream.getTracks()) {
+    const stream = localMediaStream.value;
+    if (stream) {
+      for (const track of stream.getTracks()) {
         track.stop();
       }
     }
 
-    await ayameConnection.disconnect();
+    await conn.disconnect();
 
-    setLocalMediaStream(null);
-    setRemoteMediaStream(null);
+    localMediaStream.value = null;
+    remoteMediaStream.value = null;
 
     // ayameConnection を null にする
-    setAyameConnection(null);
+    ayameConnection.value = null;
   };
 
   return (

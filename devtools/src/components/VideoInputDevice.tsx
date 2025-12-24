@@ -1,11 +1,9 @@
-import type React from "react";
-import { useEffect, useState } from "react";
-import { useStore } from "../store/useStore";
+import { useSignal } from "@preact/signals";
+import { useEffect } from "preact/hooks";
+import { videoInputDeviceId } from "../signals";
 
-const VideoInputDevice: React.FC = () => {
-  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
-  const setVideoInputDeviceId = useStore((state) => state.setVideoInputDeviceId);
-  const videoInputDeviceId = useStore((state) => state.mediaDevice.videoInputDeviceId);
+const VideoInputDevice = () => {
+  const devices = useSignal<MediaDeviceInfo[]>([]);
 
   useEffect(() => {
     const getDevices = async () => {
@@ -15,11 +13,11 @@ const VideoInputDevice: React.FC = () => {
 
       const handlePermissionChange = async () => {
         if (permissionStatus.state === "granted") {
-          const devices = await navigator.mediaDevices.enumerateDevices();
-          const videoInputDevices = devices.filter((device) => device.kind === "videoinput");
-          setDevices(videoInputDevices);
+          const deviceList = await navigator.mediaDevices.enumerateDevices();
+          const videoInputDevices = deviceList.filter((device) => device.kind === "videoinput");
+          devices.value = videoInputDevices;
         } else {
-          setDevices([]);
+          devices.value = [];
         }
       };
 
@@ -30,20 +28,21 @@ const VideoInputDevice: React.FC = () => {
       permissionStatus.onchange = handlePermissionChange;
 
       return () => {
-        // ククリーンアップ
+        // クリーンアップ
         permissionStatus.onchange = null;
       };
     };
     void getDevices();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setVideoInputDeviceId(e.target.value);
-  };
-
   return (
-    <select onChange={handleChange} value={videoInputDeviceId}>
-      {devices.map((device) => (
+    <select
+      onChange={(e) => {
+        videoInputDeviceId.value = (e.target as HTMLSelectElement).value;
+      }}
+      value={videoInputDeviceId.value}
+    >
+      {devices.value.map((device) => (
         <option key={device.deviceId} value={device.deviceId}>
           {device.label || `Camera ${device.deviceId}`}
         </option>

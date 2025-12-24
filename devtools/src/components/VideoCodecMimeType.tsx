@@ -1,31 +1,30 @@
-import type React from "react";
-import { useEffect, useState } from "react";
-import { useStore } from "../store/useStore";
-
+import { useSignal, useSignalEffect } from "@preact/signals";
 import { getAvailableCodecs } from "@open-ayame/ayame-web-sdk";
+import { videoCodecMimeType, videoDirection } from "../signals";
 
-const VideoCodecMimeType: React.FC = () => {
-  const [codecs, setCodecs] = useState<string[]>([]);
-  const setVideoCodecMimeType = useStore((state) => state.setVideoCodecMimeType);
-  const videoCodecMimeType = useStore((state) => state.settings.video.codecMimeType);
-  const videoDirection = useStore((state) => state.settings.video.direction);
+const VideoCodecMimeType = () => {
+  const codecs = useSignal<string[]>([]);
 
-  useEffect(() => {
+  useSignalEffect(() => {
     const mimeTypes = getAvailableCodecs(
       "video",
-      videoDirection === "sendrecv" || videoDirection === "sendonly" ? "sender" : "receiver",
+      videoDirection.value === "sendrecv" || videoDirection.value === "sendonly"
+        ? "sender"
+        : "receiver",
     );
-    setCodecs(mimeTypes);
-  }, [videoDirection]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setVideoCodecMimeType(e.target.value);
-  };
+    codecs.value = mimeTypes;
+  });
 
   return (
-    <select onChange={handleChange} value={videoCodecMimeType} data-testid="video-codec-mime-type">
+    <select
+      onChange={(e) => {
+        videoCodecMimeType.value = (e.target as HTMLSelectElement).value;
+      }}
+      value={videoCodecMimeType.value}
+      data-testid="video-codec-mime-type"
+    >
       <option value="undefined">未指定</option>
-      {codecs.map((mimeType) => (
+      {codecs.value.map((mimeType) => (
         <option key={mimeType} value={mimeType}>
           {mimeType}
         </option>

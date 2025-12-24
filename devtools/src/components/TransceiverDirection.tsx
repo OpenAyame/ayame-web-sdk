@@ -1,4 +1,5 @@
-import type React from "react";
+import type { Signal } from "@preact/signals";
+import type { Direction } from "@open-ayame/ayame-web-sdk";
 
 const DIRECTION = {
   SENDRECV: "sendrecv",
@@ -6,16 +7,18 @@ const DIRECTION = {
   RECVONLY: "recvonly",
 } as const;
 
-type Direction = (typeof DIRECTION)[keyof typeof DIRECTION];
-
 type Props = {
-  value: Direction;
-  onChange: (direction: Direction) => void;
+  signal: Signal<Direction>;
 };
 
-const TransceiverDirection: React.FC<Props> = ({ value, onChange }) => {
+const TransceiverDirection = ({ signal }: Props) => {
   return (
-    <select value={value} onChange={(e) => onChange(e.target.value as Direction)}>
+    <select
+      value={signal.value}
+      onChange={(e) => {
+        signal.value = (e.target as HTMLSelectElement).value as Direction;
+      }}
+    >
       {(Object.values(DIRECTION) as Direction[]).map((direction) => (
         <option key={direction} value={direction}>
           {direction}

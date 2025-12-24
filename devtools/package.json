@@ -1,19 +1,19 @@
 {
   "name": "@open-ayame/ayame-devtools",
   "scripts": {
-    "lint": "biome lint .",
-    "fmt": "biome format --write .",
+    "fmt": "oxfmt --write .",
+    "lint": "oxlint --type-aware",
     "check": "tsc --noEmit"
   },
   "dependencies": {
     "@open-ayame/ayame-web-sdk": "workspace:*",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "zustand": "5.0.9"
+    "preact": "10.28.0"
   },
   "devDependencies": {
-    "@types/react": "19.2.7",
-    "@types/react-dom": "19.2.3",
-    "@vitejs/plugin-react": "5.1.2"
+    "@preact/preset-vite": "2.10.2",
+    "@preact/signals": "2.5.1",
+    "@tailwindcss/vite": "4.1.18",
+    "preact-iso": "2.11.0",
+    "tailwindcss": "4.1.18"
   }
 }

@@ -1,48 +1,49 @@
 import { createConnection, defaultOptions } from "@open-ayame/ayame-web-sdk";
 import type { AyameAddStreamEvent } from "@open-ayame/ayame-web-sdk";
-import { useStore } from "../store/useStore";
+import {
+  audioCodecMimeType,
+  audioDirection,
+  audioEnabled,
+  ayameConnection,
+  ayameConnectionState,
+  debug,
+  localMediaStream,
+  remoteMediaStream,
+  roomId,
+  signalingKey,
+  signalingUrl,
+  videoCodecMimeType,
+  videoDirection,
+  videoEnabled,
+  videoResolution,
+} from "../signals";
 
-import type React from "react";
-const ConnectButton: React.FC = () => {
-  const audioEnabled = useStore((state) => state.settings.audio.isEnable);
-  const audioDirection = useStore((state) => state.settings.audio.direction);
-  const audioCodecMimeType = useStore((state) => state.settings.audio.codecMimeType);
-  const videoEnabled = useStore((state) => state.settings.video.isEnable);
-  const videoDirection = useStore((state) => state.settings.video.direction);
-  const videoCodecMimeType = useStore((state) => state.settings.video.codecMimeType);
-  const videoResolution = useStore((state) => state.settings.video.resolution);
-
-  const signalingUrl = useStore((state) => state.settings.signalingUrl);
-  const roomId = useStore((state) => state.settings.roomId);
-  const debug = useStore((state) => state.settings.debug);
-  const signalingKey = useStore((state) => state.settings.signalingKey);
-
-  const setAyameConnection = useStore((state) => state.setAyameConnection);
-  const setLocalMediaStream = useStore((state) => state.setLocalMediaStream);
-  const setRemoteMediaStream = useStore((state) => state.setRemoteMediaStream);
-  const setAyameConnectionState = useStore((state) => state.setAyameConnectionState);
-
+const ConnectButton = () => {
   const handleClick = async () => {
     const options = defaultOptions;
-    options.audio.enabled = audioEnabled;
-    options.audio.direction = audioDirection;
-    options.audio.codecMimeType = audioCodecMimeType;
-    options.video.enabled = videoEnabled;
-    options.video.direction = videoDirection;
-    options.video.codecMimeType = videoCodecMimeType;
-    options.signalingKey = signalingKey;
+    options.audio.enabled = audioEnabled.value;
+    options.audio.direction = audioDirection.value;
+    options.audio.codecMimeType = audioCodecMimeType.value;
+    options.video.enabled = videoEnabled.value;
+    options.video.direction = videoDirection.value;
+    options.video.codecMimeType = videoCodecMimeType.value;
+    options.signalingKey = signalingKey.value;
 
-    const conn = createConnection(signalingUrl, roomId, options, debug);
+    const conn = createConnection(signalingUrl.value, roomId.value, options, debug.value);
 
     let localStream: MediaStream | null = null;
 
     if (
-      (audioEnabled && audioDirection !== "recvonly") ||
-      (videoEnabled && videoDirection !== "recvonly")
+      (audioEnabled.value && audioDirection.value !== "recvonly") ||
+      (videoEnabled.value && videoDirection.value !== "recvonly")
     ) {
-      let videoConstraints: boolean | MediaTrackConstraints = videoEnabled;
-      if (videoEnabled && videoResolution && videoResolution !== "undefined") {
-        const [width, height] = videoResolution.split("x").map(Number);
+      let videoConstraints: boolean | MediaTrackConstraints = videoEnabled.value;
+      if (
+        videoEnabled.value &&
+        videoResolution.value &&
+        videoResolution.value !== "undefined"
+      ) {
+        const [width, height] = videoResolution.value.split("x").map(Number);
         if (width && height) {
           videoConstraints = {
             width: {
@@ -55,14 +56,14 @@ const ConnectButton: React.FC = () => {
         }
       }
       localStream = await navigator.mediaDevices.getUserMedia({
-        audio: audioEnabled,
+        audio: audioEnabled.value,
         video: videoConstraints,
       });
-      setLocalMediaStream(localStream);
+      localMediaStream.value = localStream;
     }
 
     conn.on("addstream", (event: AyameAddStreamEvent) => {
-      setRemoteMediaStream(event.stream);
+      remoteMediaStream.value = event.stream;
     });
 
     conn.on("open", () => {
@@ -71,7 +72,7 @@ const ConnectButton: React.FC = () => {
         return;
       }
       pc.onconnectionstatechange = () => {
-        setAyameConnectionState(pc.connectionState);
+        ayameConnectionState.value = pc.connectionState;
       };
     });
 
@@ -85,14 +86,14 @@ const ConnectButton: React.FC = () => {
         }
       }
 
-      setLocalMediaStream(null);
-      setRemoteMediaStream(null);
-      setAyameConnection(null);
+      localMediaStream.value = null;
+      remoteMediaStream.value = null;
+      ayameConnection.value = null;
     });
 
     await conn.connect(localStream);
 
-    setAyameConnection(conn);
+    ayameConnection.value = conn;
   };
 
   return (

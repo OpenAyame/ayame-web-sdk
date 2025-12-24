@@ -1,11 +1,9 @@
-import type React from "react";
-import { useEffect, useState } from "react";
-import { useStore } from "../store/useStore";
+import { useSignal } from "@preact/signals";
+import { useEffect } from "preact/hooks";
+import { audioInputDeviceId } from "../signals";
 
-const AudioInputDevice: React.FC = () => {
-  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
-  const setAudioInputDeviceId = useStore((state) => state.setAudioInputDeviceId);
-  const audioInputDeviceId = useStore((state) => state.mediaDevice.audioInputDeviceId);
+const AudioInputDevice = () => {
+  const devices = useSignal<MediaDeviceInfo[]>([]);
 
   useEffect(() => {
     const getDevices = async () => {
@@ -15,11 +13,11 @@ const AudioInputDevice: React.FC = () => {
 
       const handlePermissionChange = async () => {
         if (permissionStatus.state === "granted") {
-          const devices = await navigator.mediaDevices.enumerateDevices();
-          const audioInputDevices = devices.filter((device) => device.kind === "audioinput");
-          setDevices(audioInputDevices);
+          const deviceList = await navigator.mediaDevices.enumerateDevices();
+          const audioInputDevices = deviceList.filter((device) => device.kind === "audioinput");
+          devices.value = audioInputDevices;
         } else {
-          setDevices([]);
+          devices.value = [];
         }
       };
 
@@ -30,20 +28,21 @@ const AudioInputDevice: React.FC = () => {
       permissionStatus.onchange = handlePermissionChange;
 
       return () => {
-        // ククリーンアップ
+        // クリーンアップ
         permissionStatus.onchange = null;
       };
     };
     void getDevices();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setAudioInputDeviceId(e.target.value);
-  };
-
   return (
-    <select onChange={handleChange} value={audioInputDeviceId}>
-      {devices.map((device) => (
+    <select
+      onChange={(e) => {
+        audioInputDeviceId.value = (e.target as HTMLSelectElement).value;
+      }}
+      value={audioInputDeviceId.value}
+    >
+      {devices.value.map((device) => (
         <option key={device.deviceId} value={device.deviceId}>
           {device.label || `Microphone ${device.deviceId}`}
         </option>

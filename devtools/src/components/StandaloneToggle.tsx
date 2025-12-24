@@ -1,15 +1,13 @@
-import type React from "react";
-import { useStore } from "../store/useStore";
+import { standalone } from "../signals";
 
-const StandaloneToggle: React.FC = () => {
-  const isEnable = useStore((state) => state.settings.standalone);
-  const toggleStandalone = useStore((state) => state.toggleStandalone);
-
+const StandaloneToggle = () => {
   return (
     <input
       type="checkbox"
-      checked={isEnable}
-      onChange={(e) => toggleStandalone(e.target.checked)}
+      checked={standalone.value}
+      onChange={(e) => {
+        standalone.value = (e.target as HTMLInputElement).checked;
+      }}
     />
   );
 };

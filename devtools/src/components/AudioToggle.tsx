@@ -1,12 +1,14 @@
-import type React from "react";
-import { useStore } from "../store/useStore";
+import { audioEnabled } from "../signals";
 
-const AudioToggle: React.FC = () => {
-  const isEnable = useStore((state) => state.settings.audio.isEnable);
-  const toggleAudio = useStore((state) => state.toggleAudio);
-
+const AudioToggle = () => {
   return (
-    <input type="checkbox" checked={isEnable} onChange={(e) => toggleAudio(e.target.checked)} />
+    <input
+      type="checkbox"
+      checked={audioEnabled.value}
+      onChange={(e) => {
+        audioEnabled.value = (e.target as HTMLInputElement).checked;
+      }}
+    />
   );
 };
 

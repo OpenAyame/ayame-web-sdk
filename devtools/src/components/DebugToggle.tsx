@@ -1,12 +1,14 @@
-import type React from "react";
-import { useStore } from "../store/useStore";
+import { debug } from "../signals";
 
-const DebugToggle: React.FC = () => {
-  const isEnable = useStore((state) => state.settings.debug);
-  const toggleDebug = useStore((state) => state.toggleDebug);
-
+const DebugToggle = () => {
   return (
-    <input type="checkbox" checked={isEnable} onChange={(e) => toggleDebug(e.target.checked)} />
+    <input
+      type="checkbox"
+      checked={debug.value}
+      onChange={(e) => {
+        debug.value = (e.target as HTMLInputElement).checked;
+      }}
+    />
   );
 };
 

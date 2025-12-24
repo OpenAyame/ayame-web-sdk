@@ -1,16 +1,15 @@
-import type React from "react";
-import { useStore } from "../store/useStore";
+import { videoResolution } from "../signals";
 
-const VideoResolution: React.FC = () => {
-  const videoResolution = useStore((state) => state.settings.video.resolution);
-  const setVideoResolution = useStore((state) => state.setVideoResolution);
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setVideoResolution(event.target.value);
-  };
-
+const VideoResolution = () => {
   return (
-    <input type="text" value={videoResolution} onChange={handleChange} placeholder="640x480" />
+    <input
+      type="text"
+      value={videoResolution.value}
+      onChange={(e) => {
+        videoResolution.value = (e.target as HTMLInputElement).value;
+      }}
+      placeholder="640x480"
+    />
   );
 };
 

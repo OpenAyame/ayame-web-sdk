@@ -1,16 +1,9 @@
-import type React from "react";
-import { useEffect } from "react";
-import { useStore } from "../store/useStore";
+import { microphonePermissionState, setMicrophonePermissionState } from "../signals";
 
-const MicrophonePermissionState: React.FC = () => {
-  const microphonePermissionState = useStore((state) => state.permissionState.microphoneState);
-  const setMicrophonePermissionState = useStore((state) => state.setMicrophonePermissionState);
+void setMicrophonePermissionState();
 
-  useEffect(() => {
-    void setMicrophonePermissionState();
-  }, [setMicrophonePermissionState]);
-
-  return <>{microphonePermissionState}</>;
+const MicrophonePermissionState = () => {
+  return <>{microphonePermissionState.value}</>;
 };
 
 export default MicrophonePermissionState;

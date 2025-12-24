@@ -1,13 +1,6 @@
-import { useStore } from "../store/useStore";
+import { roomId } from "../signals";
 
 const RoomId = () => {
-  const roomId = useStore((state) => state.settings.roomId);
-  const setRoomId = useStore((state) => state.setRoomId);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setRoomId(e.target.value);
-  };
-
   return (
     <input
       data-testid="room-id"
@@ -15,8 +8,10 @@ const RoomId = () => {
       style={{
         width: "350px",
       }}
-      value={roomId}
-      onChange={handleChange}
+      value={roomId.value}
+      onChange={(e) => {
+        roomId.value = (e.target as HTMLInputElement).value;
+      }}
     />
   );
 };
