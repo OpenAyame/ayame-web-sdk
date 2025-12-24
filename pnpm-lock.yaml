@@ -58,8 +58,8 @@ importers:
         specifier: 4.1.18
         version: 4.1.18(vite@7.3.0(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.83.0)(terser@5.37.0)(yaml@2.8.2))
       preact-iso:
-        specifier: 2.11.0
-        version: 2.11.0(preact-render-to-string@6.6.4(preact@10.28.0))(preact@10.28.0)
+        specifier: 2.11.1
+        version: 2.11.1(preact-render-to-string@6.6.4(preact@10.28.0))(preact@10.28.0)
       tailwindcss:
         specifier: 4.1.18
         version: 4.1.18
@@ -1355,8 +1355,8 @@ packages:
     resolution: {integrity: sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==}
     engines: {node: ^10 || ^12 || >=14}
 
-  preact-iso@2.11.0:
-    resolution: {integrity: sha512-oThWJQcgcnaWh6UKy1qrBkxIWp5CkqvnHiFdLiDUxfNkGdpQ5veGQw9wOVS0NDp7X8xo98wxE4wng5jLv1e9Ug==}
+  preact-iso@2.11.1:
+    resolution: {integrity: sha512-rLy0RmzP/hrDjnFdnEblxFgKtzUj4njkHrpGJBGS7S4QuYw1zv0lA38qsWpeAAB10JAz/hF2CsHrLen9ufCtbw==}
     peerDependencies:
       preact: '>=10 || >= 11.0.0-0'
       preact-render-to-string: '>=6.4.0'
@@ -2752,7 +2752,7 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  preact-iso@2.11.0(preact-render-to-string@6.6.4(preact@10.28.0))(preact@10.28.0):
+  preact-iso@2.11.1(preact-render-to-string@6.6.4(preact@10.28.0))(preact@10.28.0):
     dependencies:
       preact: 10.28.0
       preact-render-to-string: 6.6.4(preact@10.28.0)
