@@ -11,6 +11,17 @@
 
 ## develop
 
+- [CHANGE] React から Preact に切り替える
+  - @voluntas
+- [CHANGE] devtools の状態管理を Zustand から Preact Signals に切り替える
+  - @voluntas
+- [CHANGE] Biome から Oxc に切り替える
+  - biome.jsonc を削除
+  - .oxfmtrc.jsonc を追加
+  - .oxlintrc.jsonc を追加
+  - @voluntas
+- [ADD] Tailwind CSS を導入する
+  - @voluntas
 - [ADD] DevTools に解像度を設定するオプションを追加
   - @voluntas
 

@@ -1,5 +1,4 @@
-import type React from "react";
-import { useStore } from "../store/useStore";
+import { audioDirection, videoDirection } from "../store/signals";
 import AudioCodecMimeType from "./AudioCodecMimeType";
 import AudioInputDevice from "./AudioInputDevice";
 import AudioOutputDevice from "./AudioOutputDevice";
@@ -13,12 +12,7 @@ import VideoInputDevice from "./VideoInputDevice";
 import VideoResolution from "./VideoResolution";
 import VideoToggle from "./VideoToggle";
 
-const MediaSettings: React.FC = () => {
-  const audioDirection = useStore((state) => state.settings.audio.direction);
-  const setAudioDirection = useStore((state) => state.setAudioDirection);
-  const videoDirection = useStore((state) => state.settings.video.direction);
-  const setVideoDirection = useStore((state) => state.setVideoDirection);
-
+const MediaSettings = () => {
   return (
     <fieldset
       style={{
@@ -43,7 +37,7 @@ const MediaSettings: React.FC = () => {
         <AudioOutputDevice />
         <br />
         Direction:
-        <TransceiverDirection value={audioDirection} onChange={setAudioDirection} />
+        <TransceiverDirection signal={audioDirection} />
         <br />
         AudioCodec (MIME type):
         <AudioCodecMimeType />
@@ -59,7 +53,7 @@ const MediaSettings: React.FC = () => {
         <VideoInputDevice />
         <br />
         Direction:
-        <TransceiverDirection value={videoDirection} onChange={setVideoDirection} />
+        <TransceiverDirection signal={videoDirection} />
         <br />
         Video Codec (MIME type):
         <VideoCodecMimeType />

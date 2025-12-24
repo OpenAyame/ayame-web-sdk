@@ -1,16 +1,15 @@
-import type React from "react";
-import { useEffect, useRef } from "react";
-import { useStore } from "../store/useStore";
+import { useRef } from "preact/hooks";
+import { useSignalEffect } from "@preact/signals";
+import { localMediaStream } from "../store/signals";
 
-const LocalVideo: React.FC = () => {
-  const localMediaStream = useStore((state) => state.mediaStream.local);
+const LocalVideo = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  useEffect(() => {
+  useSignalEffect(() => {
     if (videoRef.current) {
-      videoRef.current.srcObject = localMediaStream;
+      videoRef.current.srcObject = localMediaStream.value;
     }
-  }, [localMediaStream]);
+  });
 
   return (
     <video

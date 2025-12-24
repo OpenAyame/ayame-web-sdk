@@ -1,5 +1,3 @@
-import type React from "react";
-import { useEffect } from "react";
 import AyameVersion from "./components/AyameWebSdkVersion";
 import ConnectButton from "./components/ConnectButton";
 import ConnectionSettings from "./components/ConnectionSettings";
@@ -9,15 +7,11 @@ import DisconnectButton from "./components/DisconnectButton";
 import LocalVideo from "./components/LocalVideo";
 import MediaSettings from "./components/MediaSettings";
 import RemoteVideo from "./components/RemoteVideo";
-import { useStore } from "./store/useStore";
+import { setSettingsFromUrl } from "./store/signals";
 
-const App: React.FC = () => {
-  const setSettingsFromUrl = useStore((state) => state.setSettingsFromUrl);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    setSettingsFromUrl(params);
-  }, [setSettingsFromUrl]);
+const App = () => {
+  const params = new URLSearchParams(window.location.search);
+  setSettingsFromUrl(params);
 
   return (
     <>

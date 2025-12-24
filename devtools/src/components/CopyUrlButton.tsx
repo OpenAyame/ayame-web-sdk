@@ -1,9 +1,6 @@
-import type React from "react";
-import { useStore } from "../store/useStore";
+import { generateUrlParams } from "../store/signals";
 
-const CopyUrlButton: React.FC = () => {
-  const generateUrlParams = useStore((state) => state.generateUrlParams);
-
+const CopyUrlButton = () => {
   const handleClick = () => {
     const urlParams = generateUrlParams();
     window.history.replaceState(null, "", `?${urlParams}`);

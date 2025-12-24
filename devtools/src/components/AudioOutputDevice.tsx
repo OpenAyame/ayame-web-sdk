@@ -1,11 +1,9 @@
-import type React from "react";
-import { useEffect, useState } from "react";
-import { useStore } from "../store/useStore";
+import { useSignal } from "@preact/signals";
+import { useEffect } from "preact/hooks";
+import { audioOutputDeviceId } from "../store/signals";
 
-const AudioOutputDevice: React.FC = () => {
-  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
-  const setAudioOutputDeviceId = useStore((state) => state.setAudioOutputDeviceId);
-  const audioOutputDeviceId = useStore((state) => state.mediaDevice.audioOutputDeviceId);
+const AudioOutputDevice = () => {
+  const devices = useSignal<MediaDeviceInfo[]>([]);
 
   useEffect(() => {
     const getDevices = async () => {
@@ -15,11 +13,11 @@ const AudioOutputDevice: React.FC = () => {
 
       const handlePermissionChange = async () => {
         if (permissionStatus.state === "granted") {
-          const devices = await navigator.mediaDevices.enumerateDevices();
-          const audioOutputDevices = devices.filter((device) => device.kind === "audiooutput");
-          setDevices(audioOutputDevices);
+          const deviceList = await navigator.mediaDevices.enumerateDevices();
+          const audioOutputDevices = deviceList.filter((device) => device.kind === "audiooutput");
+          devices.value = audioOutputDevices;
         } else {
-          setDevices([]);
+          devices.value = [];
         }
       };
 
@@ -30,20 +28,21 @@ const AudioOutputDevice: React.FC = () => {
       permissionStatus.onchange = handlePermissionChange;
 
       return () => {
-        // ククリーンアップ
+        // クリーンアップ
         permissionStatus.onchange = null;
       };
     };
     void getDevices();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setAudioOutputDeviceId(e.target.value);
-  };
-
   return (
-    <select onChange={handleChange} value={audioOutputDeviceId}>
-      {devices.map((device) => (
+    <select
+      onChange={(e) => {
+        audioOutputDeviceId.value = (e.target as HTMLSelectElement).value;
+      }}
+      value={audioOutputDeviceId.value}
+    >
+      {devices.value.map((device) => (
         <option key={device.deviceId} value={device.deviceId}>
           {device.label || `Speaker ${device.deviceId}`}
         </option>

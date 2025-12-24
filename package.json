@@ -30,9 +30,9 @@
   "scripts": {
     "build": "vite build",
     "watch": "vite build --watch",
-    "dev": "vite --config devtools/vite.config.mjs",
-    "build:devtools": "vite build --config devtools/vite.config.mjs",
-    "preview:devtools": "vite preview --config devtools/vite.config.mjs",
+    "dev": "vite --config devtools/vite.config.ts",
+    "build:devtools": "vite build --config devtools/vite.config.ts",
+    "preview:devtools": "vite preview --config devtools/vite.config.ts",
     "build:typedoc": "typedoc",
     "fmt": "oxfmt --write .",
     "lint": "oxlint --type-aware",

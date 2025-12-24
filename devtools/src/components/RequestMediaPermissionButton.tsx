@@ -1,14 +1,13 @@
-import type React from "react";
-import { useEffect, useState } from "react";
-import { useStore } from "../store/useStore";
+import { useSignal } from "@preact/signals";
+import { useEffect } from "preact/hooks";
+import { audioEnabled, videoEnabled, videoResolution } from "../store/signals";
 
-const RequestMediaPermissionButton: React.FC<{
+type Props = {
   buttonText?: string;
-}> = ({ buttonText = "Request media permission" }) => {
-  const isAudioEnabled = useStore((state) => state.settings.audio.isEnable);
-  const isVideoEnabled = useStore((state) => state.settings.video.isEnable);
-  const videoResolution = useStore((state) => state.settings.video.resolution);
-  const [isPermissionsGranted, setIsPermissionsGranted] = useState(false);
+};
+
+const RequestMediaPermissionButton = ({ buttonText = "Request media permission" }: Props) => {
+  const isPermissionsGranted = useSignal(false);
 
   useEffect(() => {
     const checkPermissions = async () => {
@@ -16,47 +15,51 @@ const RequestMediaPermissionButton: React.FC<{
       const PermissionsToCheck = [];
 
       // 音声が有効だったらパーミッションのチェックをする
-      if (isAudioEnabled) {
+      if (audioEnabled.value) {
         const microphonePermission = await navigator.permissions.query({
           name: "microphone" as PermissionName,
         });
         PermissionsToCheck.push(microphonePermission);
         microphonePermission.onchange = () => {
           // パーミッションが granted でなければボタンを有効にする
-          setIsPermissionsGranted(microphonePermission.state === "granted");
+          isPermissionsGranted.value = microphonePermission.state === "granted";
         };
       }
       // 映像が有効だったらパーミッションのチェックをする
-      if (isVideoEnabled) {
+      if (videoEnabled.value) {
         const cameraPermission = await navigator.permissions.query({
           name: "camera" as PermissionName,
         });
         PermissionsToCheck.push(cameraPermission);
         cameraPermission.onchange = () => {
           // パーミッションが granted でなければボタンを有効にする
-          setIsPermissionsGranted(cameraPermission.state === "granted");
+          isPermissionsGranted.value = cameraPermission.state === "granted";
         };
       }
 
       // パーミッションをチェックする必要がなかったら終了
       if (PermissionsToCheck.length === 0) {
-        setIsPermissionsGranted(true);
+        isPermissionsGranted.value = true;
         return;
       }
 
       // パーミッションのチェックをする
       const allGranted = PermissionsToCheck.every((permission) => permission.state === "granted");
-      setIsPermissionsGranted(allGranted);
+      isPermissionsGranted.value = allGranted;
     };
     void checkPermissions();
-  }, [isAudioEnabled, isVideoEnabled]);
+  }, []);
 
   const handleClick = async () => {
     try {
       // ちゃんと有効にしているデバイスのパーミッションだけを取りに行く
-      let videoConstraints: boolean | MediaTrackConstraints = isVideoEnabled;
-      if (isVideoEnabled && videoResolution && videoResolution !== "undefined") {
-        const [width, height] = videoResolution.split("x").map(Number);
+      let videoConstraints: boolean | MediaTrackConstraints = videoEnabled.value;
+      if (
+        videoEnabled.value &&
+        videoResolution.value &&
+        videoResolution.value !== "undefined"
+      ) {
+        const [width, height] = videoResolution.value.split("x").map(Number);
         if (width && height) {
           videoConstraints = {
             width: {
@@ -69,7 +72,7 @@ const RequestMediaPermissionButton: React.FC<{
         }
       }
       const constraints = {
-        audio: isAudioEnabled,
+        audio: audioEnabled.value,
         video: videoConstraints,
       };
       // メディアデバイスのパーミッションを取りに行く
@@ -90,7 +93,7 @@ const RequestMediaPermissionButton: React.FC<{
   }
 
   return (
-    <button type="button" disabled={isPermissionsGranted} onClick={handleClick}>
+    <button type="button" disabled={isPermissionsGranted.value} onClick={handleClick}>
       {buttonText}
     </button>
   );

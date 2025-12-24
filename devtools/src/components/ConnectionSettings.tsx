@@ -1,4 +1,3 @@
-import type React from "react";
 import ClientId from "./ClientId";
 import DebugToggle from "./DebugToggle";
 import RoomId from "./RoomId";
@@ -6,7 +5,7 @@ import SignalingKey from "./SignalingKey";
 import SignalingUrl from "./SignalingUrl";
 import StandaloneToggle from "./StandaloneToggle";
 
-const ConnectionSettings: React.FC = () => {
+const ConnectionSettings = () => {
   return (
     <fieldset
       style={{

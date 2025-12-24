@@ -1,16 +1,15 @@
-import type React from "react";
-import { useEffect, useRef } from "react";
-import { useStore } from "../store/useStore";
+import { useRef } from "preact/hooks";
+import { useSignalEffect } from "@preact/signals";
+import { remoteMediaStream } from "../store/signals";
 
-const RemoteVideo: React.FC = () => {
-  const remoteMediaStream = useStore((state) => state.mediaStream.remote);
+const RemoteVideo = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  useEffect(() => {
+  useSignalEffect(() => {
     if (videoRef.current) {
-      videoRef.current.srcObject = remoteMediaStream;
+      videoRef.current.srcObject = remoteMediaStream.value;
     }
-  }, [remoteMediaStream]);
+  });
 
   return (
     <video

@@ -1,12 +1,14 @@
-import type React from "react";
-import { useStore } from "../store/useStore";
+import { videoEnabled } from "../store/signals";
 
-const VideoToggle: React.FC = () => {
-  const isEnable = useStore((state) => state.settings.video.isEnable);
-  const toggleVideo = useStore((state) => state.toggleVideo);
-
+const VideoToggle = () => {
   return (
-    <input type="checkbox" checked={isEnable} onChange={(e) => toggleVideo(e.target.checked)} />
+    <input
+      type="checkbox"
+      checked={videoEnabled.value}
+      onChange={(e) => {
+        videoEnabled.value = (e.target as HTMLInputElement).checked;
+      }}
+    />
   );
 };
 

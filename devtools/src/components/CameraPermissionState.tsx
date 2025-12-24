@@ -1,16 +1,9 @@
-import type React from "react";
-import { useEffect } from "react";
-import { useStore } from "../store/useStore";
+import { cameraPermissionState, setCameraPermissionState } from "../store/signals";
 
-const CameraPermissionState: React.FC = () => {
-  const cameraPermissionState = useStore((state) => state.permissionState.cameraState);
-  const setCameraPermissionState = useStore((state) => state.setCameraPermissionState);
+void setCameraPermissionState();
 
-  useEffect(() => {
-    void setCameraPermissionState();
-  }, [setCameraPermissionState]);
-
-  return <>{cameraPermissionState}</>;
+const CameraPermissionState = () => {
+  return <>{cameraPermissionState.value}</>;
 };
 
 export default CameraPermissionState;

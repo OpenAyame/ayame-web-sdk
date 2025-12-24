@@ -1,21 +1,16 @@
-import { useStore } from "../store/useStore";
+import { signalingKey } from "../store/signals";
 
 const SignalingKey = () => {
-  const signalingKey = useStore((state) => state.settings.signalingKey);
-  const setSignalingKey = useStore((state) => state.setSignalingKey);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSignalingKey(e.target.value);
-  };
-
   return (
     <input
       type="password"
       style={{
         width: "350px",
       }}
-      value={signalingKey}
-      onChange={handleChange}
+      value={signalingKey.value}
+      onChange={(e) => {
+        signalingKey.value = (e.target as HTMLInputElement).value;
+      }}
     />
   );
 };

@@ -1,31 +1,30 @@
-import type React from "react";
-import { useEffect, useState } from "react";
-import { useStore } from "../store/useStore";
-
+import { useSignal, useSignalEffect } from "@preact/signals";
 import { getAvailableCodecs } from "@open-ayame/ayame-web-sdk";
+import { audioCodecMimeType, audioDirection } from "../store/signals";
 
-const VideoCodecMimeType: React.FC = () => {
-  const [codecs, setCodecs] = useState<string[]>([]);
-  const setAudioCodecMimeType = useStore((state) => state.setAudioCodecMimeType);
-  const audioCodecMimeType = useStore((state) => state.settings.audio.codecMimeType);
-  const audioDirection = useStore((state) => state.settings.audio.direction);
+const AudioCodecMimeType = () => {
+  const codecs = useSignal<string[]>([]);
 
-  useEffect(() => {
+  useSignalEffect(() => {
     const mimeTypes = getAvailableCodecs(
       "audio",
-      audioDirection === "sendrecv" || audioDirection === "sendonly" ? "sender" : "receiver",
+      audioDirection.value === "sendrecv" || audioDirection.value === "sendonly"
+        ? "sender"
+        : "receiver",
     );
-    setCodecs(mimeTypes);
-  }, [audioDirection]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setAudioCodecMimeType(e.target.value);
-  };
+    codecs.value = mimeTypes;
+  });
 
   return (
-    <select onChange={handleChange} value={audioCodecMimeType} data-testid="audio-codec-mime-type">
+    <select
+      onChange={(e) => {
+        audioCodecMimeType.value = (e.target as HTMLSelectElement).value;
+      }}
+      value={audioCodecMimeType.value}
+      data-testid="audio-codec-mime-type"
+    >
       <option value="undefined">未指定</option>
-      {codecs.map((mimeType) => (
+      {codecs.value.map((mimeType) => (
         <option key={mimeType} value={mimeType}>
           {mimeType}
         </option>
@@ -34,4 +33,4 @@ const VideoCodecMimeType: React.FC = () => {
   );
 };
 
-export default VideoCodecMimeType;
+export default AudioCodecMimeType;
