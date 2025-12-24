@@ -8,7 +8,16 @@ const ClientId = () => {
     setClientId(e.target.value)
   }
 
-  return <input type="text" style={{ width: '350px' }} value={clientId} onChange={handleChange} />
+  return (
+    <input
+      type="text"
+      style={{
+        width: '350px',
+      }}
+      value={clientId}
+      onChange={handleChange}
+    />
+  )
 }
 
 export default ClientId

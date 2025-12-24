@@ -30,7 +30,8 @@ export const videoCodecMimeType = signal('undefined')
 
 export const signalingUrl = signal(import.meta.env.VITE_AYAME_SIGNALING_URL || '')
 export const roomId = signal(
-  `${import.meta.env.VITE_AYAME_ROOM_ID_PREFIX ?? ''}${import.meta.env.VITE_AYAME_ROOM_NAME ?? ''}` || ''
+  `${import.meta.env.VITE_AYAME_ROOM_ID_PREFIX ?? ''}${import.meta.env.VITE_AYAME_ROOM_NAME ?? ''}` ||
+    '',
 )
 export const clientId = signal(crypto.randomUUID())
 export const signalingKey = signal(import.meta.env.VITE_AYAME_SIGNALING_KEY || '')
@@ -44,7 +45,7 @@ export const setMicrophonePermissionState = async () => {
     name: 'microphone' as PermissionName,
   })
   microphonePermissionState.value = permissionStatus.state
-  
+
   // リアルタイムにパーミッションが変わったときに反映するようにする
   permissionStatus.onchange = () => {
     microphonePermissionState.value = permissionStatus.state
@@ -56,7 +57,7 @@ export const setCameraPermissionState = async () => {
     name: 'camera' as PermissionName,
   })
   cameraPermissionState.value = permissionStatus.state
-  
+
   // リアルタイムにパーミッションが変わったときに反映するようにする
   permissionStatus.onchange = () => {
     cameraPermissionState.value = permissionStatus.state

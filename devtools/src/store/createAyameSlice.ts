@@ -39,30 +39,45 @@ export const createAyameSlice: StateCreator<AyameSlice> = (set, get) => ({
 
   setAyameVersion: (version: string) => {
     set((state) => ({
-      ayame: { ...state.ayame, version },
+      ayame: {
+        ...state.ayame,
+        version,
+      },
     }))
   },
 
   setAyameConnection: (conn: Connection | null) => {
     set((state) => ({
-      ayame: { ...state.ayame, connection: conn },
+      ayame: {
+        ...state.ayame,
+        connection: conn,
+      },
     }))
   },
 
   setAyameConnectionState: (connectionState: RTCPeerConnectionState) => {
     set((state) => ({
-      ayame: { ...state.ayame, connectionState: connectionState },
+      ayame: {
+        ...state.ayame,
+        connectionState: connectionState,
+      },
     }))
   },
 
   setLocalMediaStream: (stream: MediaStream | null) => {
     set((state) => ({
-      mediaStream: { ...state.mediaStream, local: stream },
+      mediaStream: {
+        ...state.mediaStream,
+        local: stream,
+      },
     }))
   },
   setRemoteMediaStream: (stream: MediaStream | null) => {
     set((state) => ({
-      mediaStream: { ...state.mediaStream, remote: stream },
+      mediaStream: {
+        ...state.mediaStream,
+        remote: stream,
+      },
     }))
   },
 })

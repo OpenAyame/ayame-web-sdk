@@ -33,10 +33,19 @@ const App: React.FC = () => {
         <ConnectButton />
         <DisconnectButton />
       </p>
-      <div style={{ float: 'left' }}>
+      <div
+        style={{
+          float: 'left',
+        }}
+      >
         <LocalVideo />
       </div>
-      <div style={{ float: 'left', marginLeft: '20px' }}>
+      <div
+        style={{
+          float: 'left',
+          marginLeft: '20px',
+        }}
+      >
         <RemoteVideo />
       </div>
       <DatasetConnectionState />

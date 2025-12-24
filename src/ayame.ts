@@ -152,7 +152,9 @@ class Connection {
       this.ws.onclose = async () => {
         if (!this.options.standalone) {
           await this.disconnect()
-          this.callbacks.disconnect({ reason: 'WS-CLOSED' })
+          this.callbacks.disconnect({
+            reason: 'WS-CLOSED',
+          })
           return reject('WS-CLOSED')
         }
       }
@@ -184,7 +186,9 @@ class Connection {
               }
               const message = JSON.parse(event.data)
               if (message.type === 'ping') {
-                this.sendWs({ type: 'pong' })
+                this.sendWs({
+                  type: 'pong',
+                })
               } else if (message.type === 'bye') {
                 this.callbacks.bye(event)
                 return resolve()
@@ -203,7 +207,9 @@ class Connection {
                 return resolve()
               } else if (message.type === 'reject') {
                 await this.disconnect()
-                this.callbacks.disconnect({ reason: message.reason || 'REJECTED' })
+                this.callbacks.disconnect({
+                  reason: message.reason || 'REJECTED',
+                })
                 return reject('REJECTED')
               } else if (message.type === 'offer') {
                 if (this.pc && this.pc.signalingState === 'have-local-offer') {
@@ -221,7 +227,10 @@ class Connection {
               }
             } catch (error) {
               await this.disconnect()
-              this.callbacks.disconnect({ reason: 'SIGNALING-ERROR', error: error })
+              this.callbacks.disconnect({
+                reason: 'SIGNALING-ERROR',
+                error: error,
+              })
             }
           }
         }
@@ -400,7 +409,9 @@ class Connection {
           case 'disconnected':
           case 'failed':
             await this.disconnect()
-            this.callbacks.disconnect({ reason: 'ICE-CONNECTION-STATE-FAILED' })
+            this.callbacks.disconnect({
+              reason: 'ICE-CONNECTION-STATE-FAILED',
+            })
             break
         }
       }
@@ -408,7 +419,9 @@ class Connection {
     pc.onconnectionstatechange = async (_event: Event) => {
       if (pc.connectionState === 'connected') {
         if (this.options.standalone) {
-          this.sendWs({ type: 'connected' })
+          this.sendWs({
+            type: 'connected',
+          })
           if (this.ws) {
             this.traceLog('websocket is closed')
             this.ws.close()
@@ -426,7 +439,9 @@ class Connection {
     pc.ondatachannel = this.onDataChannel.bind(this)
     if (!this.pc) {
       this.pc = pc
-      this.callbacks.open({ authzMetadata: this.authzMetadata })
+      this.callbacks.open({
+        authzMetadata: this.authzMetadata,
+      })
     } else {
       this.pc = pc
     }
@@ -538,7 +553,10 @@ class Connection {
       if (this.pc.localDescription) this.sendSdp(this.pc.localDescription)
     } catch (error) {
       await this.disconnect()
-      this.callbacks.disconnect({ reason: 'CREATE-ANSWER-ERROR', error: error })
+      this.callbacks.disconnect({
+        reason: 'CREATE-ANSWER-ERROR',
+        error: error,
+      })
     }
   }
 
@@ -560,7 +578,10 @@ class Connection {
       await this.createAnswer()
     } catch (error) {
       await this.disconnect()
-      this.callbacks.disconnect({ reason: 'SET-OFFER-ERROR', error: error })
+      this.callbacks.disconnect({
+        reason: 'SET-OFFER-ERROR',
+        error: error,
+      })
     }
   }
 
@@ -575,7 +596,10 @@ class Connection {
   }
 
   private sendIceCandidate(candidate: RTCIceCandidate): void {
-    const message = { type: 'candidate', ice: candidate }
+    const message = {
+      type: 'candidate',
+      ice: candidate,
+    }
     this.sendWs(message)
   }
 
@@ -709,8 +733,14 @@ export default Connection
  * Ayame Connection のデフォルトのオプションです。
  */
 export const defaultOptions: ConnectionOptions = {
-  audio: { direction: 'sendrecv', enabled: true },
-  video: { direction: 'sendrecv', enabled: true },
+  audio: {
+    direction: 'sendrecv',
+    enabled: true,
+  },
+  video: {
+    direction: 'sendrecv',
+    enabled: true,
+  },
   iceServers: [],
   clientId: crypto.randomUUID(),
 }

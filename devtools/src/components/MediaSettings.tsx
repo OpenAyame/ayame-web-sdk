@@ -20,7 +20,11 @@ const MediaSettings: React.FC = () => {
   const setVideoDirection = useStore((state) => state.setVideoDirection)
 
   return (
-    <fieldset style={{ maxWidth: '500px' }}>
+    <fieldset
+      style={{
+        maxWidth: '500px',
+      }}
+    >
       <legend>Media settings</legend>
       <p>
         <RequestMediaPermissionButton buttonText="Request Media Permission" />

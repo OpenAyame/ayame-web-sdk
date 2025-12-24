@@ -9,14 +9,7 @@ const VideoResolution: React.FC = () => {
     setVideoResolution(event.target.value)
   }
 
-  return (
-    <input
-      type="text"
-      value={videoResolution}
-      onChange={handleChange}
-      placeholder="640x480"
-    />
-  )
+  return <input type="text" value={videoResolution} onChange={handleChange} placeholder="640x480" />
 }
 
 export default VideoResolution

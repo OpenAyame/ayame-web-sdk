@@ -12,7 +12,9 @@ const RoomId = () => {
     <input
       data-testid="room-id"
       type="text"
-      style={{ width: '350px' }}
+      style={{
+        width: '350px',
+      }}
       value={roomId}
       onChange={handleChange}
     />

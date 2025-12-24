@@ -29,8 +29,12 @@ test('DevTools のテスト', async ({ browser }) => {
   await sendrecv2.fill('[data-testid="room-id"]', `${roomId2}-${roomIdSuffix}`)
 
   // ボタンが表示されるまで待つ
-  await sendrecv1.waitForSelector('[data-testid="connect"]', { state: 'visible' })
-  await sendrecv2.waitForSelector('[data-testid="connect"]', { state: 'visible' })
+  await sendrecv1.waitForSelector('[data-testid="connect"]', {
+    state: 'visible',
+  })
+  await sendrecv2.waitForSelector('[data-testid="connect"]', {
+    state: 'visible',
+  })
 
   await sendrecv1.click('[data-testid="connect"]')
   await sendrecv2.click('[data-testid="connect"]')
@@ -39,14 +43,18 @@ test('DevTools のテスト', async ({ browser }) => {
   await expect(sendrecv1.locator('[data-testid="connection-state"]')).toHaveAttribute(
     'data-connection-state',
     'connected',
-    { timeout: 10000 },
+    {
+      timeout: 10000,
+    },
   )
 
   // もう一方のページも connected になるまで待つ
   await expect(sendrecv2.locator('[data-testid="connection-state"]')).toHaveAttribute(
     'data-connection-state',
     'connected',
-    { timeout: 10000 },
+    {
+      timeout: 10000,
+    },
   )
 
   await sendrecv1.click('[data-testid="disconnect"]')

@@ -45,8 +45,12 @@ const ConnectButton: React.FC = () => {
         const [width, height] = videoResolution.split('x').map(Number)
         if (width && height) {
           videoConstraints = {
-            width: { ideal: width },
-            height: { ideal: height },
+            width: {
+              ideal: width,
+            },
+            height: {
+              ideal: height,
+            },
           }
         }
       }

@@ -11,7 +11,9 @@ const SignalingKey = () => {
   return (
     <input
       type="password"
-      style={{ width: '350px' }}
+      style={{
+        width: '350px',
+      }}
       value={signalingKey}
       onChange={handleChange}
     />

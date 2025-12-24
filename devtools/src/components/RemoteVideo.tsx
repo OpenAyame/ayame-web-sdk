@@ -17,7 +17,11 @@ const RemoteVideo: React.FC = () => {
       ref={videoRef}
       autoPlay
       playsInline
-      style={{ width: '400px', height: '300px', border: '1px solid rgb(255, 0, 0)' }}
+      style={{
+        width: '400px',
+        height: '300px',
+        border: '1px solid rgb(255, 0, 0)',
+      }}
     >
       <track kind="captions" srcLang="ja" label="日本語" default />
     </video>

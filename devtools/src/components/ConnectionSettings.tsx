@@ -8,7 +8,11 @@ import StandaloneToggle from './StandaloneToggle'
 
 const ConnectionSettings: React.FC = () => {
   return (
-    <fieldset style={{ maxWidth: '500px' }}>
+    <fieldset
+      style={{
+        maxWidth: '500px',
+      }}
+    >
       <legend>Connection settings</legend>
       <p>
         Signaling URL:

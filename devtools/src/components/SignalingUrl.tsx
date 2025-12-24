@@ -9,7 +9,14 @@ const SignalingUrl = () => {
   }
 
   return (
-    <input type="text" style={{ width: '350px' }} value={signalingUrl} onChange={handleChange} />
+    <input
+      type="text"
+      style={{
+        width: '350px',
+      }}
+      value={signalingUrl}
+      onChange={handleChange}
+    />
   )
 }
 
