@@ -1,4 +1,4 @@
-import { debug } from "../store/signals";
+import { debug } from "../signals";
 
 const DebugToggle = () => {
   return (

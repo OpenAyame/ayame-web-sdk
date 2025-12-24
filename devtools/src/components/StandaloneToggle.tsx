@@ -1,4 +1,4 @@
-import { standalone } from "../store/signals";
+import { standalone } from "../signals";
 
 const StandaloneToggle = () => {
   return (

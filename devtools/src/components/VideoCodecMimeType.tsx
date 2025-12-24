@@ -1,6 +1,6 @@
 import { useSignal, useSignalEffect } from "@preact/signals";
 import { getAvailableCodecs } from "@open-ayame/ayame-web-sdk";
-import { videoCodecMimeType, videoDirection } from "../store/signals";
+import { videoCodecMimeType, videoDirection } from "../signals";
 
 const VideoCodecMimeType = () => {
   const codecs = useSignal<string[]>([]);

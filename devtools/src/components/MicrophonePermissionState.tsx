@@ -1,4 +1,4 @@
-import { microphonePermissionState, setMicrophonePermissionState } from "../store/signals";
+import { microphonePermissionState, setMicrophonePermissionState } from "../signals";
 
 void setMicrophonePermissionState();
 

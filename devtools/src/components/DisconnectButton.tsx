@@ -2,7 +2,7 @@ import {
   ayameConnection,
   localMediaStream,
   remoteMediaStream,
-} from "../store/signals";
+} from "../signals";
 
 const DisconnectButton = () => {
   const handleClick = async () => {

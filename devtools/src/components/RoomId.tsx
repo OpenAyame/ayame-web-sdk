@@ -1,4 +1,4 @@
-import { roomId } from "../store/signals";
+import { roomId } from "../signals";
 
 const RoomId = () => {
   return (

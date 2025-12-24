@@ -1,6 +1,6 @@
 import { useSignal, useSignalEffect } from "@preact/signals";
 import { getAvailableCodecs } from "@open-ayame/ayame-web-sdk";
-import { audioCodecMimeType, audioDirection } from "../store/signals";
+import { audioCodecMimeType, audioDirection } from "../signals";
 
 const AudioCodecMimeType = () => {
   const codecs = useSignal<string[]>([]);

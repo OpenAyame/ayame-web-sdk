@@ -16,7 +16,7 @@ import {
   videoDirection,
   videoEnabled,
   videoResolution,
-} from "../store/signals";
+} from "../signals";
 
 const ConnectButton = () => {
   const handleClick = async () => {

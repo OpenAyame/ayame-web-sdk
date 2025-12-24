@@ -1,4 +1,4 @@
-import { audioEnabled } from "../store/signals";
+import { audioEnabled } from "../signals";
 
 const AudioToggle = () => {
   return (

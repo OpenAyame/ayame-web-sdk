@@ -7,7 +7,7 @@ import DisconnectButton from "./components/DisconnectButton";
 import LocalVideo from "./components/LocalVideo";
 import MediaSettings from "./components/MediaSettings";
 import RemoteVideo from "./components/RemoteVideo";
-import { setSettingsFromUrl } from "./store/signals";
+import { setSettingsFromUrl } from "./signals";
 
 const App = () => {
   const params = new URLSearchParams(window.location.search);

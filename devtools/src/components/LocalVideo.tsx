@@ -1,6 +1,6 @@
 import { useRef } from "preact/hooks";
 import { useSignalEffect } from "@preact/signals";
-import { localMediaStream } from "../store/signals";
+import { localMediaStream } from "../signals";
 
 const LocalVideo = () => {
   const videoRef = useRef<HTMLVideoElement>(null);

@@ -1,4 +1,4 @@
-import { signalingUrl } from "../store/signals";
+import { signalingUrl } from "../signals";
 
 const SignalingUrl = () => {
   return (

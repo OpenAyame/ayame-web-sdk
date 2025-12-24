@@ -1,6 +1,6 @@
 import { useSignal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
-import { videoInputDeviceId } from "../store/signals";
+import { videoInputDeviceId } from "../signals";
 
 const VideoInputDevice = () => {
   const devices = useSignal<MediaDeviceInfo[]>([]);

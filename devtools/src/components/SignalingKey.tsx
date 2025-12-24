@@ -1,4 +1,4 @@
-import { signalingKey } from "../store/signals";
+import { signalingKey } from "../signals";
 
 const SignalingKey = () => {
   return (

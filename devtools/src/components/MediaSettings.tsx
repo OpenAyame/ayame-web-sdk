@@ -1,4 +1,4 @@
-import { audioDirection, videoDirection } from "../store/signals";
+import { audioDirection, videoDirection } from "../signals";
 import AudioCodecMimeType from "./AudioCodecMimeType";
 import AudioInputDevice from "./AudioInputDevice";
 import AudioOutputDevice from "./AudioOutputDevice";

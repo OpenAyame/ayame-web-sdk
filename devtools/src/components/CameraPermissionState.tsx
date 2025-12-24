@@ -1,4 +1,4 @@
-import { cameraPermissionState, setCameraPermissionState } from "../store/signals";
+import { cameraPermissionState, setCameraPermissionState } from "../signals";
 
 void setCameraPermissionState();
 

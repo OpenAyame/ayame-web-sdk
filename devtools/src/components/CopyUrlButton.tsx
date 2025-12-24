@@ -1,4 +1,4 @@
-import { generateUrlParams } from "../store/signals";
+import { generateUrlParams } from "../signals";
 
 const CopyUrlButton = () => {
   const handleClick = () => {

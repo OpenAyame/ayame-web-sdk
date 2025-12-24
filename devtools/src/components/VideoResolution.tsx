@@ -1,4 +1,4 @@
-import { videoResolution } from "../store/signals";
+import { videoResolution } from "../signals";
 
 const VideoResolution = () => {
   return (

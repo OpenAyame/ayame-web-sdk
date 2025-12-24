@@ -1,4 +1,4 @@
-import { ayameConnectionState } from "../store/signals";
+import { ayameConnectionState } from "../signals";
 
 const DatasetConnectionState = () => {
   // playwright の E2E テスト用

@@ -1,5 +1,5 @@
 import { version } from "@open-ayame/ayame-web-sdk";
-import { ayameVersion } from "../store/signals";
+import { ayameVersion } from "../signals";
 
 ayameVersion.value = version();
 

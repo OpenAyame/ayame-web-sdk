@@ -1,6 +1,6 @@
 import { useSignal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
-import { audioEnabled, videoEnabled, videoResolution } from "../store/signals";
+import { audioEnabled, videoEnabled, videoResolution } from "../signals";
 
 type Props = {
   buttonText?: string;

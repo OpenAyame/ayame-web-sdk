@@ -1,6 +1,6 @@
 import { useSignal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
-import { audioInputDeviceId } from "../store/signals";
+import { audioInputDeviceId } from "../signals";
 
 const AudioInputDevice = () => {
   const devices = useSignal<MediaDeviceInfo[]>([]);

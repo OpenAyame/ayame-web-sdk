@@ -1,4 +1,4 @@
-import { videoEnabled } from "../store/signals";
+import { videoEnabled } from "../signals";
 
 const VideoToggle = () => {
   return (

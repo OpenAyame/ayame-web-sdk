@@ -1,4 +1,4 @@
-import { clientId } from "../store/signals";
+import { clientId } from "../signals";
 
 const ClientId = () => {
   return (

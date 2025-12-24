@@ -1,6 +1,6 @@
 import { useRef } from "preact/hooks";
 import { useSignalEffect } from "@preact/signals";
-import { remoteMediaStream } from "../store/signals";
+import { remoteMediaStream } from "../signals";
 
 const RemoteVideo = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
