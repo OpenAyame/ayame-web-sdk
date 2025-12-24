@@ -6,7 +6,7 @@
     "declaration": true,
     "strictNullChecks": true,
     "importHelpers": true,
-    "moduleResolution": "Bundler",
+    "moduleResolution": "bundler",
     "experimentalDecorators": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
