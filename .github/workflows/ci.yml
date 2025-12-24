@@ -24,7 +24,7 @@ jobs:
       - run: pnpm run lint
         env:
           CI: true
-      - run: pnpm run check
+      - run: pnpm run typecheck
         env:
           CI: true
       - run: pnpm run build
