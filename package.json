@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@playwright/test": "1.57.0",
-    "@types/node": "25.0.8",
+    "@types/node": "25.0.9",
     "@types/webrtc": "0.0.47",
     "oxfmt": "0.24.0",
     "oxlint": "1.39.0",
