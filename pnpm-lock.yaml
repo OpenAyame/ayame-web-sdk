@@ -45,8 +45,8 @@ importers:
         specifier: workspace:*
         version: link:..
       '@preact/signals':
-        specifier: 2.7.0
-        version: 2.7.0(preact@10.28.3)
+        specifier: 2.7.1
+        version: 2.7.1(preact@10.28.3)
       preact:
         specifier: 10.28.3
         version: 10.28.3
@@ -578,8 +578,8 @@ packages:
   '@preact/signals-core@1.13.0':
     resolution: {integrity: sha512-slT6XeTCAbdql61GVLlGU4x7XHI7kCZV5Um5uhE4zLX4ApgiiXc0UYFvVOKq06xcovzp7p+61l68oPi563ARKg==}
 
-  '@preact/signals@2.7.0':
-    resolution: {integrity: sha512-9rQ030JhUfdBO4xlFB6Iwc/rOBi9IFXaCgu8VrFMSjAJfubGRTTxBPsgSlAF5qmWdY3C91b9kBK09mpUOMh1Rw==}
+  '@preact/signals@2.7.1':
+    resolution: {integrity: sha512-mP2+wMYHqDXVKFGzjqkL6CiHj3okB8eVTTJUZBrSVGozi/XfA+zZRCEALKKZYRoSoqLyT4J6qM4lhwT9155s1Q==}
     peerDependencies:
       preact: '>= 10.25.0 || >=11.0.0-0'
 
@@ -2043,7 +2043,7 @@ snapshots:
 
   '@preact/signals-core@1.13.0': {}
 
-  '@preact/signals@2.7.0(preact@10.28.3)':
+  '@preact/signals@2.7.1(preact@10.28.3)':
     dependencies:
       '@preact/signals-core': 1.13.0
       preact: 10.28.3
