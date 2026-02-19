@@ -47,7 +47,7 @@
     "@types/webrtc": "0.0.47",
     "oxfmt": "0.33.0",
     "oxlint": "1.48.0",
-    "oxlint-tsgolint": "0.14.0",
+    "oxlint-tsgolint": "0.14.1",
     "typedoc": "0.28.17",
     "typescript": "5.9.3",
     "vite": "7.3.1",
