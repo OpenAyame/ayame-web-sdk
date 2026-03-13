@@ -24,6 +24,16 @@ jobs:
       - run: pnpm run build
         env:
           CI: true
+      - run: |
+          echo "=== dist/ ==="
+          ls -la dist/
+          echo "=== devtools/node_modules/@open-ayame/ ==="
+          ls -la devtools/node_modules/@open-ayame/ayame-web-sdk/
+          echo "=== devtools/node_modules/@open-ayame/ayame-web-sdk/dist/ ==="
+          ls -la devtools/node_modules/@open-ayame/ayame-web-sdk/dist/ || echo "dist not found via symlink"
+          echo "=== readlink ==="
+          readlink -f devtools/node_modules/@open-ayame/ayame-web-sdk
+        name: Debug dist and symlinks
       - run: pnpm run lint
         env:
           CI: true
