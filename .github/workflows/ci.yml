@@ -27,7 +27,8 @@ jobs:
       - run: pnpm run lint
         env:
           CI: true
-      - run: pnpm run lint:devtools:ci
+      - run: pnpm run lint
+        working-directory: devtools
         env:
           CI: true
       - run: pnpm run typecheck
