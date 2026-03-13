@@ -18,7 +18,6 @@
     "no-implied-eval": "error",
     "no-new-func": "error",
     "no-script-url": "error",
-    "no-void": "error",
     "no-with": "error",
     "eqeqeq": "error",
     "no-var": "error",
@@ -50,6 +49,25 @@
     "radix": "error",
     "require-unicode-regexp": "error",
     "symbol-description": "error",
+
+    // Category override - style/pedantic カテゴリから不要なルールを無効化
+    "capitalized-comments": "off", // 日本語コメントに不適合
+    "func-style": "off", // アロー関数を許可
+    "id-length": "off", // イベントハンドラの (e) => を許可
+    "max-lines": "off", // ファイルサイズ制限不要
+    "max-lines-per-function": "off", // 関数サイズ制限不要
+    "max-params": "off", // パラメータ数制限不要
+    "max-statements": "off", // 文の数制限不要
+    "no-magic-numbers": "off", // 0, -1, 200 などの定数は許可
+    "no-negated-condition": "off", // 否定条件を許可
+    "no-shadow": "off", // スコープ内の同名変数を許可
+    "no-ternary": "off", // 三項演算子を許可
+    "no-useless-return": "off", // ガード節の空 return を許可
+    "no-void": "off", // void で Promise を明示的に無視するパターンを許可
+    "prefer-destructuring": "off", // array[0] を許可
+    "sort-imports": "off", // import ソートはフォーマッタに委任
+    "require-await": "off", // promise-function-async と競合するため無効化
+    "sort-keys": "off", // オブジェクトキーの意味的な順序を許可
 
     // TypeScript - Type-aware rules (tsgolint) 全部入り
     "typescript/await-thenable": "error",
@@ -88,7 +106,7 @@
     "typescript/promise-function-async": "error",
     "typescript/related-getter-setter-pairs": "error",
     "typescript/require-array-sort-compare": "error",
-    "typescript/require-await": "error",
+    "typescript/require-await": "off", // promise-function-async と競合するため無効化
     "typescript/restrict-plus-operands": "error",
     "typescript/restrict-template-expressions": "error",
     "typescript/return-await": "error",
@@ -160,6 +178,7 @@
     "unicorn/error-message": "error",
     "unicorn/escape-case": "error",
     "unicorn/explicit-length-check": "error",
+    "unicorn/filename-case": "off", // Preact コンポーネントの PascalCase を許可
     "unicorn/new-for-builtins": "error",
     "unicorn/no-abusive-eslint-disable": "error",
     "unicorn/no-array-callback-reference": "error",
@@ -200,6 +219,7 @@
     "unicorn/no-zero-fractions": "error",
     "unicorn/number-literal-case": "error",
     "unicorn/numeric-separators-style": "error",
+    "unicorn/prefer-add-event-listener": "off", // WebSocket/WebRTC の onX パターンを許可
     "unicorn/prefer-array-find": "error",
     "unicorn/prefer-array-flat-map": "error",
     "unicorn/prefer-array-flat": "error",
@@ -243,7 +263,10 @@
     // Import - モジュール管理 厳格
     "import/default": "error",
     "import/export": "error",
+    "import/exports-last": "off", // export 位置の制約不要
     "import/first": "error",
+    "import/group-exports": "off", // named export のグループ化不要
+    "import/max-dependencies": "off", // 依存数制限不要
     "import/named": "error",
     "import/namespace": "error",
     "import/no-absolute-path": "error",
@@ -256,6 +279,8 @@
     "import/no-named-as-default": "error",
     "import/no-named-as-default-member": "error",
     "import/no-named-default": "error",
+    "import/no-named-export": "off", // named export を許可
+    "import/no-nodejs-modules": "off", // Node.js モジュールを許可（vite.config 等）
     "import/no-self-import": "error",
     "import/no-webpack-loader-syntax": "error",
     "import/unambiguous": "error",
@@ -265,7 +290,7 @@
     "promise/avoid-new": "off",
     "promise/catch-or-return": "error",
     "promise/no-callback-in-promise": "error",
-    "promise/no-multiple-resolved": "error",
+    "promise/no-multiple-resolved": "off", // WebSocket シグナリングのイベントハンドラパターンを許可
     "promise/no-nesting": "error",
     "promise/no-new-statics": "error",
     "promise/no-promise-in-callback": "error",
@@ -279,7 +304,7 @@
   },
   "overrides": [
     {
-      "files": ["devtools/**/*.ts"],
+      "files": ["devtools/**/*.ts", "devtools/**/*.tsx"],
       "rules": {
         "no-console": "off",
         "unicorn/prefer-top-level-await": "off",
@@ -296,6 +321,12 @@
         "typescript/no-unsafe-member-access": "off",
         "typescript/no-unsafe-return": "off",
         "typescript/no-unsafe-type-assertion": "off",
+      },
+    },
+    {
+      "files": ["**/*.d.ts"],
+      "rules": {
+        "import/unambiguous": "off",
       },
     },
   ],

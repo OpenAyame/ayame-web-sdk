@@ -1,16 +1,19 @@
+import type { VNode } from "preact";
 import { useSignal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
 import { audioEnabled, videoEnabled, videoResolution } from "../signals";
 
-type Props = {
+interface Props {
   buttonText?: string;
-};
+}
 
-const RequestMediaPermissionButton = ({ buttonText = "Request media permission" }: Props) => {
+const RequestMediaPermissionButton = ({
+  buttonText = "Request media permission",
+}: Props): VNode => {
   const isPermissionsGranted = useSignal(false);
 
   useEffect(() => {
-    const checkPermissions = async () => {
+    const checkPermissions = async (): Promise<void> => {
       // チェックすべきパーミッションを入れる
       const PermissionsToCheck = [];
 
@@ -20,7 +23,7 @@ const RequestMediaPermissionButton = ({ buttonText = "Request media permission" 
           name: "microphone" as PermissionName,
         });
         PermissionsToCheck.push(microphonePermission);
-        microphonePermission.onchange = () => {
+        microphonePermission.onchange = (): void => {
           // パーミッションが granted でなければボタンを有効にする
           isPermissionsGranted.value = microphonePermission.state === "granted";
         };
@@ -31,7 +34,7 @@ const RequestMediaPermissionButton = ({ buttonText = "Request media permission" 
           name: "camera" as PermissionName,
         });
         PermissionsToCheck.push(cameraPermission);
-        cameraPermission.onchange = () => {
+        cameraPermission.onchange = (): void => {
           // パーミッションが granted でなければボタンを有効にする
           isPermissionsGranted.value = cameraPermission.state === "granted";
         };
@@ -50,7 +53,7 @@ const RequestMediaPermissionButton = ({ buttonText = "Request media permission" 
     void checkPermissions();
   }, []);
 
-  const handleClick = async () => {
+  const handleClick = async (): Promise<void> => {
     try {
       // ちゃんと有効にしているデバイスのパーミッションだけを取りに行く
       let videoConstraints: boolean | MediaTrackConstraints = videoEnabled.value;
@@ -58,11 +61,11 @@ const RequestMediaPermissionButton = ({ buttonText = "Request media permission" 
         const [width, height] = videoResolution.value.split("x").map(Number);
         if (width && height) {
           videoConstraints = {
-            width: {
-              ideal: width,
-            },
             height: {
               ideal: height,
+            },
+            width: {
+              ideal: width,
             },
           };
         }
@@ -78,13 +81,13 @@ const RequestMediaPermissionButton = ({ buttonText = "Request media permission" 
         track.stop();
       }
     } catch (error) {
-      console.error("Failed to get media devices:", error);
+      globalThis.console.error("Failed to get media devices:", error);
     }
   };
 
   // <permission> を利用した microphone/camera の権限取得
-  if ("HTMLPermissionElement" in window) {
-    // @ts-ignore HTMLPermissionElement を認識しないため
+  if ("HTMLPermissionElement" in globalThis) {
+    // @ts-expect-error HTMLPermissionElement を認識しないため
     return <permission type="microphone camera" />;
   }
 
@@ -92,7 +95,9 @@ const RequestMediaPermissionButton = ({ buttonText = "Request media permission" 
     <button
       type="button"
       disabled={isPermissionsGranted.value}
-      onClick={handleClick}
+      onClick={(): void => {
+        void handleClick();
+      }}
       class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
     >
       {buttonText}

@@ -1,8 +1,8 @@
+import type { VNode } from "preact";
 import { ayameConnectionState } from "../signals";
 
-const DatasetConnectionState = () => {
-  // playwright の E2E テスト用
-  return <div data-testid="connection-state" data-connection-state={ayameConnectionState.value} />;
-};
+const DatasetConnectionState = (): VNode => (
+  <div data-testid="connection-state" data-connection-state={ayameConnectionState.value} />
+);
 
 export default DatasetConnectionState;

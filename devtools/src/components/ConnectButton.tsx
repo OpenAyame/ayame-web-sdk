@@ -1,4 +1,6 @@
+import type { VNode } from "preact";
 import { createConnection, defaultOptions } from "@open-ayame/ayame-web-sdk";
+// eslint-disable-next-line no-duplicate-imports -- consistent-type-specifier-style との競合を回避
 import type { AyameAddStreamEvent } from "@open-ayame/ayame-web-sdk";
 import {
   audioCodecMimeType,
@@ -18,8 +20,8 @@ import {
   videoResolution,
 } from "../signals";
 
-const ConnectButton = () => {
-  const handleClick = async () => {
+const ConnectButton = (): VNode => {
+  const handleClick = async (): Promise<void> => {
     const options = defaultOptions;
     options.audio.enabled = audioEnabled.value;
     options.audio.direction = audioDirection.value;
@@ -42,11 +44,11 @@ const ConnectButton = () => {
         const [width, height] = videoResolution.value.split("x").map(Number);
         if (width && height) {
           videoConstraints = {
-            width: {
-              ideal: width,
-            },
             height: {
               ideal: height,
+            },
+            width: {
+              ideal: width,
             },
           };
         }
@@ -67,7 +69,7 @@ const ConnectButton = () => {
       if (!pc) {
         return;
       }
-      pc.onconnectionstatechange = () => {
+      pc.onconnectionstatechange = (): void => {
         ayameConnectionState.value = pc.connectionState;
       };
     });
@@ -75,7 +77,7 @@ const ConnectButton = () => {
     // 切断時にローカルとリモートのメディアストリームを停止する
     conn.on("disconnect", () => {
       // この関数内で取得した localStream を停止する
-      // store を経由しないようにする
+      // Store を経由しないようにする
       if (localStream) {
         for (const track of localStream.getTracks()) {
           track.stop();
@@ -96,7 +98,9 @@ const ConnectButton = () => {
     <button
       data-testid="connect"
       type="button"
-      onClick={handleClick}
+      onClick={(): void => {
+        void handleClick();
+      }}
       class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
     >
       Connect

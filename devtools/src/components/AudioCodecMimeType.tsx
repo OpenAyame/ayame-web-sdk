@@ -1,8 +1,9 @@
+import type { VNode } from "preact";
 import { useSignal, useSignalEffect } from "@preact/signals";
 import { getAvailableCodecs } from "@open-ayame/ayame-web-sdk";
 import { audioCodecMimeType, audioDirection } from "../signals";
 
-const AudioCodecMimeType = () => {
+const AudioCodecMimeType = (): VNode => {
   const codecs = useSignal<string[]>([]);
 
   useSignalEffect(() => {

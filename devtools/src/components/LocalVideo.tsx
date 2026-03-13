@@ -1,8 +1,9 @@
+import type { VNode } from "preact";
 import { useRef } from "preact/hooks";
 import { useSignalEffect } from "@preact/signals";
 import { localMediaStream } from "../signals";
 
-const LocalVideo = () => {
+const LocalVideo = (): VNode => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useSignalEffect(() => {

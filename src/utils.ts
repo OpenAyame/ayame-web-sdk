@@ -1,33 +1,21 @@
 /**
- * @ignore
- */
-interface Window {
-  performance: WindowPerformance;
-  navigator: any;
-}
-interface WindowPerformance {
-  now(): number;
-}
-declare let window: Window;
-
-/**
  * ブラウザを判定する
  */
 export function browser(): string {
-  const ua = window.navigator.userAgent.toLocaleLowerCase();
-  if (ua.indexOf("edge") !== -1) {
+  const ua = globalThis.navigator.userAgent.toLocaleLowerCase();
+  if (ua.includes("edge")) {
     return "edge";
   }
-  if (ua.indexOf("chrome") !== -1 && ua.indexOf("edge") === -1) {
+  if (ua.includes("chrome") && !ua.includes("edge")) {
     return "chrome";
   }
-  if (ua.indexOf("safari") !== -1 && ua.indexOf("chrome") === -1) {
+  if (ua.includes("safari") && !ua.includes("chrome")) {
     return "safari";
   }
-  if (ua.indexOf("opera") !== -1) {
+  if (ua.includes("opera")) {
     return "opera";
   }
-  if (ua.indexOf("firefox") !== -1) {
+  if (ua.includes("firefox")) {
     return "firefox";
   }
   return "unknown";
@@ -36,14 +24,13 @@ export function browser(): string {
 /**
  * デバッグログを出力する
  */
-export function traceLog(title: string, value?: string | Record<string, any>): void {
-  let prefix = "";
-  if (window.performance) {
-    prefix = `[Ayame ${(window.performance.now() / 1000).toFixed(3)}]`;
-  }
+export function traceLog(title: string, value?: unknown): void {
+  const prefix = `[Ayame ${(globalThis.performance.now() / 1000).toFixed(3)}]`;
   if (browser() === "edge") {
+    // eslint-disable-next-line no-console -- デバッグログ出力
     console.log(`${prefix} ${title}\n`, value);
   } else {
+    // eslint-disable-next-line no-console -- デバッグログ出力
     console.info(`${prefix} ${title}\n`, value);
   }
 }
@@ -57,15 +44,15 @@ export const getSelectedCodecs = (
   selectedCodecMimeType: string,
   codecs: RTCRtpCodecCapability[],
 ): RTCRtpCodecCapability[] => {
-  const filteredCodecs = codecs.filter((c) => {
-    const codecMimeType = c.mimeType.toLowerCase();
+  const filteredCodecs = codecs.filter((codec) => {
+    const codecMimeType = codec.mimeType.toLowerCase();
 
     // 指定された codec はマッチしたら true
     if (codecMimeType === selectedCodecMimeType.toLowerCase()) {
       return true;
     }
 
-    // rtx, red, ulpfec は常に true にする
+    // Rtx, red, ulpfec は常に true にする
     if (
       codecMimeType === `${kind}/rtx` ||
       codecMimeType === `${kind}/red` ||
@@ -90,10 +77,10 @@ export const getAvailableCodecs = (
     return [];
   }
 
-  // sendrecv と sendonly は RTCRtpSender を使う
-  // recvonly は RTCRtpReceiver を使う
+  // Sendrecv と sendonly は RTCRtpSender を使う
+  // Recvonly は RTCRtpReceiver を使う
   const codecs =
-    direction === "sender" || direction === "receiver"
+    direction === "sender"
       ? RTCRtpSender.getCapabilities(kind)?.codecs
       : RTCRtpReceiver.getCapabilities(kind)?.codecs;
   if (!codecs) {
@@ -102,11 +89,11 @@ export const getAvailableCodecs = (
 
   return (
     codecs
-      .filter((c) => {
-        // mimeType は insensitive-case なので lowerCase に変換する
-        const codecType = c.mimeType.toLowerCase();
+      .filter((codec) => {
+        // MimeType は insensitive-case なので lowerCase に変換する
+        const codecType = codec.mimeType.toLowerCase();
 
-        // rtx/red/ulpfec はフィルターとして削除する
+        // Rtx/red/ulpfec はフィルターとして削除する
         if (
           codecType === `${kind}/rtx` ||
           codecType === `${kind}/red` ||
@@ -117,9 +104,12 @@ export const getAvailableCodecs = (
 
         return true;
       })
-      // mimeType が既に存在している場合は重複を削除する
-      .filter((c, index, self) => index === self.findIndex((t) => t.mimeType === c.mimeType))
-      .map((c) => c.mimeType)
-      .sort()
+      // MimeType が既に存在している場合は重複を削除する
+      .filter(
+        (codec, index, self) =>
+          index === self.findIndex((target) => target.mimeType === codec.mimeType),
+      )
+      .map((codec) => codec.mimeType)
+      .toSorted()
   );
 };

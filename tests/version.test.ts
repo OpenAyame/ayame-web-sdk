@@ -8,7 +8,7 @@ test("Ayame Web SDK のバージョンを確認", async ({ browser }) => {
 
   // Ayame Web SDK のバージョンを確認
   await expect(sendrecv1.locator('[data-testid="ayame-web-sdk-version"]')).toHaveText(version(), {
-    timeout: 10000,
+    timeout: 10_000,
   });
 
   await sendrecv1.close();

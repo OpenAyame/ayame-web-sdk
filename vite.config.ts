@@ -12,35 +12,35 @@ const banner = `/**
  **/
 `;
 export default defineConfig({
-  define: {
-    __AYAME_WEB_SDK_VERSION__: JSON.stringify(pkg.version),
-  },
-  root: resolve(__dirname, "./"),
   build: {
-    minify: "esbuild",
-    target: "es2023",
     emptyOutDir: true,
-    manifest: true,
-    outDir: resolve(__dirname, "./dist"),
     lib: {
       entry: resolve(__dirname, "src/ayame.ts"),
-      name: "Ayame",
-      formats: ["es"],
       fileName: "ayame",
+      formats: ["es"],
+      name: "Ayame",
     },
+    manifest: true,
+    minify: "esbuild",
+    outDir: resolve(__dirname, "./dist"),
     rollupOptions: {
       output: {
         // 本来不要なはず
-        entryFileNames: "ayame.mjs",
         banner: banner,
+        entryFileNames: "ayame.mjs",
       },
     },
+    target: "es2023",
+  },
+  define: {
+    __AYAME_WEB_SDK_VERSION__: JSON.stringify(pkg.version),
   },
   envDir: resolve(__dirname, "./"),
   plugins: [
     dts({
-      include: ["src/**/*"],
       copyDtsFiles: true,
+      include: ["src/**/*"],
     }),
   ],
+  root: resolve(__dirname, "./"),
 });

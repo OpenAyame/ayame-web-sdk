@@ -28,11 +28,11 @@ test.describe.parallel("コーデックテスト", () => {
 
       // RoodID を取得
       const roomId1 = await sendrecv1.evaluate(() => {
-        const roomIdElement = document.querySelector('[data-testid="room-id"]') as HTMLInputElement;
+        const roomIdElement = document.querySelector('[data-testid="room-id"]')!;
         return roomIdElement.value;
       });
       const roomId2 = await sendrecv2.evaluate(() => {
-        const roomIdElement = document.querySelector('[data-testid="room-id"]') as HTMLInputElement;
+        const roomIdElement = document.querySelector('[data-testid="room-id"]')!;
         return roomIdElement.value;
       });
       const roomIdSuffix = crypto.randomUUID();
@@ -58,12 +58,12 @@ test.describe.parallel("コーデックテスト", () => {
       await sendrecv1.click('[data-testid="connect"]');
       await sendrecv2.click('[data-testid="connect"]');
 
-      // data-connection-state が connected になるまで待つ
+      // Data-connection-state が connected になるまで待つ
       await expect(sendrecv1.locator('[data-testid="connection-state"]')).toHaveAttribute(
         "data-connection-state",
         "connected",
         {
-          timeout: 10000,
+          timeout: 10_000,
         },
       );
 
@@ -72,7 +72,7 @@ test.describe.parallel("コーデックテスト", () => {
         "data-connection-state",
         "connected",
         {
-          timeout: 10000,
+          timeout: 10_000,
         },
       );
 

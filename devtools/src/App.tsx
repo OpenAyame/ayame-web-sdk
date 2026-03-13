@@ -1,3 +1,4 @@
+import type { VNode } from "preact";
 import AyameVersion from "./components/AyameWebSdkVersion";
 import ConnectButton from "./components/ConnectButton";
 import ConnectionSettings from "./components/ConnectionSettings";
@@ -9,8 +10,8 @@ import MediaSettings from "./components/MediaSettings";
 import RemoteVideo from "./components/RemoteVideo";
 import { setSettingsFromUrl } from "./signals";
 
-const App = () => {
-  const params = new URLSearchParams(window.location.search);
+const App = (): VNode => {
+  const params = new URLSearchParams(globalThis.location.search);
   setSettingsFromUrl(params);
 
   return (

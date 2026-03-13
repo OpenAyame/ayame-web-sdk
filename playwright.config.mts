@@ -4,7 +4,7 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   workers: 1,
   testDir: "tests",
-  // fullyParallel: true,
+  // FullyParallel: true,
   reporter: "html",
   use: {
     launchOptions: {
@@ -28,20 +28,20 @@ export default defineConfig({
     },
 
     // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
+    //   Name: 'firefox',
+    //   Use: { ...devices['Desktop Firefox'] },
     // },
 
     // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
+    //   Name: 'webkit',
+    //   Use: { ...devices['Desktop Safari'] },
     // },
   ],
   webServer: {
     command: "pnpm run dev --port 9000",
-    url: "http://localhost:9000/",
-    reuseExistingServer: !process.env.CI,
-    stdout: "pipe",
+    reuseExistingServer: process.env.CI === undefined,
     stderr: "pipe",
+    stdout: "pipe",
+    url: "http://localhost:9000/",
   },
 });

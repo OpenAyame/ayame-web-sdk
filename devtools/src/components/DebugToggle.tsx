@@ -1,15 +1,14 @@
+import type { VNode } from "preact";
 import { debug } from "../signals";
 
-const DebugToggle = () => {
-  return (
-    <input
-      type="checkbox"
-      checked={debug.value}
-      onChange={(e) => {
-        debug.value = (e.target as HTMLInputElement).checked;
-      }}
-    />
-  );
-};
+const DebugToggle = (): VNode => (
+  <input
+    type="checkbox"
+    checked={debug.value}
+    onChange={(e) => {
+      debug.value = (e.target as HTMLInputElement).checked;
+    }}
+  />
+);
 
 export default DebugToggle;

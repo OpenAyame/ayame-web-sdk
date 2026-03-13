@@ -1,7 +1,8 @@
+import type { VNode } from "preact";
 import { ayameConnection, localMediaStream, remoteMediaStream } from "../signals";
 
-const DisconnectButton = () => {
-  const handleClick = async () => {
+const DisconnectButton = (): VNode => {
+  const handleClick = async (): Promise<void> => {
     const conn = ayameConnection.value;
     if (!conn) {
       return;
@@ -19,7 +20,7 @@ const DisconnectButton = () => {
     localMediaStream.value = null;
     remoteMediaStream.value = null;
 
-    // ayameConnection を null にする
+    // AyameConnection を null にする
     ayameConnection.value = null;
   };
 
@@ -27,7 +28,9 @@ const DisconnectButton = () => {
     <button
       data-testid="disconnect"
       type="button"
-      onClick={handleClick}
+      onClick={(): void => {
+        void handleClick();
+      }}
       class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
     >
       Disconnect

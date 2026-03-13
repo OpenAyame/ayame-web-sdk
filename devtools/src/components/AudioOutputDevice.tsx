@@ -1,7 +1,8 @@
-import { useState, useEffect } from "preact/hooks";
+import type { VNode } from "preact";
+import { useEffect, useState } from "preact/hooks";
 import { audioOutputDeviceId } from "../signals";
 
-const AudioOutputDevice = () => {
+const AudioOutputDevice = (): VNode => {
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
 
   useEffect(() => {
@@ -10,7 +11,7 @@ const AudioOutputDevice = () => {
         name: "microphone" as PermissionName,
       });
 
-      const handlePermissionChange = async () => {
+      const handlePermissionChange = async (): Promise<void> => {
         if (permissionStatus.state === "granted") {
           const deviceList = await navigator.mediaDevices.enumerateDevices();
           const audioOutputDevices = deviceList.filter((device) => device.kind === "audiooutput");
@@ -34,7 +35,7 @@ const AudioOutputDevice = () => {
       // 権限変更の監視
       permissionStatus.onchange = handlePermissionChange;
 
-      return () => {
+      return (): void => {
         // クリーンアップ
         permissionStatus.onchange = null;
       };

@@ -1,5 +1,8 @@
 import { render } from "preact";
 import App from "./App";
-import "./index.css";
+import "./index.css"; // eslint-disable-line import/no-unassigned-import -- CSS import
 
-render(<App />, document.getElementById("root") as HTMLDivElement);
+const root = document.querySelector("#root");
+if (root !== null) {
+  render(<App />, root);
+}

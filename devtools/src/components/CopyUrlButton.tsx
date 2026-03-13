@@ -1,10 +1,11 @@
+import type { VNode } from "preact";
 import { generateUrlParams } from "../signals";
 
-const CopyUrlButton = () => {
-  const handleClick = () => {
+const CopyUrlButton = (): VNode => {
+  const handleClick = (): void => {
     const urlParams = generateUrlParams();
-    window.history.replaceState(null, "", `?${urlParams}`);
-    void navigator.clipboard.writeText(window.location.href);
+    globalThis.history.replaceState(null, "", `?${urlParams}`);
+    void navigator.clipboard.writeText(globalThis.location.href);
   };
 
   return (

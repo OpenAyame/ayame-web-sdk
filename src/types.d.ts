@@ -28,16 +28,16 @@ export interface ConnectionOptions {
   video: ConnectionVideoOption;
   /** クライアントID */
   clientId: string;
-  /** ayame server から iceServers が返って来なかった場合に使われる iceServer の情報 */
+  /** Ayame server から iceServers が返って来なかった場合に使われる iceServer の情報 */
   iceServers: RTCIceServer[];
   /** 送信するシグナリングキー */
   signalingKey?: string;
-  /** standalone モードの場合は true */
+  /** Standalone モードの場合は true */
   standalone?: boolean;
 }
 
 /** 接続時に指定できるメタデータ */
 export interface MetadataOption {
   /** 送信するメタデータ */
-  authnMetadata?: any;
+  authnMetadata?: unknown;
 }
