@@ -1,5 +1,5 @@
 {
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "$schema": "../node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "oxc", "unicorn", "import", "promise"],
   "categories": {
     "correctness": "error",
@@ -11,7 +11,7 @@
   },
   "rules": {
     // General - 厳格
-    "no-console": "error",
+    "no-console": "off", // devtools ではコンソール出力を許可
     "no-debugger": "error",
     "no-alert": "error",
     "no-eval": "error",
@@ -51,23 +51,23 @@
     "symbol-description": "error",
 
     // Category override - style/pedantic カテゴリから不要なルールを無効化
-    "capitalized-comments": "off", // 日本語コメントに不適合
-    "func-style": "off", // アロー関数を許可
-    "id-length": "off", // イベントハンドラの (e) => を許可
-    "max-lines": "off", // ファイルサイズ制限不要
-    "max-lines-per-function": "off", // 関数サイズ制限不要
-    "max-params": "off", // パラメータ数制限不要
-    "max-statements": "off", // 文の数制限不要
-    "no-magic-numbers": "off", // 0, -1, 200 などの定数は許可
-    "no-negated-condition": "off", // 否定条件を許可
-    "no-shadow": "off", // スコープ内の同名変数を許可
-    "no-ternary": "off", // 三項演算子を許可
-    "no-useless-return": "off", // ガード節の空 return を許可
-    "no-void": "off", // void で Promise を明示的に無視するパターンを許可
-    "prefer-destructuring": "off", // array[0] を許可
-    "sort-imports": "off", // import ソートはフォーマッタに委任
-    "require-await": "off", // promise-function-async と競合するため無効化
-    "sort-keys": "off", // オブジェクトキーの意味的な順序を許可
+    "capitalized-comments": "off",
+    "func-style": "off",
+    "id-length": "off",
+    "max-lines": "off",
+    "max-lines-per-function": "off",
+    "max-params": "off",
+    "max-statements": "off",
+    "no-magic-numbers": "off",
+    "no-negated-condition": "off",
+    "no-shadow": "off",
+    "no-ternary": "off",
+    "no-useless-return": "off",
+    "no-void": "off",
+    "prefer-destructuring": "off",
+    "sort-imports": "off",
+    "require-await": "off",
+    "sort-keys": "off",
 
     // TypeScript - Type-aware rules (tsgolint) 全部入り
     "typescript/await-thenable": "error",
@@ -106,7 +106,7 @@
     "typescript/promise-function-async": "error",
     "typescript/related-getter-setter-pairs": "error",
     "typescript/require-array-sort-compare": "error",
-    "typescript/require-await": "off", // promise-function-async と競合するため無効化
+    "typescript/require-await": "off",
     "typescript/restrict-plus-operands": "error",
     "typescript/restrict-template-expressions": "error",
     "typescript/return-await": "error",
@@ -178,7 +178,7 @@
     "unicorn/error-message": "error",
     "unicorn/escape-case": "error",
     "unicorn/explicit-length-check": "error",
-    "unicorn/filename-case": "off", // Preact コンポーネントの PascalCase を許可
+    "unicorn/filename-case": "off",
     "unicorn/new-for-builtins": "error",
     "unicorn/no-abusive-eslint-disable": "error",
     "unicorn/no-array-callback-reference": "error",
@@ -219,7 +219,7 @@
     "unicorn/no-zero-fractions": "error",
     "unicorn/number-literal-case": "error",
     "unicorn/numeric-separators-style": "error",
-    "unicorn/prefer-add-event-listener": "off", // WebSocket/WebRTC の onX パターンを許可
+    "unicorn/prefer-add-event-listener": "off",
     "unicorn/prefer-array-find": "error",
     "unicorn/prefer-array-flat-map": "error",
     "unicorn/prefer-array-flat": "error",
@@ -252,7 +252,7 @@
     "unicorn/prefer-string-starts-ends-with": "error",
     "unicorn/prefer-string-trim-start-end": "error",
     "unicorn/prefer-structured-clone": "error",
-    "unicorn/prefer-top-level-await": "error",
+    "unicorn/prefer-top-level-await": "off", // devtools では top-level await 不要
     "unicorn/prefer-type-error": "error",
     "unicorn/require-array-join-separator": "error",
     "unicorn/require-number-to-fixed-digits-argument": "error",
@@ -263,10 +263,10 @@
     // Import - モジュール管理 厳格
     "import/default": "error",
     "import/export": "error",
-    "import/exports-last": "off", // export 位置の制約不要
+    "import/exports-last": "off",
     "import/first": "error",
-    "import/group-exports": "off", // named export のグループ化不要
-    "import/max-dependencies": "off", // 依存数制限不要
+    "import/group-exports": "off",
+    "import/max-dependencies": "off",
     "import/named": "error",
     "import/namespace": "error",
     "import/no-absolute-path": "error",
@@ -279,8 +279,8 @@
     "import/no-named-as-default": "error",
     "import/no-named-as-default-member": "error",
     "import/no-named-default": "error",
-    "import/no-named-export": "off", // named export を許可
-    "import/no-nodejs-modules": "off", // Node.js モジュールを許可（vite.config 等）
+    "import/no-named-export": "off",
+    "import/no-nodejs-modules": "off",
     "import/no-self-import": "error",
     "import/no-webpack-loader-syntax": "error",
     "import/unambiguous": "error",
@@ -290,7 +290,7 @@
     "promise/avoid-new": "off",
     "promise/catch-or-return": "error",
     "promise/no-callback-in-promise": "error",
-    "promise/no-multiple-resolved": "off", // WebSocket シグナリングのイベントハンドラパターンを許可
+    "promise/no-multiple-resolved": "off",
     "promise/no-nesting": "error",
     "promise/no-new-statics": "error",
     "promise/no-promise-in-callback": "error",
@@ -304,24 +304,11 @@
   },
   "overrides": [
     {
-      "files": ["**/*.test.ts", "**/*.spec.ts"],
-      "rules": {
-        "typescript/no-explicit-any": "off",
-        "typescript/no-non-null-assertion": "off",
-        "typescript/no-unsafe-argument": "off",
-        "typescript/no-unsafe-assignment": "off",
-        "typescript/no-unsafe-call": "off",
-        "typescript/no-unsafe-member-access": "off",
-        "typescript/no-unsafe-return": "off",
-        "typescript/no-unsafe-type-assertion": "off",
-      },
-    },
-    {
       "files": ["**/*.d.ts"],
       "rules": {
         "import/unambiguous": "off",
       },
     },
   ],
-  "ignorePatterns": ["dist/**", "devtools/**", "node_modules/**"],
+  "ignorePatterns": ["dist/**", "node_modules/**"],
 }

@@ -35,7 +35,7 @@
     "preview:devtools": "vite preview --config devtools/vite.config.ts",
     "build:typedoc": "typedoc",
     "fmt": "oxfmt --write .",
-    "lint": "oxlint --type-aware",
+    "lint": "oxlint --type-aware && cd devtools && oxlint --type-aware",
     "typecheck": "tsc --noEmit",
     "dist": "pnpm clean && pnpm install && pnpm build",
     "clean": "git clean -ffdx -e .env.local -e .env",
@@ -50,7 +50,7 @@
     "oxlint-tsgolint": "0.16.0",
     "typedoc": "0.28.17",
     "typescript": "5.9.3",
-    "vite": "7.3.1",
+    "vite": "8.0.0",
     "vite-plugin-dts": "4.5.4"
   },
   "engines": {
