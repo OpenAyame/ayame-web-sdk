@@ -21,12 +21,12 @@ jobs:
         with:
           version: 10
       - run: pnpm install
+      - run: pnpm run build
+        env:
+          CI: true
       - run: pnpm run lint
         env:
           CI: true
       - run: pnpm run typecheck
-        env:
-          CI: true
-      - run: pnpm run build
         env:
           CI: true
