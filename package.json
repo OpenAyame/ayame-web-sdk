@@ -20,6 +20,7 @@
   ],
   "type": "module",
   "module": "dist/ayame.mjs",
+  "types": "dist/ayame.d.ts",
   "exports": {
     ".": {
       "types": "./dist/ayame.d.ts",
