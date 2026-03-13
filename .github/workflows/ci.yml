@@ -27,7 +27,7 @@ jobs:
       - run: pnpm run lint
         env:
           CI: true
-      - run: cd devtools && oxlint
+      - run: pnpm run lint:devtools:ci
         env:
           CI: true
       - run: pnpm run typecheck

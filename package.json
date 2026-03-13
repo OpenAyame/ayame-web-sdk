@@ -38,6 +38,7 @@
     "fmt": "oxfmt --write .",
     "lint": "oxlint --type-aware --ignore-pattern 'devtools/**'",
     "lint:devtools": "cd devtools && oxlint --type-aware",
+    "lint:devtools:ci": "cd devtools && oxlint",
     "typecheck": "tsc --noEmit",
     "dist": "pnpm clean && pnpm install && pnpm build",
     "clean": "git clean -ffdx -e .env.local -e .env",
