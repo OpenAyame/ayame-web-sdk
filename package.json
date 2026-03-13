@@ -35,7 +35,7 @@
     "preview:devtools": "vite preview --config devtools/vite.config.ts",
     "build:typedoc": "typedoc",
     "fmt": "oxfmt --write .",
-    "lint": "oxlint --type-aware --ignore-pattern 'devtools/**' && cd devtools && oxlint --type-aware",
+    "lint": "oxlint --type-aware --ignore-pattern 'devtools/**' && oxlint --type-aware --tsconfig devtools/tsconfig.json -c devtools/.oxlintrc.jsonc devtools/src/",
     "typecheck": "tsc --noEmit",
     "dist": "pnpm clean && pnpm install && pnpm build",
     "clean": "git clean -ffdx -e .env.local -e .env",
