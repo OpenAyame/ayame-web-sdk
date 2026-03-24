@@ -38,7 +38,7 @@ export const roomId = signal(
   `${import.meta.env.VITE_AYAME_ROOM_ID_PREFIX || ""}${import.meta.env.VITE_AYAME_ROOM_NAME || ""}` ||
     "",
 );
-export const clientId = signal(crypto.randomUUID());
+export const clientId = signal<string>(crypto.randomUUID());
 export const signalingKey = signal(import.meta.env.VITE_AYAME_SIGNALING_KEY || "");
 
 export const debug = signal(false);

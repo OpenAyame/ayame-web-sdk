@@ -11,46 +11,33 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        node-version: ["20", "22", "24"]
+        node-version: ["22", "24"]
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: voidzero-dev/setup-vp@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
-      - run: pnpm install
-      - run: pnpm run build
+      - run: vp install
+      - run: vp build
         env:
           CI: true
-      - run: pnpm run lint
+      - run: vp lint
         env:
           CI: true
-      # devtools の oxlint --type-aware は CI (Linux) で実行できない。
+      # devtools の vp lint --type-aware は CI (Linux) で実行できない。
       #
-      # devtools は pnpm workspace 経由で @open-ayame/ayame-web-sdk に依存しており、
-      # pnpm install 時に devtools/node_modules/@open-ayame/ayame-web-sdk がルートへの
+      # devtools は vp workspace 経由で @open-ayame/ayame-web-sdk に依存しており、
+      # vp install 時に devtools/node_modules/@open-ayame/ayame-web-sdk がルートへの
       # シンボリックリンクとして作成される。
       #
-      # oxlint --type-aware の内部で使われる tsgolint (typescript-go ベース) が、
-      # このシンボリックリンク経由での型解決に失敗する。具体的には:
-      #
-      # 1. devtools/tsconfig.json の paths で @open-ayame/ayame-web-sdk を
-      #    ../dist/ayame.d.ts にマッピングしているが、tsgolint がこれを解決できない
-      # 2. ルート package.json の types フィールド (dist/ayame.d.ts) も参照されない
-      # 3. ルート package.json の exports フィールドも参照されない
-      # 4. 結果として @open-ayame/ayame-web-sdk の全ての型が any になり、
-      #    no-unsafe-* ルールが大量のエラーを報告する
-      #
-      # ローカル (macOS) では同じ構成で問題なく動作するため、
-      # tsgolint の Linux 環境でのモジュール解決に起因する問題と思われる。
+      # vp lint --type-aware の内部で使われる tsgolint (typescript-go ベース) が、
+      # このシンボリックリンク経由での型解決に失敗する。
       #
       # 回避策: CI では devtools の lint を --type-aware なしで実行する。
-      # type-aware ルールはローカルの pre-commit (pnpm run lint:devtools) でチェックする。
-      - run: pnpm run lint:devtools:ci
+      # type-aware ルールはローカルの pre-commit でチェックする。
+      - run: vp run lint:devtools:ci
         env:
           CI: true
-      - run: pnpm run typecheck
+      - run: vp run typecheck
         env:
           CI: true

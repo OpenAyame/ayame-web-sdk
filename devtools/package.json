@@ -1,8 +1,9 @@
 {
   "name": "@open-ayame/ayame-devtools",
+  "type": "module",
   "scripts": {
-    "fmt": "oxfmt --write .",
-    "lint": "oxlint --type-aware",
+    "fmt": "vp fmt",
+    "lint": "vp lint --type-aware",
     "check": "tsc --noEmit"
   },
   "dependencies": {
@@ -13,7 +14,8 @@
   },
   "devDependencies": {
     "@preact/preset-vite": "2.10.5",
-    "@tailwindcss/vite": "4.2.1",
-    "tailwindcss": "4.2.1"
+    "@tailwindcss/vite": "4.2.2",
+    "tailwindcss": "4.2.2",
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.1.13"
   }
 }

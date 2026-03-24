@@ -11,6 +11,20 @@
 
 ## develop
 
+- [CHANGE] Vite / Oxc から Vite+ (vp) に切り替える
+  - vite を @voidzero-dev/vite-plus-core に置換する
+  - vite-plus を追加する
+  - oxfmt / oxlint / oxlint-tsgolint を削除する (vp に統合)
+  - 全スクリプトを vp コマンドに切り替える
+  - defineConfig の import を vite-plus から行う
+  - rollupOptions を rolldownOptions に変更する
+  - minify を esbuild から oxc に変更する
+  - GitHub Actions を voidzero-dev/setup-vp@v1 に切り替える
+  - @voluntas
+- [CHANGE] Node.js 20 のサポートを終了する
+  - engines.node を >=22 に変更する
+  - CI / E2E テストのマトリクスから Node.js 20 を削除する
+  - @voluntas
 - [CHANGE] React から Preact に切り替える
   - @voluntas
 - [CHANGE] devtools の状態管理を Zustand から Preact Signals に切り替える

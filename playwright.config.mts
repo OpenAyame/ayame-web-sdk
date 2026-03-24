@@ -38,7 +38,7 @@ export default defineConfig({
     // },
   ],
   webServer: {
-    command: "pnpm run dev --port 9000",
+    command: "vp dev --config devtools/vite.config.ts --port 9000",
     reuseExistingServer: process.env.CI === undefined,
     stderr: "pipe",
     stdout: "pipe",
