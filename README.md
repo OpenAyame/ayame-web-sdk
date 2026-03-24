@@ -26,6 +26,12 @@ Please read <https://github.com/shiguredo/oss> before use.
 npm install @open-ayame/ayame-web-sdk
 ```
 
+### pnpm
+
+```bash
+pnpm add @open-ayame/ayame-web-sdk
+```
+
 ### vp
 
 ```bash
@@ -90,7 +96,7 @@ API ドキュメントは以下の URL を参照してください。
 Apache License 2.0
 
 ```text
-Copyright 2019-2025, Shiguredo Inc.
+Copyright 2019-2026, Shiguredo Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
