@@ -26,10 +26,10 @@ Please read <https://github.com/shiguredo/oss> before use.
 npm install @open-ayame/ayame-web-sdk
 ```
 
-### pnpm
+### vp
 
 ```bash
-pnpm add @open-ayame/ayame-web-sdk
+vp add @open-ayame/ayame-web-sdk
 ```
 
 ## 動作環境
@@ -58,9 +58,9 @@ VITE_AYAME_SIGNALING_KEY={シグナリングキー}
 ```
 
 ```bash
-pnpm install
-pnpm build
-pnpm dev
+vp install
+vp build
+vp dev
 ```
 
 <http://localhost:5173/> にアクセスすると、以下のような画面が表示されます。

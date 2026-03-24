@@ -2,36 +2,36 @@ repos:
   - repo: local
     hooks:
       - id: fmt
-        name: pnpm fmt
-        entry: pnpm run fmt
+        name: vp fmt
+        entry: vp run fmt
         language: system
         pass_filenames: false
         stages: [pre-commit]
 
       - id: test
-        name: pnpm test
-        entry: pnpm run test
+        name: vp test
+        entry: vp run test
         language: system
         pass_filenames: false
         stages: [pre-commit]
 
       - id: lint
-        name: pnpm lint
-        entry: pnpm run lint
+        name: vp lint
+        entry: vp run lint
         language: system
         pass_filenames: false
         stages: [pre-commit]
 
       - id: lint-devtools
-        name: pnpm lint:devtools
-        entry: pnpm run lint:devtools
+        name: vp lint:devtools
+        entry: vp run lint:devtools
         language: system
         pass_filenames: false
         stages: [pre-commit]
 
       - id: typecheck
-        name: pnpm typecheck
-        entry: pnpm run typecheck
+        name: vp typecheck
+        entry: vp run typecheck
         language: system
         pass_filenames: false
         stages: [pre-commit]

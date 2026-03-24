@@ -19,7 +19,7 @@ jobs:
       - name: Build devtools
         run: vp build --config devtools/vite.config.ts
       - name: Build typedoc
-        run: pnpm run build:typedoc
+        run: vp run build:typedoc
       - name: copy
         run: |
           mkdir -p ./output/devtools

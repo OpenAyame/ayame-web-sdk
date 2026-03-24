@@ -40,7 +40,7 @@
     "lint:devtools": "cd devtools && vp lint",
     "lint:devtools:ci": "cd devtools && vp lint",
     "typecheck": "tsc --noEmit",
-    "dist": "pnpm clean && vp install && vp build",
+    "dist": "vp run clean && vp install && vp build",
     "clean": "git clean -ffdx -e .env.local -e .env",
     "test": "vp exec playwright test --project=chromium"
   },
@@ -56,7 +56,7 @@
   },
   "engines": {
     "node": ">=22",
-    "pnpm": ">=10"
+    "vp": ">=0.1"
   },
-  "packageManager": "pnpm@10.28.2"
+  "packageManager": "pnpm@10.32.1"
 }
