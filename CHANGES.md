@@ -11,6 +11,9 @@
 
 ## develop
 
+- [CHANGE] ビルド出力を ayame.mjs から ayame.js に変更する
+  - exports から不要な require フィールドを削除する
+  - @voluntas
 - [CHANGE] Vite / Oxc から Vite+ (vp) に切り替える
   - vite を @voidzero-dev/vite-plus-core に置換する
   - vite-plus を追加する

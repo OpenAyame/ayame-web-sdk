@@ -29,7 +29,7 @@ export default defineConfig({
       output: {
         // 本来不要なはず
         banner: banner,
-        entryFileNames: "ayame.mjs",
+        entryFileNames: "ayame.js",
       },
     },
     target: "es2023",

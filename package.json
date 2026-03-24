@@ -1,6 +1,6 @@
 {
   "name": "@open-ayame/ayame-web-sdk",
-  "version": "2025.1.1",
+  "version": "2026.0.0",
   "description": "WebRTC Signaling Server Ayame Web SDK",
   "homepage": "https://github.com/OpenAyame/ayame-web-sdk",
   "bugs": {
@@ -19,13 +19,12 @@
     "dist"
   ],
   "type": "module",
-  "module": "dist/ayame.mjs",
+  "module": "dist/ayame.js",
   "types": "dist/ayame.d.ts",
   "exports": {
     ".": {
       "types": "./dist/ayame.d.ts",
-      "import": "./dist/ayame.mjs",
-      "require": "./dist/ayame.mjs"
+      "import": "./dist/ayame.js"
     }
   },
   "scripts": {
