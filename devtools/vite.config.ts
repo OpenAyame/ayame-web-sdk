@@ -12,7 +12,7 @@ export default defineConfig({
   publicDir: resolve(__dirname, "dist"),
   resolve: {
     alias: {
-      "@open-ayame/ayame-web-sdk": resolve(__dirname, "../dist/ayame.mjs"),
+      "@open-ayame/ayame-web-sdk": resolve(__dirname, "../dist/ayame.js"),
     },
   },
   root: resolve(__dirname),
