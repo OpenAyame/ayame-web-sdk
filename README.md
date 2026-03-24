@@ -26,10 +26,10 @@ Please read <https://github.com/shiguredo/oss> before use.
 npm install @open-ayame/ayame-web-sdk
 ```
 
-### pnpm
+### vp
 
 ```bash
-pnpm add @open-ayame/ayame-web-sdk
+vp add @open-ayame/ayame-web-sdk
 ```
 
 ### vp
