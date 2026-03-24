@@ -29,35 +29,34 @@
     }
   },
   "scripts": {
-    "build": "vite build",
-    "watch": "vite build --watch",
-    "dev": "vite --config devtools/vite.config.ts",
-    "build:devtools": "vite build --config devtools/vite.config.ts",
-    "preview:devtools": "vite preview --config devtools/vite.config.ts",
+    "build": "vp build",
+    "watch": "vp build --watch",
+    "dev": "vp dev --config devtools/vite.config.ts",
+    "build:devtools": "vp build --config devtools/vite.config.ts",
+    "preview:devtools": "vp preview --config devtools/vite.config.ts",
     "build:typedoc": "typedoc",
-    "fmt": "oxfmt --write .",
-    "lint": "oxlint --type-aware --ignore-pattern 'devtools/**'",
-    "lint:devtools": "cd devtools && oxlint --type-aware",
-    "lint:devtools:ci": "cd devtools && oxlint",
+    "fmt": "vp fmt",
+    "lint": "vp lint",
+    "lint:devtools": "cd devtools && vp lint",
+    "lint:devtools:ci": "cd devtools && vp lint",
     "typecheck": "tsc --noEmit",
-    "dist": "pnpm clean && pnpm install && pnpm build",
+    "dist": "pnpm clean && vp install && vp build",
     "clean": "git clean -ffdx -e .env.local -e .env",
-    "test": "playwright test --project=chromium"
+    "test": "vp exec playwright test --project=chromium"
   },
   "devDependencies": {
     "@playwright/test": "1.58.2",
     "@types/node": "25.5.0",
     "@types/webrtc": "0.0.47",
-    "oxfmt": "0.41.0",
-    "oxlint": "1.56.0",
-    "oxlint-tsgolint": "0.17.0",
     "typedoc": "0.28.17",
     "typescript": "5.9.3",
-    "vite": "8.0.0",
-    "vite-plugin-dts": "4.5.4"
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.1.13",
+    "vite-plugin-dts": "4.5.4",
+    "vite-plus": "0.1.13"
   },
   "engines": {
-    "node": ">=20",
+    "node": ">=22",
     "pnpm": ">=10"
-  }
+  },
+  "packageManager": "pnpm@10.28.2"
 }

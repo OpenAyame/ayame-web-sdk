@@ -1,7 +1,9 @@
 import { resolve } from "node:path";
-import { defineConfig } from "vite";
+import { defineConfig } from "vite-plus";
 import dts from "vite-plugin-dts";
-import pkg from "./package.json";
+import pkg from "./package.json" with { type: "json" };
+
+const __dirname = import.meta.dirname;
 
 const banner = `/**
  * ${pkg.name}
@@ -21,9 +23,9 @@ export default defineConfig({
       name: "Ayame",
     },
     manifest: true,
-    minify: "esbuild",
+    minify: "oxc",
     outDir: resolve(__dirname, "./dist"),
-    rollupOptions: {
+    rolldownOptions: {
       output: {
         // 本来不要なはず
         banner: banner,
@@ -43,4 +45,14 @@ export default defineConfig({
     }),
   ],
   root: resolve(__dirname, "./"),
+  lint: {
+    ignorePatterns: ["dist/**", "devtools/**", "tests/**", ".claude/**", ".codex/**"],
+    options: {
+      typeAware: true,
+      typeCheck: true,
+    },
+  },
+  fmt: {
+    ignorePatterns: ["dist/**", "devtools/**", ".claude/**", ".codex/**"],
+  },
 });
