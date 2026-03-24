@@ -17,6 +17,7 @@
     "allowImportingTsExtensions": true,
     "noEmit": true,
     "jsx": "react-jsx",
+    "jsxImportSource": "preact",
     "newLine": "LF",
     "types": ["webrtc", "node"],
     "lib": ["dom", "esnext", "dom.iterable"],

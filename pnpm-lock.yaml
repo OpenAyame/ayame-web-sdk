@@ -57,6 +57,9 @@ importers:
       tailwindcss:
         specifier: 4.2.2
         version: 4.2.2
+      vite:
+        specifier: npm:@voidzero-dev/vite-plus-core@0.1.13
+        version: '@voidzero-dev/vite-plus-core@0.1.13(@types/node@25.5.0)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.83.0)(terser@5.37.0)(typescript@5.9.3)(yaml@2.8.3)'
 
 packages:
 
