@@ -12,8 +12,8 @@
     "preact-iso": "2.11.1"
   },
   "devDependencies": {
-    "@preact/preset-vite": "2.10.4",
-    "@tailwindcss/vite": "4.2.1",
-    "tailwindcss": "4.2.1"
+    "@preact/preset-vite": "2.10.5",
+    "@tailwindcss/vite": "4.2.2",
+    "tailwindcss": "4.2.2"
   }
 }
