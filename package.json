@@ -52,7 +52,7 @@
     "oxlint": "1.56.0",
     "oxlint-tsgolint": "0.17.2",
     "typedoc": "0.28.18",
-    "typescript": "5.9.3",
+    "typescript": "6.0.2",
     "vite": "8.0.2",
     "vite-plugin-dts": "4.5.4"
   },
