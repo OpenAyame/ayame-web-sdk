@@ -16,6 +16,6 @@
     "@preact/preset-vite": "2.10.5",
     "@tailwindcss/vite": "4.2.2",
     "tailwindcss": "4.2.2",
-    "vite": "npm:@voidzero-dev/vite-plus-core@0.1.14"
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.1.15"
   }
 }
