@@ -44,7 +44,7 @@
     "test": "vp exec playwright test --project=chromium"
   },
   "devDependencies": {
-    "@playwright/test": "1.58.2",
+    "@playwright/test": "1.59.0",
     "@types/node": "25.5.0",
     "@types/webrtc": "0.0.47",
     "typedoc": "0.28.18",
