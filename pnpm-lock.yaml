@@ -40,17 +40,17 @@ importers:
         version: link:..
       '@preact/signals':
         specifier: 2.9.0
-        version: 2.9.0(preact@10.29.0)
+        version: 2.9.0(preact@10.29.1)
       preact:
-        specifier: 10.29.0
-        version: 10.29.0
+        specifier: 10.29.1
+        version: 10.29.1
       preact-iso:
         specifier: 2.11.1
-        version: 2.11.1(preact-render-to-string@6.6.4(preact@10.29.0))(preact@10.29.0)
+        version: 2.11.1(preact-render-to-string@6.6.4(preact@10.29.1))(preact@10.29.1)
     devDependencies:
       '@preact/preset-vite':
         specifier: 2.10.5
-        version: 2.10.5(@babel/core@7.29.0)(@voidzero-dev/vite-plus-core@0.1.15(@types/node@25.5.2)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.83.0)(terser@5.37.0)(typescript@6.0.2)(yaml@2.8.3))(preact@10.29.0)(rollup@4.57.0)
+        version: 2.10.5(@babel/core@7.29.0)(@voidzero-dev/vite-plus-core@0.1.15(@types/node@25.5.2)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.83.0)(terser@5.37.0)(typescript@6.0.2)(yaml@2.8.3))(preact@10.29.1)(rollup@4.57.0)
       '@tailwindcss/vite':
         specifier: 4.2.2
         version: 4.2.2(@voidzero-dev/vite-plus-core@0.1.15(@types/node@25.5.2)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.83.0)(terser@5.37.0)(typescript@6.0.2)(yaml@2.8.3))
@@ -1749,8 +1749,8 @@ packages:
     peerDependencies:
       preact: '>=10 || >= 11.0.0-0'
 
-  preact@10.29.0:
-    resolution: {integrity: sha512-wSAGyk2bYR1c7t3SZ3jHcM6xy0lcBcDel6lODcs9ME6Th++Dx2KU+6D3HD8wMMKGA8Wpw7OMd3/4RGzYRpzwRg==}
+  preact@10.29.1:
+    resolution: {integrity: sha512-gQCLc/vWroE8lIpleXtdJhTFDogTdZG9AjMUpVkDf2iTCNwYNWA+u16dL41TqUDJO4gm2IgrcMv3uTpjd4Pwmg==}
 
   punycode.js@2.3.1:
     resolution: {integrity: sha512-uxFIHU0YlHYhDQtV4R9J6a52SLx28BCjT+4ieh7IGbgwVJWO+km431c4yRlREUAsAmt/uMjQUyQHNEPf0M39CA==}
@@ -2448,12 +2448,12 @@ snapshots:
 
   '@polka/url@1.0.0-next.29': {}
 
-  '@preact/preset-vite@2.10.5(@babel/core@7.29.0)(@voidzero-dev/vite-plus-core@0.1.15(@types/node@25.5.2)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.83.0)(terser@5.37.0)(typescript@6.0.2)(yaml@2.8.3))(preact@10.29.0)(rollup@4.57.0)':
+  '@preact/preset-vite@2.10.5(@babel/core@7.29.0)(@voidzero-dev/vite-plus-core@0.1.15(@types/node@25.5.2)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.83.0)(terser@5.37.0)(typescript@6.0.2)(yaml@2.8.3))(preact@10.29.1)(rollup@4.57.0)':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/plugin-transform-react-jsx': 7.28.6(@babel/core@7.29.0)
       '@babel/plugin-transform-react-jsx-development': 7.27.1(@babel/core@7.29.0)
-      '@prefresh/vite': 2.4.12(@voidzero-dev/vite-plus-core@0.1.15(@types/node@25.5.2)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.83.0)(terser@5.37.0)(typescript@6.0.2)(yaml@2.8.3))(preact@10.29.0)
+      '@prefresh/vite': 2.4.12(@voidzero-dev/vite-plus-core@0.1.15(@types/node@25.5.2)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.83.0)(terser@5.37.0)(typescript@6.0.2)(yaml@2.8.3))(preact@10.29.1)
       '@rollup/pluginutils': 5.3.0(rollup@4.57.0)
       babel-plugin-transform-hook-names: 1.0.2(@babel/core@7.29.0)
       debug: 4.4.3
@@ -2469,27 +2469,27 @@ snapshots:
 
   '@preact/signals-core@1.14.0': {}
 
-  '@preact/signals@2.9.0(preact@10.29.0)':
+  '@preact/signals@2.9.0(preact@10.29.1)':
     dependencies:
       '@preact/signals-core': 1.14.0
-      preact: 10.29.0
+      preact: 10.29.1
 
   '@prefresh/babel-plugin@0.5.3': {}
 
-  '@prefresh/core@1.5.9(preact@10.29.0)':
+  '@prefresh/core@1.5.9(preact@10.29.1)':
     dependencies:
-      preact: 10.29.0
+      preact: 10.29.1
 
   '@prefresh/utils@1.2.1': {}
 
-  '@prefresh/vite@2.4.12(@voidzero-dev/vite-plus-core@0.1.15(@types/node@25.5.2)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.83.0)(terser@5.37.0)(typescript@6.0.2)(yaml@2.8.3))(preact@10.29.0)':
+  '@prefresh/vite@2.4.12(@voidzero-dev/vite-plus-core@0.1.15(@types/node@25.5.2)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.83.0)(terser@5.37.0)(typescript@6.0.2)(yaml@2.8.3))(preact@10.29.1)':
     dependencies:
       '@babel/core': 7.29.0
       '@prefresh/babel-plugin': 0.5.3
-      '@prefresh/core': 1.5.9(preact@10.29.0)
+      '@prefresh/core': 1.5.9(preact@10.29.1)
       '@prefresh/utils': 1.2.1
       '@rollup/pluginutils': 4.2.1
-      preact: 10.29.0
+      preact: 10.29.1
       vite: '@voidzero-dev/vite-plus-core@0.1.15(@types/node@25.5.2)(esbuild@0.27.2)(jiti@2.6.1)(sass@1.83.0)(terser@5.37.0)(typescript@6.0.2)(yaml@2.8.3)'
     transitivePeerDependencies:
       - supports-color
@@ -3335,16 +3335,16 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  preact-iso@2.11.1(preact-render-to-string@6.6.4(preact@10.29.0))(preact@10.29.0):
+  preact-iso@2.11.1(preact-render-to-string@6.6.4(preact@10.29.1))(preact@10.29.1):
     dependencies:
-      preact: 10.29.0
-      preact-render-to-string: 6.6.4(preact@10.29.0)
+      preact: 10.29.1
+      preact-render-to-string: 6.6.4(preact@10.29.1)
 
-  preact-render-to-string@6.6.4(preact@10.29.0):
+  preact-render-to-string@6.6.4(preact@10.29.1):
     dependencies:
-      preact: 10.29.0
+      preact: 10.29.1
 
-  preact@10.29.0: {}
+  preact@10.29.1: {}
 
   punycode.js@2.3.1: {}
 
