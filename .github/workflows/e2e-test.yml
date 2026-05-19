@@ -22,8 +22,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
-      - uses: voidzero-dev/setup-vp@v1
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: voidzero-dev/setup-vp@ca1c46663915d6c1042ae23bd39ab85718bfb0fa # v1.10.0
         with:
           node-version: ${{ matrix.node-version }}
       - run: vp install
@@ -32,3 +32,21 @@ jobs:
       - run: vp exec playwright test --project=${{ matrix.browser }}
         env:
           VITE_AYAME_ROOM_NAME: ${{ matrix.node-version }}
+
+  slack_notify:
+    needs: [e2e_test_job]
+    runs-on: ubuntu-slim
+    if: ${{ !cancelled() }}
+    timeout-minutes: 5
+    permissions:
+      actions: read
+    steps:
+      - name: Slack Notification
+        uses: shiguredo/github-actions/.github/actions/slack-notify@main
+        with:
+          status: ${{ job.status }}
+          slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
+          slack_channel: media-processors
+          notify_mode: failure_and_fixed
+        env:
+          GH_TOKEN: ${{ github.token }}
