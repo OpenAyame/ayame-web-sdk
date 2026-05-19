@@ -2,7 +2,7 @@
 
 - Priority: Medium
 - Created: 2026-05-19
-- Model: Composer
+- Model: Composer 2.5
 - Branch: feature/refactor-devtools-preact-signals-architecture
 
 ## 目的

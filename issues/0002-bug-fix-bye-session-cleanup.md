@@ -2,7 +2,7 @@
 
 - Priority: High
 - Created: 2026-05-19
-- Model: Composer
+- Model: Composer 2.5
 - Branch: feature/fix-bye-session-cleanup
 
 ## 目的
