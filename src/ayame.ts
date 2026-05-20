@@ -45,6 +45,7 @@ function isSignalingMessage(value: unknown): value is AyameSignalingMessage {
 
 interface AyameCallbacks {
   addstream: (event: AyameAddStreamEvent) => void;
+  /** ピア終了の通知。セッション解放は disconnect で行う。bye コールバック内で disconnect() を呼び出してはならない。 */
   bye: (event: MessageEvent) => void;
   connect: () => void;
   datachannel: (dataChannel: RTCDataChannel) => void;
@@ -234,6 +235,13 @@ class Connection {
                 });
               } else if (message.type === "bye") {
                 this.callbacks.bye(event);
+                void this.disconnect()
+                  .then(() => {
+                    this.callbacks.disconnect({ reason: "BYE" });
+                  })
+                  .catch(() => {
+                    this.callbacks.disconnect({ reason: "BYE" });
+                  });
                 resolve();
                 return;
               } else if (message.type === "accept") {
