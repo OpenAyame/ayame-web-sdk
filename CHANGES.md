@@ -46,6 +46,10 @@
   - @voluntas
 - [ADD] createDefaultOptions 関数を追加する
   - @voluntas
+- [UPDATE] DevTools を Preact Signals のベストプラクティスに沿って再構成する
+  - connectionOptions / mediaConstraints の computed 化
+  - ayameSession モデルによる接続フローの集約
+  - @voluntas
 - [FIX] disconnect 後の再接続で addstream が発火しない問題を修正する
   - @voluntas
 - [FIX] bye 受信時にセッションを解放し disconnect コールバックを発火する
@@ -71,6 +75,8 @@
 
 ### misc
 
+- [UPDATE] DevTools から未使用の preact-iso 依存を削除する
+  - @voluntas
 - [ADD] 再接続・bye・コーデックネゴの E2E テストを追加する
   - @voluntas
 - [ADD] tests/reconnect.test.ts を追加する

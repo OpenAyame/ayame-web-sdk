@@ -6,7 +6,6 @@ function isDirection(value: string | null): value is Direction {
 }
 
 // Ayame signals
-export const ayameVersion = signal("");
 export const ayameConnection = signal<Connection | null>(null);
 export const ayameConnectionState = signal<RTCPeerConnectionState>("new");
 
@@ -26,11 +25,11 @@ export const videoInputDeviceId = signal("default");
 // Settings signals
 export const audioEnabled = signal(true);
 export const audioDirection = signal<Direction>("sendrecv");
-export const audioCodecMimeType = signal("undefined");
+export const audioCodecMimeType = signal<string | null>(null);
 
 export const videoEnabled = signal(true);
 export const videoDirection = signal<Direction>("sendrecv");
-export const videoCodecMimeType = signal("undefined");
+export const videoCodecMimeType = signal<string | null>(null);
 export const videoResolution = signal("");
 
 export const signalingUrl = signal(import.meta.env.VITE_AYAME_SIGNALING_URL || "");
@@ -75,15 +74,20 @@ export const generateUrlParams = (): string => {
 
   params.set("audio", audioEnabled.value.toString());
   params.set("audioDirection", audioDirection.value);
-  params.set("audioCodecMimeType", audioCodecMimeType.value);
+  if (audioCodecMimeType.value) {
+    params.set("audioCodecMimeType", audioCodecMimeType.value);
+  }
 
   params.set("video", videoEnabled.value.toString());
   params.set("videoDirection", videoDirection.value);
-  params.set("videoCodecMimeType", videoCodecMimeType.value);
+  if (videoCodecMimeType.value) {
+    params.set("videoCodecMimeType", videoCodecMimeType.value);
+  }
   params.set("videoResolution", videoResolution.value);
 
   params.set("signalingUrl", signalingUrl.value);
   params.set("roomId", roomId.value);
+  params.set("clientId", clientId.value);
   params.set("signalingKey", signalingKey.value);
   params.set("debug", debug.value.toString());
   params.set("standalone", standalone.value.toString());
@@ -95,12 +99,16 @@ export const setSettingsFromUrl = (params: URLSearchParams): void => {
   audioEnabled.value = params.get("audio") !== "false";
   const audioDir = params.get("audioDirection");
   audioDirection.value = isDirection(audioDir) ? audioDir : "sendrecv";
-  audioCodecMimeType.value = params.get("audioCodecMimeType") ?? "undefined";
+  const audioCodec = params.get("audioCodecMimeType");
+  audioCodecMimeType.value =
+    audioCodec === null || audioCodec === "" || audioCodec === "undefined" ? null : audioCodec;
 
   videoEnabled.value = params.get("video") !== "false";
   const videoDir = params.get("videoDirection");
   videoDirection.value = isDirection(videoDir) ? videoDir : "sendrecv";
-  videoCodecMimeType.value = params.get("videoCodecMimeType") ?? "undefined";
+  const videoCodec = params.get("videoCodecMimeType");
+  videoCodecMimeType.value =
+    videoCodec === null || videoCodec === "" || videoCodec === "undefined" ? null : videoCodec;
   videoResolution.value = params.get("videoResolution") ?? "";
 
   // 項目がなかった場合は今ある値をそのまま利用する

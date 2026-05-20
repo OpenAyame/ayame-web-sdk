@@ -1,7 +1,8 @@
 import type { VNode } from "preact";
 import { useSignal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
-import { audioEnabled, videoEnabled, videoResolution } from "../signals";
+import { mediaConstraints } from "../connectionOptions";
+import { audioEnabled, videoEnabled } from "../signals";
 
 interface Props {
   buttonText?: string;
@@ -62,25 +63,7 @@ const RequestMediaPermissionButton = ({
 
   const handleClick = async (): Promise<void> => {
     try {
-      let videoConstraints: boolean | MediaTrackConstraints = videoEnabled.value;
-      if (videoEnabled.value && videoResolution.value && videoResolution.value !== "undefined") {
-        const [width, height] = videoResolution.value.split("x").map(Number);
-        if (width && height) {
-          videoConstraints = {
-            height: {
-              ideal: height,
-            },
-            width: {
-              ideal: width,
-            },
-          };
-        }
-      }
-      const constraints = {
-        audio: audioEnabled.value,
-        video: videoConstraints,
-      };
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      const stream = await navigator.mediaDevices.getUserMedia(mediaConstraints.value);
       for (const track of stream.getTracks()) {
         track.stop();
       }

@@ -1,31 +1,29 @@
 import type { VNode } from "preact";
-import { useSignal, useSignalEffect } from "@preact/signals";
+import { useComputed } from "@preact/signals";
 import { getAvailableCodecs } from "@open-ayame/ayame-web-sdk";
 import { videoCodecMimeType, videoDirection } from "../signals";
 
 const VideoCodecMimeType = (): VNode => {
-  const codecs = useSignal<string[]>([]);
-
-  useSignalEffect(() => {
-    const mimeTypes = getAvailableCodecs(
+  const codecs = useComputed(() =>
+    getAvailableCodecs(
       "video",
       videoDirection.value === "sendrecv" || videoDirection.value === "sendonly"
         ? "sender"
         : "receiver",
-    );
-    codecs.value = mimeTypes;
-  });
+    ),
+  );
 
   return (
     <select
       onChange={(e) => {
-        videoCodecMimeType.value = (e.target as HTMLSelectElement).value;
+        const value = (e.target as HTMLSelectElement).value;
+        videoCodecMimeType.value = value === "" ? null : value;
       }}
-      value={videoCodecMimeType.value}
+      value={videoCodecMimeType.value ?? ""}
       data-testid="video-codec-mime-type"
       class="px-2 py-1 border border-gray-300 rounded"
     >
-      <option value="undefined">未指定</option>
+      <option value="">未指定</option>
       {codecs.value.map((mimeType) => (
         <option key={mimeType} value={mimeType}>
           {mimeType}
