@@ -801,6 +801,27 @@ class Connection {
 export default Connection;
 
 /**
+ * Ayame Connection のデフォルトのオプションを新規生成します。
+ * 呼び出しごとに新しいオブジェクトを返します。
+ */
+export const createDefaultOptions = (): ConnectionOptions => ({
+  audio: {
+    codecMimeType: undefined,
+    direction: "sendrecv",
+    enabled: true,
+  },
+  clientId: crypto.randomUUID(),
+  iceServers: [],
+  signalingKey: undefined,
+  standalone: undefined,
+  video: {
+    codecMimeType: undefined,
+    direction: "sendrecv",
+    enabled: true,
+  },
+});
+
+/**
  * Ayame Connection のデフォルトのオプションです。
  */
 export const defaultOptions: ConnectionOptions = {
@@ -834,7 +855,7 @@ export const connection = (
 export const createConnection = (
   signalingUrl: string,
   roomId: string,
-  options: ConnectionOptions = defaultOptions,
+  options: ConnectionOptions = createDefaultOptions(),
   debug = false,
   isRelay = false,
 ): Connection => new Connection(signalingUrl, roomId, options, debug, isRelay);

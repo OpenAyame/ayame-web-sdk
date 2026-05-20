@@ -41,9 +41,13 @@
   - @voluntas
 - [ADD] DevTools に解像度を設定するオプションを追加
   - @voluntas
+- [ADD] createDefaultOptions 関数を追加する
+  - @voluntas
 - [FIX] disconnect 後の再接続で addstream が発火しない問題を修正する
   - @voluntas
 - [FIX] bye 受信時にセッションを解放し disconnect コールバックを発火する
+  - @voluntas
+- [FIX] DevTools で defaultOptions を直接書き換えていた問題を修正する
   - @voluntas
 
 ## 2025.1.1

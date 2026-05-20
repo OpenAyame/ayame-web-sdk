@@ -2,6 +2,7 @@
 
 - Priority: High
 - Created: 2026-05-19
+- Completed: 2026-05-20
 - Model: Composer 2.5
 - Branch: feature/fix-default-options-shared-mutation
 
@@ -83,6 +84,10 @@ DevTools で Connect → 設定変更 → 再度 Connect。2 回目が 1 回目�
 ### E2E（任意・0006 と連携）
 
 2 回 Connect 間で room ID 以外の設定を変え、2 回目に反映されることを確認。
+
+## 解決方法
+
+`createDefaultOptions()` を `src/ayame.ts` に追加し、`createConnection` のデフォルト引数を `createDefaultOptions()` に変更した。`devtools/src/components/ConnectButton.tsx` では毎回 `createDefaultOptions()` から新規 `ConnectionOptions` を組み立てるようにした。
 
 ## 解決方法（実装手順）
 
