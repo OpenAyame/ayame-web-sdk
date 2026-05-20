@@ -48,19 +48,67 @@ Ayame DevTools の Preact コンポーネントで、`useEffect` の cleanup が
 
 ### 関連（本 issue に含める）
 
-| ファイル                                                         | 問題                                                                                                  |
-| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `devtools/src/components/RequestMediaPermissionButton.tsx:15-54` | `permission.onchange` の cleanup なし。`deps: []` で `audioEnabled` / `videoEnabled` 変更に追従しない |
-| `devtools/src/components/MicrophonePermissionState.tsx:4`        | モジュール import 時に `void setMicrophonePermissionState()`                                          |
-| `devtools/src/components/CameraPermissionState.tsx:4`            | モジュール import 時に `void setCameraPermissionState()`                                              |
-| `devtools/src/App.tsx:14-15`                                     | render 内で `setSettingsFromUrl`（毎 render 副作用）                                                  |
+| ファイル                                                         | 問題                                                                                                                                                                                                                              |
+| ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `devtools/src/components/RequestMediaPermissionButton.tsx:15-54` | `permission.onchange` の cleanup なし。`deps: []` で `audioEnabled` / `videoEnabled` 変更に追従しない。`onchange` が **単一権限のみ** を見て `isPermissionsGranted` を上書きする（初期判定は `every` で正しいが、変更時は非対称） |
+| `devtools/src/components/MicrophonePermissionState.tsx:4`        | モジュール import 時に `void setMicrophonePermissionState()`                                                                                                                                                                      |
+| `devtools/src/components/CameraPermissionState.tsx:4`            | モジュール import 時に `void setCameraPermissionState()`                                                                                                                                                                          |
+| `devtools/src/App.tsx:14-15`                                     | render 内で `setSettingsFromUrl`（毎 render 副作用）                                                                                                                                                                              |
 
 `signals.ts` の `setMicrophonePermissionState` / `setCameraPermissionState` も、コンポーネントの `useSignalEffect` + cleanup に移す。
 
 ## 設計方針
 
 1. **デバイス 3 コンポーネント**: `useEffect` の同期 return で `onchange = null` と `cancelled = true` を行う。async 処理は IIFE 内で行い、cleanup を async から return しない。
-2. **RequestMediaPermissionButton**: 各 `PermissionStatus` の `onchange` を effect の cleanup で解除。`audioEnabled` / `videoEnabled` は `useSignalEffect` で購読する。
+2. **RequestMediaPermissionButton**: 各 `PermissionStatus` の `onchange` を effect の cleanup で解除。`audioEnabled` / `videoEnabled` のトグル変更時に effect を再実行する。`onchange` 内の判定は初期処理と同様 **`permissionsToCheck.every((p) => p.state === "granted")`** に統一する。
+
+   **実装方法**: `permissionsToCheck` を effect スコープの変数として宣言し、`onchange` クロージャから参照する。`useEffect` を使用し、依存配列に `audioEnabled.value` と `videoEnabled.value` を指定する。
+
+   ```tsx
+   useEffect(() => {
+     const permissionsToCheck: PermissionStatus[] = [];
+     let cancelled = false;
+
+     const checkPermissions = async (): Promise<void> => {
+       if (audioEnabled.value) {
+         const mic = await navigator.permissions.query({ name: "microphone" as PermissionName });
+         if (cancelled) return;
+         permissionsToCheck.push(mic);
+       }
+       if (videoEnabled.value) {
+         const cam = await navigator.permissions.query({ name: "camera" as PermissionName });
+         if (cancelled) return;
+         permissionsToCheck.push(cam);
+       }
+
+       // 全クエリ完了後に onchange を登録する（レースコンディション防止）
+       for (const p of permissionsToCheck) {
+         p.onchange = () => {
+           if (cancelled) return;
+           isPermissionsGranted.value = permissionsToCheck.every((pp) => pp.state === "granted");
+         };
+       }
+
+       if (permissionsToCheck.length === 0) {
+         isPermissionsGranted.value = true;
+         return;
+       }
+       isPermissionsGranted.value = permissionsToCheck.every((p) => p.state === "granted");
+     };
+     void checkPermissions();
+
+     return () => {
+       cancelled = true;
+       for (const p of permissionsToCheck) {
+         p.onchange = null;
+       }
+     };
+   }, [audioEnabled.value, videoEnabled.value]);
+   ```
+
+   **注意**: `useSignalEffect` は cleanup 関数を返すことができるが、`useEffect` を使用する理由は以下の通り:
+   - 依存配列を明示的に指定できる（`audioEnabled.value` / `videoEnabled.value` の変更で再実行するため）
+   - `useSignalEffect` は signal の変更のみをトリガーとし、依存配列による制御ができない
 3. **権限表示コンポーネント**: モジュールトップレベルの `void set*()` を削除し、コンポーネント内 `useSignalEffect` に移す。
 4. **App.tsx**: `setSettingsFromUrl` を `useEffect(() => { ... }, [])` に移す。
 
@@ -73,7 +121,9 @@ useEffect(() => {
 
   const handlePermissionChange = async (): Promise<void> => {
     if (cancelled || !permissionStatus) return;
-    // enumerateDevices + setDevices ...
+    const deviceList = await navigator.mediaDevices.enumerateDevices();
+    if (cancelled) return; // enumerateDevices 完成後にもガード
+    // setDevices ...
   };
 
   void (async () => {
@@ -96,13 +146,15 @@ useEffect(() => {
 }, []);
 ```
 
+**注意**: `handlePermissionChange` 内の `enumerateDevices()` 完成後にも `cancelled` チェックが必要。非同期処理の各 await 後にガードを置く設計とする。
+
 ## 変更対象ファイル
 
 | ファイル                                                   | 変更内容                                                   |
 | ---------------------------------------------------------- | ---------------------------------------------------------- |
 | `devtools/src/components/AudioInputDevice.tsx`             | cleanup 修正                                               |
 | `devtools/src/components/VideoInputDevice.tsx`             | cleanup 修正                                               |
-| `devtools/src/components/AudioOutputDevice.tsx`            | cleanup 修正                                               |
+| `devtools/src/components/AudioOutputDevice.tsx` | cleanup 修正（`microphone` 権限で speaker デバイスを監視。ブラウザの仕様上、出力デバイスの列挙には `microphone` 権限が必要） |
 | `devtools/src/components/RequestMediaPermissionButton.tsx` | cleanup + signal 購読                                      |
 | `devtools/src/components/MicrophonePermissionState.tsx`    | 副作用を effect へ                                         |
 | `devtools/src/components/CameraPermissionState.tsx`        | 副作用を effect へ                                         |
@@ -114,7 +166,7 @@ useEffect(() => {
 
 - [ ] デバイス 3 コンポーネントで、コンポーネントのアンマウント後に `permissionStatus.onchange` が `null` である（DevTools で該当 UI を表示→別画面へ遷移、または Story 的に mount/unmount を繰り返して確認）
 - [ ] アンマウント後に `setDevices` が呼ばれない（`cancelled` ガード）
-- [ ] `RequestMediaPermissionButton` で Audio / Video トグル変更後も権限 UI が正しく更新される
+- [ ] `RequestMediaPermissionButton` で Audio / Video トグル変更後も権限 UI が正しく更新される（両方有効時、片方だけ granted ならボタンは disabled のまま）
 - [ ] `App.tsx` の render 内で `setSettingsFromUrl` が呼ばれない
 - [ ] モジュール import 時の `void setMicrophonePermissionState()` / `void setCameraPermissionState()` が無い
 - [ ] `pnpm run lint:devtools` / `typecheck` / 既存 Playwright E2E が通る
@@ -138,7 +190,7 @@ AGENTS.md: モック・スタブ禁止。
 ## 解決方法（実装手順）
 
 1. `AudioInputDevice.tsx` / `VideoInputDevice.tsx` / `AudioOutputDevice.tsx` を上記パターンに修正する。
-2. `RequestMediaPermissionButton.tsx` に cleanup と `useSignalEffect` を追加する。
+2. `RequestMediaPermissionButton.tsx` に cleanup と `useEffect`（依存配列に `audioEnabled.value` / `videoEnabled.value`）を追加する。
 3. `MicrophonePermissionState.tsx` / `CameraPermissionState.tsx` からモジュールトップレベル副作用を削除する。
 4. `App.tsx` で URL 初期化を `useEffect` に移す。
 5. 手動確認と E2E を実行する。

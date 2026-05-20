@@ -63,14 +63,35 @@ Preact `useEffect` cleanup 不備・権限 UI の副作用は **issue 0007** で
 | メンバ                         | 種別                         | 責務                                                                        |
 | ------------------------------ | ---------------------------- | --------------------------------------------------------------------------- |
 | `connection`                   | `signal<Connection \| null>` | 現在の SDK 接続                                                             |
-| `connectionState`              | `computed`                   | `peerConnection?.connectionState ?? "new"`（SDK 内部 ICE 状態と混同しない） |
+| `connectionState`              | `signal`                     | `pc.onconnectionstatechange` で更新（computed ではリアクティブにならない） |
 | `localStream` / `remoteStream` | `signal`                     | メディア                                                                    |
-| `isConnecting`                 | `computed`                   | 接続処理中                                                                  |
-| `canConnect`                   | `computed`                   | 接続可能か                                                                  |
-| `connect(buildOptions)`        | `action`                     | 既存接続があれば先に `disconnect`                                           |
-| `disconnect()`                 | `action`                     | トラック停止 + signal クリア + `conn.disconnect()`                          |
+| `isConnecting`                 | `signal<boolean>`            | 接続処理中。`connect` 開始時に `true`、完了/エラー時に `false`              |
+| `canConnect`                   | `computed`                   | `!isConnecting.value && connection.value === null`                          |
+| `connect(options)`             | `async` 関数                 | 既存接続があれば先に `await disconnect()`。`connectionOptions` computed を引数として受け取る。`action` は使わない（`await` 前後のシグナル追跡が分断されるため）。`isConnecting` の更新は `batch` で行う。`getUserMedia` / `conn.connect` 失敗時は `try / finally` で `isConnecting.value = false` とし、取得済みの `localStream` トラックを停止する |
+| `disconnect()`                 | `async` 関数                 | トラック停止 + signal クリア + `await conn.disconnect()`。`connect` 内から `await` で呼ぶ。`conn` が null の場合は早期 return |
 
 `ConnectButton` / `DisconnectButton` は model のメソッドを呼ぶだけに薄くする。
+
+#### `connect(options)` の引数設計
+
+`connect` は `ConnectionOptions` を引数として受け取る。呼び出し元の `ConnectButton` は `connectionOptions` computed の値を渡す。
+
+```ts
+// ConnectButton.tsx
+const handleClick = async (): Promise<void> => {
+  await ayameSessionModel.connect(connectionOptions.value);
+};
+```
+
+`connect` 内部では:
+1. 既存接続があれば `disconnect()` を呼ぶ
+2. `createConnection(signalingUrl.value, roomId.value, options, debug.value)` を呼ぶ
+3. `getUserMedia` でローカルストリームを取得する（`mediaConstraints` computed を使用）
+4. SDK コールバックを登録する:
+   - `conn.on("addstream")` で `remoteStream` signal を更新
+   - `conn.on("open")` で `peerConnection` signal をセットし、`pc.onconnectionstatechange` を登録して `connectionState` signal を更新
+   - `conn.on("disconnect")` でトラック停止 + signal クリア
+5. `conn.connect(localStream)` を呼ぶ
 
 ### 2. 設定: `connectionOptions` を `computed`
 
@@ -81,19 +102,25 @@ export const connectionOptions = computed(
   (): ConnectionOptions => ({
     ...createDefaultOptions(),
     clientId: clientId.value,
+    iceServers: [], // 明示的に含める（createDefaultOptions() から継承されるが、お手本として明記）
     standalone: standalone.value || undefined,
     signalingKey: signalingKey.value || undefined,
     audio: {
-      /* signals から */
+      direction: audioDirection.value,
+      enabled: audioEnabled.value,
+      codecMimeType: audioCodecMimeType.value ?? undefined,
     },
     video: {
-      /* signals から */
+      direction: videoDirection.value,
+      enabled: videoEnabled.value,
+      codecMimeType: videoCodecMimeType.value ?? undefined,
     },
   }),
 );
 ```
 
-- `audioCodecMimeType` / `videoCodecMimeType` は `signal<string | null>(null)`。UI の「未指定」は `null`。
+- `createDefaultOptions()` は SDK 側（`src/ayame.ts`）で 0003 により追加される。`connectionOptions` computed はこれをベースにスプレッドし、信号の値で上書きする。
+- `audioCodecMimeType` / `videoCodecMimeType` は `signal<string | null>(null)`。UI の「未指定」は `null`。`computed` 内で `null` → `undefined` 変換を行う。
 - **0003 完了後**に導入し、`defaultOptions` を直接書き換えない。
 
 ### 3. メディア制約: `mediaConstraints` を `computed`
@@ -161,6 +188,13 @@ export const connectionOptions = computed(
 - Tailwind / レイアウトの大幅変更
 - `preact-iso` ルーティング導入
 
+## 推奨着手順
+
+1. 0007（Hooks cleanup）
+2. 0003（`createDefaultOptions` / ConnectButton のミュート禁止）
+3. 本 issue（0004）
+4. 0006（E2E 拡張）
+
 ## 関連 issue
 
-0001, 0002, 0003, 0006, 0007
+0001, 0002, 0003, 0005, 0006, 0007
