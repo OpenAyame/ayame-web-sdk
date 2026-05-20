@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("bye 受信後に再接続できる", async ({ browser }) => {
+test("相手の切断後に再接続できる", async ({ browser }) => {
   const peer1 = await browser.newPage();
   const peer2 = await browser.newPage();
 

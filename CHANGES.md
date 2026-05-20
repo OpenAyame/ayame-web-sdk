@@ -69,6 +69,17 @@
 - [FIX] connect の metadataOption が null のとき authnMetadata をクリアする
   - @voluntas
 
+### misc
+
+- [ADD] 再接続・bye・コーデックネゴの E2E テストを追加する
+  - @voluntas
+- [ADD] tests/reconnect.test.ts を追加する
+  - @voluntas
+- [UPDATE] tests/codec.test.ts でネゴシエーション後のコーデックを検証する
+  - @voluntas
+- [UPDATE] tests/version.test.ts を devtools.test.ts に統合する
+  - @voluntas
+
 ## 2025.1.1
 
 - [FIX] Ayame Web SDK のバージョンを取得できなかったのを修正する

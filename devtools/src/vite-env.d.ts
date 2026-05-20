@@ -10,3 +10,11 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+declare global {
+  interface Window {
+    __ayameDevtoolsPeerConnection?: RTCPeerConnection | null;
+  }
+}
+
+export {};

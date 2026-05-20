@@ -19,7 +19,7 @@ const codecs = [
 
 test.describe.parallel("コーデックテスト", () => {
   for (const { audioCodec, videoCodec } of codecs) {
-    test(`DevTools with ${audioCodec} and ${videoCodec}`, async ({ browser }) => {
+    test(`${audioCodec} と ${videoCodec} で接続できる`, async ({ browser }) => {
       const sendrecv1 = await browser.newPage();
       const sendrecv2 = await browser.newPage();
 
@@ -75,6 +75,24 @@ test.describe.parallel("コーデックテスト", () => {
           timeout: 10_000,
         },
       );
+
+      const hasNegotiatedVideoCodec = await sendrecv1.evaluate((expectedVideoCodec: string) => {
+        const pc = globalThis.__ayameDevtoolsPeerConnection;
+        if (!pc) {
+          return false;
+        }
+        const videoSender = pc.getSenders().find((sender) => sender.track?.kind === "video");
+        if (!videoSender) {
+          return false;
+        }
+        const parameters = videoSender.getParameters();
+        return (
+          parameters.codecs?.some(
+            (codec) => codec.mimeType.toLowerCase() === expectedVideoCodec.toLowerCase(),
+          ) ?? false
+        );
+      }, videoCodec);
+      expect(hasNegotiatedVideoCodec).toBe(true);
 
       await sendrecv1.click('[data-testid="disconnect"]');
       await sendrecv2.click('[data-testid="disconnect"]');
