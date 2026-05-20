@@ -2,6 +2,7 @@
 
 - Priority: Medium
 - Created: 2026-05-19
+- Completed: 2026-05-20
 - Model: Composer 2.5
 - Branch: feature/fix-signaling-webrtc-error-paths
 

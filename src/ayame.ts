@@ -54,6 +54,7 @@ interface AyameCallbacks {
 }
 
 const POLLING_INTERVAL_MS = 200;
+const CLOSE_POLLING_TIMEOUT_MS = 5000;
 
 class Connection {
   private debug: boolean;
@@ -71,6 +72,8 @@ class Connection {
   private isOffer: boolean;
   private isExistUser: boolean;
   private dataChannels: RTCDataChannel[];
+  private disconnecting: boolean;
+  private pendingIceCandidates: RTCIceCandidate[];
   private pcConfig: {
     iceServers: RTCIceServer[];
     iceTransportPolicy: RTCIceTransportPolicy;
@@ -109,6 +112,8 @@ class Connection {
     this.authnMetadata = null;
     this.authzMetadata = null;
     this.dataChannels = [];
+    this.disconnecting = false;
+    this.pendingIceCandidates = [];
     this.isOffer = false;
     this.isExistUser = false;
     this.connectionState = "new";
@@ -143,8 +148,11 @@ class Connection {
       throw new Error("RTCPeerConnection Already Exists!");
     }
 
+    this.disconnecting = false;
     this.stream = stream;
-    if (metadataOption !== null) {
+    if (metadataOption == null) {
+      this.authnMetadata = null;
+    } else {
       this.authnMetadata = metadataOption.authnMetadata;
     }
     await this.signaling();
@@ -153,7 +161,12 @@ class Connection {
   /**
    * 接続を切断する
    */
-  public async disconnect(): Promise<void> {
+  public async disconnect(reason?: string, error?: unknown): Promise<void> {
+    if (this.disconnecting) {
+      return;
+    }
+    this.disconnecting = true;
+
     // DataChannel を閉じる
     const closePromises = this.dataChannels.map(async (dataChannel) =>
       this.closeDataChannel(dataChannel),
@@ -169,6 +182,12 @@ class Connection {
     this.dataChannels = [];
     this.connectionState = "new";
     this.remoteStream = null;
+    this.pendingIceCandidates = [];
+
+    this.callbacks.disconnect({
+      error,
+      reason: reason ?? "UNKNOWN",
+    });
   }
 
   /**
@@ -190,16 +209,13 @@ class Connection {
       this.ws = new WebSocket(this.signalingUrl);
       this.ws.onclose = (): void => {
         if (this.options.standalone !== true) {
-          void this.disconnect();
-          this.callbacks.disconnect({
-            reason: "WS-CLOSED",
-          });
+          void this.disconnect("WS-CLOSED");
           reject(new Error("WS-CLOSED"));
           return;
         }
       };
       this.ws.onerror = (): void => {
-        void this.disconnect();
+        void this.disconnect("WS-CLOSED-WITH-ERROR");
         reject(new Error("WS-CLOSED-WITH-ERROR"));
       };
       this.ws.onopen = (): void => {
@@ -235,13 +251,7 @@ class Connection {
                 });
               } else if (message.type === "bye") {
                 this.callbacks.bye(event);
-                void this.disconnect()
-                  .then(() => {
-                    this.callbacks.disconnect({ reason: "BYE" });
-                  })
-                  .catch(() => {
-                    this.callbacks.disconnect({ reason: "BYE" });
-                  });
+                void this.disconnect("BYE");
                 resolve();
                 return;
               } else if (message.type === "accept") {
@@ -259,10 +269,7 @@ class Connection {
                 resolve();
                 return;
               } else if (message.type === "reject") {
-                void this.disconnect();
-                this.callbacks.disconnect({
-                  reason: message.reason ?? "REJECTED",
-                });
+                void this.disconnect(message.reason ?? "REJECTED");
                 reject(new Error("REJECTED"));
                 return;
               } else if (message.type === "offer") {
@@ -288,11 +295,7 @@ class Connection {
                 void this.addIceCandidate(candidate);
               }
             } catch (error) {
-              void this.disconnect();
-              this.callbacks.disconnect({
-                error,
-                reason: "SIGNALING-ERROR",
-              });
+              void this.disconnect("SIGNALING-ERROR", error);
             }
           };
         }
@@ -334,13 +337,22 @@ class Connection {
   private createPeerConnection(): void {
     if (this.pc) {
       this.remoteStream = null;
+      const oldPc = this.pc;
+      oldPc.ontrack = null;
+      oldPc.onicecandidate = null;
+      oldPc.oniceconnectionstatechange = null;
+      oldPc.onconnectionstatechange = null;
+      oldPc.onsignalingstatechange = null;
+      oldPc.ondatachannel = null;
+      oldPc.close();
+      this.pc = null;
     }
     this.traceLog("RTCConfiguration=>", this.pcConfig);
 
     const pc = new RTCPeerConnection(this.pcConfig);
 
     // Sendrecv / sendonly が指定されている場合は setCodecPreferences を試みる
-    if (this.stream && this.options.audio.direction !== "recvonly") {
+    if (this.stream && this.options.audio.enabled && this.options.audio.direction !== "recvonly") {
       // そもそも audioTracks が 0 じゃないかどうか確認する
       const audioTracks = this.stream.getAudioTracks();
       if (audioTracks.length > 0) {
@@ -386,7 +398,7 @@ class Connection {
     }
 
     // Sendrecv / sendonly が指定されている場合は setCodecPreferences を試みる
-    if (this.stream && this.options.video.direction !== "recvonly") {
+    if (this.stream && this.options.video.enabled && this.options.video.direction !== "recvonly") {
       // そもそも videoTracks が 0 じゃないかどうか確認する
       const videoTracks = this.stream.getVideoTracks();
       if (videoTracks.length > 0) {
@@ -461,12 +473,12 @@ class Connection {
             this.callbacks.connect();
             break;
           }
-          case "disconnected":
+          case "disconnected": {
+            // failed のみ切断。disconnected は一時的な状態のため切断しない
+            break;
+          }
           case "failed": {
-            void this.disconnect();
-            this.callbacks.disconnect({
-              reason: "ICE-CONNECTION-STATE-FAILED",
-            });
+            void this.disconnect("ICE-FAILED");
             break;
           }
         }
@@ -486,7 +498,7 @@ class Connection {
         }
       } else if (pc.connectionState === "closed") {
         this.traceLog("peer connection is closed");
-        void this.disconnect();
+        void this.disconnect("PEER-CONNECTION-CLOSED");
       }
     };
     pc.onsignalingstatechange = (): void => {
@@ -585,18 +597,22 @@ class Connection {
       return;
     }
 
-    const offer = await this.pc.createOffer({
-      offerToReceiveAudio:
-        this.options.audio.enabled && this.options.audio.direction !== "sendonly",
-      offerToReceiveVideo:
-        this.options.video.enabled && this.options.video.direction !== "sendonly",
-    });
-    this.traceLog("create offer sdp, sdp=", offer.sdp ?? "");
-    await this.pc.setLocalDescription(offer);
-    if (this.pc.localDescription) {
-      this.sendSdp(this.pc.localDescription);
+    try {
+      const offer = await this.pc.createOffer({
+        offerToReceiveAudio:
+          this.options.audio.enabled && this.options.audio.direction !== "sendonly",
+        offerToReceiveVideo:
+          this.options.video.enabled && this.options.video.direction !== "sendonly",
+      });
+      this.traceLog("create offer sdp, sdp=", offer.sdp ?? "");
+      await this.pc.setLocalDescription(offer);
+      if (this.pc.localDescription) {
+        this.sendSdp(this.pc.localDescription);
+      }
+      this.isOffer = true;
+    } catch (error) {
+      void this.disconnect("SEND-OFFER-ERROR", error);
     }
-    this.isOffer = true;
   }
 
   private async createAnswer(): Promise<void> {
@@ -611,11 +627,7 @@ class Connection {
         this.sendSdp(this.pc.localDescription);
       }
     } catch (error) {
-      await this.disconnect();
-      this.callbacks.disconnect({
-        error,
-        reason: "CREATE-ANSWER-ERROR",
-      });
+      void this.disconnect("CREATE-ANSWER-ERROR", error);
     }
   }
 
@@ -623,8 +635,13 @@ class Connection {
     if (!this.pc) {
       return;
     }
-    await this.pc.setRemoteDescription(sessionDescription);
-    this.traceLog("set answer sdp=", sessionDescription.sdp);
+    try {
+      await this.pc.setRemoteDescription(sessionDescription);
+      this.traceLog("set answer sdp=", sessionDescription.sdp);
+      await this.flushPendingIceCandidates();
+    } catch (error) {
+      void this.disconnect("SET-ANSWER-ERROR", error);
+    }
   }
 
   private async setOffer(sessionDescription: RTCSessionDescription): Promise<void> {
@@ -634,21 +651,35 @@ class Connection {
       }
       await this.pc.setRemoteDescription(sessionDescription);
       this.traceLog("set offer sdp=", sessionDescription.sdp);
+      await this.flushPendingIceCandidates();
       await this.createAnswer();
     } catch (error) {
-      await this.disconnect();
-      this.callbacks.disconnect({
-        error,
-        reason: "SET-OFFER-ERROR",
-      });
+      void this.disconnect("SET-OFFER-ERROR", error);
+    }
+  }
+
+  private async flushPendingIceCandidates(): Promise<void> {
+    if (!this.pc) {
+      return;
+    }
+    const pending = this.pendingIceCandidates;
+    this.pendingIceCandidates = [];
+    for (const candidate of pending) {
+      await this.addIceCandidate(candidate);
     }
   }
 
   private async addIceCandidate(candidate: RTCIceCandidate): Promise<void> {
+    if (!this.pc) {
+      this.pendingIceCandidates.push(candidate);
+      return;
+    }
+    if (!this.pc.remoteDescription) {
+      this.pendingIceCandidates.push(candidate);
+      return;
+    }
     try {
-      if (this.pc) {
-        await this.pc.addIceCandidate(candidate);
-      }
+      await this.pc.addIceCandidate(candidate);
     } catch {
       this.traceLog("invalid ice candidate", candidate);
     }
@@ -698,10 +729,18 @@ class Connection {
         return;
       }
       dataChannel.onclose = null;
+      let elapsedMs = 0;
       const timerId = setInterval(() => {
+        elapsedMs += POLLING_INTERVAL_MS;
         if (dataChannel.readyState === "closed") {
           clearInterval(timerId);
           this.traceLog("data channel is closed");
+          resolve();
+          return;
+        }
+        if (elapsedMs >= CLOSE_POLLING_TIMEOUT_MS) {
+          clearInterval(timerId);
+          this.traceLog("data channel close polling timed out");
           resolve();
         }
       }, POLLING_INTERVAL_MS);
@@ -724,7 +763,9 @@ class Connection {
         return;
       }
       this.pc.oniceconnectionstatechange = null;
+      let elapsedMs = 0;
       const timerId = setInterval(() => {
+        elapsedMs += POLLING_INTERVAL_MS;
         if (!this.pc) {
           clearInterval(timerId);
           this.traceLog("peer connection is null");
@@ -735,6 +776,13 @@ class Connection {
           this.pc = null;
           clearInterval(timerId);
           this.traceLog("peer connection is closed");
+          resolve();
+          return;
+        }
+        if (elapsedMs >= CLOSE_POLLING_TIMEOUT_MS) {
+          clearInterval(timerId);
+          this.pc = null;
+          this.traceLog("peer connection close polling timed out");
           resolve();
         }
       }, POLLING_INTERVAL_MS);
@@ -760,7 +808,9 @@ class Connection {
       // WS の onclose を null 入れる
       this.ws.onclose = null;
       // WS が閉じられるまで待つ
+      let elapsedMs = 0;
       const timerId = setInterval(() => {
+        elapsedMs += POLLING_INTERVAL_MS;
         // WS がない場合はすでに閉じられているので resolve
         if (!this.ws) {
           clearInterval(timerId);
@@ -773,6 +823,13 @@ class Connection {
           this.ws = null;
           clearInterval(timerId);
           this.traceLog("websocket is closed");
+          resolve();
+          return;
+        }
+        if (elapsedMs >= CLOSE_POLLING_TIMEOUT_MS) {
+          clearInterval(timerId);
+          this.ws = null;
+          this.traceLog("websocket close polling timed out");
           resolve();
         }
       }, POLLING_INTERVAL_MS);

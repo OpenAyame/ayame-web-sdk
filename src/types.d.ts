@@ -6,7 +6,7 @@ export interface ConnectionAudioOption {
   codecMimeType?: string;
   /** 送受信方向 */
   direction: Direction;
-  /** 有効かどうかのフラグ */
+  /** 有効かどうかのフラグ。false のときは当該メディアの送受信を行わない */
   enabled: boolean;
 }
 
@@ -16,7 +16,7 @@ export interface ConnectionVideoOption {
   codecMimeType?: string;
   /** 送受信方向 */
   direction: Direction;
-  /** 有効かどうかのフラグ */
+  /** 有効かどうかのフラグ。false のときは当該メディアの送受信を行わない */
   enabled: boolean;
 }
 
