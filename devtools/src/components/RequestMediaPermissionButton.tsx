@@ -13,49 +13,55 @@ const RequestMediaPermissionButton = ({
   const isPermissionsGranted = useSignal(false);
 
   useEffect(() => {
+    const permissionsToCheck: PermissionStatus[] = [];
+    let cancelled = false;
+
     const checkPermissions = async (): Promise<void> => {
-      // チェックすべきパーミッションを入れる
-      const PermissionsToCheck = [];
-
-      // 音声が有効だったらパーミッションのチェックをする
       if (audioEnabled.value) {
-        const microphonePermission = await navigator.permissions.query({
-          name: "microphone" as PermissionName,
-        });
-        PermissionsToCheck.push(microphonePermission);
-        microphonePermission.onchange = (): void => {
-          // パーミッションが granted でなければボタンを有効にする
-          isPermissionsGranted.value = microphonePermission.state === "granted";
-        };
+        const mic = await navigator.permissions.query({ name: "microphone" as PermissionName });
+        if (cancelled) {
+          return;
+        }
+        permissionsToCheck.push(mic);
       }
-      // 映像が有効だったらパーミッションのチェックをする
       if (videoEnabled.value) {
-        const cameraPermission = await navigator.permissions.query({
-          name: "camera" as PermissionName,
-        });
-        PermissionsToCheck.push(cameraPermission);
-        cameraPermission.onchange = (): void => {
-          // パーミッションが granted でなければボタンを有効にする
-          isPermissionsGranted.value = cameraPermission.state === "granted";
+        const cam = await navigator.permissions.query({ name: "camera" as PermissionName });
+        if (cancelled) {
+          return;
+        }
+        permissionsToCheck.push(cam);
+      }
+
+      if (cancelled) {
+        return;
+      }
+      for (const p of permissionsToCheck) {
+        p.onchange = () => {
+          if (cancelled) {
+            return;
+          }
+          isPermissionsGranted.value = permissionsToCheck.every((pp) => pp.state === "granted");
         };
       }
 
-      // パーミッションをチェックする必要がなかったら終了
-      if (PermissionsToCheck.length === 0) {
+      if (permissionsToCheck.length === 0) {
         isPermissionsGranted.value = true;
         return;
       }
-
-      // パーミッションのチェックをする
-      const allGranted = PermissionsToCheck.every((permission) => permission.state === "granted");
-      isPermissionsGranted.value = allGranted;
+      isPermissionsGranted.value = permissionsToCheck.every((p) => p.state === "granted");
     };
     void checkPermissions();
-  }, []);
+
+    return () => {
+      cancelled = true;
+      for (const p of permissionsToCheck) {
+        p.onchange = null;
+      }
+    };
+  }, [audioEnabled.value, videoEnabled.value]);
 
   const handleClick = async (): Promise<void> => {
     try {
-      // ちゃんと有効にしているデバイスのパーミッションだけを取りに行く
       let videoConstraints: boolean | MediaTrackConstraints = videoEnabled.value;
       if (videoEnabled.value && videoResolution.value && videoResolution.value !== "undefined") {
         const [width, height] = videoResolution.value.split("x").map(Number);
@@ -74,9 +80,7 @@ const RequestMediaPermissionButton = ({
         audio: audioEnabled.value,
         video: videoConstraints,
       };
-      // メディアデバイスのパーミッションを取りに行く
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      // ストリームを停止する
       for (const track of stream.getTracks()) {
         track.stop();
       }
@@ -85,7 +89,6 @@ const RequestMediaPermissionButton = ({
     }
   };
 
-  // <permission> を利用した microphone/camera の権限取得
   if ("HTMLPermissionElement" in globalThis) {
     // @ts-expect-error HTMLPermissionElement を認識しないため
     return <permission type="microphone camera" />;

@@ -6,41 +6,51 @@ const AudioInputDevice = (): VNode => {
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
 
   useEffect(() => {
-    const getDevices = async () => {
-      const permissionStatus = await navigator.permissions.query({
+    let cancelled = false;
+    let permissionStatus: PermissionStatus | undefined;
+
+    const handlePermissionChange = async (): Promise<void> => {
+      if (cancelled || !permissionStatus) {
+        return;
+      }
+      if (permissionStatus.state === "granted") {
+        const deviceList = await navigator.mediaDevices.enumerateDevices();
+        if (cancelled) {
+          return;
+        }
+        const audioInputDevices = deviceList.filter((device) => device.kind === "audioinput");
+        setDevices(audioInputDevices);
+        if (
+          audioInputDevices.length > 0 &&
+          !audioInputDevices.some((d) => d.deviceId === audioInputDeviceId.value)
+        ) {
+          const defaultDevice = audioInputDevices.find((d) => d.deviceId === "default");
+          audioInputDeviceId.value = defaultDevice?.deviceId ?? audioInputDevices[0].deviceId;
+        }
+      } else {
+        setDevices([]);
+      }
+    };
+
+    void (async () => {
+      permissionStatus = await navigator.permissions.query({
         name: "microphone" as PermissionName,
       });
-
-      const handlePermissionChange = async (): Promise<void> => {
-        if (permissionStatus.state === "granted") {
-          const deviceList = await navigator.mediaDevices.enumerateDevices();
-          const audioInputDevices = deviceList.filter((device) => device.kind === "audioinput");
-          setDevices(audioInputDevices);
-          // 現在の値がデバイスリストに存在しない場合、default または最初のデバイスを選択
-          if (
-            audioInputDevices.length > 0 &&
-            !audioInputDevices.some((d) => d.deviceId === audioInputDeviceId.value)
-          ) {
-            const defaultDevice = audioInputDevices.find((d) => d.deviceId === "default");
-            audioInputDeviceId.value = defaultDevice?.deviceId ?? audioInputDevices[0].deviceId;
-          }
-        } else {
-          setDevices([]);
-        }
+      if (cancelled) {
+        return;
+      }
+      await handlePermissionChange();
+      permissionStatus.onchange = () => {
+        void handlePermissionChange();
       };
+    })();
 
-      // 初期状態の処理
-      void handlePermissionChange();
-
-      // 権限変更の監視
-      permissionStatus.onchange = handlePermissionChange;
-
-      return (): void => {
-        // クリーンアップ
+    return () => {
+      cancelled = true;
+      if (permissionStatus) {
         permissionStatus.onchange = null;
-      };
+      }
     };
-    void getDevices();
   }, []);
 
   return (
