@@ -24,6 +24,9 @@
   - minify を esbuild から oxc に変更する
   - GitHub Actions を voidzero-dev/setup-vp@v1 に切り替える
   - @voluntas
+- [CHANGE] ICE disconnected 時は即座に切断しないようにする
+  - failed のみ切断する
+  - @voluntas
 - [CHANGE] Node.js 20 のサポートを終了する
   - engines.node を >=22 に変更する
   - CI / E2E テストのマトリクスから Node.js 20 を削除する
@@ -50,6 +53,20 @@
 - [FIX] DevTools で defaultOptions を直接書き換えていた問題を修正する
   - @voluntas
 - [FIX] DevTools の useEffect cleanup が登録されない問題を修正する
+  - @voluntas
+- [FIX] setAnswer / sendOffer の例外未処理を修正する
+  - @voluntas
+- [FIX] glare 時に旧 RTCPeerConnection を close する
+  - @voluntas
+- [FIX] remoteDescription 設定前の ICE candidate をキューする
+  - @voluntas
+- [FIX] disconnect の二重呼び出しとコールバック重複を防ぐ
+  - @voluntas
+- [FIX] クローズ待ちポーリングにタイムアウトを追加する
+  - @voluntas
+- [FIX] audio / video の enabled が false のときメディアを追加しない
+  - @voluntas
+- [FIX] connect の metadataOption が null のとき authnMetadata をクリアする
   - @voluntas
 
 ## 2025.1.1
