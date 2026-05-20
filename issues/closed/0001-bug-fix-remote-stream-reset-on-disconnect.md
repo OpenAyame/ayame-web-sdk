@@ -2,6 +2,7 @@
 
 - Priority: High
 - Created: 2026-05-19
+- Completed: 2026-05-20
 - Model: Composer 2.5
 - Branch: feature/fix-remote-stream-reset-on-disconnect
 
@@ -109,6 +110,10 @@ AGENTS.md に従い、**モック・スタブは使用しない**。
 ### 手動確認（E2E 環境が無い場合）
 
 Ayame Labo 等で DevTools を 2 タブ開き、上記 1〜3 を実施。2 回目以降もリモート映像が表示されること。
+
+## 解決方法
+
+`src/ayame.ts` の `disconnect()` で `this.remoteStream = null` を追加した。`createPeerConnection()` の先頭で `this.pc` が存在する場合に `this.remoteStream = null` をリセットし、glare 時の PeerConnection 差し替え経路に対応した。`devtools/src/components/RemoteVideo.tsx` に `data-testid="remote-video"` を追加し、`tests/devtools.test.ts` に disconnect → connect の再接続 E2E を追加した。glare 経路の旧 PC ハンドラ解除は issue 0005 で対応予定。
 
 ## 解決方法（実装手順）
 

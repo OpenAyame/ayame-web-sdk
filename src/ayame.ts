@@ -167,6 +167,7 @@ class Connection {
     this.isExistUser = false;
     this.dataChannels = [];
     this.connectionState = "new";
+    this.remoteStream = null;
   }
 
   /**
@@ -323,6 +324,9 @@ class Connection {
   }
 
   private createPeerConnection(): void {
+    if (this.pc) {
+      this.remoteStream = null;
+    }
     this.traceLog("RTCConfiguration=>", this.pcConfig);
 
     const pc = new RTCPeerConnection(this.pcConfig);
