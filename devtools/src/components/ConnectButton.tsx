@@ -1,7 +1,7 @@
 import type { VNode } from "preact";
-import { createConnection, defaultOptions } from "@open-ayame/ayame-web-sdk";
+import { createConnection, createDefaultOptions } from "@open-ayame/ayame-web-sdk";
 // eslint-disable-next-line no-duplicate-imports -- consistent-type-specifier-style との競合を回避
-import type { AyameAddStreamEvent } from "@open-ayame/ayame-web-sdk";
+import type { AyameAddStreamEvent, ConnectionOptions } from "@open-ayame/ayame-web-sdk";
 import {
   audioCodecMimeType,
   audioDirection,
@@ -22,14 +22,25 @@ import {
 
 const ConnectButton = (): VNode => {
   const handleClick = async (): Promise<void> => {
-    const options = defaultOptions;
-    options.audio.enabled = audioEnabled.value;
-    options.audio.direction = audioDirection.value;
-    options.audio.codecMimeType = audioCodecMimeType.value;
-    options.video.enabled = videoEnabled.value;
-    options.video.direction = videoDirection.value;
-    options.video.codecMimeType = videoCodecMimeType.value;
-    options.signalingKey = signalingKey.value;
+    const base = createDefaultOptions();
+    const options: ConnectionOptions = {
+      ...base,
+      audio: {
+        ...base.audio,
+        codecMimeType:
+          audioCodecMimeType.value === "undefined" ? undefined : audioCodecMimeType.value,
+        direction: audioDirection.value,
+        enabled: audioEnabled.value,
+      },
+      signalingKey: signalingKey.value || undefined,
+      video: {
+        ...base.video,
+        codecMimeType:
+          videoCodecMimeType.value === "undefined" ? undefined : videoCodecMimeType.value,
+        direction: videoDirection.value,
+        enabled: videoEnabled.value,
+      },
+    };
 
     const conn = createConnection(signalingUrl.value, roomId.value, options, debug.value);
 
