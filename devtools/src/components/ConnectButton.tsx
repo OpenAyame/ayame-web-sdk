@@ -83,6 +83,7 @@ const ConnectButton = (): VNode => {
       pc.onconnectionstatechange = (): void => {
         ayameConnectionState.value = pc.connectionState;
       };
+      window.__ayameDevtoolsPeerConnection = pc;
     });
 
     // 切断時にローカルとリモートのメディアストリームを停止する
@@ -98,6 +99,7 @@ const ConnectButton = (): VNode => {
       localMediaStream.value = null;
       remoteMediaStream.value = null;
       ayameConnection.value = null;
+      window.__ayameDevtoolsPeerConnection = null;
     });
 
     await conn.connect(localStream);

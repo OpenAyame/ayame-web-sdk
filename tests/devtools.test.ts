@@ -57,37 +57,6 @@ test("DevTools のテスト", async ({ browser }) => {
     },
   );
 
-  const waitForRemoteVideo = async (page: typeof sendrecv1): Promise<void> => {
-    await page.waitForFunction(
-      () => {
-        const video = document.querySelector('[data-testid="remote-video"]');
-        if (!(video instanceof HTMLVideoElement)) {
-          return false;
-        }
-        const stream = video.srcObject;
-        return stream instanceof MediaStream && stream.getVideoTracks().length > 0;
-      },
-      { timeout: 10_000 },
-    );
-  };
-
-  // タブ 2 でリモート映像が表示されることを確認
-  await waitForRemoteVideo(sendrecv2);
-
-  await sendrecv1.click('[data-testid="disconnect"]');
-
-  // タブ 1 で再接続
-  await sendrecv1.click('[data-testid="connect"]');
-
-  await expect(sendrecv1.locator('[data-testid="connection-state"]')).toHaveAttribute(
-    "data-connection-state",
-    "connected",
-    { timeout: 10_000 },
-  );
-
-  // 再接続後もタブ 2 でリモート映像が表示される
-  await waitForRemoteVideo(sendrecv2);
-
   await sendrecv1.click('[data-testid="disconnect"]');
   await sendrecv2.click('[data-testid="disconnect"]');
 

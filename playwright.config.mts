@@ -4,7 +4,6 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   workers: 1,
   testDir: "tests",
-  // FullyParallel: true,
   reporter: "html",
   use: {
     launchOptions: {
@@ -26,16 +25,6 @@ export default defineConfig({
         ...devices["Desktop Chrome"],
       },
     },
-
-    // {
-    //   Name: 'firefox',
-    //   Use: { ...devices['Desktop Firefox'] },
-    // },
-
-    // {
-    //   Name: 'webkit',
-    //   Use: { ...devices['Desktop Safari'] },
-    // },
   ],
   webServer: {
     command: "vp dev --config devtools/vite.config.ts --port 9000",
