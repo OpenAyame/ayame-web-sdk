@@ -49,6 +49,8 @@
   - @voluntas
 - [FIX] DevTools で defaultOptions を直接書き換えていた問題を修正する
   - @voluntas
+- [FIX] DevTools の useEffect cleanup が登録されない問題を修正する
+  - @voluntas
 
 ## 2025.1.1
 

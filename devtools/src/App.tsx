@@ -1,4 +1,5 @@
 import type { VNode } from "preact";
+import { useEffect } from "preact/hooks";
 import AyameVersion from "./components/AyameWebSdkVersion";
 import ConnectButton from "./components/ConnectButton";
 import ConnectionSettings from "./components/ConnectionSettings";
@@ -11,8 +12,10 @@ import RemoteVideo from "./components/RemoteVideo";
 import { setSettingsFromUrl } from "./signals";
 
 const App = (): VNode => {
-  const params = new URLSearchParams(globalThis.location.search);
-  setSettingsFromUrl(params);
+  useEffect(() => {
+    const params = new URLSearchParams(globalThis.location.search);
+    setSettingsFromUrl(params);
+  }, []);
 
   return (
     <div class="p-4">
