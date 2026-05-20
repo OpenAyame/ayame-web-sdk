@@ -1,37 +1,17 @@
 import type { VNode } from "preact";
-import { ayameConnection, localMediaStream, remoteMediaStream } from "../signals";
+import { ayameConnection } from "../signals";
+import { disconnectSession, isConnecting } from "../models/ayameSession";
 
 const DisconnectButton = (): VNode => {
-  const handleClick = async (): Promise<void> => {
-    const conn = ayameConnection.value;
-    if (!conn) {
-      return;
-    }
-
-    const stream = localMediaStream.value;
-    if (stream) {
-      for (const track of stream.getTracks()) {
-        track.stop();
-      }
-    }
-
-    await conn.disconnect();
-
-    localMediaStream.value = null;
-    remoteMediaStream.value = null;
-
-    // AyameConnection を null にする
-    ayameConnection.value = null;
-  };
-
   return (
     <button
       data-testid="disconnect"
       type="button"
+      disabled={isConnecting.value}
       onClick={(): void => {
-        void handleClick();
+        void disconnectSession();
       }}
-      class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+      class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
     >
       Disconnect
     </button>
