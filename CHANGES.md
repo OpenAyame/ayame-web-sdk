@@ -41,6 +41,8 @@
   - @voluntas
 - [ADD] DevTools に解像度を設定するオプションを追加
   - @voluntas
+- [FIX] disconnect 後の再接続で addstream が発火しない問題を修正する
+  - @voluntas
 
 ## 2025.1.1
 
