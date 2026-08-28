@@ -45,14 +45,16 @@ export default defineConfig({
     }),
   ],
   root: resolve(__dirname, "./"),
+  // vp 0.2.x 以降、lint/fmt の設定はワークスペースルートのこのファイルで一元管理される。
+  // devtools のソースもここで対象に含め、ビルド出力のみ除外する。
   lint: {
-    ignorePatterns: ["dist/**", "devtools/**", "tests/**", ".claude/**", ".codex/**"],
+    ignorePatterns: ["dist/**", "devtools/dist/**", "tests/**", ".claude/**", ".codex/**"],
     options: {
       typeAware: true,
       typeCheck: true,
     },
   },
   fmt: {
-    ignorePatterns: ["dist/**", "devtools/**", ".claude/**", ".codex/**"],
+    ignorePatterns: ["dist/**", "devtools/dist/**", ".claude/**", ".codex/**"],
   },
 });

@@ -1,5 +1,4 @@
 import type { VNode } from "preact";
-import { ayameConnection } from "../signals";
 import { disconnectSession, isConnecting } from "../models/ayameSession";
 
 const DisconnectButton = (): VNode => {

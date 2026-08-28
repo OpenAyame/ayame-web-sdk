@@ -41,25 +41,23 @@ const buildVideoConstraints = (): boolean | MediaTrackConstraints => {
   return Object.keys(constraints).length > 0 ? constraints : true;
 };
 
-export const connectionOptions = computed(
-  (): ConnectionOptions => ({
-    ...createDefaultOptions(),
-    clientId: clientId.value,
-    iceServers: [],
-    standalone: standalone.value || undefined,
-    signalingKey: signalingKey.value || undefined,
-    audio: {
-      codecMimeType: audioCodecMimeType.value ?? undefined,
-      direction: audioDirection.value,
-      enabled: audioEnabled.value,
-    },
-    video: {
-      codecMimeType: videoCodecMimeType.value ?? undefined,
-      direction: videoDirection.value,
-      enabled: videoEnabled.value,
-    },
-  }),
-);
+export const connectionOptions = computed((): ConnectionOptions => ({
+  ...createDefaultOptions(),
+  clientId: clientId.value,
+  iceServers: [],
+  standalone: standalone.value || undefined,
+  signalingKey: signalingKey.value || undefined,
+  audio: {
+    codecMimeType: audioCodecMimeType.value ?? undefined,
+    direction: audioDirection.value,
+    enabled: audioEnabled.value,
+  },
+  video: {
+    codecMimeType: videoCodecMimeType.value ?? undefined,
+    direction: videoDirection.value,
+    enabled: videoEnabled.value,
+  },
+}));
 
 export const mediaConstraints = computed((): MediaStreamConstraints => {
   const audioDeviceId = resolveDeviceId(audioInputDeviceId.value);

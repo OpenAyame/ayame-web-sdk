@@ -24,20 +24,7 @@ jobs:
       - run: vp lint
         env:
           CI: true
-      # devtools の vp lint --type-aware は CI (Linux) で実行できない。
-      #
-      # devtools は vp workspace 経由で @open-ayame/ayame-web-sdk に依存しており、
-      # vp install 時に devtools/node_modules/@open-ayame/ayame-web-sdk がルートへの
-      # シンボリックリンクとして作成される。
-      #
-      # vp lint --type-aware の内部で使われる tsgolint (typescript-go ベース) が、
-      # このシンボリックリンク経由での型解決に失敗する。
-      #
-      # 回避策: CI では devtools の lint を --type-aware なしで実行する。
-      # type-aware ルールはローカルの pre-commit でチェックする。
-      - run: vp run lint:devtools:ci
-        env:
-          CI: true
+      # devtools はルート vite.config.ts の lint 設定で一括カバーする（vp 0.2.x 以降）
       - run: vp run typecheck
         env:
           CI: true
