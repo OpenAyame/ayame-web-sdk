@@ -28,18 +28,18 @@ happy path では再現しにくいが、再ネゴ・ICE 順序ずれ・一時�
 
 ### A. `setAnswer` の例外未処理
 
-| 項目 | 内容                                                                                                         |
-| ---- | ------------------------------------------------------------------------------------------------------------ |
-| 場所 | `src/ayame.ts:270-275`, `610-616`                                                                            |
-| 問題 | `void this.setAnswer(...)`。`setOffer`（618-632）には try/catch がある                                       |
+| 項目 | 内容                                                                                                                  |
+| ---- | --------------------------------------------------------------------------------------------------------------------- |
+| 場所 | `src/ayame.ts:270-275`, `610-616`                                                                                     |
+| 問題 | `void this.setAnswer(...)`。`setOffer`（618-632）には try/catch がある                                                |
 | 対応 | `setOffer` と同様に try/catch → `disconnect("SET-ANSWER-ERROR", error)`。コールバック発火は `disconnect()` 内部で行う |
 
 ### A2. `sendOffer` の例外未処理
 
-| 項目 | 内容                                                                                                          |
-| ---- | ------------------------------------------------------------------------------------------------------------- |
-| 場所 | `src/ayame.ts:571-588`                                                                                        |
-| 問題 | `sendOffer` に try/catch がない。`createOffer` / `setLocalDescription` 失敗時に unhandled rejection になる    |
+| 項目 | 内容                                                                                                                   |
+| ---- | ---------------------------------------------------------------------------------------------------------------------- |
+| 場所 | `src/ayame.ts:571-588`                                                                                                 |
+| 問題 | `sendOffer` に try/catch がない。`createOffer` / `setLocalDescription` 失敗時に unhandled rejection になる             |
 | 対応 | `setAnswer` と同様に try/catch → `disconnect("SEND-OFFER-ERROR", error)`。コールバック発火は `disconnect()` 内部で行う |
 
 ### B. glare 時の旧 PC 未 close
@@ -60,20 +60,20 @@ happy path では再現しにくいが、再ネゴ・ICE 順序ずれ・一時�
 
 ### D. ICE `disconnected` の即切断
 
-| 項目    | 内容                                                                                                                              |
-| ------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| 場所    | `src/ayame.ts:452-458`                                                                                                            |
-| 問題    | `disconnected` と `failed` を同じ扱い                                                                                             |
-| 対応    | `failed` のみ切断する。`disconnected` では切断しない。`reason` を `ICE-DISCONNECTED` / `ICE-FAILED` で分離する                     |
-| CHANGES | 挙動変更のため `[CHANGE]` とする                                                                                                  |
+| 項目    | 内容                                                                                                           |
+| ------- | -------------------------------------------------------------------------------------------------------------- |
+| 場所    | `src/ayame.ts:452-458`                                                                                         |
+| 問題    | `disconnected` と `failed` を同じ扱い                                                                          |
+| 対応    | `failed` のみ切断する。`disconnected` では切断しない。`reason` を `ICE-DISCONNECTED` / `ICE-FAILED` で分離する |
+| CHANGES | 挙動変更のため `[CHANGE]` とする                                                                               |
 
 ### E. `disconnect()` の二重呼び出し・コールバック重複
 
-| 項目 | 内容                                                                                     |
-| ---- | ---------------------------------------------------------------------------------------- |
-| 場所 | `189-201`, `252-257`, `281-286`, `452-458`, `475-478` 他                                 |
-| 問題 | WS / ICE / `connectionState` からそれぞれ `disconnect` と `disconnect` CB                |
-| 対応 | `private disconnecting = false` で idempotent 化。`disconnect` CB は 1 セッション 1 回  |
+| 項目 | 内容                                                                                   |
+| ---- | -------------------------------------------------------------------------------------- |
+| 場所 | `189-201`, `252-257`, `281-286`, `452-458`, `475-478` 他                               |
+| 問題 | WS / ICE / `connectionState` からそれぞれ `disconnect` と `disconnect` CB              |
+| 対応 | `private disconnecting = false` で idempotent 化。`disconnect` CB は 1 セッション 1 回 |
 
 #### idempotent 化の設計
 
@@ -116,10 +116,10 @@ public async connect(...): Promise<void> {
 
 ### H. `connect(..., null)` 後の `authnMetadata` 残留
 
-| 項目 | 内容                                                          |
-| ---- | ------------------------------------------------------------- |
-| 場所 | `src/ayame.ts:146-148`                                        |
-| 問題 | 2 回目 `metadataOption === null` でも前回値を register に送る |
+| 項目 | 内容                                                                                   |
+| ---- | -------------------------------------------------------------------------------------- |
+| 場所 | `src/ayame.ts:146-148`                                                                 |
+| 問題 | 2 回目 `metadataOption === null` でも前回値を register に送る                          |
 | 対応 | `metadataOption == null`（null と undefined の両方）のとき `this.authnMetadata = null` |
 
 **注意**: 現在のコード `metadataOption !== null` は undefined を通すため、`connect(stream)` 呼び出し時に `undefined.authnMetadata` にアクセスして TypeError が発生する既存バグも含めて修正する。

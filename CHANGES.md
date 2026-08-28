@@ -58,6 +58,8 @@
   - @voluntas
 - [FIX] DevTools の useEffect cleanup が登録されない問題を修正する
   - @voluntas
+- [FIX] DevTools で切断後に接続状態表示が更新されない問題を修正する
+  - @voluntas
 - [FIX] setAnswer / sendOffer の例外未処理を修正する
   - @voluntas
 - [FIX] glare 時に旧 RTCPeerConnection を close する

@@ -59,11 +59,11 @@ export された `defaultOptions` を利用者が破壊的に変更できてし�
 
 ## 変更対象ファイル
 
-| ファイル                                    | 変更内容                                                     |
-| ------------------------------------------- | ------------------------------------------------------------ |
+| ファイル                                    | 変更内容                                                                       |
+| ------------------------------------------- | ------------------------------------------------------------------------------ |
 | `src/ayame.ts`                              | `createDefaultOptions` 追加（export）、`createConnection` のデフォルト引数変更 |
-| `devtools/src/components/ConnectButton.tsx` | 毎回新規 options オブジェクト                                |
-| `CHANGES.md`                                | `[ADD]` + DevTools 修正は misc                               |
+| `devtools/src/components/ConnectButton.tsx` | 毎回新規 options オブジェクト                                                  |
+| `CHANGES.md`                                | `[ADD]` + DevTools 修正は misc                                                 |
 
 ## 完了条件
 

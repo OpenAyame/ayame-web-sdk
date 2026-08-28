@@ -123,22 +123,30 @@ test("切断後に再接続できる", async ({ browser }) => {
   await page1.click('[data-testid="connect"]');
   await page2.click('[data-testid="connect"]');
   await expect(page1.locator('[data-testid="connection-state"]')).toHaveAttribute(
-    "data-connection-state", "connected", { timeout: 10_000 },
+    "data-connection-state",
+    "connected",
+    { timeout: 10_000 },
   );
   await expect(page2.locator('[data-testid="connection-state"]')).toHaveAttribute(
-    "data-connection-state", "connected", { timeout: 10_000 },
+    "data-connection-state",
+    "connected",
+    { timeout: 10_000 },
   );
 
   // page1 を切断
   await page1.click('[data-testid="disconnect"]');
   await expect(page1.locator('[data-testid="connection-state"]')).not.toHaveAttribute(
-    "data-connection-state", "connected", { timeout: 10_000 },
+    "data-connection-state",
+    "connected",
+    { timeout: 10_000 },
   );
 
   // page1 を再接続
   await page1.click('[data-testid="connect"]');
   await expect(page1.locator('[data-testid="connection-state"]')).toHaveAttribute(
-    "data-connection-state", "connected", { timeout: 10_000 },
+    "data-connection-state",
+    "connected",
+    { timeout: 10_000 },
   );
 
   await page1.click('[data-testid="disconnect"]');
@@ -178,7 +186,9 @@ test("相手の切断時に disconnect コールバックが発火する", async
   await page1.click('[data-testid="connect"]');
   await page2.click('[data-testid="connect"]');
   await expect(page1.locator('[data-testid="connection-state"]')).toHaveAttribute(
-    "data-connection-state", "connected", { timeout: 10_000 },
+    "data-connection-state",
+    "connected",
+    { timeout: 10_000 },
   );
 
   // page1 を切断（page2 に bye が届く）
@@ -186,7 +196,9 @@ test("相手の切断時に disconnect コールバックが発火する", async
 
   // page2 の接続状態が connected でなくなることを確認
   await expect(page2.locator('[data-testid="connection-state"]')).not.toHaveAttribute(
-    "data-connection-state", "connected", { timeout: 10_000 },
+    "data-connection-state",
+    "connected",
+    { timeout: 10_000 },
   );
 
   await page2.click('[data-testid="disconnect"]');

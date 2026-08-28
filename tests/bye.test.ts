@@ -37,11 +37,22 @@ test("相手の切断後に再接続できる", async ({ browser }) => {
     { timeout: 10_000 },
   );
 
+  // peer1 が切断すると peer2 には bye が届き、disconnect コールバックで接続状態が closed に戻る
   await peer1.click('[data-testid="disconnect"]');
+  await expect(peer2.locator('[data-testid="connection-state"]')).not.toHaveAttribute(
+    "data-connection-state",
+    "connected",
+    { timeout: 10_000 },
+  );
 
-  // ピア 2 は bye 経由で切断され、再度 connect できる
+  // bye で切断された側も、相手と一緒に再接続すれば restored できる
+  await peer1.click('[data-testid="connect"]');
   await peer2.click('[data-testid="connect"]');
-
+  await expect(peer1.locator('[data-testid="connection-state"]')).toHaveAttribute(
+    "data-connection-state",
+    "connected",
+    { timeout: 10_000 },
+  );
   await expect(peer2.locator('[data-testid="connection-state"]')).toHaveAttribute(
     "data-connection-state",
     "connected",

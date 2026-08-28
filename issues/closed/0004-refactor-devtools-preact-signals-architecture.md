@@ -61,15 +61,15 @@ Preact `useEffect` cleanup 不備・権限 UI の副作用は **issue 0007** で
 
 `devtools/src/models/ayameSession.ts`（仮）を新設。
 
-| メンバ                         | 種別                         | 責務                                                                        |
-| ------------------------------ | ---------------------------- | --------------------------------------------------------------------------- |
-| `connection`                   | `signal<Connection \| null>` | 現在の SDK 接続                                                             |
-| `connectionState`              | `signal`                     | `pc.onconnectionstatechange` で更新（computed ではリアクティブにならない） |
-| `localStream` / `remoteStream` | `signal`                     | メディア                                                                    |
-| `isConnecting`                 | `signal<boolean>`            | 接続処理中。`connect` 開始時に `true`、完了/エラー時に `false`              |
-| `canConnect`                   | `computed`                   | `!isConnecting.value && connection.value === null`                          |
+| メンバ                         | 種別                         | 責務                                                                                                                                                                                                                                                                                                                                                |
+| ------------------------------ | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `connection`                   | `signal<Connection \| null>` | 現在の SDK 接続                                                                                                                                                                                                                                                                                                                                     |
+| `connectionState`              | `signal`                     | `pc.onconnectionstatechange` で更新（computed ではリアクティブにならない）                                                                                                                                                                                                                                                                          |
+| `localStream` / `remoteStream` | `signal`                     | メディア                                                                                                                                                                                                                                                                                                                                            |
+| `isConnecting`                 | `signal<boolean>`            | 接続処理中。`connect` 開始時に `true`、完了/エラー時に `false`                                                                                                                                                                                                                                                                                      |
+| `canConnect`                   | `computed`                   | `!isConnecting.value && connection.value === null`                                                                                                                                                                                                                                                                                                  |
 | `connect(options)`             | `async` 関数                 | 既存接続があれば先に `await disconnect()`。`connectionOptions` computed を引数として受け取る。`action` は使わない（`await` 前後のシグナル追跡が分断されるため）。`isConnecting` の更新は `batch` で行う。`getUserMedia` / `conn.connect` 失敗時は `try / finally` で `isConnecting.value = false` とし、取得済みの `localStream` トラックを停止する |
-| `disconnect()`                 | `async` 関数                 | トラック停止 + signal クリア + `await conn.disconnect()`。`connect` 内から `await` で呼ぶ。`conn` が null の場合は早期 return |
+| `disconnect()`                 | `async` 関数                 | トラック停止 + signal クリア + `await conn.disconnect()`。`connect` 内から `await` で呼ぶ。`conn` が null の場合は早期 return                                                                                                                                                                                                                       |
 
 `ConnectButton` / `DisconnectButton` は model のメソッドを呼ぶだけに薄くする。
 
@@ -85,6 +85,7 @@ const handleClick = async (): Promise<void> => {
 ```
 
 `connect` 内部では:
+
 1. 既存接続があれば `disconnect()` を呼ぶ
 2. `createConnection(signalingUrl.value, roomId.value, options, debug.value)` を呼ぶ
 3. `getUserMedia` でローカルストリームを取得する（`mediaConstraints` computed を使用）
@@ -99,25 +100,23 @@ const handleClick = async (): Promise<void> => {
 `signals.ts` または `connectionOptions.ts` で:
 
 ```ts
-export const connectionOptions = computed(
-  (): ConnectionOptions => ({
-    ...createDefaultOptions(),
-    clientId: clientId.value,
-    iceServers: [], // 明示的に含める（createDefaultOptions() から継承されるが、お手本として明記）
-    standalone: standalone.value || undefined,
-    signalingKey: signalingKey.value || undefined,
-    audio: {
-      direction: audioDirection.value,
-      enabled: audioEnabled.value,
-      codecMimeType: audioCodecMimeType.value ?? undefined,
-    },
-    video: {
-      direction: videoDirection.value,
-      enabled: videoEnabled.value,
-      codecMimeType: videoCodecMimeType.value ?? undefined,
-    },
-  }),
-);
+export const connectionOptions = computed((): ConnectionOptions => ({
+  ...createDefaultOptions(),
+  clientId: clientId.value,
+  iceServers: [], // 明示的に含める（createDefaultOptions() から継承されるが、お手本として明記）
+  standalone: standalone.value || undefined,
+  signalingKey: signalingKey.value || undefined,
+  audio: {
+    direction: audioDirection.value,
+    enabled: audioEnabled.value,
+    codecMimeType: audioCodecMimeType.value ?? undefined,
+  },
+  video: {
+    direction: videoDirection.value,
+    enabled: videoEnabled.value,
+    codecMimeType: videoCodecMimeType.value ?? undefined,
+  },
+}));
 ```
 
 - `createDefaultOptions()` は SDK 側（`src/ayame.ts`）で 0003 により追加される。`connectionOptions` computed はこれをベースにスプレッドし、信号の値で上書きする。

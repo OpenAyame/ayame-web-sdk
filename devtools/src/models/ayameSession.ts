@@ -31,6 +31,8 @@ const resetSessionSignals = (): void => {
   localMediaStream.value = null;
   remoteMediaStream.value = null;
   ayameConnection.value = null;
+  // pc.close() では connectionstatechange が発火しないため、接続状態は明示的に閉じた状態へ戻す
+  ayameConnectionState.value = "closed";
   window.__ayameDevtoolsPeerConnection = null;
 };
 

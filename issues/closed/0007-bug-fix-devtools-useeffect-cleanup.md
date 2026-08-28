@@ -110,6 +110,7 @@ Ayame DevTools の Preact コンポーネントで、`useEffect` の cleanup が
    **注意**: `useSignalEffect` は cleanup 関数を返すことができるが、`useEffect` を使用する理由は以下の通り:
    - 依存配列を明示的に指定できる（`audioEnabled.value` / `videoEnabled.value` の変更で再実行するため）
    - `useSignalEffect` は signal の変更のみをトリガーとし、依存配列による制御ができない
+
 3. **権限表示コンポーネント**: モジュールトップレベルの `void set*()` を削除し、コンポーネント内 `useSignalEffect` に移す。
 4. **App.tsx**: `setSettingsFromUrl` を `useEffect(() => { ... }, [])` に移す。
 
@@ -151,17 +152,17 @@ useEffect(() => {
 
 ## 変更対象ファイル
 
-| ファイル                                                   | 変更内容                                                   |
-| ---------------------------------------------------------- | ---------------------------------------------------------- |
-| `devtools/src/components/AudioInputDevice.tsx`             | cleanup 修正                                               |
-| `devtools/src/components/VideoInputDevice.tsx`             | cleanup 修正                                               |
-| `devtools/src/components/AudioOutputDevice.tsx` | cleanup 修正（`microphone` 権限で speaker デバイスを監視。ブラウザの仕様上、出力デバイスの列挙には `microphone` 権限が必要） |
-| `devtools/src/components/RequestMediaPermissionButton.tsx` | cleanup + signal 購読                                      |
-| `devtools/src/components/MicrophonePermissionState.tsx`    | 副作用を effect へ                                         |
-| `devtools/src/components/CameraPermissionState.tsx`        | 副作用を effect へ                                         |
-| `devtools/src/components/App.tsx`                          | URL 初期化を effect へ                                     |
-| `devtools/src/signals.ts`                                  | 権限 setter は export のまま、呼び出し元をコンポーネントへ |
-| `CHANGES.md`                                               | `## develop` に `[FIX]`                                    |
+| ファイル                                                   | 変更内容                                                                                                                     |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `devtools/src/components/AudioInputDevice.tsx`             | cleanup 修正                                                                                                                 |
+| `devtools/src/components/VideoInputDevice.tsx`             | cleanup 修正                                                                                                                 |
+| `devtools/src/components/AudioOutputDevice.tsx`            | cleanup 修正（`microphone` 権限で speaker デバイスを監視。ブラウザの仕様上、出力デバイスの列挙には `microphone` 権限が必要） |
+| `devtools/src/components/RequestMediaPermissionButton.tsx` | cleanup + signal 購読                                                                                                        |
+| `devtools/src/components/MicrophonePermissionState.tsx`    | 副作用を effect へ                                                                                                           |
+| `devtools/src/components/CameraPermissionState.tsx`        | 副作用を effect へ                                                                                                           |
+| `devtools/src/components/App.tsx`                          | URL 初期化を effect へ                                                                                                       |
+| `devtools/src/signals.ts`                                  | 権限 setter は export のまま、呼び出し元をコンポーネントへ                                                                   |
+| `CHANGES.md`                                               | `## develop` に `[FIX]`                                                                                                      |
 
 ## 完了条件
 
