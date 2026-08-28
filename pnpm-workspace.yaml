@@ -1,5 +1,6 @@
 packages:
   - devtools
+  - tooling/typedoc
 
 onlyBuiltDependencies:
   - esbuild

@@ -1,0 +1,13 @@
+{
+  "name": "@open-ayame/ayame-typedoc-tool",
+  "private": true,
+  "description": "TypeDoc runner isolated from the root TypeScript 7 toolchain",
+  "type": "module",
+  "scripts": {
+    "build": "typedoc"
+  },
+  "devDependencies": {
+    "typedoc": "0.28.20",
+    "typescript": "npm:@typescript/typescript6@6.0.2"
+  }
+}

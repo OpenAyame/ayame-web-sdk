@@ -1,5 +1,5 @@
 node_modules
-typedoc/
+/typedoc/
 apidoc/
 .log/
 dist/
